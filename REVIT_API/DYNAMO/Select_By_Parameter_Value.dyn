@@ -1,0 +1,248 @@
+{
+  "Uuid": "50864fd7-5086-4dc1-b15f-8269b1966201",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Select_By_Parameter_Value",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6981",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6988",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6989",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a698a",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a698b",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a698c",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a698d",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a698e",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6991",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6992",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6993",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a69a9",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a69b4",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a69e7",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6a10",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6a11",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6a26",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6a2e",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6a47",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6a48",
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6a49"
+      ],
+      "Id": "7b4b4e77ce334e29881cfb7cf7997389",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2371e7de14d04c40be19e3f40fb5a3d9",
+          "Name": "Elements",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Povolit podporu Python a načíst knihovnu DesignScript\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n\r\n\r\n# Umístit kód pod tento řádek\r\n\r\n# Přiřaďte výstup k proměnné OUT.\r\nclr.AddReference(\"RevitApi\")\r\nimport Autodesk\r\nimport Autodesk.Revit.DB as DB\r\n#from Autodesk.Revit.UI.Selection import Selection as UISelection\r\n#from Autodesk.Revit.UI import UIApplication\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\nclr.AddReference(\"System\")\r\nfrom System.Collections.Generic import List as Clist\r\n\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\n\r\n# Vstupní údaje k tomuto uzlu budou uloženy jako seznam proměnných IN.\r\nmyObjects = IN[0]\r\nmyParameterName = IN[1]\r\nmyParameterValue = IN[2]\r\n\r\n\r\n\r\n#  Creating collector instance and collecting all the walls from the model\r\n\r\n# Get all properties of wall\r\ntextOut = \"\"\r\n#for element in myObjects:\r\n#\tparam_set = element.GetOrderedParameters()\r\n#\tfor param in list(param_set):\r\n#\t\ttextOut += \"ParamName - {name}; value - {value}; hasValue - {hasValue}; ParameterType - {parameterType} unitType - {unitType}\" \\\r\n#\t\t\t\t.format( \\\r\n#\t\t\t\t\t\tname=param.Definition.Name, \\\r\n#\t\t\t\t\t\tparameterType = param.Definition.ParameterType, \\\r\n#\t\t\t\t\t\tvalue = param.AsValueString(), \\\r\n#\t\t\t\t\t\thasValue = param.HasValue, \\\r\n#\t\t\t\t\t\tunitType=param.Definition.UnitType \\\r\n#\t\t\t\t\t\t) \\\r\n#\ttextOut += \"-----------\"\r\n\r\ndef Unwrap(item, *args):\r\n\treturn UnwrapElement(item)\r\n\r\n#def ProcessList(_func, _list):\r\n#    return map( lambda x: ProcessList(_func, x) if type(x)==list else _func(x), _list )\r\n\r\ndef ProcessList(_func, _list, *args):\r\n    return map( lambda x: ProcessList(_func, x, *args) if type(x)==list else _func(x, *args), _list )\r\n\r\ndef filterByCustomParameterValue(inSelection, parameterName, parameterValue):\r\n\treturnSelection = []\r\n\tfor element in inSelection:\r\n\t\tparam_set = element.GetOrderedParameters()\r\n\t\tfor parameter in param_set:\r\n\t\t\tif parameter.Definition.Name == parameterName and parameterValue == parameter.AsValueString():\r\n\t\t\t\tprint(\"this elementID has right property - {0}\".format(element.Id))\r\n\t\t\t\treturnSelection.append(element.Id)\r\n\treturn returnSelection\r\n\r\nmyUnwrappedObjects = ProcessList(Unwrap, myObjects)\r\nselectedElementsIds = filterByCustomParameterValue( \\\r\n\t\t\t\t\t\tmyUnwrappedObjects, \\\r\n\t\t\t\t\t\tmyParameterName, \\\r\n\t\t\t\t\t\tmyParameterValue)\r\nmyCollection = Clist[DB.ElementId](selectedElementsIds)\r\nlMyCollection = list(myCollection)\r\nprint (\"myCollection length - {0}\".format(len(myCollection)))\r\nprint len(selectedElementsIds)\r\n#__revit__.ActiveUIDocument.Selection.SetElementIds(myCollection)\r\nuiapp.ActiveUIDocument.Selection.SetElementIds(myCollection)\r\n#print __revit__.ActiveUIDocument.Selection.GetElementIds()\r\nOUT = textOut",
+      "VariableInputPorts": true,
+      "Id": "9ad4d84181f84104a84705ef7ad479eb",
+      "Inputs": [
+        {
+          "Id": "4c191a60480448b382559a7fa264eac9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b8cf48cce73948468a1e82ab8a100a98",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "36acc12eddcf4d5099924b0edf2b1bdb",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a9b36448f8a64e4fbdac380130924b8e",
+          "Name": "OUT",
+          "Description": "Výsledek skriptu jazyka Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spustí vložený skript IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Nové konstrukce v AXO\";\n\"Ano\";",
+      "Id": "c8530a87dc724bbd9c3e5e4ce1624801",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9c96b9ae4f1c45e1894e41ccfa3e7336",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a1d8ae05c2cb42f68b59b597897f712e",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Nové konstrukce v AXO\";\n\"Ne\";",
+      "Id": "26fadcc012a94d5b9c7707833838e567",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7a49dfbb5902482bb87d82f2e82c74c8",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b56d81e62d7a4d00b615cbe5ae2b0af6",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "2371e7de14d04c40be19e3f40fb5a3d9",
+      "End": "4c191a60480448b382559a7fa264eac9",
+      "Id": "adb7b053fd4e44ef8891309d24920d9b"
+    },
+    {
+      "Start": "7a49dfbb5902482bb87d82f2e82c74c8",
+      "End": "b8cf48cce73948468a1e82ab8a100a98",
+      "Id": "7f53cb690fd848e2b216f489a5bddae8"
+    },
+    {
+      "Start": "b56d81e62d7a4d00b615cbe5ae2b0af6",
+      "End": "36acc12eddcf4d5099924b0edf2b1bdb",
+      "Id": "1a3cda5cebab48d4960d226f2bb2847c"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.2.6826",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Náhled pozadí",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "7b4b4e77ce334e29881cfb7cf7997389",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 568.5,
+        "Y": 351.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "9ad4d84181f84104a84705ef7ad479eb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 988.5,
+        "Y": 346.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "c8530a87dc724bbd9c3e5e4ce1624801",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 615.0,
+        "Y": 555.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "26fadcc012a94d5b9c7707833838e567",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 583.0,
+        "Y": 684.0
+      }
+    ],
+    "Annotations": [],
+    "X": -214.0,
+    "Y": 81.0,
+    "Zoom": 1.0
+  }
+}

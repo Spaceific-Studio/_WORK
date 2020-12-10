@@ -1,0 +1,5 @@
+print(dir(__revit__.CreateAddInCommandBinding))
+__revit__.CreateRibbonTab("this")
+__revit__.CreateRibbonPanel("this")
+__revit__.CreateAddInCommandBinding("this")
+#print(dir(myWindow))

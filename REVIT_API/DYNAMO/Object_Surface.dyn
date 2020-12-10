@@ -1,0 +1,302 @@
+{
+  "Uuid": "6122a9af-a72b-454e-9f78-8aba28ceb39f",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Object_Surface",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a82df"
+      ],
+      "Id": "92d12deec0ca4c15bb7ca5790f5c69ff",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "14d9484f2a804bb3a3bf004e542fb0a8",
+          "Name": "Element",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.Faces",
+      "Id": "fa0de58c378848558f89d511f8010895",
+      "Inputs": [
+        {
+          "Id": "b2fc31878e2447048d5eb6f6bb7c3358",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d8736699099b4bc985ad3c37df29f27f",
+          "Name": "Surface[]",
+          "Description": "Surface[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Plochy v tomto prvku\n\nElement.Faces: Surface[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Surface.Area",
+      "Id": "bb0a5d49f4fb49e08c5a4203b2580be2",
+      "Inputs": [
+        {
+          "Id": "95aca631368742128941dee50828364d",
+          "Name": "surface",
+          "Description": "Autodesk.DesignScript.Geometry.Surface",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0e4490fe8d3a44cda3a948577c825b2a",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrací celkovou plochu povrchu.\n\nSurface.Area: double"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.DynamoConvert, CoreNodeModels",
+      "NodeType": "ConvertBetweenUnitsNode",
+      "MeasurementType": "Area",
+      "FromConversion": "SquareMillimeter",
+      "ToConversion": "SquareMeter",
+      "Id": "564f369784104d44ae6d88647153b95b",
+      "Inputs": [
+        {
+          "Id": "13aec57c9cef4f2a8c9c40059ba00429",
+          "Name": "",
+          "Description": "Číselná hodnota k převodu",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a9e26a054c414d1aa670850bce42e0f3",
+          "Name": "",
+          "Description": "Převedená číselná hodnota",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Převod mezi měrnými jednotkami"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "a0d548f8025a43a3ba99e959cec62104",
+      "Inputs": [
+        {
+          "Id": "2262824bec9a4a51bacd4de72b33b222",
+          "Name": "",
+          "Description": "Uzel k vyhodnocení",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f1b4913277844e9a83cb81a9a958be55",
+          "Name": "",
+          "Description": "Podívejte se na obsah.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Math.Sum@double[]",
+      "Id": "42e3ead0635a4dc8a814bf1b6ca154fd",
+      "Inputs": [
+        {
+          "Id": "bf152b00c0c2414990d9a0aabc9dafeb",
+          "Name": "values",
+          "Description": "Čísla k provedení součtu\n\ndouble[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a585b09cd9f8425b9415150f7b2e80e4",
+          "Name": "sum",
+          "Description": "Součet hodnot",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Najde součet posloupnosti čísel.\n\nMath.Sum (values: double[]): double"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "14d9484f2a804bb3a3bf004e542fb0a8",
+      "End": "b2fc31878e2447048d5eb6f6bb7c3358",
+      "Id": "6fb0368ed0f44c00bada14f79b464238"
+    },
+    {
+      "Start": "d8736699099b4bc985ad3c37df29f27f",
+      "End": "95aca631368742128941dee50828364d",
+      "Id": "46c3527b830d4e9bae6ef010cfc6e4a0"
+    },
+    {
+      "Start": "0e4490fe8d3a44cda3a948577c825b2a",
+      "End": "13aec57c9cef4f2a8c9c40059ba00429",
+      "Id": "a570c54c5572450da7d3684817255e1a"
+    },
+    {
+      "Start": "a9e26a054c414d1aa670850bce42e0f3",
+      "End": "bf152b00c0c2414990d9a0aabc9dafeb",
+      "Id": "bddf69845e614031b9ae9e6454936981"
+    },
+    {
+      "Start": "a585b09cd9f8425b9415150f7b2e80e4",
+      "End": "2262824bec9a4a51bacd4de72b33b222",
+      "Id": "f1ddc16f558c42309018570edb7eed7c"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.2.6826",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Náhled pozadí",
+      "EyeX": 12180.762636644347,
+      "EyeY": 9479.886525611515,
+      "EyeZ": -1920.3209628976365,
+      "LookX": -11224.424375723695,
+      "LookY": -1451.8776455420557,
+      "LookZ": -6529.9832108055125,
+      "UpX": 0.090351071161085039,
+      "UpY": 0.99452189536827451,
+      "UpZ": 0.052563138920176437
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "92d12deec0ca4c15bb7ca5790f5c69ff",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 404.5,
+        "Y": 399.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.Faces",
+        "Id": "fa0de58c378848558f89d511f8010895",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 741.88682900373044,
+        "Y": 397.75788600248694
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Surface.Area",
+        "Id": "bb0a5d49f4fb49e08c5a4203b2580be2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1066.2726478343889,
+        "Y": 461.19700614635303
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Convert Between Units",
+        "Id": "564f369784104d44ae6d88647153b95b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1500.09042174047,
+        "Y": 436.81295079363184
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Area",
+        "Id": "a0d548f8025a43a3ba99e959cec62104",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2209.7116596457777,
+        "Y": 440.52058166838219
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Math.Sum",
+        "Id": "42e3ead0635a4dc8a814bf1b6ca154fd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2011.4922766231866,
+        "Y": 439.92585300291046
+      }
+    ],
+    "Annotations": [],
+    "X": 1.3916898463113512,
+    "Y": 182.89370305384807,
+    "Zoom": 0.44314570172316264
+  }
+}
