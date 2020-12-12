@@ -1,4 +1,4 @@
 title=Pictures
 author=Kivy team
-orientation=portrait
-fullscreen=0
+orientation=landscape
+fullscreen=1

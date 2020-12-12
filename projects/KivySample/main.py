@@ -68,7 +68,7 @@ class PicturesApp(App):
     def on_pause(self):
         return True
 
-print __file__
+
 if __name__ == '__main__':
     PicturesApp().run()
 
