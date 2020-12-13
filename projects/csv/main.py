@@ -3,12 +3,76 @@ import csv
 import copy
 import sys
 import math
+import http.client
+#import requests
+import urllib.request
+
+urlRecovered="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+urlConfirmed="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+urlDeads="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+#response = urllib.request.urlopen(url)
+#dData = response.read()
+#text = dData.decode('utf-8')
+#print("dData {0}".format(text))
+#r = requests.get(url, auth=('usrname', 'password'), verify=False,stream=True)
+#r.raw.decode_content = True
+#with open("file_name.pdf", 'wb') as f:
+#        shutil.copyfileobj(r.raw, f)
+        
+#conn = http.client.HTTPConnection('github.com')
+#conn = http.client.HTTPSConnection("www.python.org")
+#conn.request("GET", "/")
+#conn.request("GET", "/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series")
+#r1 = conn.getresponse()
+#print(r1.status, r1.reason)
+#while chunk := r1.read(200):
+#    print(repr(chunk))
+#h2 = h1.request("BODY    ","/index.html")
+#h3= http.client.parse_headers(h2)
+#print("h1 {0}".format(h1))
+#print("h2 {0}".format(h2))
+#    print("h3 {0}".format(h3))
+print("file {0}".format(__file__))
 myCwd = os.getcwd()
 print("my cwd {0}".format(myCwd))
 path = r"".format(myCwd)
 countriesFName = "countries/2020_WORLD_STATES.csv"
 
 countriesFilePath = os.path.join(path, countriesFName)
+
+def ensure_dir(file_path):
+    directory = os.path.dirname(file_path) 
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        
+def download_data(inUrl, dPath):
+    connOk = False
+    try:
+        response = urllib.request.urlopen(inUrl)
+        connOk =True
+        
+    except Exception as ex:
+        pass
+        #print(ex)
+    if connOk:
+        dData = response.read()
+        text = dData.decode('utf-8')
+        fName = inUrl.split("/")[-1]
+        fName = fName.split(".")[0] 
+        fName = fName + ".txt"
+        fullName = os.path.join(dPath, fName)
+        #print("dData {0}".format(text))
+        ensure_dir(dPath)
+        with open(fullName, 'wb') as myFile:
+            myFile.write(dData)
+        print("Data from {0} was downloaded to :{1}".format(inUrl, os.path.join(dPath, fullName)))
+    else:
+        print("Unable to connect to: {0}\n".format(inUrl))
+
+
+download_data(urlRecovered, os.path.join(myCwd, "JHU"))
+download_data(urlDeads, os.path.join(myCwd, "JHU"))
+download_data(urlConfirmed, os.path.join(myCwd, "JHU"))
 
 with open(countriesFilePath, newline='') as cF:
     cReader = csv.reader(cF)
