@@ -10,6 +10,8 @@ urlConfirmed="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/c
 urlDeads="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
 
 print("file {0}".format(__file__))
+
+os.chdir(r"{}".format("/".join(__file__.split("/")[0:-1])))
 myCwd = os.getcwd()
 print("my cwd {0}".format(myCwd))
 path = r"".format(myCwd)
@@ -141,7 +143,7 @@ class InputData():
     
     def __init__(self, inPath, inPopData):
         if not InputData.FIRST_LINE:
-            InputData.FIRST_LINE = ["Region", "Confirmed", "Deads", "Recovered","D/C %", "C/Pop%", "c7D100k%", "d7D1m%", "incC8DStd"]
+            InputData.FIRST_LINE = ["Region", "Confirmed", "Deads", "Recovered","D/C %", "C/Pop%", "c7D100k ", "d7D1m ", "incC8DStd%"]
         self.fileNameConfirmedJHU = "time_series_covid19_confirmed_global.txt"
         self.fileNameRecoveredJHU = "time_series_covid19_recovered_global.txt"
         self.fileNameDeathsJHU = "time_series_covid19_deaths_global.txt"
@@ -152,7 +154,7 @@ class InputData():
         allDataConfirmed = self.readFile(self.confirmedPath)
         #print("InputData.allDataConfirmed {0}".format(allDataConfirmed))
         self.confirmedDic = self.allDataToDic(allDataConfirmed)
-        print(self.confirmedDic["Czechia"])
+        #print(self.confirmedDic["Czechia"])
         #print("InputData.confirmedDic {}".format(self.confirmedDic))
         allDataDeaths = self.readFile(self.deathsPath)
         
@@ -329,7 +331,7 @@ class InputData():
                     inCData = True
                     break
                 elif line[0] == "Korea, South" and "South Korea" in country[1]:
-                    print("South Korea line [1] {0}-line[0] inCountries {2} {1}".format(line[1], i, line[0]))
+                    #print("South Korea line [1] {0}-line[0] inCountries {2} {1}".format(line[1], i, line[0]))
                     lookUpTable["Korea, South"] = i
                     inCData = True
                     break
@@ -360,7 +362,7 @@ cSecondLine = cData.pop(0)
 cData.pop(-1)
 
 filePathJHU = os.path.join(path, "JHU")
-print("filePathJHU: {}".format(filePathJHU)) 
+#print("filePathJHU: {}".format(filePathJHU)) 
 
 inputJHU = InputData(filePathJHU, cData)
 
@@ -441,13 +443,13 @@ ccData = countrySorting(4, cData.copy())
     #0__sort counties by population
     #1__sort counties by area
     #2__sort counties by density
-reservedStrings =["q", "p", "a", "de", "d", "c", "dc", "dp", "cp", "r", "ic", "id", ">", "<", "100", "std", "d1m"]
+reservedStrings =["q", "p", "a", "de", "d", "c", "dc", "dp", "cp", "r", "ic", "id", ">", "<", "c100k", "std", "d1m"]
 coutriesOfIterest = [("Czechia", "CZE"),("Slovakia", "SVK"), ("US", "USA"), ("Italy", "ITA"), ("Spain", "ESP"), ("Croatia", "CRO"), ("Montenegro", "MTN"), ("Slovenia", "SLO"), ("United Kingdom", "UK"), ("Russia", "RUS"), ("Brazil", "BRA"), ("Germany", "GER"), ("Austria", "AUT"), ("Denmark", "DEN"), ("Belgium","BEL"), ("Netherlands", "NED"), ("France", "FRA"), ("Iceland", "ICE"), ("New Zealand", "NZL"), ("Israel", "IZR"), ("Greece", "GRE"), ("Japan", "JAP"), ("China", "CHI"), ("Switzerland", "SUI"), ("Sweden", "SWE"), ("Finland", "FIN"), ("Norway", "NOR"), ("Romania", "ROM"), ("Argentina", "ARG"), ("Turkey", "TUR"), ("Belarus", "BLR"), ("Mali", "MAL"), ("Hungary", "HUN"), ("Poland", "POL"), ("Estonia", "EST"), ("Pakistan", "PAK"), ("Ecuador", "ECU"), ("Colombia", "COL"), ("India", "IND"), ("Bahrain", "BAH"), ("Lebanon", "LEB"), ("Venezuela", "VEN"), ("Mexico", "MEX##"), ("South Korea", "SKO"), ("Singapore", "SIN"), ("Thailand", "THJ")]
 
 inputText = "\n"
 for i, c in enumerate(coutriesOfIterest):
     inputText += str(i) + " - " + c[1] + " |"
-inputText += "\n daily charts sorting:\nc - sort by confirmed\nd - sort by dead\ndc - sort by confirm/dead ratio\ndp - sort by dead/population ratio\ncp - sort by confirmed/population ratio\nr - sort by recovered\nic - sort by daily increas ratio of confirmed in %\nid - sort by daily increas ratio of dead in %\na - sort countries by alphabetical order\nd1m - sort by dead for last 7 days to 1 mil citicenz\n100 - sort countries by last 7 days confirmed increase / 100k citizens\nstd - sort by actual increas of confirmed to standard deviation for last 8 days\n"
+inputText += "\n daily charts sorting:\nc - sort by confirmed\nd - sort by dead\ndc - sort by confirm/dead ratio\ndp - sort by dead/population ratio\ncp - sort by confirmed/population ratio\nr - sort by recovered\na - sort countries by alphabetical order\nd1m - sort by dead for last 7 days to 1 mil citicenz\nc100k - sort countries by last 7 days confirmed increase / 100k citizens\nstd - sort by actual increas of confirmed to standard deviation for last 8 days\n"
 inputText += "q - quit\n"
 countryName = coutriesOfIterest[0][0]
 myInput = input(inputText)
@@ -480,7 +482,7 @@ while myInput != "q" or myInput != "Q":
         data = dayChartSorting(7, InputData.C_DATA_OBJ)
     elif myInput == "a":
         data = dayChartSorting(8, InputData.C_DATA_OBJ)
-    elif myInput == "100":
+    elif myInput == "c100k":
         data = dayChartSorting(9, InputData.C_DATA_OBJ)
     elif myInput == "d1m":
         data = dayChartSorting(10, InputData.C_DATA_OBJ)
