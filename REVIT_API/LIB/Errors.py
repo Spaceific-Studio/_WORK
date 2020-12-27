@@ -6,10 +6,13 @@
 
 import sys
 #Class for errors reporting
-import clr
-clr.AddReference("System.Drawing")
-import System.Drawing
-from System.Drawing import Color
+if "pydroid" in sys.prefix:
+	    pass
+else:
+    import clr
+    clr.AddReference("System.Drawing")
+    import System.Drawing
+    from System.Drawing import Color
 
 class Errors(object):
 	report = []

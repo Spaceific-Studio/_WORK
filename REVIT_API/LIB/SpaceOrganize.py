@@ -3,23 +3,59 @@
 #Classes for organizing elements in space and for space analases
 #e.g. kD_Trees...
 #resource_path: H:\_WORK\PYTHON\REVIT_API\LIB\SpaceOrganize.py
+import sys
 
-import clr
+try:
+	sys.modules['__main__']
+	hasMainAttr = True	
+except:
+	hasMainAttr = False
+	
+try:
+	sys.modules['Autodesk']
+	hasAutodesk = True	
+except:
+	hasAutodesk = False
+
+print("module : {0} ; hasMainAttr = {1}".format(__file__, hasMainAttr))
+print("module : {0} ; hasAutodesk = {1}".format(__file__, hasAutodesk))
+
+	
+if hasMainAttr:
+	#import clr
+	if "pydroid" in sys.prefix:
+	    pass
+	else:
+	    from Autodesk.Revit.UI.Selection import *
+	    import Autodesk.Revit.DB as DB
+	    doc = __revit__.ActiveUIDocument.Document
+	    #clr.AddReference("RevitServices")
+	    #import RevitServices
+	    #from RevitServices.Transactions import TransactionManager
+	    pass
+
+else:
+	if "pydroid" in sys.prefix:
+	    pass
+	else:
+	    import clr
+	    clr.AddReference('ProtoGeometry')
+	    from Autodesk.DesignScript.Geometry import *
+
 # clr.AddReference("RevitAPI")
 # import Autodesk
 # import Autodesk.Revit.DB as DB
 
-import sys
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
 sys.path.append(lib_path)
 sys.path.append(pyt_path)
 
-clr.AddReference('ProtoGeometry')
-from Autodesk.DesignScript.Geometry import *
+#clr.AddReference('ProtoGeometry')
+#from Autodesk.DesignScript.Geometry import *
 
 import ListUtils as ListUtils
-from Errors import *
+#from Errors import Errors
 
 import heapq
 
@@ -50,14 +86,15 @@ class SolidPoint():
 class KD_Tree():
 	def __init__(self, inPoints):
 		if isinstance(inPoints, list) or isinstance(inPoints, tuple):
-			if len(inPoints) > 0 and (inPoints[0].__class__.__name__ == "SolidPoint" or isinstance(inPoints[0], Point)):
-				self.points = self.transformDSPoints(inPoints)
-				self.dsPoints = inPoints
-				self.dim = 3
+			if hasAutodesk:
+			    if len(inPoints) > 0 and (inPoints[0].__class__.__name__ == "SolidPoint" or isinstance(inPoints[0], Autodesk.DesignScrtipt.Geometry.Point)):
+				    self.points = self.transformDSPoints(inPoints)
+				    self.dsPoints = inPoints
+				    self.dim = 3
 			elif len(inPoints) > 0 and (isinstance(inPoints[0], tuple) or isinstance(inPoints[0], list)):
 				self.points = inPoints
 				self.dim = len(inPoints[0])
-				if self.dim == 3:
+				if self.dim == 3 and hasAutodesk:
 					self.dsPoints = [Point.ByCoordinates(x[0], x[1], x[2]) for x in inPoints]
 				else:
 					self.dsPoints = []
@@ -155,23 +192,32 @@ class KD_Tree():
 			heap = []
 
 		if kd_node: 
-			dist = dist_func(point, kd_node[2]) 
-			if isinstance(kd_node[2], Point):
-				dx = self.getDSPointAxis((kd_node[2], i)) - self.getDSPointAxis((point, i))
-			else:
-				dx = kd_node[2][i] - point[i]
+			dist = dist_func(point, kd_node[2])
+			if hasAutodesk:
+				if isinstance(kd_node[2], Point):
+				    dx = self.getDSPointAxis((kd_node[2], i)) - self.getDSPointAxis((point, i))
+                else:
+                    dx = kd_node[2][i] - point[i]
+            else:
+		        dx = kd_node[2][i] - point[i]
 			if len(heap) < k: 
 				#print("len(heap) < k {0} -dist {1} kd_node[2] {2}".format(len(heap), -dist, kd_node[2]))
-				if isinstance(kd_node[2], Point):
-					heapq.heappush(heap, (-dist, kd_node[2])) 
-				else:
-					heapq.heappush(heap, (-dist, list(kd_node[2]))) 
+				if hasAutodesk:
+				    if isinstance(kd_node[2], Point):
+					    heapq.heappush(heap, (-dist, kd_node[2])) 
+				    else:
+					    heapq.heappush(heap, (-dist, list(kd_node[2])))
+			    else:
+			        heapq.heappush(heap, (-dist, list(kd_node[2])))
 			elif dist < -heap[0][0]: 
 				#print("len(heap) < k {0} -dist {1} kd_node[2] {2} -heap[0][0] {3}".format(len(heap), -dist, kd_node[2],-heap[0][0]))
-				if isinstance(kd_node[2], Point):
-					heapq.heappushpop(heap, (-dist, kd_node[2])) 
+				if hasAutodesk:
+				    if isinstance(kd_node[2], Point):
+					    heapq.heappushpop(heap, (-dist, kd_node[2])) 
+				    else:
+					    heapq.heappushpop(heap, (-dist, list(kd_node[2]))) 
 				else:
-					heapq.heappushpop(heap, (-dist, list(kd_node[2]))) 
+				    heapq.heappushpop(heap, (-dist, list(kd_node[2]))) 
 			i = (i + 1) % dim 
 			# Goes into the left branch, and then the right branch if needed 
 			self.get_knn(kd_node[dx < 0], point, k, dim, dist_func, return_distances, i, heap) 
@@ -189,10 +235,13 @@ class KD_Tree():
 	def get_nearest(self, kd_node, point, dim, dist_func, return_distances=True, i=0, best=None): 		
 		if kd_node: 			
 			dist = dist_func(point, kd_node[2])
-			if isinstance(kd_node[2], Point) or kd_node[2].__class__.__name__ == "SolidPoint":
-				dx = self.getDSPointAxis((kd_node[2], i)) - self.getDSPointAxis((point, i))
+			if hasAutodesk:
+			    if isinstance(kd_node[2], Point) or kd_node[2].__class__.__name__ == "SolidPoint":
+				    dx = self.getDSPointAxis((kd_node[2], i)) - self.getDSPointAxis((point, i))
+			    else:
+				    dx = kd_node[2][i] - point[i]
 			else:
-				dx = kd_node[2][i] - point[i]
+			    dx = kd_node[2][i] - point[i]
 			#dx = self.getDSPointAxis((kd_node[2], i)) if isinstance(kd_node[2], Point) else kd_node[2][i] - self.getDSPointAxis((point, i)) if isinstance(point, Point) else point[i]
 			if not best: 
 				best = [dist, kd_node[2]] 
