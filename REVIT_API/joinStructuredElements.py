@@ -2,7 +2,7 @@
 # Copyright(c) 2020, Daniel Gercak
 #Classes for organizing elements in space and for space analases
 #e.g. kD_Trees...
-#resource_path: H:\_WORK\PYTHON\REVIT_API\LIB\SpaceOrganize.py
+#resource_path: https://github.com/Spaceific-Arch/_WORK/REVIT_API/joinStructuredElements.py
 import sys
 if "IronPython" in sys.prefix:
 	pytPath = r'C:\Program Files (x86)\IronPython 2.7\Lib'
@@ -43,6 +43,11 @@ else:
 	    clr.AddReference("RevitAPI")
 	    import Autodesk
 	    import Autodesk.Revit.DB as DB
+	    clr.AddReference("RevitServices")
+	    import RevitServices
+	    from RevitServices.Persistence import DocumentManager
+	    from RevitServices.Transactions import TransactionManager
+	    doc = DocumentManager.Instance.CurrentDBDocument
 
 # clr.AddReference("RevitAPI")
 # import Autodesk
@@ -77,12 +82,33 @@ Errors.catchVar(platform.platform(), "platform.platform()") """
 import SpaceOrganize
 
 structuredElements = IN[0]
+bPoints = []
+#TransactionManager.Instance.EnsureInTransaction(doc)
+#t = DB.SubTransaction(doc)
+
+# Begin new transaction
+#t.Start()
+for i, el in enumerate(list(structuredElements[1])):
+	#raise TypeError("{0}".format(type(DB.ElementId(el.Id))))
+	#Errors.catchVar(el.Id, "{1} el.Id - {0}".format(el.Id, i))
+	docEl = doc.GetElement(DB.ElementId(el.Id))
+	# Get the Bounding Box of the selected element.
+	el_bb = docEl.get_BoundingBox(doc.ActiveView)
+	#Errors.catchVar(el_bb, "{1} dir(el.Geometry) - {0}".format(dir(el.Geometry[options]), i))
+	#Errors.catchVar(el_bb.Max.X, "{1} el_bb.Max.X - {0}".format(el_bb.Max.X, i))
+	bPoint = ((el_bb.Max.X - el_bb.Min.X) / 2.0, (el_bb.Max.Y - el_bb.Min.Y) / 2.0, (el_bb.Max.Z - el_bb.Min.Z) / 2.0)
+	bPoints.append(bPoint)
+
+# Close the transaction
+#t.Commit()
+#TransactionManager.Instance.TransactionTaskDone()
+
 if Errors.hasError():
  	OUT = Errors.report
 elif Errors.hasContent():
 	OUT = Errors.getConntainerContent()
 else:
-	OUT = structuredElements
+	OUT = (structuredElements[1], bPoints)
 
 
 
