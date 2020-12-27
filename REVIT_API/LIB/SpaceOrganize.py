@@ -25,6 +25,8 @@ if hasMainAttr:
 	#import clr
 	if "pydroid" in sys.prefix:
 	    pass
+	elif "Python38" in sys.prefix:
+	    pass
 	else:
 	    from Autodesk.Revit.UI.Selection import *
 	    import Autodesk.Revit.DB as DB
@@ -36,6 +38,8 @@ if hasMainAttr:
 
 else:
 	if "pydroid" in sys.prefix:
+	    pass
+	elif "Python38" in sys.prefix:
 	    pass
 	else:
 	    import clr
