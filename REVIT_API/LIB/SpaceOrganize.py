@@ -196,10 +196,10 @@ class KD_Tree():
 			if hasAutodesk:
 				if isinstance(kd_node[2], Point):
 				    dx = self.getDSPointAxis((kd_node[2], i)) - self.getDSPointAxis((point, i))
-                else:
-                    dx = kd_node[2][i] - point[i]
-            else:
-		        dx = kd_node[2][i] - point[i]
+				else:
+				    dx = kd_node[2][i] - point[i]
+			else:
+			    dx = kd_node[2][i] - point[i]
 			if len(heap) < k: 
 				#print("len(heap) < k {0} -dist {1} kd_node[2] {2}".format(len(heap), -dist, kd_node[2]))
 				if hasAutodesk:
@@ -207,8 +207,8 @@ class KD_Tree():
 					    heapq.heappush(heap, (-dist, kd_node[2])) 
 				    else:
 					    heapq.heappush(heap, (-dist, list(kd_node[2])))
-			    else:
-			        heapq.heappush(heap, (-dist, list(kd_node[2])))
+				else:
+				    heapq.heappush(heap, (-dist, list(kd_node[2])))
 			elif dist < -heap[0][0]: 
 				#print("len(heap) < k {0} -dist {1} kd_node[2] {2} -heap[0][0] {3}".format(len(heap), -dist, kd_node[2],-heap[0][0]))
 				if hasAutodesk:

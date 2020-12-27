@@ -1,4 +1,4 @@
-
+    
 import itertools
 import platform
 import sys
@@ -25,10 +25,13 @@ points = [(random.randint(0,10), random.randint(0,10), random.randint(0,10)) for
 print("points {0}".format(points))
 
 kdTree = KD_Tree(points)
-print("kdTree: {0}".format(kdTree.tree))
-inspPoint(1,1,1)
-nearest = kdTree.get_nearest(kdTree.tree, inspPoint, 3, KD_Tree.dist_sq)
+print("kdTree: {0} dim {1}".format(kdTree.tree, kdTree.dim))
+inspPoint = (7,3,4)
+nearest = kdTree.get_nearest(kdTree.tree, inspPoint, kdTree.dim, kdTree.dist_sq_dim)
+kNearest = kdTree.get_knn(kdTree.tree, inspPoint, 3, kdTree.dim, kdTree.dist_sq_dim)
 print("nearest point to {0} is {1}".format(inspPoint, nearest))
+print("kNearest points to {0} is {1} len {2}".format(inspPoint, kNearest, len(kNearest)))
+
 myList = []
 for n in range(0,10):
     myList.append(n)
