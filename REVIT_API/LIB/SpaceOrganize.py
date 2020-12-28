@@ -6,7 +6,7 @@
 import sys
 if "IronPython" in sys.prefix:
 	pytPath = r'C:\Program Files (x86)\IronPython 2.7\Lib'
-sys.path.append(pytPath)
+	sys.path.append(pytPath)
 
 try:
 	sys.modules['__main__']
@@ -62,7 +62,7 @@ elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
 
 sys.path.append(libPath)
 
-from Errors import *
+#from Errors import Errors
 """ Errors.catchVar(sys.platform, "sys.platform")
 Errors.catchVar(sys.prefix, "sys.prefix")
 Errors.catchVar(os.name, "os.name")
