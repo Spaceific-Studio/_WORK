@@ -83,20 +83,35 @@ import SpaceOrganize
 
 structuredElements = IN[0]
 bPoints = []
+bbs = []
+intersectedElements = []
 #TransactionManager.Instance.EnsureInTransaction(doc)
 #t = DB.SubTransaction(doc)
 
 # Begin new transaction
 #t.Start()
 for i, el in enumerate(list(structuredElements[1])):
+	
 	#raise TypeError("{0}".format(type(DB.ElementId(el.Id))))
 	#Errors.catchVar(el.Id, "{1} el.Id - {0}".format(el.Id, i))
 	docEl = doc.GetElement(DB.ElementId(el.Id))
+	elIntFilter = 	DB.ElementIntersectsElementFilter(docEl)
+	#reference = DB.Reference(docEl)
+	#solid = docEl.GetGeometryObjectFromReference(reference)
+	#solidIntFilter = DB.ElementIntersectsSolidFilter(solid)
+	intElements = DB.FilteredElementCollector(doc).WherePasses(elIntFilter).WhereElementIsNotElementType().ToElements()
+	#intSolids = DB.FilteredElementCollector(doc).WherePasses(elIntFilter).WhereElementIsNotElementType().ToElements()
+	intersectedElements.append(intElements)
 	# Get the Bounding Box of the selected element.
 	el_bb = docEl.get_BoundingBox(doc.ActiveView)
+	bbs.append(docEl)
 	#Errors.catchVar(el_bb, "{1} dir(el.Geometry) - {0}".format(dir(el.Geometry[options]), i))
 	#Errors.catchVar(el_bb.Max.X, "{1} el_bb.Max.X - {0}".format(el_bb.Max.X, i))
-	bPoint = ((el_bb.Max.X - el_bb.Min.X) / 2.0, (el_bb.Max.Y - el_bb.Min.Y) / 2.0, (el_bb.Max.Z - el_bb.Min.Z) / 2.0)
+	bPoint = ( \
+				DB.UnitUtils.ConvertFromInternalUnits((el_bb.Max.X - el_bb.Min.X) / 2.0, DB.DisplayUnitType.DUT_MILLIMETERS), \
+				DB.UnitUtils.ConvertFromInternalUnits((el_bb.Max.Y - el_bb.Min.Y) / 2.0, DB.DisplayUnitType.DUT_MILLIMETERS), \
+				DB.UnitUtils.ConvertFromInternalUnits((el_bb.Max.Z - el_bb.Min.Z) / 2.0, DB.DisplayUnitType.DUT_MILLIMETERS) \
+			)
 	bPoints.append(bPoint)
 
 # Close the transaction
@@ -108,7 +123,7 @@ if Errors.hasError():
 elif Errors.hasContent():
 	OUT = Errors.getConntainerContent()
 else:
-	OUT = (structuredElements[1], bPoints)
+	OUT = (structuredElements[1], bPoints, bbs, intersectedElements)
 
 
 
