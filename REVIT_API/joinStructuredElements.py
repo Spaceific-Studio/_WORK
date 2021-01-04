@@ -6,7 +6,7 @@
 import sys
 if "IronPython" in sys.prefix:
 	pytPath = r'C:\Program Files (x86)\IronPython 2.7\Lib'
-sys.path.append(pytPath)
+	sys.path.append(pytPath)
 import os
 import platform
 
@@ -68,7 +68,13 @@ if sys.platform.startswith('linux'):
 elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
     libPath = r"H:/_WORK/PYTHON/REVIT_API/LIB"
 
+if sys.platform.startswith('linux'):
+    pythLibPath = r"/storage/emulated/0/_WORK/LIB"
+elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
+    pythLibPath = r"H:/_WORK/PYTHON/LIB"
+
 sys.path.append(libPath)
+sys.path.append(pythLibPath)
 
 from Errors import *
 
@@ -80,28 +86,53 @@ Errors.catchVar(platform.os, "platform.os")
 Errors.catchVar(platform.platform(), "platform.platform()") """
 
 import SpaceOrganize
+import RevitSelection as RS
+import ListUtils
+import heapq
+
+def groupByDistance(inRevitElements):
+	baseElement = inRevitElements[0]
+	baseSolid = RS.getRevitGeometry(baseElement, asDynamoGeo = True)
+	restElements = inRevitElements[1:]
+	distanceOrdered = []
+	for restElement in restElements:
+		restSolid = RS.getRevitGeometry(restElement, asDynamoGeo = True)
+		raise TypeError ("dir(Solid) {0}".format(dir(baseSolid)))
+		dist = baseSolid.DistanceTo(restSolid)
+		heappush(distanceOrdered, (dist, (restSolid, restElement)))
+		
+	return distanceOrdered
 
 structuredElements = IN[0]
 bPoints = []
 bbs = []
 intersectedElements = []
+intersectedSolids = []
+revitGeos = []
 #TransactionManager.Instance.EnsureInTransaction(doc)
 #t = DB.SubTransaction(doc)
 
 # Begin new transaction
 #t.Start()
-for i, el in enumerate(list(structuredElements[1])):
+for i, el in enumerate(list(structuredElements[0])):
 	
 	#raise TypeError("{0}".format(type(DB.ElementId(el.Id))))
 	#Errors.catchVar(el.Id, "{1} el.Id - {0}".format(el.Id, i))
 	docEl = doc.GetElement(DB.ElementId(el.Id))
+	try:
+		revitGeo = RS.getRevitGeometry(el)
+	except Exception as ex:
+		Errors.catch(ex, "Error in getRevitGeo(docEl) dir(el){0}\ndir(docEl){1}".format(dir(el), dir(docEl)))
+		revitGeo = None
+	revitGeos.append(revitGeo)
 	elIntFilter = 	DB.ElementIntersectsElementFilter(docEl)
 	#reference = DB.Reference(docEl)
 	#solid = docEl.GetGeometryObjectFromReference(reference)
-	#solidIntFilter = DB.ElementIntersectsSolidFilter(solid)
+	solidIntFilter = DB.ElementIntersectsSolidFilter(revitGeo)
 	intElements = DB.FilteredElementCollector(doc).WherePasses(elIntFilter).WhereElementIsNotElementType().ToElements()
-	#intSolids = DB.FilteredElementCollector(doc).WherePasses(elIntFilter).WhereElementIsNotElementType().ToElements()
+	intSolids = DB.FilteredElementCollector(doc).WherePasses(solidIntFilter).WhereElementIsNotElementType().ToElements()
 	intersectedElements.append(intElements)
+	intersectedSolids.append(intSolids)
 	# Get the Bounding Box of the selected element.
 	el_bb = docEl.get_BoundingBox(doc.ActiveView)
 	bbs.append(docEl)
@@ -118,12 +149,14 @@ for i, el in enumerate(list(structuredElements[1])):
 #t.Commit()
 #TransactionManager.Instance.TransactionTaskDone()
 
+groupedByDistance = groupByDistance(list(structuredElements[0]))
+
 if Errors.hasError():
  	OUT = Errors.report
 elif Errors.hasContent():
 	OUT = Errors.getConntainerContent()
 else:
-	OUT = (structuredElements[1], bPoints, bbs, intersectedElements)
+	OUT = (structuredElements[1], bPoints, bbs, intersectedElements, intersectedSolids, revitGeos, groupedByDistance)
 
 
 

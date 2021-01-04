@@ -527,12 +527,82 @@ def getOpeningsElements(inElements, **kwargs):
 	else:
 		return ListUtils.flattenList(filteredWalls)
 
+def getRevitGeometry(inElement, *args, **kwargs):
+	"""
+		get revit geometry from revit element
+
+		inElement: type: Autodesk.Revit.DB.Element
+		kwargs['only3D'] type: bool - returns only solid objects if true, else returns also 2D geometry as tuple(geos, geosNot3D, geosOther), default = True
+		kwargs['asDynamoGeometry'] - returns Autodesk.DesignScript.Geometry.Solid objects if True, default False
+		Returns: list[Autodesk.Revit.DB.Solid, ...] if only3D == True, else returns 
+					tuple(list[Autodesk.Revit.DB.Solid] - all 3D solids,
+						  list[Autodesk.Revit.DB.Solid] - Solids with zero Volume, 
+						  list[...], other geometry)
+	"""
+	only3D = kwargs['only3D'] if 'only3D' in kwargs else True
+	asDynamoGeo = kwargs['asDynamoGeometry'] if 'asDynamoGeometry' in kwargs else False
+
+	gopt = DB.Options()
+	gopt.View = doc.ActiveView
+	element = _UnwrapElement(inElement)		
+	geo1 = element.get_Geometry(gopt)
+	enum1 = geo1.GetEnumerator()
+	geos = []
+	geos2 = None
+	geosNot3D = []
+	geosOther = []
+	unitedSolid = None
+	first = True
+	while enum1.MoveNext():
+		geos2 = []
+		if hasattr(enum1.Current, "GetInstanceGeometry"):
+			geo2 = enum1.Current.GetInstanceGeometry()
+		else:
+			geo2 = enum1.Current
+		geosNot3d2 = []
+		geosOther2 = []
+		if ListUtils.isIterable(geo2):
+			for i, g in enumerate(geo2):
+				if hasattr(g, "Volume"):
+					if g.Volume > 0:
+						#solid = g.Convert()
+						#geos2.append(solid)
+						if asDynamoGeo:
+							geos2.append(g.ToProtoType())
+						else:
+							geos2.append(g)
+					else:
+						geosNot3d2.append(g)
+				else:
+					geosOther2.append(g.ToProtoType()) if hasattr(g, "ToProtoType") else geosOther2.append(g)
+			geosNot3D.append(geosNot3d2)
+			geosOther.append(geosOther2)
+		else:
+			if hasattr(geo2, "Volume"):
+				if geo2.Volume > 0:
+					if asDynamoGeo:
+							geos2.append(geo2.ToProtoType())
+					else:
+						geos2.append(geo2)
+				else:
+					geosNot3d.append(geo2)
+			else:
+				geosOther.append(geo2.ToProtoType()) if hasattr(geo2, "ToProtoType") else geosOther2.append(geo2)
+
+	#geos = geos2 if geos2 else geo1 
+	geos = geos2[0] if len(geos2) == 1 else geos2
+
+	if only3D:
+		return geos
+	else:
+		return (geos, geosNot3D, geosOther)
+
 def getDynamoGeometry(inElement, *args, **kwargs):
 	"""
 		get dynamo geometry from revit element
 
 		inElement: type: Autodesk.Revit.DB.Element
-		kwargs['only3D'] type: bool - returns only solid objects if true, else returns also 2D geometry, default = True
+		kwargs['only3D'] type: bool - returns only solid objects if true, else returns also 2D geometry as tuple(geos, geosNot3D, geosOther), default = True
 		kwargs['united'] type: bool - returns united solid of all solids in element if True, else returns separated geometry, default = True
 		Returns: list[Autodesk.DesignScript.Geometry.Solid, ...] if only3D == True, else returns 
 					tuple(list[Autodesk.DesignScript.Geometry.Solid] - all 3D solids,
@@ -552,13 +622,37 @@ def getDynamoGeometry(inElement, *args, **kwargs):
 	first = True
 	while enum1.MoveNext():
 		geos2 = []
-		geo2 = enum1.Current.GetInstanceGeometry()
+		if hasattr(enum1.Current, "GetInstanceGeometry"):
+			geo2 = enum1.Current.GetInstanceGeometry()
+		else:
+			geo2 = enum1.Current
 		geosNot3d2 = []
 		geosOther2 = []
-		for i, g in enumerate(geo2):
-			if hasattr(g, "Volume"):
-				if g.Volume > 0:
-					solid = g.Convert()
+		if ListUtils.isIterable(geo2):
+			for i, g in enumerate(geo2):
+				if hasattr(g, "Volume"):
+					if g.Volume > 0:
+						solid = g.Convert()
+						if united:
+							if first:
+								unitedSolid = solid
+								first = False
+							else:
+								try:
+									unitedSolid = Autodesk.DesignScript.Geometry.Solid.Union(unitedSolid, solid)
+								except Exception as ex:
+									pass
+									#Errors.catch(ex, "Unable to make union of solids in element {0} of geometry object {1}".format(inElement.Id.IntegerValue, i))
+						else:
+							geos2.append(solid)
+					else:
+						geosNot3d2.append(g)
+				else:
+					geosOther2.append(g.ToProtoType()) if hasattr(g, "ToProtoType") else geosOther2.append(g)
+		else:
+			if hasattr(geo2, "Volume"):
+				if geo2.Volume > 0:
+					solid = geo2.Convert()
 					if united:
 						if first:
 							unitedSolid = solid
@@ -572,10 +666,11 @@ def getDynamoGeometry(inElement, *args, **kwargs):
 					else:
 						geos2.append(solid)
 				else:
-					geosNot3d2.append(g)
+					geosNot3d2.append(geo2)
 			else:
-				geosOther2.append(g.ToProtoType()) if hasattr(g, "ToProtoType") else geosOther2.append(g)
-		geos.append(geos2) if united == False else geos.append(unitedSolid)
+				geosOther2.append(geo2.ToProtoType()) if hasattr(geo2, "ToProtoType") else geosOther2.append(geo2)
+		geos = geos2[0] if len(geos2) == 1 else geos2
+		#geos.append(geos2) if united == False else geos.append(unitedSolid)
 		geosNot3D.append(geosNot3d2)
 		geosOther.append(geosOther2)
 	if only3D:

@@ -178,11 +178,19 @@ def flattenList(inList, *args, **kwargs):
     else:
      return returnItems
 
-     def transpose(inList):
-        returnList = [[inList[j][i] for j in range(len(inList))] for i in range(len(inList[0]))]
-        return returnList
+ def transpose(inList):
+    returnList = [[inList[j][i] for j in range(len(inList))] for i in range(len(inList[0]))]
+    return returnList
 
-    class Dic2obj(object):
-        def __init__(self, dictionary):
-        for key in dictionary:
-            setattr(self, key, dictionary[key])
+class Dic2obj(object):
+    def __init__(self, dictionary):
+    for key in dictionary:
+        setattr(self, key, dictionary[key])
+
+def isIterable(inItem):
+    try:
+        iter(initem)
+        iterable = True
+    except:
+        iterable = False
+    return iterable
