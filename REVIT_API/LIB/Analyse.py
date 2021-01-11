@@ -2,11 +2,11 @@
 # Copyright(c) 2019, Daniel Gercak
 #Classes for bulding a simplyfied Dynamo geometry from Revit model and classes for making further
 #analyses e.g. energy analyses...
-#resource_path: H:\_WORK\PYTHON\REVIT_API\LIB\Analyse.py
+#resource_path: https://github.com/Spaceific-Studio/_WORK/REVIT_API/LIB/Analyse.py
 
 import sys
 import time
-#import traceback
+import traceback
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
 sys.path.append(pyt_path)
@@ -166,39 +166,50 @@ class RTD_model(object):
 		self.levelIds = getLevelIds(self.allLevels)
 
 		sTime = time.time()
-		self.structuredElements = self.getStructuredElements()		
+		self.structuredElements = self.getStructuredElements()
+		#raise TypeError("Structured Ellements{0}".format(self.structuredElements))
 			
 		# Dynamo solids must be created before appending opening elements to self.unwrappedElements because of 
 		# throwing exception while trying to get geometry from elements in mode wihout openings, which 
 		# must be done in transaction where openings are deleted and then deletion is undone 
 		self.dynamoSolids = self.getDynamoModel(True)
+		#raise TypeError("dynamoSolids {0}".format(self.dynamoSolids))
+
 		eTime = time.time()
 		myTime = eTime - sTime
-		Errors.catchVar(self.structuredElements,"self.structuredElements + time dynamoSolids - {0:.5f} s".format(myTime))
-		Errors.catchVar(self.dynamoSolids,"self.dynamoSolids + time dynamoSolids - {0:.5f} s".format(myTime))
+		#Errors.catchVar(self.structuredElements,"self.structuredElements + time dynamoSolids - {0:.5f} s".format(myTime))
+		#Errors.catchVar(self.dynamoSolids,"self.dynamoSolids + time dynamoSolids - {0:.5f} s".format(myTime))
 		 
 		#Errors.catchVar(self.dynamoSolids, "self.dynamoSolids")
 		#raise ValueError("self.dynamoSolids {0}".format(len(self.dynamoSolids), self.dynamoSolids))
 		#self.dynamoSolids.append(self.dynamoOpeningSolids)
 		self.dynamoSolidsWithOpenings = self.getDynamoModel(False, incCW = True)
-		Errors.catchVar(self.dynamoSolidsWithOpenings,"self.dynamoSolidsWithOpenings".format())
-		
-		flattenedSolids = ListUtils.flatList(self.dynamoSolids)
+		#Errors.catchVar(self.dynamoSolidsWithOpenings,"self.dynamoSolidsWithOpenings".format())
+		try:
+			flattenedSolids = ListUtils.flatList(self.dynamoSolids)
+		except Exception:
+			raise TypeError("Unable to flatten solids in RTD_model.setup() - flattenedSolids = ListUtils.flatList(self.dynamoSolids) - {0}".format(traceback.print_exc()))
+			flattenedSolids = None
 		flattenedSolidsWithOpenings = ListUtils.flatList(self.dynamoSolidsWithOpenings)		
 		#drop out unassigned items
 		filteredFlattenedSolids = filter(lambda x: x!=None, flattenedSolids)
-		Errors.catchVar(filteredFlattenedSolids, "filteredFlattenedSolids")
+		#Errors.catchVar(filteredFlattenedSolids, "filteredFlattenedSolids")
 		
 		filteredFlattenedSolidsWithOpenings = filter(lambda x: x!=None, flattenedSolidsWithOpenings)
-		Errors.catchVar(filteredFlattenedSolidsWithOpenings, "filteredFlattenedSolidsWithOpenings")
+		#Errors.catchVar(filteredFlattenedSolidsWithOpenings, "filteredFlattenedSolidsWithOpenings")
 		
 		#make solid union of all solids representing element geometry 
 		sTime = time.time()
 		
 		try:
 			self.unitedSolid = Autodesk.DesignScript.Geometry.Solid.ByUnion(filteredFlattenedSolids)
-			Errors.catchVar(self.unitedSolid, "self.unitedSolid")
-
+		except Exception:
+			#raise TypeError("{0}".format(traceback.print_exc()))
+			self.unitedSolid = None
+		Errors.catchVar(self.unitedSolid, "self.unitedSolid")
+		
+		""" 
+		try:
 			#get openings by subtracting united solid without openings and with united solid with openings
 			self.unitedSolidWithOpenings = Autodesk.DesignScript.Geometry.Solid.ByUnion(filteredFlattenedSolidsWithOpenings)
 			self.subtractedOpenings = Autodesk.DesignScript.Geometry.Solid.DifferenceAll(self.unitedSolid, Clist[Autodesk.DesignScript.Geometry.Solid]([self.unitedSolidWithOpenings]))
@@ -231,14 +242,14 @@ class RTD_model(object):
 			self.innerShells = self.getOuterShells(self.groupedSolids, innerShell=True) 
 			Errors.catchVar(self.outerShells, "self.outerShells")
 			Errors.catchVar(self.innerShells, "self.innerShells")
-			''' 
+
 			#Errors.catchVar(self.outerShells, "self.outerShells")
 			self.outerShellPolysurfaces = []
 			self.rawOuterShellAreas = []
 			for outerShell in self.outerShells:
 				pSurface = Autodesk.DesignScript.Geometry.PolySurface.BySolid(outerShell)
 				self.outerShellPolysurfaces.append(pSurface)
-				self.rawOuterShellAreas.append(pSurface.Area * 0.000001) '''
+				self.rawOuterShellAreas.append(pSurface.Area * 0.000001)
 
 			#collection of all door and window elements gathered by RevitSelection.getInserts method in RTD_Model.getDynamoModel()
 			sTime = time.time()
@@ -281,7 +292,8 @@ class RTD_model(object):
 			Errors.catchVar(self.outerShellIntersectingSurfaces, "self.outerShellIntersectingSurfaces {0:.5f} s".format(myTime))
 		except Exception as ex:
 			Errors.catch(ex, "3D model in setup in RTD_model.setup() failed")
-		
+ 		"""
+
 		"""
 		try:
 			self.outerShellIntersectingSurfacesAreaSums = ListUtils.processListSum(self.getAreasWithSum, self.outerShellIntersectingSurfaces)
@@ -854,7 +866,8 @@ class RTD_model(object):
 			except Exception as ex:
 				Errors.catch(ex, "getCurtainWallSimplyfiedGeometry in RTD_model.getDynamoSolid() failed.")
 		elif self.isValid(item):
-			if type(item) !=list:
+			
+			""" if type(item) !=list:
 				revitGeo = item.Geometry[geo_options]
 				try:		
 					revit_geos = convertGeometryInstance(revitGeo, list())
@@ -869,13 +882,16 @@ class RTD_model(object):
 					revit_geo = None
 					raise TypeError("Variable revit_geos is unassigned or is list. For next process is variable of type GeometryElement necessary.")
 			except Exception as ex:
-				Errors.catch(ex)
+				Errors.catch(ex) """
+
 			try:
-				dynamoGeometry = revit_geo.ToProtoType()
+				#dynamoGeometry = revit_geo.ToProtoType()
+				dynamoGeometry = item.ToDSType(False).Geometry()
 			except Exception as ex:
-				Errors.catch(ex, "error in converting geometry in RTD_model.getDynamoSolid() dynamoGeometry = revit_geo.ToProtoType() item ID = {}".format(item.Id.IntegerValue))
+				#Errors.catch(ex, "error in converting geometry in RTD_model.getDynamoSolid() dynamoGeometry = revit_geo.ToProtoType() item ID = {}".format(item.Id.IntegerValue))
+				raise TypeError("Could not convert element Id - {0} to dynamogeometry ".format(item.Id.IntegerValue))
 				dynamoGeometry = None
-			return dynamoGeometry
+			return dynamoGeometry if not hasattr(dynamoGeometry, "__iter__") else dynamoGeometry[0]
 
 	def getCurtainWallSimplyfiedGeometry(self, inElement, **kwargs):
 		thickness = kwargs["thickness"] if "thickness" in kwargs else 25

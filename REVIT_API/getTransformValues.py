@@ -2,7 +2,7 @@
 # Copyright(c) 2020, Daniel Gercak
 #Classes for organizing elements in space and for space analases
 #e.g. kD_Trees...
-#resource_path: https://github.com/Spaceific-Arch/_WORK/REVIT_API/joinStructuredElements.py
+#resource_path: https://github.com/Spaceific-Studio/_WORK/REVIT_API/joinStructuredElements.py
 import sys
 if "IronPython" in sys.prefix:
 	pytPath = r'C:\Program Files (x86)\IronPython 2.7\Lib'
