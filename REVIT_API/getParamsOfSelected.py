@@ -95,6 +95,7 @@ class TabForm(Form):
 		self.dgv.BorderStyle = BorderStyle.Fixed3D
 		self.dgv.EditMode = DataGridViewEditMode.EditOnEnter
 		self.dgv.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right)
+		#self.dgv.Dock = DockStyle.Fill
 		self.dgv.ColumnHeadersDefaultCellStyle.Font = Font(self.dgv.ColumnHeadersDefaultCellStyle.Font, FontStyle.Bold)
 		headerCellStyle = self.dgv.ColumnHeadersDefaultCellStyle.Clone()
 		headerCellStyle.BackColor = Color.LightSkyBlue

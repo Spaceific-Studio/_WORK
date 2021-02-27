@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright(c) 2020, Daniel Gercak
-#Revit Python Shell script for multiple joining elements
-#resource_path: https://github.com/Spaceific-Studio/_WORK/REVIT_API/joinSelectedElements.py
+# Copyright(c) 2021, Daniel Gercak
+#Revit Python Shell script to change join order of elements joined with current selected elements
+#resource_path: https://github.com/Spaceific-Studio/_WORK/REVIT_API/changeOrderOfJoinedElements.py
 import sys
 if "IronPython" in sys.prefix:
 	pytPath = r'C:\Program Files (x86)\IronPython 2.7\Lib'
@@ -25,6 +25,7 @@ if hasMainAttr:
 	    from Autodesk.Revit.UI.Selection import *
 	    import Autodesk.Revit.DB as DB
 	    import Autodesk.Revit.UI as UI
+	    from System.Collections.Generic import List as Clist
 	    doc = __revit__.ActiveUIDocument.Document
 	    uidoc = __revit__.ActiveUIDocument
 	    #clr.AddReference("RevitServices")
@@ -48,7 +49,12 @@ else:
 	    import RevitServices
 	    from RevitServices.Persistence import DocumentManager
 	    from RevitServices.Transactions import TransactionManager
+	    from System.Collections.Generic import List as Clist
 	    doc = DocumentManager.Instance.CurrentDBDocument
+
+# clr.AddReference("RevitAPI")
+# import Autodesk
+# import Autodesk.Revit.DB as DB
 
 try:
 	import Autodesk
@@ -100,44 +106,41 @@ def pickobject(inStatus):
 
 
 firstSelection = [doc.GetElement(elId) for elId in __revit__.ActiveUIDocument.Selection.GetElementIds()]
+print("firstSlection len - {0} - {1}".format(len(firstSelection), firstSelection))
+# all elements connected with selected element
+conElements = []
+for selEl in firstSelection:
+	# current connected elements
+	conEls = DB.JoinGeometryUtils.GetJoinedElements(doc, selEl)
+	conElements += list(conEls)
+	print("conElements len - {0} - {1}".format(len(conElements), conElements))
 
-bPoints = []
-bbs = []
-intersectedElements = []
-intersectedSolids = []
-revitGeos = []
-#TransactionManager.Instance.EnsureInTransaction(doc)
-#t = DB.SubTransaction(doc)
-
-# Begin new transaction
-#t.Start()
-#t = DB.Transaction(doc, "Select element to join with")
-#t.Start()
-secondSelection = doc.GetElement(pickobject("Select objects to join element with").ElementId)
-
-#t.Commit()
-
-if hasattr(secondSelection, "__iter__"):
-	for i in secondSelection:
-		print("You have selected {0} elements".format(len(secondSelection)))
-else:
-	print("You have selected 1 element {0}".format(secondSelection.Id))
-
-t = DB.Transaction(doc, "Join selected elements")
+print("Connected Elements of selected :")
+t = DB.Transaction(doc, "Change join order")
 t.Start()
 
-for i, el in enumerate(firstSelection):
-	print(el.Id)
-	areJoined = DB.JoinGeometryUtils.AreElementsJoined(doc, el, secondSelection)
-	if not areJoined:
-		try:
-			DB.JoinGeometryUtils.JoinGeometry(doc, el, secondSelection)
-			print("element {0} is joined with element {1} - areJoined > {2}".format(el.Id, secondSelection.Id, areJoined))
-		except Exception as ex:
-			import traceback
-			print("ELEMENT {0} WAS NOT JOINED WITH ELEMENT {1} - {2}".format(el.Id, secondSelection.Id, areJoined))
-			print("Traceback content >> \n {0}".format(sys.exc_info()))
-			#exc_info = sys.exc_info()
-			#traceback.print_exception(*exc_info)
-			#del exc_info
+for i, elId in enumerate(conElements):
+	el = doc.GetElement(elId)
+	for selEl in firstSelection:
+		if DB.JoinGeometryUtils.AreElementsJoined(doc, el, selEl):
+			try:
+				DB.JoinGeometryUtils.SwitchJoinOrder(doc, el, selEl)
+				print("{0} - {1} changed order with {2}".format(i, elId, selEl.Id))
+			except Exception as ex:
+				import traceback
+				print("Traceback content >> \n {0}".format(sys.exc_info()))
+				exc_info = sys.exc_info()
+				traceback.print_exception(*exc_info)
+				del exc_info
+		
+
 t.Commit()
+
+elementsCol = Clist[DB.ElementId](conElements)
+uidoc.Selection.SetElementIds(elementsCol)
+	
+
+
+
+
+

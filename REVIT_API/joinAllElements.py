@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Copyright(c) 2020, Daniel Gercak
 #Revit Python Shell script for multiple joining elements
-#resource_path: https://github.com/Spaceific-Studio/_WORK/REVIT_API/joinSelectedElements.py
+#joins all selected elements by brute force applying join to all pair combinations
+#resource_path: https://github.com/Spaceific-Arch/_WORK/REVIT_API/joinAllElements.py
 import sys
 if "IronPython" in sys.prefix:
 	pytPath = r'C:\Program Files (x86)\IronPython 2.7\Lib'
@@ -50,6 +51,10 @@ else:
 	    from RevitServices.Transactions import TransactionManager
 	    doc = DocumentManager.Instance.CurrentDBDocument
 
+# clr.AddReference("RevitAPI")
+# import Autodesk
+# import Autodesk.Revit.DB as DB
+
 try:
 	import Autodesk
 	sys.modules['Autodesk']
@@ -63,12 +68,7 @@ print("module : {0} ; hasAutodesk = {1}".format(__file__, hasAutodesk))
 if sys.platform.startswith('linux'):
     libPath = r"/storage/emulated/0/_WORK/REVIT_API/LIB"
 elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
-    scriptDir = "\\".join(__file__.split("\\")[:-1])
-    scriptDisk = __file__.split(":")[0]
-    if scriptDisk == "B" or scriptDisk == "b":
-        libPath = r"B:/Podpora Revit/Rodiny/141/_STAVEBNI/_REVITPYTHONSHELL/LIB"
-    elif scriptDisk == "H" or scriptDisk == "h":
-        libPath = r"H:/_WORK/PYTHON/REVIT_API/LIB"
+    libPath = r"H:/_WORK/PYTHON/REVIT_API/LIB"
 
 if sys.platform.startswith('linux'):
     pythLibPath = r"/storage/emulated/0/_WORK/LIB"
@@ -77,6 +77,21 @@ elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
 
 sys.path.append(libPath)
 sys.path.append(pythLibPath)
+
+from Errors import *
+
+""" Errors.catchVar(sys.platform, "sys.platform")
+Errors.catchVar(sys.prefix, "sys.prefix")
+Errors.catchVar(os.name, "os.name")
+Errors.catchVar(platform.sys, "platform.sys")
+Errors.catchVar(platform.os, "platform.os")
+Errors.catchVar(platform.platform(), "platform.platform()") """
+
+import SpaceOrganize
+import RevitSelection as RS
+import ListUtils
+import heapq
+from itertools import combinations
 
 uidoc = __revit__.ActiveUIDocument
 doc = __revit__.ActiveUIDocument.Document
@@ -100,8 +115,14 @@ def pickobject(inStatus):
 
 
 firstSelection = [doc.GetElement(elId) for elId in __revit__.ActiveUIDocument.Selection.GetElementIds()]
+print("firstSelection len {0} - {1}".format(len(firstSelection), firstSelection))
+selComb = list(combinations(firstSelection, 2))
+#while next(selComb):
+#    print("selComb \n{0}".format(selComb))
+#print("selComb \n{0}".format(selComb))
+print("selComb len {0} - {1}".format(len(selComb), selComb))
 
-bPoints = []
+""" bPoints = []
 bbs = []
 intersectedElements = []
 intersectedSolids = []
@@ -122,20 +143,20 @@ if hasattr(secondSelection, "__iter__"):
 		print("You have selected {0} elements".format(len(secondSelection)))
 else:
 	print("You have selected 1 element {0}".format(secondSelection.Id))
-
-t = DB.Transaction(doc, "Join selected elements")
+"""
+t = DB.Transaction(doc, "Join all selected elements")
 t.Start()
 
-for i, el in enumerate(firstSelection):
-	print(el.Id)
-	areJoined = DB.JoinGeometryUtils.AreElementsJoined(doc, el, secondSelection)
+for i, pair in enumerate(selComb):
+	print("{0} - Element_0: {1} <> Element_1 {2}".format(i, pair[0].Id, pair[1].Id))
+	areJoined = DB.JoinGeometryUtils.AreElementsJoined(doc, pair[0], pair[1])
 	if not areJoined:
 		try:
-			DB.JoinGeometryUtils.JoinGeometry(doc, el, secondSelection)
-			print("element {0} is joined with element {1} - areJoined > {2}".format(el.Id, secondSelection.Id, areJoined))
+			DB.JoinGeometryUtils.JoinGeometry(doc, pair[0], pair[1])
+			print("element {0} is joined with element {1} - areJoined > {2}".format(pair[0].Id, pair[1].Id, areJoined))
 		except Exception as ex:
 			import traceback
-			print("ELEMENT {0} WAS NOT JOINED WITH ELEMENT {1} - {2}".format(el.Id, secondSelection.Id, areJoined))
+			print("ELEMENT {0} WAS NOT JOINED WITH ELEMENT {1} - {2}".format(pair[0].Id, pair[1].Id, areJoined))
 			print("Traceback content >> \n {0}".format(sys.exc_info()))
 			#exc_info = sys.exc_info()
 			#traceback.print_exception(*exc_info)

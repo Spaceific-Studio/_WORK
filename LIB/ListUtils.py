@@ -1,3 +1,8 @@
+class Dic2obj(object):
+	def __init__(self, dictionary):
+		for key in dictionary:
+			setattr(self, key, dictionary[key])
+
 def processList(_func, _list, *args):
 	"""Iterates trough input list and aplies a function to each item of the list
 
@@ -182,10 +187,7 @@ def flattenList(inList, *args, **kwargs):
     returnList = [[inList[j][i] for j in range(len(inList))] for i in range(len(inList[0]))]
     return returnList
 
-class Dic2obj(object):
-    def __init__(self, dictionary):
-    for key in dictionary:
-        setattr(self, key, dictionary[key])
+
 
 def isIterable(inItem):
     try:
