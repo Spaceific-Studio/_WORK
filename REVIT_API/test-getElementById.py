@@ -10,6 +10,7 @@ if "IronPython" in sys.prefix:
 	sys.path.append(pytPath)
 import os
 import platform
+from operator import attrgetter
 
 try:
 	sys.modules['__main__']
@@ -27,9 +28,9 @@ if hasMainAttr:
 	    from Autodesk.Revit.UI.Selection import *
 	    import Autodesk.Revit.DB as DB
 	    import Autodesk.Revit.UI as UI
-	    import Autodesk
-	    import System
-	    import threading
+	    #import Autodesk
+	    #import System
+	    #import threading
 	    from System.Collections.Generic import List as Clist
 	    #import System.Drawing
 	    import clr
@@ -37,9 +38,10 @@ if hasMainAttr:
 	    clr.AddReference("System.Drawing")
 	    clr.AddReference('System')
 	    #import System.Windows.Forms
-	    from System.Threading import ThreadStart, Thread
+	    #from System.Threading import ThreadStart, Thread
 	    from System.Windows.Forms import *
 	    from System.Drawing import *
+	    from System.ComponentModel import ListSortDirection
 	    doc = __revit__.ActiveUIDocument.Document
 	    uidoc = __revit__.ActiveUIDocument
 	    #clr.AddReference("RevitServices")
@@ -109,10 +111,6 @@ Errors.catchVar(platform.platform(), "platform.platform()") """
 
 #import SpaceOrganize
 #import RevitSelection as RS
-from ListUtils import *
-#from ListUtils import Dic2obj
-from IO_Utils import *
-print(ensure_dir)
 #print("ProcesList {0}".format(processList(ensure_dir, sys.path)))
 
 from itertools import combinations
@@ -128,24 +126,29 @@ class Dic2obj(object):
 class MainForm(Form):
 	def __init__(self, inIds):
 		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
-		print(self.scriptDir)
+		print("script directory: {}".format(self.scriptDir))
 		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
 		self.Icon = icon	
 
 		self.ids = inIds
 		self.confirmed = False
-		
+		#column count check in ColumnAdded function
+		self.cCount = 0
+		self.selectedRowsHolder = []
+		self.selectedIds = []
+		self.strSelectedIdsHolder = []
+		self.strSelectedIds = []
 		self.InitializeComponent()
 
 	def InitializeComponent(self):
 		self.Text = "Setup of join priority for categories by Spaceific-Studio"
 		self.Width = 500
-		self.Height = 200
+		self.Height = 350
 		self.StartPosition = FormStartPosition.CenterScreen
 		self.TopMost = True
 		screenSize = Screen.GetWorkingArea(self)
-		self.Height = screenSize.Height / 5
+		self.Height = screenSize.Height / 3
 		self.Width = screenSize.Width / 3
 		self.panelHeight = self.ClientRectangle.Height * 0.75
 		self.panelWidth = self.ClientRectangle.Width / 3
@@ -157,7 +160,8 @@ class MainForm(Form):
 	def setupDataGridView(self):
 		self.dgvPanel = Panel()
 		self.dgvPanel.Dock = DockStyle.Fill
-		self.dgvPanel.AutoSize = False
+		self.dgvPanel.AutoSize = True
+		#self.dgvPanel.Height = 290
 		self.dgvPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
 		self.dgvPanel.AutoScroll = True
 		self.dgvPanel.BackColor = Color.Blue
@@ -168,7 +172,7 @@ class MainForm(Form):
 		self.buttonPanel.Name = "Button Panel"
 		self.buttonPanel.Height = 60
 		self.buttonPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
-		self.buttonPanel.AutoScroll = True
+		self.buttonPanel.AutoScroll = False
 		self.buttonPanel.BackColor = Color.White
 		#self.buttonPanel.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right)
 		#self.buttonPanel.ControlAdded += self.control_Added 
@@ -179,6 +183,8 @@ class MainForm(Form):
 		#self.dgv.AutoGenerateColumns = True
 		self.dgv.BackColor = Color.Yellow
 		self.dgv.ColumnAdded += self.ColumnAdded
+		self.dgv.ColumnHeaderMouseClick += self.ColumnHeaderMouseClick
+		self.dgv.DataBindingComplete += self.DataBindingComplete
 
 		self.dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
 		self.dgv.RowHeadersVisible = False
@@ -199,19 +205,23 @@ class MainForm(Form):
 		self.dgv.ColumnHeadersDefaultCellStyle = headerCellStyle
 		self.dgv.CellClick += self.cellClick
 		self.dgv.SelectionChanged += self.selectionChanged
-		#self.dgv.DataBindingComplete += self.setSelectedRowsEvent		
+		self.dgv.DataBindingComplete += self.DataBindingComplete
 
 		self.columnNames = ("Num", "Id", "Category")
+		self.columnAscendingSort = {}
+		for colName in self.columnNames:
+			self.columnAscendingSort[colName] = True
 
 		tableDicList, tableObjectList = self.getDataSources(self.ids)
 		#self.createDGVbyRows(tableDicList)
 		self.createDGVbyDataSource(tableObjectList)
-		print("self.dgv.DataSource {0}".format(self.dgv.DataSource))
+		#print("self.dgv.DataSource {0}".format(self.dgv.DataSource))
 		
+		self.Controls.Add(self.dgvPanel)
 		self.Controls.Add(self.buttonPanel)
 
 		self.infoLabel = Label()
-		self.infoLabel.Width = self.panelWidth
+		self.infoLabel.Width = self.Width
 		self.infoLabel.Height = 30
 		self.infoLabel.TextAlign = ContentAlignment.MiddleLeft
 		self.infoLabel.Text = ""
@@ -220,7 +230,7 @@ class MainForm(Form):
 
 		self.inputTextBox = TextBox()
 		self.inputTextBox.Name = "inputTextBox"
-		self.inputTextBox.Width = self.panelWidth
+		self.inputTextBox.Width = self.Width/2 -10
 		self.inputTextBox.Height = 30
 		self.inputTextBox.TextAlign = HorizontalAlignment.Left
 		self.inputTextBox.Text = ""
@@ -262,8 +272,7 @@ class MainForm(Form):
 		#self.downButton.Dock = DockStyle.Right
 		#self.downButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right)
 		self.buttonPanel.Controls.Add(self.selectButton)
-		
-		self.Controls.Add(self.dgvPanel)
+			
 		
 		self.dgvPanel.Controls.Add(self.dgv)		
 
@@ -275,8 +284,8 @@ class MainForm(Form):
 		#for obj in inObjList:
 		#	bindingList.Add(obj)
 		self.dgv.DataSource = Clist[object](inObjList)
-		for col in self.dgv.Columns:
-			col.SortMode = DataGridViewColumnSortMode.Automatic
+		""" for col in self.dgv.Columns:
+			col.SortMode = DataGridViewColumnSortMode.Automatic """
 		#self.dgv.DataSource = bindingList
 
 	def createDGVbyRows(self, inDicList):
@@ -286,7 +295,7 @@ class MainForm(Form):
 		if isinstance(inDicList, list):
 			if len(inDicList) > 0:
 				colNames = [x for x in inDicList[0].keys()]
-				print("colNames {}".format(colNames))
+				#print("colNames {}".format(colNames))
 				self.dgv.ColumnCount = len(colNames)
 				for j, colName in enumerate(colNames):
 					self.dgv.Columns[j].Name = self.columnNames[j]
@@ -324,8 +333,8 @@ class MainForm(Form):
 					cm.EndCurrentEdit()
 				print("self.dgv.IsCurrentCellDirty NOT") """
 				
-				rowToDelete = self.dgv.Rows.GetLastRow(DataGridViewElementStates.None)
-				print("self.dgv.Rows.GetLastRow().RowIndex - {}".format(self.dgv.Rows.GetLastRow(DataGridViewElementStates.None)))
+				#rowToDelete = self.dgv.Rows.GetLastRow(DataGridViewElementStates.None)
+				#print("self.dgv.Rows.GetLastRow().RowIndex - {}".format(self.dgv.Rows.GetLastRow(DataGridViewElementStates.None)))
 				# if rowToDelete > -1:
 				# 	self.dgv.Rows.RemoveAt(rowToDelete)
 				
@@ -337,9 +346,11 @@ class MainForm(Form):
 		else:
 			raise TypeError("input argument inDicList not of type list")
 	
-	def getDataSources(self, inTableData):
+	def getDataSources(self, inTableData, **kwargs):
 		tableObjectList = []
 		tableDicList = []
+		sortColumnIndex = kwargs["sortColumnIndex"] if "sortColumnIndex" in kwargs else None
+		#print("getDataSources sortColumnIndex - {0}".format(sortColumnIndex))
 		#priorityCategoriesNames = getPriorityCategoriesNames(inTableData)
 		for i,elId in enumerate(inTableData):
 
@@ -361,35 +372,121 @@ class MainForm(Form):
 			rowObj = Dic2obj(dic)
 			tableDicList.append(dic)
 			tableObjectList.append(rowObj)
-		return (tableDicList, tableObjectList)
+		if sortColumnIndex >=0:
+			sortColumnName = self.dgv.Columns[sortColumnIndex].Name
+			#print("Sorting columnIndex {0} - columnName {1}".format(sortColumnIndex, sortColumnName))
+			#print("Current ascending direction of column {0} - {1}".format(sortColumnName, self.columnAscendingSort[sortColumnName]))
+			tableObjectListSorted = sorted(tableObjectList[:], key = attrgetter(sortColumnName), reverse = self.columnAscendingSort[sortColumnName])
+			tableDicListSorted = sorted(tableDicList[:], key= lambda x: x[sortColumnName], reverse = self.columnAscendingSort[sortColumnName])
+			self.columnAscendingSort[sortColumnName] = not self.columnAscendingSort[sortColumnName]
+			#print("New ascending direction of column {0} - {1}".format(sortColumnName, self.columnAscendingSort[sortColumnName]))
+			#return (tableDicList.sort(key= lambda x: x[sortColumnName]) ,tableObjectList.sort(key = attrgetter(sortColumnName)))
+			return (tableDicListSorted , tableObjectListSorted)
+		else:
+			return (tableDicList, tableObjectList)
+
+	def ColumnHeaderMouseClick(self, sender, event):
+		#print("ColumnHeader {0} was clicked".format(event.ColumnIndex))
+		tableDicList, tableObjectList = self.getDataSources(self.ids, sortColumnIndex = event.ColumnIndex)
+		""" for item in tableObjectList:
+			print("{0} - {1} - {2}".format(item.Num, item.Id, item.Category)) """
+		""" for item in tableDicList:
+			print("{0} - {1} - {2}".format(item["Num"], item["Id"], item["Category"])) """
+		#self.createDGVbyRows(tableDicList)
+		#self.selectedRowsHolder = self.dgv.SelectedRows
+				
+		#print("idColumnIndex {0}".format(self.idColumnIndex))
+		#self.selectedRowsIds = [self.dgv.Rows[x.Index].Cells[self.idColumnIndex].FormattedValue for x in self.dgv.SelectedRows]
+		#print("selectedRowsIds {0}".format(self.selectedRowsIds))
+		self.strSelectedIdsHolder = self.strSelectedIds[:]
+		self.dgv.DataSource = tableObjectList
+		#self.dgv.ClearSelection
+		
+				#print("selected row index {0} Rows len {1}".format(index, len(self.dgv.Rows)))
+			
+		
+		""" newColumn = self.dgv.Columns[event.ColumnIndex]
+		oldColumn = self.dgv.SortedColumn
+
+		#If oldColumn is null, then the DataGridView is not sorted
+		if oldColumn != None:
+			#Sort the same column again, reversing the SortOrder.
+			if(oldColumn == newColumn and self.dgv.SortOrder == SortOrder.Ascending):
+				direction = ListSortDirection.Descending
+			else:
+				#Sort a new column and remove the old SortGlyph.
+				direction = ListSortDirection.Ascending
+				oldColumn.HeaderCell.SortGlyphDirection = SortOrder.None
+		else:
+			direction = ListSortDirection.Ascending
+		#Sort the selected column.
+		self.dgv.Sort(newColumn, direction)
+		newColumn.HeaderCell.SortGlyphDirection = SortOrder.Ascending if direction == ListSortDirection.Ascending else SortOrder.Descending """
+
+
+	def DataBindingComplete(self, sender, event):
+		print("Data Binding Complete")
+		self.dgv.ClearSelection()
+		#self.selectedIds = []
+		for column in self.dgv.Columns:
+			column.SortMode = DataGridViewColumnSortMode.Programmatic
+
+		self.markSelected()
+		""" for i, row in enumerate(self.dgv.Rows):
+			currentId = row.Cells[self.idColumnIndex].FormattedValue
+			if currentId in self.strSelectedIdsHolder:
+				self.dgv.Rows[i].Selected = True """
+		""" for i, row in enumerate(self.selectedRowsHolder):
+			print("selected row index {0} Rows len {1}".format(row.Index, len(self.dgv.Rows)))
+			self.dgv.Rows[row.Index].Selected = True """
 	
+	def markSelected(self):
+		for i, row in enumerate(self.dgv.Rows):
+			currentId = row.Cells[self.idColumnIndex].FormattedValue
+			if currentId in self.strSelectedIdsHolder:
+				self.dgv.Rows[i].Selected = True
+			else:
+				self.dgv.Rows[i].Selected = False
+
+	def DataSourceChanged(self, sender, event):
+		for i, index in enumerate(self.selectedRowsIndicies):
+			#print("selected row index {0} Rows len {1}".format(index, len(self.dgv.Rows)))
+			self.dgv.Rows[index].Selected = True
+
 	def ColumnAdded(self, sender, *args):
+		self.cCount += 1
+		#print("{0} - {1}".format(self.cCount, args[0].Column.Name))
 		if self.dgv.Columns.Count == len(self.columnNames):
 			if self.dgv.Columns["Num"]:
-				print("column Num added")
+				#print("column Num added")
 				self.dgv.Columns["Num"].DisplayIndex = 0
 				self.dgv.Columns["Num"].ReadOnly = True
 				self.dgv.Columns["Num"].Width = 65
 			if self.dgv.Columns["Category"]:
-				print("column Category added")
+				#print("column Category added")
 				self.dgv.Columns["Category"].DisplayIndex = 2
 				self.dgv.Columns["Category"].ReadOnly = True
 				self.dgv.Columns["Category"].ReadOnly = True
 			if self.dgv.Columns["Id"]:
-				print("column Id added")
+				#print("column Id added")
 				self.dgv.Columns["Id"].DisplayIndex = 1
 				self.dgv.Columns["Id"].ReadOnly = True
 				self.dgv.Columns["Id"].ReadOnly = True
+			self.idColumnIndex = self.dgv.Columns[self.columnNames[1]].Index
 
-	def selectionChanged(self, sender, e):
+	def selectionChanged(self, sender, event):
+		#print("begining of selectionChannged selectedRowsHolder {0} self.dgv.SelectedRows {1}".format(len(self.dgv.SelectedRows), len(self.dgv.SelectedRows)))
 		#self.infoLabel.Text = "Id {0} at row {1}".format(self.dgv.Columns["Id"][0], self.dgv.Rows[e.RowIndex])
 		self.selectedIds = []
+		#print("selectionChanged sender {0} \n{1}".format(dir(sender), event))
 		for i,row in enumerate(self.dgv.SelectedRows):
-			elementId = self.dgv.Rows[row.Index].Cells[1].FormattedValue
+			elementId = self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue
 			self.selectedIds.append(DB.ElementId(int(elementId)))
-		strIds = [x.ToString() for x in self.selectedIds]
-		self.inputTextBox.Text = ",".join(strIds)
-		self.infoLabel.Text = "selected Ids {0}".format(strIds)
+		self.strSelectedIds = [x.ToString() for x in self.selectedIds]
+		self.inputTextBox.Text = ",".join(self.strSelectedIds)
+		self.infoLabel.Text = "selected Ids {0}".format(self.strSelectedIds)
+		#self.selectedRowsHolder = self.dgv.SelectedRows if len(self.selectedRowsHolder) == 0 else self.selectedRowsHolder
+		#print("end of selectionChannged selectedRowsHolder {0} self.dgv.SelectedRows {1}".format(len(self.dgv.SelectedRows), len(self.dgv.SelectedRows)))
 		#print("sender - {0}".format(dir(sender)))
 
 	def cellClick(self, sender, e):
@@ -449,12 +546,24 @@ class MainForm(Form):
 
 	def selectSelected(self, sender, event):
 		if sender.Name == "selectButton":
-			strIds = [x.strip() for x in self.inputTextBox.Text.split(",")]
-			self.selectedIds = [DB.ElementId(int(x)) for x in strIds]
-			print("strIds {}".format(strIds))
-			selectedIdsCol = Clist[DB.ElementId](self.selectedIds)
-			uidoc.Selection.SetElementIds(selectedIdsCol)
-			uidoc.ShowElements(selectedIdsCol)
+			strIds = [x.strip() for x in self.inputTextBox.Text.split(",")] if len(self.inputTextBox.Text) > 0 else []
+			print("len(StrIds) {0} - Text {1}".format(len(strIds), self.inputTextBox.Text))
+			if len(strIds) > 0:
+				self.selectedIds = [DB.ElementId(int(x)) for x in strIds]
+				self.strSelectedIds = [x.ToString() for x in self.selectedIds]
+			else:
+				self.selectedIds = []
+				self.strSelectedIds = []
+			self.strSelectedIdsHolder = self.strSelectedIds[:]
+			self.markSelected()
+			#print("strIds {}".format(strIds))
+			if len(self.selectedIds) > 0:
+				selectedIdsCol = Clist[DB.ElementId](self.selectedIds)
+				uidoc.Selection.SetElementIds(selectedIdsCol)
+				uidoc.ShowElements(selectedIdsCol)
+			else:
+				selectedIdsCol = Clist[DB.ElementId]([])
+				uidoc.Selection.SetElementIds(selectedIdsCol)
 
 
 	def close(self, sender, event):
@@ -463,7 +572,7 @@ class MainForm(Form):
 		if sender.Name == "inputTextBox":
 			if event.KeyValue == 13:			
 				inputId = DB.ElementId(int(sender.Text))
-				print("inputTextBox {0}".format(inputId))
+				#print("inputTextBox {0}".format(inputId))
 		elif sender.Name =="confirmButton":
 			#pass
 			#priorityLookup = self.priorityLookup
@@ -490,7 +599,7 @@ for i, oForm in enumerate(openedForms):
 	else:
 		rpsOutput = None
 
-print(doc)
+#print(doc)
 
 elIds = [DB.ElementId(1064911), \
 		DB.ElementId(1356699), \
@@ -501,9 +610,9 @@ viewSelection = list(uidoc.Selection.GetElementIds())
 if len(viewSelection) > 0:
 	elIds = viewSelection
 
-for i, elId in enumerate(elIds):
+""" for i, elId in enumerate(elIds):
 	myElement = doc.GetElement(elId)
-	print("{0} - {1}".format(i, myElement))
+	print("{0} - {1}".format(i, myElement)) """
 
 #uidoc.ShowElements(ElementId)
 

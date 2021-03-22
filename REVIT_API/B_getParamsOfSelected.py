@@ -4,13 +4,11 @@
 #resource_path: H:\_WORK\PYTHON\REVIT_API\vyska_prostupu.py
 from Autodesk.Revit.DB import *
 from Autodesk.Revit.DB.Architecture import *
-#from Autodesk.Revit.DB.Analysis import *
+from Autodesk.Revit.DB.Analysis import *
 from Autodesk.Revit.UI import *
 from Autodesk.Revit.UI.Selection import *
 
 import sys
-from operator import attrgetter
-import os
 #if "Windows" in platform.uname():
 	#lib_path = r'H:/_WORK/PYTHON/LIB'
 lib_path = r'H:/_WORK/PYTHON/REVIT_API/LIB'
@@ -22,15 +20,14 @@ import clr
 clr.AddReference("System")
 from System.Collections.Generic import List as Clist
 
-#clr.AddReferenceByPartialName('PresentationCore')
-#clr.AddReferenceByPartialName('PresentationFramework')
+clr.AddReferenceByPartialName('PresentationCore')
+clr.AddReferenceByPartialName('PresentationFramework')
 clr.AddReferenceByPartialName('System.Windows.Forms')
-#import System.Windows
-#import System.Drawing
-#from System.Reflection import BindingFlags
+import System.Windows
+import System.Drawing
+from System.Reflection import BindingFlags
 from System.Drawing import *
 from System.Windows.Forms import *
-#from System.ComponentModel import BindingList
 
 
 uidoc = __revit__.ActiveUIDocument
@@ -44,34 +41,14 @@ class Dic2obj(object):
 
 class TabForm(Form):
 	selectedRowIndices = []
-	selectedRowStrIds = []
-	userSelectedStrIds = []
-	userSelectedRowIndices = []
 
-	def __init__(self, tableData, elements, parameterName, inUserSelectedStrIds):
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
-		print("script directory: {}".format(self.scriptDir))
-		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
-		icon = Icon(iconFilename)
-		self.Icon = icon	
-
+	def __init__(self, tableData, elements, parameterName):
 		self.tableData = tableData
 		self.elements = elements
 		self.elementsNumber = len(self.elements)
 		self.parameterName = parameterName
 		self.parameter = nameToParamDic[self.parameterName]
-		self.strSelectedIdsHolder = []
-		TabForm.userSelectedStrIds = inUserSelectedStrIds
-		#self.ControlAdded += self.control_Added
-		self.cCount = 0
-		
 		self.InitializeComponent()
-		
-		#column count check in ColumnAded function
-		
-		
-
-		
 		
 
 	def InitializeComponent(self):
@@ -83,9 +60,6 @@ class TabForm(Form):
 		self.filteredElements = 0
 		self.setupDataGridView()
 		
-		
-		
-		
 	def setupDataGridView(self):
 		self.dgvPanel = Panel()
 		self.dgvPanel.Dock = DockStyle.Fill
@@ -93,23 +67,13 @@ class TabForm(Form):
 		self.dgvPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
 		self.dgvPanel.AutoScroll = True
 
-		self.inputTextPanel = Panel()
-		self.inputTextPanel.Dock = DockStyle.Bottom
-		self.inputTextPanel.AutoSize = True
-		self.inputTextPanel.Name = "Button Panel"
-		self.inputTextPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
-		self.inputTextPanel.AutoScroll = True
-		self.inputTextPanel.BackColor = Color.White
-
 		self.buttonPanel = Panel()
 		self.buttonPanel.Dock = DockStyle.Bottom
-		self.buttonPanel.AutoSize = True
-		self.buttonPanel.Name = "Button Panel"
-		self.buttonPanel.Height = 80
+		self.buttonPanel.AutoSize = False
+		self.buttonPanel.Height = 90
 		self.buttonPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
 		self.buttonPanel.AutoScroll = True
 		self.buttonPanel.BackColor = Color.White
-		#self.buttonPanel.ControlAdded += self.control_Added
 		
 		self.dgv = DataGridView()
 		self.dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect
@@ -122,279 +86,91 @@ class TabForm(Form):
 		self.dgv.BorderStyle = BorderStyle.Fixed3D
 		self.dgv.EditMode = DataGridViewEditMode.EditOnEnter
 		self.dgv.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right)
-		#self.dgv.Dock = DockStyle.Fill
 		self.dgv.ColumnHeadersDefaultCellStyle.Font = Font(self.dgv.ColumnHeadersDefaultCellStyle.Font, FontStyle.Bold)
 		headerCellStyle = self.dgv.ColumnHeadersDefaultCellStyle.Clone()
 		headerCellStyle.BackColor = Color.LightSkyBlue
-
-		self.dgv.RowsDefaultCellStyle.BackColor = Color.White
-		self.dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.AliceBlue
 		self.dgv.ColumnHeadersDefaultCellStyle = headerCellStyle
-		self.dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-		self.dgv.Dock = DockStyle.Fill
-		self.dgv.AutoResizeColumns()
 		self.dgv.CellClick += self.cellClick
-		self.dgv.ColumnHeaderMouseClick += self.ColumnHeaderMouseClick
 		self.dgv.SelectionChanged += self.selectionChanged
-		self.dgv.DataBindingComplete += self.DataBindingComplete		
+		self.dgv.DataBindingComplete += self.setSelectedRows		
 
-		self.columnNames = ("Element_Id", "Category", "Element_Name", "parameter_{}".format(self.parameterName))
-		self.columnAscendingSort = {}
-		for colName in self.columnNames:
-			self.columnAscendingSort[colName] = True
-
+		self.columnNames = ("Element Id", "Category", "Element Name", "parameter_{}".format(self.parameterName))
 		self.values = getValuesByParameterName(self.elements, self.parameterName, doc)
-		""" tableObjectList = []
-		tableDicList = []
+		tableObjectList = []
 		for i,v in enumerate(self.elements):
 			elId = v.Id.ToString()
 			elCategory = "{}".format(v.Category.Name)
 			parameterValue = "{}".format(self.values[i])
 			elName = "{}".format(v.Name if hasattr(v, "Name") else v.FamilyName)
-			dic = {self.columnNames[0] : elId, \
+			rowObj = Dic2obj({self.columnNames[0] : elId, \
 											self.columnNames[1] : elCategory, \
 											self.columnNames[2] : elName, \
-											self.columnNames[3] : parameterValue}
-			rowObj = Dic2obj(dic)
-			tableDicList.append(dic)
-			tableObjectList.append(rowObj) """
-		
-		print("setDataSources 1")
-		tableDicList, tableObjectList = self.getDataSources(self.elements)
-		""" for i, obj in enumerate(tableObjectList):
-			print("{0} - {1} - {2} - {3}".format(i, obj.Element_Id, obj.Category, obj.Element_Name)) """
+											self.columnNames[3] : parameterValue})
+			
+			tableObjectList.append(rowObj)
+		for col in self.dgv.Columns:
+			col.SortMode = DataGridViewColumnSortMode.Automatic
+		self.dgv.DataSource = Clist[object](tableObjectList)
+		self.dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+		self.dgv.Dock = DockStyle.Fill
+		self.dgv.AutoResizeColumns()
 
-		""" for col in self.dgv.Columns:
-			col.SortMode = DataGridViewColumnSortMode.Automatic """
-		#self.dgv.DataSource = Clist[object](tableObjectList)
-		
-		#print("tableDicList - {}".format(tableDicList))
-		
-		self.createDGVbyDataSource(tableObjectList)
 		self.isolateButton = Button()
 		self.isolateButton.Text = "Isolate selected elements"
 		self.isolateButton.Height = 30
 		self.isolateButton.Click += self.isolateSelectedElements
-		self.isolateButton.Location = Point(0,120)
-		self.isolateButton.AutoSize = True
+		self.isolateButton.Location = Point(0,0)
 		self.buttonPanel.Controls.Add(self.isolateButton)
 
 		self.setParameterButton = Button()
 		self.setParameterButton.Text = "Set Value For Selected"
 		self.setParameterButton.Height = 30
-		self.setParameterButton.Location = Point(0,60)
+		self.isolateButton.Location = Point(0,30)
 		self.setParameterButton.Click += self.setParametersOfSelected
 		self.buttonPanel.Controls.Add(self.setParameterButton)
 
 		self.setParameterTextBox = TextBox()
 		#self.setParameterTextBox.FontHeight = 20
-		self.setParameterTextBox.Height = 100
 		self.setParameterTextBox.Text = "Text"
 		self.setParameterTextBox.Name = "setParameterTextBox"
-		self.setParameterTextBox.ScrollBars = ScrollBars.Vertical
-		self.setParameterTextBox.Location = Point(0,0)
-		self.setParameterTextBox.Multiline = True
 		self.setParameterTextBox.KeyDown += self.setParameterSubmit
 
-		#self.buttonPanel.Controls.Add(self.setParameterTextBox)		
+		
+		self.buttonPanel.Controls.Add(self.setParameterTextBox)		
 		self.dgvPanel.Controls.Add(self.dgv)
-		self.inputTextPanel.Controls.Add(self.setParameterTextBox)
 
 		self.Controls.Add(self.dgvPanel)
-		self.Controls.Add(self.inputTextPanel)
 		self.Controls.Add(self.buttonPanel)
 		
-
-		#self.isolateButton.Width = self.buttonPanel.Width
-		self.setParameterButton.Width = self.buttonPanel.Width
-		self.setParameterTextBox.Width = self.buttonPanel.Width
 		self.isolateButton.Width = self.buttonPanel.Width
-		self.setParameterTextBox.Location = Point(0,0)
-
+		self.setParameterButton.Width = self.buttonPanel.Width/2
+		self.setParameterTextBox.Width = self.buttonPanel.Width/2
+		self.setParameterTextBox.Height = 60
+		self.setParameterTextBox.Location = Point(self.buttonPanel.Width/2,0)
 		
-		#self.createDGVbyRows(tableDicList)
-
-		self.testButton = Button()
-		self.testButton.Text = "Test"
-		self.testButton.Height = 30
-		self.testButton.Location = Point(0,90)
-		self.testButton.Click += self.backColorChanged
-		self.testButton.Width = self.buttonPanel.Width
-		self.buttonPanel.Controls.Add(self.testButton)	
-		#self.setParameterButton.Enabled = False
-		#self.setParameterButton.Enabled = True
-		
-
-
-	def createDGVbyDataSource(self, inObjList):
-		"""
-		inObjList type: list of objects [object, object...]
-		"""
-		self.dgv.DataSource = Clist[object](inObjList)
-
-
-	def createDGVbyRows(self, inDicList):
-		"""
-		inDicList type: list of dictionaries [{"ab": "AB"}, {"cd":"CD"}, {"ef":"EF"}]
-		"""
-		if isinstance(inDicList, list):
-			if len(inDicList) > 0:
-				colNames = [x for x in inDicList[0].keys()]
-				print("colNames {}".format(colNames))
-				self.dgv.ColumnCount = len(colNames)
-				for j, colName in enumerate(colNames):
-					self.dgv.Columns[j].Name = self.columnNames[j]
-				for i,dic in enumerate(inDicList):
-					rowValues = (dic[self.columnNames[0]], dic[self.columnNames[1]], dic[self.columnNames[2]], dic[self.columnNames[3]])
-					#cRows.Item[cRows.Count - 1].CreateCells(self.dgv,Clist[dict](dic))
-
-					self.dgv.Rows.Add(*rowValues)
-			
-				rowToDelete = self.dgv.Rows.GetLastRow(DataGridViewElementStates.None)
-			else:
-				raise IndexError("inDicList is empty list")
-		else:
-			raise TypeError("input argument inDicList not of type list")
-
-	def getDataSources(self, inTableData, **kwargs):
-		tableObjectList = []
-		tableDicList = []
-		sortColumnIndex = kwargs["sortColumnIndex"] if "sortColumnIndex" in kwargs else None
-		for i,v in enumerate(inTableData):
-			elId = v.Id.ToString()
-			elCategory = "{}".format(v.Category.Name)
-			parameterValue = "{}".format(self.values[i])
-			elName = "{}".format(v.Name if hasattr(v, "Name") else v.FamilyName)
-			dic = {self.columnNames[0] : elId, \
-											self.columnNames[1] : elCategory, \
-											self.columnNames[2] : elName, \
-											self.columnNames[3] : parameterValue}
-			rowObj = Dic2obj(dic)
-			tableDicList.append(dic)
-			tableObjectList.append(rowObj)
-		if sortColumnIndex >=0:
-			sortColumnName = self.dgv.Columns[sortColumnIndex].Name
-			#print("Sorting columnIndex {0} - columnName {1}".format(sortColumnIndex, sortColumnName))
-			#print("Current ascending direction of column {0} - {1}".format(sortColumnName, self.columnAscendingSort[sortColumnName]))
-			tableObjectListSorted = sorted(tableObjectList[:], key = attrgetter(sortColumnName), reverse = self.columnAscendingSort[sortColumnName])
-			tableDicListSorted = sorted(tableDicList[:], key= lambda x: x[sortColumnName], reverse = self.columnAscendingSort[sortColumnName])
-			self.columnAscendingSort[sortColumnName] = not self.columnAscendingSort[sortColumnName]
-			#print("New ascending direction of column {0} - {1}".format(sortColumnName, self.columnAscendingSort[sortColumnName]))
-			#return (tableDicList.sort(key= lambda x: x[sortColumnName]) ,tableObjectList.sort(key = attrgetter(sortColumnName)))
-			return (tableDicListSorted , tableObjectListSorted)
-		else:
-			return (tableDicList, tableObjectList)
-
-	def control_Added(self, sender, e):
-		print("The control named " + e.Control.Text + " has been added to the form.")
-		#if e.Control.Name == "Button Panel":
-		#	self.setSelectedRows()
-
-	def backColorChanged(self, sender, event):
-		print("BackColorChanged")
-		self.dgv.ClearSelection()
-		for i in TabForm.selectedRowIndices:
-			print("row to select {0}".format(self.dgv.Rows[i].Index))
-			self.dgv.Rows[i].Selected = True
-
-	def DataBindingComplete(self, sender, event):
-		self.arangeColumns()
-		TabForm.userSelectedRowIndices = self.getRowIndiciesFromStrIds(TabForm.userSelectedStrIds)
-		TabForm.selectedRowIndices = self.getRowIndiciesFromStrIds(TabForm.selectedRowStrIds)
-		print("DataBindingComplete {0} {1}".format(sender, event))		
-		#self.markSelected()
-		TabForm.selectedRowStrIds = self.strSelectedIdsHolder
-		self.dgv.ClearSelection()
-		self.setSelectedRows()
-	
-	def ColumnHeaderMouseClick(self, sender, event):
-		#print("ColumnHeader {0} was clicked".format(event.ColumnIndex))
-		#tableDicList, tableObjectList = self.getDataSources(self.ids, sortColumnIndex = event.ColumnIndex)
-		print("getDataSources - 2")
-		self.strSelectedIdsHolder = TabForm.selectedRowStrIds[:]
-		tableDicList, tableObjectList = self.getDataSources(self.elements, sortColumnIndex = event.ColumnIndex)
-		""" for item in tableObjectList:
-			print("{0} - {1} - {2}".format(item.Num, item.Id, item.Category)) """
-		""" for item in tableDicList:
-			print("{0} - {1} - {2}".format(item["Num"], item["Id"], item["Category"])) """
-		#self.createDGVbyRows(tableDicList)
-		#self.selectedRowsHolder = self.dgv.SelectedRows
-				
-		#print("idColumnIndex {0}".format(self.idColumnIndex))
-		#self.selectedRowsIds = [self.dgv.Rows[x.Index].Cells[self.idColumnIndex].FormattedValue for x in self.dgv.SelectedRows]
-		#print("selectedRowsIds {0}".format(self.selectedRowsIds))		
-		self.dgv.DataSource = tableObjectList
-
-	def arangeColumns(self):
-		for col in self.dgv.Columns:
-			if col.Name == self.columnNames[0]:
-				print("column {0} was updated".format(col.Name))
-				col.SortMode = DataGridViewColumnSortMode.Programmatic
-				col.DisplayIndex = 0
-				col.ReadOnly = True
-			elif col.Name == self.columnNames[1]:
-				print("column {0} was updated".format(col.Name))
-				col.SortMode = DataGridViewColumnSortMode.Programmatic
-				col.DisplayIndex = 1
-				col.ReadOnly = True
-			elif col.Name == self.columnNames[2]:
-				print("column {0} was updated".format(col.Name))
-				col.SortMode = DataGridViewColumnSortMode.Programmatic
-				col.DisplayIndex = 2
-				col.ReadOnly = True
-			elif col.Name == self.columnNames[3]:
-				print("column {0} was updated".format(col.Name))
-				col.SortMode = DataGridViewColumnSortMode.Programmatic
-				col.DisplayIndex = 3
-				col.ReadOnly = True
-			
-
-	def getRowIndiciesFromStrIds(self, inStrIds):
-		returnIndicies = []
-		for row in self.dgv.Rows:
-			#print("row.Cells[self.dgv.Columns[self.columnNames[0]].Index].FormattedValue {}".format(row.Cells[self.dgv.Columns[self.columnNames[0]].Index].FormattedValue))
-			if row.Cells[self.idColumnIndex].FormattedValue in inStrIds:
-				returnIndicies.append(row.Index)
-		return returnIndicies
-
-	def markSelected(self):
-		for i, row in enumerate(self.dgv.Rows):
-			currentId = row.Cells[self.idColumnIndex].FormattedValue
-			if currentId in self.strSelectedIdsHolder:
-				self.dgv.Rows[i].Selected = True
-			else:
-				self.dgv.Rows[i].Selected = False
-
-	def setSelectedRows(self):
-		#print("TabForm.selectedRowIndices {}".format(TabForm.selectedRowIndices))
-		""" for i, r in enumerate(self.dgv.Rows):
+	def setSelectedRows(self, sender, event):
+		for i, r in enumerate(self.dgv.Rows):
 			# print("ElId {0}".format(self.dgv.Rows[i].Cells[1].FormattedValue))
-			if self.dgv.Rows[i].Cells[self.idColumnIndex].FormattedValue in viewSelectionIdStrings:	
-				TabForm.selectedRowIndices.append(i) """
-		#print("TabForm.selectedRowIndices {}".format(TabForm.selectedRowIndices))
-		#print("TabForm.userSelectedStrIds {}".format(TabForm.userSelectedStrIds))
-		print("setSelectedRows - TabForm.userSelectedRowIndices {}".format(TabForm.userSelectedRowIndices))
-		print("setSelectedRows - TabForm.selectedRowIndicies {}".format(TabForm.selectedRowIndices))
+			if self.dgv.Rows[i].Cells[1].FormattedValue in viewSelectionIdStrings:	
+				TabForm.selectedRowIndices.append(i)
 		
-		
-		self.markSelected()
-		
-		#self.dgv.ClearSelection()
+		self.dgv.ClearSelection()
 		print("Rows Count {}".format(self.dgv.Rows.Count))
-		""" brightRow = self.dgv.DefaultCellStyle.Clone()
+		brightRow = self.dgv.DefaultCellStyle.Clone()
 		brightRow.BackColor = Color.White
 		darkRow = self.dgv.DefaultCellStyle.Clone()
-		darkRow.BackColor = Color.AliceBlue """
+		darkRow.BackColor = Color.AliceBlue
 		selectedRow = self.dgv.DefaultCellStyle.Clone()
 		selectedRow.BackColor = Color.Orange
-		
-		for i in TabForm.userSelectedRowIndices:
-			self.dgv.Rows[i].DefaultCellStyle = selectedRow
-		
-		if self.parameter.IsReadOnly or self.parameter.StorageType == StorageType.ElementId:
+		for i,r in enumerate(self.dgv.Rows):
+			r.DefaultCellStyle = brightRow if i % 2 == 0 else darkRow
+			if i in TabForm.selectedRowIndices:
+				r.DefaultCellStyle = selectedRow
+				r.Selected = True
+		if self.parameter.IsReadOnly:
 			self.setParameterButton.Enabled = False
 			self.setParameterTextBox.Enabled = False
-			self.dgv.Columns[self.columnNames[3]].ReadOnly = True
+			self.dgv.Columns[3].ReadOnly = True
 		else:
 			self.setParameterButton.Enabled = True
 			self.setParameterTextBox.Enabled = True
@@ -410,21 +186,19 @@ class TabForm(Form):
 		if e.RowIndex >=0:
 			print("{0} Row, {1} Column button clicked".format(e.RowIndex +1, e.ColumnIndex +1))
 			for x in self.elements:
-				if x.Id.ToString() == "{0}".format(self.dgv.Rows[e.RowIndex].Cells[self.idColumnIndex].FormattedValue):
+				if x.Id.ToString() == "{0}".format(self.dgv.Rows[e.RowIndex].Cells[1].FormattedValue):
 					elId = [x.Id]
-				else:
-					elId = []
 			elementsCol = Clist[ElementId](elId)
-			#uidoc.Selection.SetElementIds(elementsCol)
+			uidoc.Selection.SetElementIds(elementsCol)
 
 	def isolateSelectedElements(self, sender, event):
 		if sender.Text == "Isolate selected elements":
 			iDs = []
 			for row in self.dgv.SelectedRows:
 				for x in self.elements:
-					if x.Id.ToString() == "{0}".format(self.dgv.Rows[row.Index].Cells[0].FormattedValue):
+					if x.Id.ToString() == "{0}".format(self.dgv.Rows[row.Index].Cells[1].FormattedValue):
 						iDs.append(x.Id)
-				print("Isolated element on row {0} Id {1}".format(row.Index, self.dgv.Rows[row.Index].Cells[0].Value))
+				print("Isolated element on row {0} Id {1}".format(row.Index, self.dgv.Rows[row.Index].Cells[1].Value))
 			elementIdsCol = Clist[ElementId](iDs)
 			t = Transaction(doc, "Temporary Isolate Selected Elements")
 			#transaction Start
@@ -454,7 +228,7 @@ class TabForm(Form):
 	def setParametersOfSelected(self, sender, event):
 		elementsToSet = []
 		for i,row in enumerate(self.dgv.SelectedRows):
-			elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[0].FormattedValue]
+			elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[1].FormattedValue]
 			el = doc.GetElement(elId)
 			elementsToSet.append(el)
 			#elParams = el.GetOrderedParameters()
@@ -485,29 +259,19 @@ class TabForm(Form):
 			errorReport = traceback.format_exc()
 			raise RuntimeError("Parameter name {0} not set !!! {1}".format(self.parameterName, errorReport)) """
 		
-	""" def buttonPanelOnResize(self, sender, event):
-		self.setParameterButton.Width = self.buttonPanel.Width
-		self.setParameterTextBox.Width = self.buttonPanel.Width """
-		
+
 	def selectionChanged(self, sender, event):
-		self.idColumnIndex = self.dgv.Columns[self.columnNames[0]].Index
 		elNames = []
 		selectedElements = []
 		selectedElementsId = []
 		elParamValues = []
-		TabForm.selectedRowIndices = []
-		TabForm.selectedRowIds = []
 		for i,row in enumerate(self.dgv.SelectedRows):
 			elementName = self.dgv.Rows[row.Index].Cells[2].FormattedValue
-			#print("X SelectionChanged Rows[row.Index].Cells[2].FormattedValue - {}".format(elementName))
 			if elementName not in elNames:
 				elNames.append(elementName)
-				elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue]
-				#print("SelectionChanged viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[1].FormattedValue] - {}".format(elId))
+				elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[1].FormattedValue]
 			selectedElements.append(doc.GetElement(elId))
 			selectedElementsId.append(elId)
-			TabForm.selectedRowIndices.append(row.Index)
-			TabForm.selectedRowStrIds.append(self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue)
 			#print("{0} - Selected element Id: {1} with value {2}".format(i, self.dgv.Rows[row.Index].Cells[0].FormattedValue, self.dgv.Rows[row.Index].Cells[3].FormattedValue))
 
 		#for el in selectedElements:
@@ -516,7 +280,6 @@ class TabForm(Form):
 		for value in elemParamValues:
 			if value not in uniqueValues and value !="":
 				uniqueValues.append(value)
-		#print("SelectionChanged selectedElementsId - {}".format(selectedElementsId))
 		elementIdsCol = Clist[ElementId](selectedElementsId)
 		uidoc.Selection.SetElementIds(elementIdsCol)
 		if len(uniqueValues) == 1:
@@ -532,40 +295,181 @@ class TabForm(Form):
 		#print("rows selected: {0}, unique element names: {1}, uniqueValues {2}".format(len(self.dgv.SelectedRows), len(elNames), len(uniqueValues)))
 
 	def ColumnAdded(self, sender, *args):
-		self.cCount += 1
-		#print(sender.Text)
-		print("{0} - {1}".format(self.cCount, args[0].Column.Name))
 		if self.dgv.Columns.Count == len(self.columnNames):
-			if args[0].Column.Name == self.columnNames[0]:
-				print("column {0} added".format(args[0].Column.Name))
-				args[0].Column.DisplayIndex = 0
-				args[0].Column.ReadOnly = True
-			if args[0].Column.Name == self.columnNames[1]:
-				print("column {0} added".format(args[0].Column.Name))
-				args[0].Column.DisplayIndex = 1
-				args[0].Column.ReadOnly = True
-			if args[0].Column.Name == self.columnNames[2]:
-				print("column {0} added".format(args[0].Column.Name))
-				args[0].Column.DisplayIndex = 2
-				args[0].Column.ReadOnly = True
-			if args[0].Column.Name == self.columnNames[3]:
-				print("column {0} added".format(args[0].Column.Name))
-				args[0].Column.DisplayIndex = 3
-				args[0].Column.ReadOnly = True
+			if self.dgv.Columns["Element Id"]:
+				print("column Element Id added")
+				self.dgv.Columns["Element Id"].DisplayIndex = 0
+				self.dgv.Columns["Element Id"].ReadOnly = True
+			if self.dgv.Columns["Category"]:
+				print("column Category added")
+				self.dgv.Columns["Category"].DisplayIndex = 1
+				self.dgv.Columns["Category"].ReadOnly = True
+			if self.dgv.Columns["Element Name"]:
+				print("column Element Name added")
+				self.dgv.Columns["Element Name"].DisplayIndex = 2
+				self.dgv.Columns["Element Name"].ReadOnly = True
+			if self.dgv.Columns["parameter_{}".format(self.parameterName)]:
+				print("column parameter_{} added".format(self.parameterName))
+				self.dgv.Columns["parameter_{}".format(self.parameterName)].DisplayIndex = 3
+				self.dgv.Columns["parameter_{}".format(self.parameterName)].ReadOnly = True
+
+	def setupTable(self):
+		self.panel = Panel()
+		self.panel.Dock = DockStyle.Fill
+		self.panel.AutoScroll = True
+		self.panel.AutoSize = False
+
+		self.table = TableLayoutPanel()
+		absoluteHeaderRowHeight = 20
+		absoluteRowHeight = 20
+		#self.table.Width = self.panel.Width
+		#self.table.Height = self.panel.Height
+		self.table.GrowStyle = TableLayoutPanelGrowStyle.AddRows
+		self.table.Dock = DockStyle.Top
+		self.table.AutoSize = True
+		self.table.AutoSizeMode = AutoSizeMode.GrowAndShrink
+		#self.table.MaximumSize = Size(self.table.Width, self.table.Height)
+		#self.table.AutoScroll = True
+		#self.table.ColumnCount = 4	
+		#self.table.ControlAdded += self.OnControlAdded
+		self.table.CellBorderStyle = TableLayoutPanelCellBorderStyle.None
+		#self.filteredElements = self.filterElementsByParameterName(self.elements, self.parameterName)
+		self.values = getValuesByParameterName(self.elements, self.parameterName, doc)
+		self.tableItems = [(v.Id.ToString(), "{}".format(v.Category.Name), "{}".format(v.Name if hasattr(v, "Name") else v.FamilyName), "{}".format(self.values[i])) for i,v in enumerate(self.elements)]
+		header = ("Element Id", "Category", "Element Name", self.parameterName)
+		#self.tableItems = header + self.tableItems
+		rStyle = RowStyle(SizeType.Absolute, absoluteHeaderRowHeight)
+		self.table.RowStyles.Add(rStyle)
+		for j, value in enumerate(header):
+			self.table.Controls.Add(self.setupHeaderLabel(value), j, 0)
+		for i, row in enumerate(self.tableItems):
+			rStyle = RowStyle(SizeType.Absolute, absoluteRowHeight)
+			self.table.RowStyles.Add(rStyle)
+			for j, value in enumerate(row):
+				cStyle = ColumnStyle(SizeType.Percent, 10 if j == 0 else 30)
+				self.table.ColumnStyles.Add(cStyle)
+				#print("{0}_{1} - {2}".format(i,j,value))
+				self.table.Controls.Add(self.setupBodyTextBox(value, i) if j !=0 else self.setupBodyButton(value, i), j, i+1)
+
+		self.Controls.Add(self.panel)
+		self.panel.Height = self.table.Height
+		self.panel.Controls.Add(self.table)		
+
+		self.filteredNumLabel = Label()
+		self.filteredNumLabel.Text = "Elements Count: {}".format(self.elementsNumber)
+		self.filteredNumLabel.Width = self.Width
+		self.filteredNumLabel.Parent = self
+		self.filteredNumLabel.Anchor = AnchorStyles.Top
+		self.filteredNumLabel.Dock = DockStyle.Top
+
+		self.SelectAllButton = Button()
+		self.SelectAllButton.Text = 'Select All'
+		self.SelectAllButton.Click += self.select
+		self.SelectAllButton.Parent = self
+		self.SelectAllButton.Anchor = AnchorStyles.Bottom
+		self.SelectAllButton.Dock = DockStyle.Bottom
+
+		self.closeButton = Button()
+		self.closeButton.Text = 'Close'
+		self.closeButton.Click += self.close
+		self.closeButton.Parent = self
+		self.closeButton.Anchor = AnchorStyles.Bottom
+		self.closeButton.Dock = DockStyle.Bottom
+
+	def setupHeaderLabel(self, inText):
+		label = Label()
+		label.Text = "{}".format(inText)
+		label.Margin = Padding(0)
+		label.Dock = DockStyle.Fill
+		label.Font = Font(label.Font, FontStyle.Bold)
+		#label.TextAlign = ContentAlignment.MiddleCenter
+		label.TextAlign = ContentAlignment.MiddleLeft
+		label.Width = self.table.Width #* (1/float(len(self.tableData)))
+		label.BackColor = Color.LightSkyBlue
+		return label
+
+	def setupBodyTextBox(self, inText, inRowPosition):
+		tbPanel = Panel()
+		tbPanel.Dock = DockStyle.Fill
+		tbPanel.Margin = Padding(0)
+		tbPanel.BackColor = Color.AliceBlue if inRowPosition % 2 == 0 else Color.White
+		#tbPanel.AutoSize = True
+		#tbPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
+		textBox = TextBox()		
+		textBox.Text = "{}".format(inText)
+		textBox.Dock = DockStyle.Fill
+		textBox.TextAlign = HorizontalAlignment.Left
+		textBox.Width = self.table.Width #* (1/float(len(self.tableData)))
+		textBox.BorderStyle = BorderStyle.None #FixedSingle
+		#textBox.BorderColor = Color.AliceBlue if inRowPosition % 2 == 0 else Color.White
+		textBox.Margin = Padding(0)
+		#textBox.AutoSize = True
+		textBox.BackColor = Color.AliceBlue if- inRowPosition % 2 == 0 else Color.White
+		tbPanel.Controls.Add(textBox)
+		return tbPanel
+
+	def setupBodyButton(self, inText, inRowPosition):
+		button = Button()
+		button.Text = "{}".format(inText)
+		button.Click += self.selectItem
+		button.Dock = DockStyle.Fill
+		button.Name = "{0}".format(inRowPosition)
+		button.Margin = Padding(0)
+		button.FlatStyle = FlatStyle.Flat
+		button.FlatAppearance.BorderSize = 0
+		button.TextAlign = ContentAlignment.MiddleLeft
+		#button.Width = self.table.Width * 0.4
+		button.AutoSizeMode = AutoSizeMode.GrowAndShrink
+		button.BackColor = Color.AliceBlue if inRowPosition % 2 == 0 else Color.White
+		return button
+
+	def select(self, sender, event):
+		elIds = [x.Id for x in self.elements]
+		elementsCol = Clist[ElementId](elIds)
+		uidoc.Selection.SetElementIds(elementsCol)
+		self.Close()
+
+	def selectItem(self, sender, event):
+		print("{0}".format(sender.Text))
+		for x in self.elements:
+			if x.Id.ToString() == sender.Text:
+				elId = [x.Id]
+		elementsCol = Clist[ElementId](elId)
+		uidoc.Selection.SetElementIds(elementsCol)
+		self.Close()
+	
+	def info(self, sender, event):
+		print("{0}".format(sender.Margin))
+		sender.Margin = Padding(0)
+		print("margin was set to {0}".format(sender.Margin))
+		#for s in list(self.table.RowStyles):
+		#	s.Height = 120
+
+		#elIds = [x.Id for x in self.elements]
+	def close(self, sender, event):
+		self.Close()
+
+	# def OnControlAdded(self, sender, event):
+	# 	if event.Control != None:
+	# 		row = self.table.GetPositionFromControl(event.Control).Row
+	# 		print("Row {} to self.table was added".format(row))
+	# 		#print("Sender Row {} to self.table was added".format(dir(sender)))
+
+	def onRowClickSelect(self, sender, event):
+		elIds = [x.Id for x in self.elements]
+		elementsCol = Clist[ElementId](elIds)
+		uidoc.Selection.SetElementIds(elementsCol)
+		self.Close()
+
+			#typeParameters = typeElement.GetOrderedParameters()
+			#for parameter in typeParameters:
 
 
 
 class MainForm(Form):
-	def __init__(self, tableData, elements, inViewSelectionIdStrings):
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
-		print("script directory: {}".format(self.scriptDir))
-		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
-		icon = Icon(iconFilename)
-		self.Icon = icon	
-
+	def __init__(self, tableData, elements):
 		self.tableData = tableData
 		self.elements = elements
-		self.viewSelectionIdStrings = inViewSelectionIdStrings
 		self.inSelectedParameters = {k : True if k in selectedParams else False for k, v in uniqueParams.items()}
 		self.InitializeComponent()
 
@@ -675,9 +579,8 @@ class MainForm(Form):
 		# 	print("{0} - \n".format(el.Id.ToString()))
 		self.values = getValuesByParameterName(self.filteredElements, myParameterName, doc)
 		
-		self.elementTab = TabForm(self.tableData, self.filteredElements, myParameterName, self.viewSelectionIdStrings)
+		self.elementTab = TabForm(self.tableData, self.filteredElements, myParameterName)
 		self.elementTab.ShowDialog()
-		
 		# t = Transaction(doc, "Filter elements by parameter name and value")
 		# #transaction Start
 		# t.Start()
@@ -767,7 +670,7 @@ selectedParamsIds = {v.Id.ToString():v for k,v in selectedParams.items()}
 #run input form
 viewSelection = uidoc.Selection
 Application.EnableVisualStyles()
-myDialogWindow = MainForm(uniqueParams, allViewElements, viewSelectionIdStrings)
+myDialogWindow = MainForm(uniqueParams, allViewElements)
 
 Application.Run(myDialogWindow)
 

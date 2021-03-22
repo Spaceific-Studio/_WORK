@@ -10,6 +10,7 @@ if "IronPython" in sys.prefix:
 	sys.path.append(pytPath)
 import os
 import platform
+import time
 
 try:
 	sys.modules['__main__']
@@ -130,22 +131,25 @@ def pickobject(inStatus):
     #__window__.Topmost = True
     return picked
 
-priorityLookup = [	Autodesk.Revit.DB.BuiltInCategory.OST_Columns, \
+priorityLookup = [	[Autodesk.Revit.DB.BuiltInCategory.OST_Columns, Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns], \
 					Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming, \
 					[Autodesk.Revit.DB.FootPrintRoof, Autodesk.Revit.DB.ExtrusionRoof], \
 					Autodesk.Revit.DB.Wall, \
-					[Autodesk.Revit.DB.Floor, Autodesk.Revit.DB.SlabEdge]]
+					[Autodesk.Revit.DB.Floor, Autodesk.Revit.DB.SlabEdge], \
+					Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings]
 
 def getPriorityCategoriesNames(inPriorityLookup):
 	returnlist = []
 	for item in inPriorityLookup:
 		if not hasattr(item, "__iter__"):
-			if str(item) == "OST_Columns":
-				returnlist.append("Sloupy")
-			elif str(item) == "OST_StructuralFraming":
+			if str(item) == "OST_StructuralFraming":
 				returnlist.append("Konstrukční rámová konstrukce")
+			elif str(item) == "OST_Ceilings":
+				returnlist.append("Podhledy")
 			elif item == Autodesk.Revit.DB.Wall:
 				returnlist.append("Stěny")
+		elif Autodesk.Revit.DB.BuiltInCategory.OST_Columns in item:
+				returnlist.append("Sloupy")
 		elif Autodesk.Revit.DB.FootPrintRoof in item:
 				returnlist.append("Střechy")
 		elif Autodesk.Revit.DB.Floor in item:
@@ -186,11 +190,11 @@ class MainForm(Form):
 	def InitializeComponent(self):
 		self.Text = "Setup of join priority for categories by Spaceific-Studio"
 		self.Width = 500
-		self.Height = 200
+		self.Height = 280
 		self.StartPosition = FormStartPosition.CenterScreen
 		self.TopMost = True
 		screenSize = Screen.GetWorkingArea(self)
-		self.Height = screenSize.Height / 5
+		#self.Height = screenSize.Height / 5
 		self.Width = screenSize.Width / 3
 		self.panelHeight = self.ClientRectangle.Height * 0.75
 		self.panelWidth = self.ClientRectangle.Width / 3
@@ -223,7 +227,8 @@ class MainForm(Form):
 		self.dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect
 		#self.dgv.AutoGenerateColumns = True
 		self.dgv.BackColor = Color.Yellow
-		self.dgv.ColumnAdded += self.ColumnAdded
+		#self.dgv.ColumnAdded += self.ColumnAdded
+		self.dgv.DataBindingComplete += self.DataBindingComplete
 
 		self.dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
 		self.dgv.RowHeadersVisible = False
@@ -244,7 +249,7 @@ class MainForm(Form):
 		self.dgv.ColumnHeadersDefaultCellStyle = headerCellStyle
 		self.dgv.CellClick += self.cellClick
 		#self.dgv.SelectionChanged += self.selectionChanged
-		#self.dgv.DataBindingComplete += self.setSelectedRowsEvent		
+		#self.dgv.DataBindingComplete += self.setSelectedRowsEvent	
 
 		self.columnNames = ("Priority", "Category", "Builtin Category or Class")
 
@@ -391,7 +396,30 @@ class MainForm(Form):
 			tableDicList.append(dic)
 			tableObjectList.append(rowObj)
 		return (tableDicList, tableObjectList)
-	
+
+	def DataBindingComplete(self, sender, event):
+		self.arangeColumns()
+		print("DataBindingComplete {0} {1}".format(sender, event))	
+
+	def arangeColumns(self):
+		for col in self.dgv.Columns:
+			if col.Name == self.columnNames[0]:
+				print("column {0} was updated".format(col.Name))
+				col.SortMode = DataGridViewColumnSortMode.Programmatic
+				col.DisplayIndex = 0
+				col.ReadOnly = True
+				col.Width = 65
+			elif col.Name == self.columnNames[1]:
+				print("column {0} was updated".format(col.Name))
+				col.SortMode = DataGridViewColumnSortMode.Programmatic
+				col.DisplayIndex = 1
+				col.ReadOnly = True
+			elif col.Name == self.columnNames[2]:
+				print("column {0} was updated".format(col.Name))
+				col.SortMode = DataGridViewColumnSortMode.Programmatic
+				col.DisplayIndex = 2
+				col.ReadOnly = True
+	""" 
 	def ColumnAdded(self, sender, *args):
 		if self.dgv.Columns.Count == len(self.columnNames):
 			if self.dgv.Columns["_Num"]:
@@ -402,7 +430,7 @@ class MainForm(Form):
 			if self.dgv.Columns["Category"]:
 				print("column Category added")
 				self.dgv.Columns["Category"].DisplayIndex = 1
-				self.dgv.Columns["Category"].ReadOnly = True
+				self.dgv.Columns["Category"].ReadOnly = True """
 
 	def cellClick(self, sender, e):
 
@@ -479,7 +507,7 @@ class ProgressBarDialog(Form):
 		self.Text = 'Join All Selected Elements by Priority - Script by Spaceific-Studio'
 		self.TopMost = True
 		screenSize = Screen.GetWorkingArea(self)
-		self.Height = 150
+		self.Height = 200
 		self.Width = 800
 		self.StartPosition = FormStartPosition.CenterScreen
 		self.panelHeight = self.ClientRectangle.Height * 0.75
@@ -513,6 +541,22 @@ class ProgressBarDialog(Form):
 		self.infoLabel.Text = "Joining elements..."
 		self.infoLabel.Location = (Point(0,0))
 		self.Controls.Add(self.infoLabel)
+
+		""" self.infoLabel2 = Label()
+		self.infoLabel2.Width = self.pb.Width
+		self.infoLabel2.Height = 90
+		self.infoLabel2.TextAlign = ContentAlignment.MiddleCenter
+		self.infoLabel2.Text = "Joining elements..."
+		self.infoLabel2.Location = (Point(0,90))
+		self.Controls.Add(self.infoLabel2) """
+
+		self.cancelButton = Button()
+		self.cancelButton.Text =  "Cancel"
+		self.cancelButton.Name = "Cancel"
+		self.cancelButton.Location = (Point(self.Width/2 - self.cancelButton.Width/2, 120))
+		self.cancelButton.Click += self.close
+		self.Controls.Add(self.cancelButton)
+
 	
 	def start(self):
 		for i in range(100):
@@ -536,6 +580,34 @@ class ProgressBarDialog(Form):
 
 	def UpdateProgress(self):
 		self.pb.Value +=1
+	
+	def close(self, sender, event):
+		scriptCancelled = True
+		openedForms = list(Application.OpenForms)
+		infotext = ""
+		rpsOpenedForms = []
+		for i, oForm in enumerate(openedForms):
+			print(str(i))
+			print(oForm)
+			infotext += "; {}".format(oForm)
+			if "RevitPythonShell" in str(oForm):
+				print("Totot je oForm {0}".format(oForm))
+				rpsOutput = oForm.Show()
+				rpsOpenedForms.append(oForm)
+			else:
+				rpsOutput = None
+		#self.infoLabel2.Text = infotext
+		if len(rpsOpenedForms) > 0:
+			lastForm = rpsOpenedForms[-1]
+			lastForm.Show()
+			if len(rpsOpenedForms) > 1:
+				rpsOFormsToClose = rpsOpenedForms[:-1]
+				for oFormToClose in rpsOFormsToClose:
+					oFormToClose.Close()
+		lastForm.Show()
+		self.Close()
+		lastForm.Close()
+		
 
 class Dic2obj(object):
 	def __init__(self, dictionary):
@@ -543,30 +615,45 @@ class Dic2obj(object):
 			setattr(self, key, dictionary[key])
 
 def getElementPriority(inElement):
-	if isinstance(inElement, Autodesk.Revit.DB.FamilyInstance):
-		cat = cats[inElement.Category.Name]
-		#print("cat[el.Category.Name] {0} - class {1}".format(cat, cat.__class__))
-		if cat in priorityLookup:
-			#print("{0} is in priorityLookup {1}".format(cat, priorityLookup.index(cat)))
-			return priorityLookup.index(cat)
+	try:
+		if isinstance(inElement, Autodesk.Revit.DB.FamilyInstance):
+			cat = cats[inElement.Category.Name]
+			#print("cat[el.Category.Name] {0} - class {1}".format(cat, cat.__class__))
+			if cat in priorityLookup:
+				#print("{0} is in priorityLookup {1}".format(cat, priorityLookup.index(cat)))
+				return priorityLookup.index(cat)
+			elif cat == Autodesk.Revit.DB.BuiltInCategory.OST_Columns or cat == Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns:
+				return priorityLookup.index([Autodesk.Revit.DB.BuiltInCategory.OST_Columns, Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns])
+			else:
+				return len(priorityLookup)
 		else:
-			return len(priorityLookup)
-	else:
-		cName = inElement.__class__.__name__
-		if cName == "ExtrusionRoof" or cName == "FootPrintRoof":
-			cat = [Autodesk.Revit.DB.FootPrintRoof, Autodesk.Revit.DB.ExtrusionRoof]
-		elif cName == "Floor" or cName == "SlabEdge":
-			cat = [Autodesk.Revit.DB.Floor, Autodesk.Revit.DB.SlabEdge]
-		else:
-			#print("type(inElement {0})".format(type(inElement)))
-			cat = type(inElement)
-		if cat in priorityLookup:
-			return priorityLookup.index(cat)
-		else:
-			return len(priorityLookup)
+			cat = cats[inElement.Category.Name]
+			print("getElementPriority cat {}".format(cat))
+			cName = inElement.__class__.__name__
+			if cName == "ExtrusionRoof" or cName == "FootPrintRoof":
+				cat = [Autodesk.Revit.DB.FootPrintRoof, Autodesk.Revit.DB.ExtrusionRoof]
+			elif cName == "Floor" or cName == "SlabEdge":
+				cat = [Autodesk.Revit.DB.Floor, Autodesk.Revit.DB.SlabEdge]
+			elif cat in priorityLookup:
+				#print("cat: {0} - priorityLookup {1}".format(cat, priorityLookup.index(cat) if cat in priorityLookup else "Not in priorityLookup"))
+				try:
+					priority = priorityLookup.index(cat)
+				except:
+					priority = len(priorityLookup)
+				return priority
+			else:
+				#print("type(inElement {0})".format(type(inElement)))
+				cat = type(inElement)
+				#print("cat type(inElement): {0} - {1}".format(type(inElement), priorityLookup.index(cat) if cat in priorityLookup else "Not in priorityLookup"))
+			if cat in priorityLookup:
+				return priorityLookup.index(cat)
+			else:
+				return len(priorityLookup)
+	except:
+		return len(priorityLookup)
 
 firstSelection = [doc.GetElement(elId) for elId in __revit__.ActiveUIDocument.Selection.GetElementIds()]
-
+scriptCancelled = False
 
 print("firstSelection len {0}".format(len(firstSelection)))
 for i, el in enumerate(firstSelection):
@@ -595,6 +682,7 @@ for i, oForm in enumerate(openedForms):
 		rpsOutput = None
 print("__main__.OpenForms {}".format(list(Application.OpenForms)))
 #rpsOutput = list(Application.OpenForms)[0]
+
 
 if rpsOutput:
 	rpsOutput.Hide()
@@ -658,8 +746,9 @@ if myDialogWindow.confirmed:
 				switched = False
 		else:
 			switched = False
-		pBar.updateProgressLabel("processing {0} of {1} - {2} with {3}".format(i, len(selComb), pair[0].Id, pair[1].Id))
-		pBar.UpdateProgress()
+		if pBar:
+			pBar.updateProgressLabel("processing {0} of {1} - {2} with {3}".format(i, len(selComb), pair[0].Id, pair[1].Id))
+			pBar.UpdateProgress()
 		print("{0} - Element_0: {1}-{2} priority {3} <> Element_1 {4}-{5} priority {6} \nwas joined - {7} \njoining {8} \nfinal join {9} \n first is cutting {10} \nswitched {11}".format(i, \
 																													pair[0].Id, \
 																													pairCats[0], \
@@ -689,9 +778,30 @@ if myDialogWindow.confirmed:
 				#traceback.print_exception(*exc_info)
 				#del exc_info """
 	t.Commit()
-	pBar.Close()
+	if pBar:
+		pBar.Close()
 	print("Script succesfully finished")
+
 else:
+	pass
 	print("Script was cancelled")
-rpsOutput.Show()
-rpsOutput.TopMost = True
+
+if not scriptCancelled:
+	openedForms = list(Application.OpenForms)
+	rpsOpenedForms = []
+	for i, oForm in enumerate(openedForms):
+		if "RevitPythonShell" in str(oForm):
+			rpsOpenedForms.append(oForm)
+
+	if len(rpsOpenedForms) > 0:
+		lastForm = rpsOpenedForms[-1]
+		lastForm.Show()
+		if len(rpsOpenedForms) > 1:
+			rpsOFormsToClose = rpsOpenedForms[:-1]
+			print("Script was cancelled")
+			time.sleep(5)
+			for oFormToClose in rpsOFormsToClose:
+				oFormToClose.Close()
+
+
+
