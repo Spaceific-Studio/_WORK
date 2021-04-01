@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright(c) 2021, Daniel Gercak
-#Revit Python Shell script for multiple unjoining elements
-#resource_path: https://github.com/Spaceific-Studio/_WORK/REVIT_API/unJoinSelectedElements.py
+#Revit Python Shell script for multiple unjoining connected elements
+#resource_path: https://github.com/Spaceific-Studio/_WORK/REVIT_API/unJoinConectedElements.py
 import sys
 if "IronPython" in sys.prefix:
 	pytPath = r'C:\Program Files (x86)\IronPython 2.7\Lib'
@@ -96,6 +96,7 @@ sys.path.append(pythLibPath)
 
 uidoc = __revit__.ActiveUIDocument
 doc = __revit__.ActiveUIDocument.Document
+
 
 def pickobjects(inStatus):
     __window__.Hide()
@@ -201,6 +202,15 @@ class ProgressBarDialog(Form):
 			#System.Threading.Dispatcher.Run(UpdateProgress())
 			#self.pb.Dispatcher.Invoke(ProgressBarDelegate(self.UpdateProgress), DispatcherPriority.Background)
 			Thread.Sleep(15)
+		""" def update():
+			for i in range(100):
+				print i
+				def step():
+					self.prog.Value = i + 1
+				
+				self.Invoke(CallTarget0(step))
+				Thread.Sleep(15)
+			self.Close() """
 		#t = Thread(ThreadStart(update))
 		#t.Start()
 	def updateProgressLabel(self, inText):
@@ -209,15 +219,93 @@ class ProgressBarDialog(Form):
 	def UpdateProgress(self):
 		self.pb.Value +=1
 
+def unjoinConnected(inElement, cats):
+	if isinstance(inElement, Autodesk.Revit.DB.FamilyInstance):
+		cat = cats[inElement.Category.Name]
+		#className = el.Category.CategoryType
+		inElementCatName = cat.ToString()
+	else:
+		inElementCatName = item.__class__.__name__
+
+	joinedElementsIds = list(DB.JoinGeometryUtils.GetJoinedElements(doc, inElement))
+	joinedElements = [doc.GetElement(elId) for eiId in joinedElementsIds]
+	for el in joinedElements:
+		try:
+			if isinstance(el, Autodesk.Revit.DB.FamilyInstance):
+				cat = cats[el.Category.Name]
+				#className = el.Category.CategoryType
+				elCatName = cat.ToString()
+			else:
+				elCatName = item.__class__.__name__
+			
+			DB.JoinGeometryUtils.UnjoinGeometry(doc, inElement, el)
+			print("{0} - {1} unjoined with {2} - {3}".format(inElement.Id, inElementCatName, el.Id, elCatName))
+		except:
+			print(sys.exc_info())
+			print("{0} - {1} NOT UNJOINED WITH {2} - {3}".format(inElement.Id, inElementCatName, el.Id, elCatName))
+
 firstSelection = [doc.GetElement(elId) for elId in __revit__.ActiveUIDocument.Selection.GetElementIds()]
-#firstSelectionElements = [doc.GetElement(x) for x in firstSelection]
+
+#TransactionManager.Instance.EnsureInTransaction(doc)
+#t = DB.SubTransaction(doc)
+
+# Begin new transaction
+#t.Start()
+#t = DB.Transaction(doc, "Select element to join with")
+#t.Start()
+#secondSelection = doc.GetElement(pickobject("Select objects to join element with").ElementId)
+
+#t.Commit()
+bic = System.Enum.GetValues(DB.BuiltInCategory)
+#print(bic)
+cats = {}
+for i in bic:
+	#print(type(i))
+	try:
+		cat = DB.Category.GetCategory(doc, i)
+		#print(cat.Name if cat else i.ToString())
+		cats[cat.Name] = i
+	except:
+		cat = None
+
+for i, el in enumerate(firstSelection):
+	if isinstance(el, Autodesk.Revit.DB.FamilyInstance):
+		categoryId = el.Symbol.Family.FamilyCategoryId
+		cat = cats[el.Category.Name]
+		#className = el.Category.CategoryType
+		name = cat.ToString()
+	else:
+		name = el.__class__.__name__
+	print("{0}-{1} {2} {3}".format(i, el.Id, el.Category.Name, name))
+
+print("firstSelection len {0}".format(len(firstSelection)))
+for i, el in enumerate(firstSelection):
+	if isinstance(el, Autodesk.Revit.DB.FamilyInstance):
+		categoryId = el.Symbol.Family.FamilyCategoryId
+		cat = cats[el.Category.Name]
+		#className = el.Category.CategoryType
+		name = cat.ToString()
+	else:
+		name = el.__class__.__name__
+	print("{0}-{1} {2} {3}".format(i, el.Id, el.Category.Name, name))
+selComb = list(combinations(firstSelection, 2))
+#while next(selComb):
+#    print("selComb \n{0}".format(selComb))
+#print("selComb \n{0}".format(selComb))
+print("selComb len {0}".format(len(selComb)))
+""" 
+if hasattr(secondSelection, "__iter__"):
+	for i in secondSelection:
+		print("You have selected {0} elements".format(len(secondSelection)))
+else:
+	print("You have selected 1 element {0}".format(secondSelection.Id)) """
 
 openedForms = list(Application.OpenForms)
 for i, oForm in enumerate(openedForms):
 	print(str(i))
 	print(oForm)
 	if "RevitPythonShell" in str(oForm):
-		#print("Totot je oForm {0}".format(oForm))
+		print("Totot je oForm {0}".format(oForm))
 		rpsOutput = oForm
 	else:
 		rpsOutput = None
@@ -229,37 +317,104 @@ if rpsOutput:
 else:
 	pass
 
+""" #infoDialogWindow = InfoDialog("Unjoining...")
+#mainFormThread = threading.Thread(target=Application.Run(infoDialogWindow), args=(1,))
+#mainFormThread.start()
+pBar = ProgressBar()
+pBar.Minimum = 0
+pBar.Maximum = len(selComb)
+pBar.Value = 0
+pBar.Step = 1
+Application.Run(pBar)
+"""
+
 Application.EnableVisualStyles()
 #Application.ProgressBarDialog
-pBar = ProgressBarDialog(len(firstSelection))
+pBar = ProgressBarDialog(len(selComb))
 fThread = Thread(ThreadStart(pBar))
 pBar.Show()
+#Windows.Threading.Dispatcher.Run(pBar.start())
 
-t = DB.Transaction(doc, "Select element to join with")
+t = DB.Transaction(doc, "Unjoin selected elements")
 t.Start()
-for i, el1 in enumerate(firstSelection):
-	try:
-		jElementsCol = DB.JoinGeometryUtils.GetJoinedElements(doc,el1)
-		jElements = [doc.GetElement(x) for x in list(jElementsCol)]
-		#print("{0} - len(jElements) - {1}".format(len(jElements), el1.Id.IntegerValue))
- 	except:
-		jElementsCol = None
-		jElements = None
-		#print("No Elements") 
-		
-	if hasattr(jElements, "__iter__"):
-		for j, el2 in enumerate(jElements):
-			areJoined = DB.JoinGeometryUtils.AreElementsJoined(doc, el1, el2)
-			if areJoined:
-				try:
-					DB.JoinGeometryUtils.UnjoinGeometry(doc, el1, el2)
-					print("{0}-{1} Unjoining el1 - {2} and el2 {3} Done:".format(i, j, el1.Id.IntegerValue, el2.Id.IntegerValue))
-				except:
-					print("{0}-{1} Unjoining el1 - {2} and el2 {3} error: {2}".format(i, j, el1.Id.IntegerValue, el2.Id.IntegerValue, sys.exc_info()))
+
+fTime = 0.0
+for i, element in enumerate(firstSelection):
+	sTime = time.time()
+	unjoinConnected(element, cats)
+	eTime = time.time()
+	myTime = eTime - sTime
+	fTime += myTime
+	#pBar.PerformStep()
 	pBar.updateProgressLabel("processing {0} of {1}".format(i, len(firstSelection)))
 	pBar.UpdateProgress()
+	
+print("Final proceed time - {0:.5f}".format(fTime))
 t.Commit()
+print("Script succesfully finished")
+#mainFormThread.join()
+#infoDialogWindow.Close()
 pBar.Close()
 rpsOutput.Show()
 rpsOutput.TopMost = True
+
+""" t = DB.Transaction(doc, "Unjoin selected elements")
+t.Start()
+
+fTime = 0.0
+for i, pair in enumerate(selComb):
+	pairCats = []
+	sTime = time.time()
+	for item in pair:
+		if isinstance(item, Autodesk.Revit.DB.FamilyInstance):
+			cat = cats[item.Category.Name]
+			#className = el.Category.CategoryType
+			name = cat.ToString()
+		else:
+			name = item.__class__.__name__
+		pairCats.append(name)
+	areJoined = DB.JoinGeometryUtils.AreElementsJoined(doc, pair[0], pair[1])
+	if areJoined:
+		try:
+			DB.JoinGeometryUtils.UnjoinGeometry(doc, pair[0], pair[1])
+			unjoining = True
+		except:
+			unjoining = False
+	else:
+		unjoining = False
+	
+	finalJoin = DB.JoinGeometryUtils.AreElementsJoined(doc, pair[0], pair[1])
+	eTime = time.time()
+	myTime = eTime - sTime
+	fTime += myTime
+	#pBar.PerformStep()
+	pBar.updateProgressLabel("processing {0} of {1}".format(i, len(selComb)))
+	pBar.UpdateProgress()
+	
+	print("{0} - Element_0: {1}-{2} <> Element_1 {3}-{4} \nwas joined - {5} \nunjoining {6} \nfinal join {7} proceed time {8:.5f}s\n".format(i, \
+																												pair[0].Id, \
+																												pairCats[0], \
+																												pair[1].Id, \
+																												pairCats[1], \
+																												areJoined, \
+																												unjoining, \
+																												finalJoin, \
+																												myTime))
+	print("Final proceed time - {0:.5f}".format(fTime)) """
+
+""" 
+for i, el in enumerate(firstSelection):
+	print(el.Id)
+	areJoined = DB.JoinGeometryUtils.AreElementsJoined(doc, el, secondSelection)
+	if not areJoined:
+		try:
+			DB.JoinGeometryUtils.JoinGeometry(doc, el, secondSelection)
+			print("element {0} is joined with element {1} - areJoined > {2}".format(el.Id, secondSelection.Id, areJoined))
+		except Exception as ex:
+			import traceback
+			print("ELEMENT {0} WAS NOT JOINED WITH ELEMENT {1} - {2}".format(el.Id, secondSelection.Id, areJoined))
+			print("Traceback content >> \n {0}".format(sys.exc_info()))
+			#exc_info = sys.exc_info()
+			#traceback.print_exception(*exc_info)
+			#del exc_info """
 
