@@ -840,6 +840,7 @@ def getElementPriority(inElement):
 				return len(priorityLookup)
 	except:
 		return len(priorityLookup)
+<<<<<<< HEAD
 def getIntersectionWarnings():
 	warningDescriptions = ["Highlighted elements are joined but do not intersect.", "Zvýrazněné prvky jsou připojeny, ale neprotínají se."]
 	warnings = doc.GetWarnings()
@@ -855,6 +856,8 @@ def getIntersectionWarnings():
 		#fElementsStrIds = "{0}:{1}".format(j,fElementsStrIds)
 		#print("{0}\n{1}".format(fElementsStrIds, warning.GetDescriptionText()))
 	return returnWarnings
+=======
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 
 """ sel = __revit__.ActiveUIDocument.Selection.GetElementIds()
 groups = DB.FilteredElementCollector(doc, sel).OfCategory(DB.BuiltInCategory.OST_IOSModelGroups).ToElementIds()
@@ -862,11 +865,14 @@ uidoc.Selection.SetElementIds(groups)
 print("Groups {0} {1}".format(len(list(groups)), groups))
 input("cakam") """
 
+<<<<<<< HEAD
 cvi = DB.ConnectionValidationInfo()
 manyWarnings = cvi.ManyWarnings()
 print("ManyWarnings() {0}".format(manyWarnings))
 #input("waiting for enter press")
 
+=======
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 allElementsIds = getAllElements(doc, toId=True)
 allElementsCol = Clist[DB.Element](getAllModelElements(doc))
 print("allElementsIds length {}".format(len(allElementsIds)))
@@ -925,7 +931,10 @@ for i, el in enumerate(firstSelection):
 		name = el.__class__.__name__
 	print("{0}-{1} {2} {3}".format(i, el.Id, el.Category.Name, name))
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 #get boundingboxes of elements
 """ firstSelectionBBoxes = []
 for i,el in enumerate(firstSelection):	
@@ -989,12 +998,17 @@ if myDialogWindow.confirmed:
 	#mainFormThread.join()
 
 	alreadyJoined = []
+<<<<<<< HEAD
 	t = DB.Transaction(doc, "AutoJoin elements")
 	t.Start()
 	#options = t.GetFailureHandlingOptions()
 	#options.SetFailuresPreprocessor(RegenFailuresSwallower())
 	#t.SetFailureHandlingOptions(options)
 
+=======
+	t = DB.Transaction(doc, "Join all selected elements")
+	t.Start()
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 	print("len firstSelection before joining {0}".format(len(firstSelection)))
 	for j, el in enumerate(firstSelection):
 		neighbours = [doc.GetElement(x) for x in getNeighbours(el, multiCatFilter, multiClassFilter, exclusionFilter)]
@@ -1014,12 +1028,17 @@ if myDialogWindow.confirmed:
 				#print(("figuring out join status {0} with {1}".format(pair[0].Id, pair[1].Id)))
 				areJoined = DB.JoinGeometryUtils.AreElementsJoined(doc, pair[0], pair[1])
 				#print("elements {0} and {1} are joined {2}".format(pair[0].Id, pair[1].Id, areJoined))
+<<<<<<< HEAD
 				#t = DB.Transaction(doc, "Join {0}-{1} with {2}-{3}".format(pair[0].Id, pair[0].Category.Name, pair[1].Id, pair[1].Category.Name))
 				#t.Start()
+=======
+				
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				if not areJoined:
 					try:
 						DB.JoinGeometryUtils.JoinGeometry(doc, pair[0], pair[1])
 						joining = True
+<<<<<<< HEAD
 						#t.Commit()
 						#print("joining {0} with {1} - True".format(pair[0].Id, pair[1].Id))
 					except:
@@ -1029,6 +1048,14 @@ if myDialogWindow.confirmed:
 				else:
 					joining = False
 				print("JoinElementSwallower.hasMessage - {0}".format(JoinElementSwallower.hasMessage))
+=======
+						#print("joining {0} with {1} - True".format(pair[0].Id, pair[1].Id))
+					except:
+						#print("joining {0} with {1} - False {2}".format(pair[0].Id, pair[1].Id, sys.exc_info()))
+						joining = False
+				else:
+					joining = False
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				finalJoin = DB.JoinGeometryUtils.AreElementsJoined(doc, pair[0], pair[1])
 				#print("finalJoin {0} with {1} - {2}".format(pair[0].Id, pair[1].Id, finalJoin))
 				if finalJoin:
@@ -1037,25 +1064,36 @@ if myDialogWindow.confirmed:
 					isCuttingElement = False
 				itemOnePriority = getElementPriority(pair[0])
 				itemTwoPriority = getElementPriority(pair[1])
+<<<<<<< HEAD
 				#t = DB.Transaction(doc, "Switch join Order {0}-{1} with {2}-{3}".format(pair[0].Id, pair[0].Category.Name, pair[1].Id, pair[1].Category.Name))
 				#t.Start()
+=======
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				if not isCuttingElement and (itemOnePriority < itemTwoPriority) and finalJoin:
 					try:
 						DB.JoinGeometryUtils.SwitchJoinOrder(doc, pair[0], pair[1])
 						switched = True
 					except:
 						switched = False
+<<<<<<< HEAD
 					#t.Commit()
+=======
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				elif isCuttingElement and (itemOnePriority > itemTwoPriority) and finalJoin:
 					try:
 						DB.JoinGeometryUtils.SwitchJoinOrder(doc, pair[0], pair[1])
 						switched = True
 					except:
 						switched = False
+<<<<<<< HEAD
 					#t.Commit()
 				else:
 					switched = False
 					#t.RollBack()
+=======
+				else:
+					switched = False
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				if pBar:
 					pBar.updateProgressLabel("processing {0} of {1} - {2}-{3} with {4}-{5}".format(j, len(firstSelection), pair[0].Id, pair[0].Category.Name, pair[1].Id, pair[1].Category.Name))
 				alreadyJoined.append(checkAlreadyJoinedStr)
@@ -1083,6 +1121,7 @@ if myDialogWindow.confirmed:
 		#emptyCList = Clist[DB.ElementId](emptyList)
 		#__revit__.ActiveUIDocument.Selection.SetElementIds(emptyCList)
 
+<<<<<<< HEAD
 	if pBar:
 		pBar.Close()
 	t.Commit()
@@ -1101,6 +1140,12 @@ if myDialogWindow.confirmed:
 				print("Unable to unjoin elements in warnings list {0}-{1}: {2}".format(failingElementsIds[0].IntegerValue, failingElementsIds[1].IntegerValue, sys.exc_info()))
 	t.Commit()
 
+=======
+	t.Commit()
+	if pBar:
+		pBar.Close()
+	
+>>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 	print("Script succesfully finished")
 
 else:
