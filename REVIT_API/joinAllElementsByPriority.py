@@ -21,53 +21,53 @@ except:
 if hasMainAttr:
 	#import clr
 	if "pydroid" in sys.prefix:
-	    pass
+		pass
 	elif "Python38" in sys.prefix:
-	    pass
+		pass
 	else:
-	    from Autodesk.Revit.UI.Selection import *
-	    import Autodesk.Revit.DB as DB
-	    import Autodesk.Revit.UI as UI
-	    import Autodesk
-	    from Autodesk.Revit.DB import IFailuresPreprocessor, BuiltInFailures
-	    import System
-	    import threading
-	    from System.Collections.Generic import List as Clist
-	    from System import Type
-	    #from System.Collections.Generic import Ilist
-	    #import System.Drawing
-	    import clr
-	    clr.AddReferenceByPartialName('System.Windows.Forms')
-	    clr.AddReference("System.Drawing")
-	    clr.AddReference('System')
-	    #import System.Windows.Forms
-	    from System.Threading import ThreadStart, Thread
-	    from System.Windows.Forms import *
-	    from System.Drawing import *
-	    doc = __revit__.ActiveUIDocument.Document
-	    uidoc = __revit__.ActiveUIDocument
-	    #clr.AddReference("RevitServices")
-	    #import RevitServices
-	    #from RevitServices.Transactions import TransactionManager
-	    pass
+		from Autodesk.Revit.UI.Selection import *
+		import Autodesk.Revit.DB as DB
+		import Autodesk.Revit.UI as UI
+		import Autodesk
+		from Autodesk.Revit.DB import IFailuresPreprocessor, BuiltInFailures
+		import System
+		import threading
+		from System.Collections.Generic import List as Clist
+		from System import Type
+		#from System.Collections.Generic import Ilist
+		#import System.Drawing
+		import clr
+		clr.AddReferenceByPartialName('System.Windows.Forms')
+		clr.AddReference("System.Drawing")
+		clr.AddReference('System')
+		#import System.Windows.Forms
+		from System.Threading import ThreadStart, Thread
+		from System.Windows.Forms import *
+		from System.Drawing import *
+		doc = __revit__.ActiveUIDocument.Document
+		uidoc = __revit__.ActiveUIDocument
+		#clr.AddReference("RevitServices")
+		#import RevitServices
+		#from RevitServices.Transactions import TransactionManager
+		pass
 
 else:
 	if "pydroid" in sys.prefix:
-	    pass
+		pass
 	elif "Python38" in sys.prefix:
-	    pass
+		pass
 	else:
-	    import clr
-	    clr.AddReference('ProtoGeometry')
-	    from Autodesk.DesignScript.Geometry import *
-	    clr.AddReference("RevitAPI")
-	    import Autodesk
-	    import Autodesk.Revit.DB as DB
-	    clr.AddReference("RevitServices")
-	    import RevitServices
-	    from RevitServices.Persistence import DocumentManager
-	    from RevitServices.Transactions import TransactionManager
-	    doc = DocumentManager.Instance.CurrentDBDocument
+		import clr
+		clr.AddReference('ProtoGeometry')
+		from Autodesk.DesignScript.Geometry import *
+		clr.AddReference("RevitAPI")
+		import Autodesk
+		import Autodesk.Revit.DB as DB
+		clr.AddReference("RevitServices")
+		import RevitServices
+		from RevitServices.Persistence import DocumentManager
+		from RevitServices.Transactions import TransactionManager
+		doc = DocumentManager.Instance.CurrentDBDocument
 
 # clr.AddReference("RevitAPI")
 # import Autodesk
@@ -84,36 +84,24 @@ print("module : {0} ; hasMainAttr = {1}".format(__file__, hasMainAttr))
 print("module : {0} ; hasAutodesk = {1}".format(__file__, hasAutodesk))
 
 if sys.platform.startswith('linux'):
-    libPath = r"/storage/emulated/0/_WORK/REVIT_API/LIB"
+	libPath = r"/storage/emulated/0/_WORK/REVIT_API/LIB"
 elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
-    scriptDir = "\\".join(__file__.split("\\")[:-1])
-    scriptDisk = __file__.split(":")[0]
-    if scriptDisk == "B" or scriptDisk == "b":
-        libPath = r"B:/Podpora Revit/Rodiny/141/_STAVEBNI/_REVITPYTHONSHELL/LIB"
-    elif scriptDisk == "C" or scriptDisk == "c":
-        libPath = r"C:/_WORK/PYTHON/REVIT_API/LIB"
-    elif scriptDisk == "H" or scriptDisk == "h":
-        libPath = r"H:/_WORK/PYTHON/REVIT_API/LIB"
+	scriptDir = "\\".join(__file__.split("\\")[:-1])
+	scriptDisk = __file__.split(":")[0]
+	if scriptDisk == "B" or scriptDisk == "b":
+		libPath = r"B:/Podpora Revit/Rodiny/141/_STAVEBNI/_REVITPYTHONSHELL/LIB"
+	elif scriptDisk == "C" or scriptDisk == "c":
+		libPath = r"C:/_WORK/PYTHON/REVIT_API/LIB"
+	elif scriptDisk == "H" or scriptDisk == "h":
+		libPath = r"H:/_WORK/PYTHON/REVIT_API/LIB"
 
 if sys.platform.startswith('linux'):
-    pythLibPath = r"/storage/emulated/0/_WORK/LIB"
-elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
-    pythLibPath = r"C:/_WORK/PYTHON/LIB"
+	pythLibPath = r"/storage/emulated/0/_WORK/LIB"
+#elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
+#	pythLibPath = r"C:/_WORK/PYTHON/LIB"
 
 sys.path.append(libPath)
-sys.path.append(pythLibPath)
-
-
-
-""" Errors.catchVar(sys.platform, "sys.platform")
-Errors.catchVar(sys.prefix, "sys.prefix")
-Errors.catchVar(os.name, "os.name")
-Errors.catchVar(platform.sys, "platform.sys")
-Errors.catchVar(platform.os, "platform.os")
-Errors.catchVar(platform.platform(), "platform.platform()") """
-
-#import SpaceOrganize
-#import RevitSelection as RS
+#sys.path.append(pythLibPath)
 
 from itertools import combinations
 
@@ -122,19 +110,19 @@ doc = __revit__.ActiveUIDocument.Document
 
 
 def pickobjects(inStatus):
-    __window__.Hide()
-    picked = uidoc.Selection.PickElementsByRectangle(inStatus)
-    __window__.Show()
-    #__window__.Topmost = True
-    return picked
+	__window__.Hide()
+	picked = uidoc.Selection.PickElementsByRectangle(inStatus)
+	__window__.Show()
+	#__window__.Topmost = True
+	return picked
 
 def pickobject(inStatus):
-    from Autodesk.Revit.UI.Selection import ObjectType
-    __window__.Hide()
-    picked = uidoc.Selection.PickObject(ObjectType.Element, inStatus)
-    __window__.Show()
-    #__window__.Topmost = True
-    return picked
+	from Autodesk.Revit.UI.Selection import ObjectType
+	__window__.Hide()
+	picked = uidoc.Selection.PickObject(ObjectType.Element, inStatus)
+	__window__.Show()
+	#__window__.Topmost = True
+	return picked
 
 priorityLookup = [	[Autodesk.Revit.DB.BuiltInCategory.OST_Columns, Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns], \
 					Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming, \
@@ -210,6 +198,12 @@ def createExclusionMultiCategoryFilter():
 	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_IOSOpening)
 	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_WindowsOpeningCut)
 	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_DoorsOpeningCut)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainGrids)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullionsCut)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullions)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullionsHiddenLines)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanelsHiddenLines)
 	colOfBIC = Clist[DB.BuiltInCategory](listOfCategories)
 	multiCategoryFilter = DB.ElementMulticategoryFilter(colOfBIC)
 	return multiCategoryFilter
@@ -238,8 +232,6 @@ def getAllModelElements(doc):
 	allElementsOfModel = map(lambda x: doc.GetElement(x), allIdsOfModelElements)
 	return allElementsOfModel
 
-
-
 def isElementInBBox(inElement, elementToSurvey, allElementsCol):
 	inElementBBox = inElement.get_BoundingBox(doc.ActiveView)
 	inElementOutline = DB.Outline(inElementBBox.Min, inElementBBox.Max)
@@ -252,9 +244,27 @@ def isElementInBBox(inElement, elementToSurvey, allElementsCol):
 		print("Element {0} contains {1} inside BBox".format(inElement.Id, elementToSurvey.Id))
 	return insideElementsIds
 
+def convertFromInternal(inValue):
+	displayUnitType = uidoc.Document.GetUnits().GetFormatOptions(DB.UnitType.UT_Length).DisplayUnits
+	#print("displayUnitType {}".format(displayUnitType))
+	return DB.UnitUtils.ConvertFromInternalUnits(inValue, displayUnitType)
+
+def convertToInternal(inValue):
+	displayUnitType = uidoc.Document.GetUnits().GetFormatOptions(DB.UnitType.UT_Length).DisplayUnits
+	#print("displayUnitType {}".format(displayUnitType))
+	return DB.UnitUtils.ConvertToInternalUnits(inValue, displayUnitType)
+
 def getNeighbours(inElement, multiCatFilter, multiClassFilter, exclusionFilter):
 	inElementBBox = inElement.get_BoundingBox(doc.ActiveView)
-	inElementOutline = DB.Outline(inElementBBox.Min, inElementBBox.Max)
+	virtualBBoxOffset = 50
+	newMin = DB.XYZ(convertToInternal(convertFromInternal(inElementBBox.Min.X)-virtualBBoxOffset), \
+					convertToInternal(convertFromInternal(inElementBBox.Min.Y)-virtualBBoxOffset), \
+					convertToInternal(convertFromInternal(inElementBBox.Min.Z)-virtualBBoxOffset))
+	newMax = DB.XYZ(convertToInternal(convertFromInternal(inElementBBox.Max.X)+virtualBBoxOffset), \
+					convertToInternal(convertFromInternal(inElementBBox.Max.Y)+virtualBBoxOffset), \
+					convertToInternal(convertFromInternal(inElementBBox.Max.Z)+virtualBBoxOffset))
+	#inElementOutline = DB.Outline(inElementBBox.Min, inElementBBox.Max)
+	inElementOutline = DB.Outline(newMin, newMax)
 	bboxIntersectingFilter = DB.BoundingBoxIntersectsFilter(inElementOutline)
 	selfElementExclusionFilter = DB.ExclusionFilter(Clist[DB.ElementId]([inElement.Id]))
 	
@@ -273,24 +283,10 @@ def getNeighbours(inElement, multiCatFilter, multiClassFilter, exclusionFilter):
 										.WhereElementIsNotElementType() \
 										.ToElementIds()
 
-	""" if insideElementsMulitCatIdsCol.Count > 0:
-		excludeElementsCol1 = DB.FilteredElementCollector(doc, insideElementsMulitCatIdsCol).WherePasses(multiExclCategoryFilter).ToElementIds()
-		if excludeElementsCol1.Count > 0:
-			detailGroupsExclFilter1 = DB.ExclusionFilter(excludeElementsCol1)
-			insideElementsMulitCatIdsCol = DB.FilteredElementCollector(doc, insideElementsMulitCatIdsCol).WherePasses(detailGroupsExclFilter1).ToElementIds()
-	if insideElementsMulitClassIdsCol.Count:
-		excludeElementsCol2 = DB.FilteredElementCollector(doc, insideElementsMulitClassIdsCol).WherePasses(multiExclCategoryFilter).ToElementIds()
-		if excludeElementsCol2.Count > 0:
-			detailGroupsExclFilter2 = DB.ExclusionFilter(excludeElementsCol2)
-			insideElementsMulitClassIdsCol = DB.FilteredElementCollector(doc, insideElementsMulitClassIdsCol).WherePasses(detailGroupsExclFilter2).ToElementIds() """
-
 	insideElementsMulitCatIds = list(insideElementsMulitCatIdsCol)
 	insideElementsMulitClassIds = list(insideElementsMulitClassIdsCol)
 
 	return insideElementsMulitCatIds + insideElementsMulitClassIds
-
-
-
 
 def getPriorityCategoriesNames(inPriorityLookup):
 	returnlist = []
@@ -486,47 +482,9 @@ class MainForm(Form):
 				for j, colName in enumerate(colNames):
 					self.dgv.Columns[j].Name = self.columnNames[j]
 				for i,dic in enumerate(inDicList):
-					# elId = v.Id.ToString()
-					# elCategory = "{}".format(v.Category.Name)
-					# parameterValue = "{}".format(self.values[i])
-					# elName = "{}".format(v.Name if hasattr(v, "Name") else v.FamilyName)
-					# rowObj = Dic2obj({self.columnNames[0] : elId, \
-					# 								self.columnNames[1] : elCategory, \
-					# 								self.columnNames[2] : elName, \
-					# 								self.columnNames[3] : parameterValue})
-					#row = [elId, elCategory, elName, parameterValue]
-					#rowCol = Clist[str](row)
-					#cRows = Clist[DataGridViewRow]
-					#dgvRow = DataGridViewRow()
-					#cRows.Add(DataGridViewRow())
-					
-					#rowValues = dic.values()
 					rowValues = (dic[self.columnNames[0]], dic[self.columnNames[1]])
-					#cRows.Item[cRows.Count - 1].CreateCells(self.dgv,Clist[dict](dic))
-
 					self.dgv.Rows.Add(*rowValues)
-					
-				# self.dgv.NotifyCurrentCellDirty(True)
-				# self.dgv.EndEdit()
-				# self.dgv.NotifyCurrentCellDirty(False)
-				# self.dgv.CommitEdit(DataGridViewDataErrorContexts.Commit)
-				""" self.dgv.NotifyCurrentCellDirty(True)
-				if self.dgv.IsCurrentCellDirty or self.dgv.IsCurrentRowDirty:
-					print("self.dgv.DataSource {0} self.dgv.DataMember {1}".format(self.dgv.DataSource, self.dgv.DataMember))
-					#self.dgv.CurrentRow.DataGridView.EndEdit()
-					self.dgv.EndEdit()
-					cm = self.dgv.BindingContext[self.dgv.DataSource, self.dgv.DataMember]
-					cm.EndCurrentEdit()
-				print("self.dgv.IsCurrentCellDirty NOT") """
-				
 				rowToDelete = self.dgv.Rows.GetLastRow(DataGridViewElementStates.None)
-				#print("self.dgv.Rows.GetLastRow().RowIndex - {}".format(self.dgv.Rows.GetLastRow(DataGridViewElementStates.None)))
-				# if rowToDelete > -1:
-				# 	self.dgv.Rows.RemoveAt(rowToDelete)
-				
-					#self.dgv.Rows.AddRange(cRows.ToArray())
-				#self.columnNames = ("Element Id", "Category", "Element Name", self.parameterName)
-				#self.setSelectedRows()
 			else:
 				raise IndexError("inDicList is empty list")
 		else:
@@ -573,18 +531,6 @@ class MainForm(Form):
 				col.SortMode = DataGridViewColumnSortMode.Programmatic
 				col.DisplayIndex = 2
 				col.ReadOnly = True
-	""" 
-	def ColumnAdded(self, sender, *args):
-		if self.dgv.Columns.Count == len(self.columnNames):
-			if self.dgv.Columns["_Num"]:
-				print("column Priority added")
-				self.dgv.Columns["Priority"].DisplayIndex = 0
-				self.dgv.Columns["Priority"].ReadOnly = True
-				self.dgv.Columns["Priority"].Width = 65
-			if self.dgv.Columns["Category"]:
-				print("column Category added")
-				self.dgv.Columns["Category"].DisplayIndex = 1
-				self.dgv.Columns["Category"].ReadOnly = True """
 
 	def cellClick(self, sender, e):
 
@@ -639,17 +585,10 @@ class MainForm(Form):
 		self.infoLabel.Text = str(inText)
 
 	def close(self, sender, event):
-		#pass
 		priorityLookup = self.priorityLookup
-		#print("self.OpenForms {}".format(list(Application.OpenForms)))
-		#self.rpsOutput = list(Application.OpenForms)[0]
-		#currentForm = list(Application.OpenForms)[-1]
-		#print("currentForm.__class__.__name__ {}".format(currentForm.__class__.__name__))
-		#self.rpsOutput.Hide()
 		self.confirmed = True
 		self.Close()
-		#self.rpsOutput.TopMost = True
-		#Application.Exit()
+
 
 class ProgressBarDialog(Form):
 	def __init__(self, inMax):
@@ -712,24 +651,6 @@ class ProgressBarDialog(Form):
 		self.cancelButton.Click += self.close
 		self.Controls.Add(self.cancelButton)
 
-	
-	def start(self):
-		for i in range(100):
-			self.UpdateProgress()
-			#System.Threading.Dispatcher.Run(UpdateProgress())
-			#self.pb.Dispatcher.Invoke(ProgressBarDelegate(self.UpdateProgress), DispatcherPriority.Background)
-			Thread.Sleep(15)
-		""" def update():
-			for i in range(100):
-				print i
-				def step():
-					self.prog.Value = i + 1
-				
-				self.Invoke(CallTarget0(step))
-				Thread.Sleep(15)
-			self.Close() """
-		#t = Thread(ThreadStart(update))
-		#t.Start()
 	def updateProgressLabel(self, inText):
 		self.progressLabel.Text = str(inText)
 
@@ -763,40 +684,61 @@ class ProgressBarDialog(Form):
 		self.Close()
 		lastForm.Close()
 		
-
-class JoinElementSwallower(IFailuresPreprocessor):
-    hasMessage = False
-    def PreprocessFailures(self, failuresAccessor):
-        fail_list = List[FailureMessageAccessor](failuresAccessor.GetFailureMessages())
-        #fail_acc_list = failuresAccessor.GetFailureMessages().GetEnumerator()
-        JoinElementSwallower.updateMessage(True)
-        for failure in fail_list:
-            failure_id = failure.GetFailureDefinitionId()
-            failure_severity = failure.GetSeverity()
-            failure_type = DB.BuiltInFailures.JoinElementsFailures.JoiningDisjoint
-            #print("{0} WITH ID: {1} OF TYPE: JoiningDisjoint occured!".format(failure_severity, failure_id.Guid))
-            #failure_type = DB.BuiltInFailures.JoinElementsFailures.JoiningDisjointWarn
-            if failure_id == failure_type:
-                print("{0} WITH ID: {1} OF TYPE: JoiningDisjoint occured!".format(failure_severity, failure_id.Guid))
-            failuresAccessor.DeleteWarning(failure)
-        #failuresAccessor.DeleteAllWarnings()
-        return DB.FailureProcessingResult.Continue
-    @classmethod
-    def updateMessage(cls, inStatus):
-        cls.hasMessage = inStatus
-
-class RegenFailuresSwallower(IFailuresPreprocessor):
-    def PreprocessFailures(self, failuresAccessor):
-        fail_list = List[FailureMessageAccessor]()
-        fail_acc_list = failuresAccessor.GetFailureMessages().GetEnumerator()
-        for failure in fail_acc_list:
-            failure_id = failure.GetFailureDefinitionId()
-            failure_severity = failure.GetSeverity()
-            failure_type = DB.BuiltInFailures.RegenFailures.GeomStepFailed
-            if failure_id == failure_type:
-                print("{0} WITH ID: {1} OF TYPE: GeomStepFailed occured!".format(failure_severity, failure_id.Guid))
-                failuresAccessor.DeleteWarning(failure)
-        return DB.FailureProcessingResult.Continue
+class WarningSwallower(IFailuresPreprocessor):
+	def PreprocessFailures(self, failuresAccessor):
+		#fail_list = CList[FailureMessageAccessor]()
+		fail_acc_list = failuresAccessor.GetFailureMessages().GetEnumerator()
+		print("WarningSwallower IS ACTIVE {}".format(failuresAccessor.IsActive()))
+		for i, failure in enumerate(fail_acc_list):
+			failure_id = failure.GetFailureDefinitionId()
+			#failure_AdditionalElementIds = list(failure.GetAdditionalElementIds())
+			#failure_ElementIds = list(failure.GetFailingElementIds())
+			#failure_Type = failure.GetCurrentResolutionType()
+			#failure_descriptionText = failure.GetDescriptionText()
+			failure_has_resolutions = failure.HasResolutions()
+			failure_elements_Ids = list(failure.GetFailingElementIds())
+			#failure_default_resolution_caption = failure.GetDefaultResolutionCaption()
+			#failure_has_resolutions = failure.HasResolutions()
+			#failure_severity = failure.GetSeverity()
+			joiningDisjoint_failure_type = DB.BuiltInFailures.JoinElementsFailures.JoiningDisjointWarn
+			if failure_id == joiningDisjoint_failure_type:
+				#print("{0} WITH ID: {1} DESCRIPTION: {2}: ID {3} - HAS RESOLUTION: {4}\n DEFAULT RESOLUTION CAPTION {5}".format( \
+				#                                    failure_severity, \
+				#                                    failure_id.Guid, \
+				#                                    failure_descriptionText, \
+				#                                    failure_id.ToString(), \
+				#                                    failure_has_resolutions, \
+				#                                    failure_default_resolution_caption))
+				if failure_has_resolutions:                    
+					#failuresAccessor.DeleteWarning(failure)
+					failure.SetCurrentResolutionType(DB.FailureResolutionType.DetachElements)
+					#print("FAILURE RESOLUTION TO DetachElements WAS SET")
+					failuresAccessor.ResolveFailure(failure)
+					print("{0} - FAILURE joiningDisjoint WAS RESOLVED - IDs {1}".format(i,[x.IntegerValue for x in failure_elements_Ids]))
+					failuresAccessor.DeleteWarning(failure)
+					print("  FAILURE WARNING WAS DELETED")
+				else:
+					failuresAccessor.DeleteWarning(failure)
+			elif failure_id == BuiltInFailures.ColumnInsideWallFailures.ColumnInsideWall:
+				if failure_has_resolutions:
+					failure.SetCurrentResolutionType(DB.FailureResolutionType.DetachElements)
+					failuresAccessor.ResolveFailure(failure)
+					print("{0} - FAILURE ColumnInsideWall WAS RESOLVED - IDs {1}".format(i,[x.IntegerValue for x in failure_elements_Ids]))
+					failuresAccessor.DeleteWarning(failure)
+					print("  FAILURE WARNING WAS DELETED")
+				else:
+					failuresAccessor.DeleteWarning(failure)
+			elif failure_id == BuiltInFailures.RegenFailures.GeomStepFailedError:
+				print("{0} - FAILURE RegenFailures WAS RESOLVED - IDs {1}".format(i,[x.IntegerValue for x in failure_elements_Ids]))
+				if failure_has_resolutions:
+					#failure.SetCurrentResolutionType(DB.FailureResolutionType.DetachElements)
+					#failuresAccessor.ResolveFailure(failure)
+					print("  HAS RESOLUTION")
+					failuresAccessor.DeleteWarning(failure)
+					print("  FAILURE WARNING WAS DELETED")
+				else:
+					failuresAccessor.DeleteWarning(failure)
+		return DB.FailureProcessingResult.Continue
 
 class Dic2obj(object):
 	def __init__(self, dictionary):
@@ -840,7 +782,7 @@ def getElementPriority(inElement):
 				return len(priorityLookup)
 	except:
 		return len(priorityLookup)
-<<<<<<< HEAD
+
 def getIntersectionWarnings():
 	warningDescriptions = ["Highlighted elements are joined but do not intersect.", "Zvýrazněné prvky jsou připojeny, ale neprotínají se."]
 	warnings = doc.GetWarnings()
@@ -849,30 +791,13 @@ def getIntersectionWarnings():
 		descText = warning.GetDescriptionText()
 		if descText in warningDescriptions:
 			returnWarnings.append(warning)
-		#fElementsStrIds = ""
-		#failingElements = warning.GetFailingElements()
-		#for i, fElid in enumerate(failingElements):
-			#fElementsStrIds += "{0}-{1}, ".format(i,fElid.IntegerValue)
-		#fElementsStrIds = "{0}:{1}".format(j,fElementsStrIds)
-		#print("{0}\n{1}".format(fElementsStrIds, warning.GetDescriptionText()))
 	return returnWarnings
-=======
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 
-""" sel = __revit__.ActiveUIDocument.Selection.GetElementIds()
-groups = DB.FilteredElementCollector(doc, sel).OfCategory(DB.BuiltInCategory.OST_IOSModelGroups).ToElementIds()
-uidoc.Selection.SetElementIds(groups)
-print("Groups {0} {1}".format(len(list(groups)), groups))
-input("cakam") """
-
-<<<<<<< HEAD
 cvi = DB.ConnectionValidationInfo()
 manyWarnings = cvi.ManyWarnings()
 print("ManyWarnings() {0}".format(manyWarnings))
 #input("waiting for enter press")
 
-=======
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 allElementsIds = getAllElements(doc, toId=True)
 allElementsCol = Clist[DB.Element](getAllModelElements(doc))
 print("allElementsIds length {}".format(len(allElementsIds)))
@@ -881,8 +806,17 @@ print("allElementsIds length {}".format(len(allElementsIds)))
 multiCatFilter = createMultiCategoryFilter()
 multiClassFilter = createMultiClassFilter()
 multiExclCategoryFilter = createExclusionMultiCategoryFilter()
-allExcludedIds = DB.FilteredElementCollector(doc).WherePasses(multiExclCategoryFilter).ToElementIds()
-exclusionFilter = DB.ExclusionFilter(allExcludedIds)
+allExcludedIds = list(DB.FilteredElementCollector(doc).WherePasses(multiExclCategoryFilter).ToElementIds())
+allExcludedWallsIds = list(DB.FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.Wall))
+wallIdsToExclude = []
+for el in allExcludedWallsIds:
+	#print("allExcludedWalls {}".format(dir(el)))
+	if hasattr(el, "CurtainGrid"):
+		if el.CurtainGrid:
+			wallIdsToExclude.append(el.Id)
+allExcludedIds += wallIdsToExclude
+
+exclusionFilter = DB.ExclusionFilter(Clist[DB.ElementId](allExcludedIds))
 
 
 print("allExcludedIds length {}".format(len(allExcludedIds)))
@@ -901,14 +835,6 @@ firstSelectionMultiClassIdsCol = DB.FilteredElementCollector(doc, __revit__.Acti
 									.ToElementIds()
 firstSelectionMultiCat = [doc.GetElement(elId) for elId in firstSelectionMultiCatIdsCol]
 firstSelectionMultiClass = [doc.GetElement(elId) for elId in firstSelectionMultiClassIdsCol]
-""" 
-selNeighbours = getNeighbours(firstSelectionMultiClass[0], allElementsCol, multiCatFilter, multiClassFilter, exclusionFilter)
-selNeighboursCol = Clist[DB.ElementId](selNeighbours)
-t = DB.Transaction(doc, "Isolate neighbours")
-t.Start()
-uidoc.ActiveView.IsolateElementsTemporary(selNeighboursCol)
-t.Commit() """
-#input("Waiting for keypress...")
 
 firstSelection = firstSelectionMultiCat + firstSelectionMultiClass
 
@@ -924,41 +850,14 @@ scriptCancelled = False
 for i, el in enumerate(firstSelection):
 	if isinstance(el, Autodesk.Revit.DB.FamilyInstance):
 		categoryId = el.Symbol.Family.FamilyCategoryId
+		familyName = el.Symbol.Family.FamilyCategory.Name
 		cat = cats[el.Category.Name]
 		#className = el.Category.CategoryType
 		name = cat.ToString()
 	else:
 		name = el.__class__.__name__
-	print("{0}-{1} {2} {3}".format(i, el.Id, el.Category.Name, name))
-
-<<<<<<< HEAD
-
-=======
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
-#get boundingboxes of elements
-""" firstSelectionBBoxes = []
-for i,el in enumerate(firstSelection):	
-	firstSelectionBBoxes.append(el.get_BoundingBox(doc.ActiveView))
-	print("{0} - {1}".format(i, firstSelectionBBoxes[i])) """
-
-
-
-""" print("len allElementsCol {0}".format(len(allElementsCol)))
-for i, el in enumerate(allElementsCol):
-	print("{0} - {1} - {2}".format(i, el, el.Category.Name)) """
-
-#elementToSurvey = firstSelection[1]
-#inBBoxElements = isElementInBBox(firstSelection[0], elementToSurvey, allElementsCol)
-#print("inBBoxElements len - {0} - {1}".format(len(inBBoxElements), inBBoxElements))
-#uidoc.Selection.SetElementIds(getNeighbours(firstSelection[0], allElementsCol))
-
-
-
-#selComb = list(combinations(firstSelection, 2))
-#while next(selComb):
-#    print("selComb \n{0}".format(selComb))
-#print("selComb \n{0}".format(selComb))
-#print("selComb len {0}".format(len(selComb)))
+		familyName = None
+	print("{0}-{1} {2} {3} familyName {4}".format(i, el.Id, el.Category.Name, name, familyName))
 
 openedForms = list(Application.OpenForms)
 for i, oForm in enumerate(openedForms):
@@ -982,33 +881,20 @@ myDialogWindow = MainForm(priorityLookup)
 myDialogWindow.updateInfoLabel("Number of elements to process - {0}".format(len(firstSelection)))
 Application.Run(myDialogWindow)
 
-
-
 if myDialogWindow.confirmed:
 	pBar = ProgressBarDialog(len(firstSelection))
 	
 	fThread = Thread(ThreadStart(pBar))
 	pBar.Show()
 	#rpsOutput.Show()
-	#myDialogWindow = MainForm(priorityLookup)
-	#Application.Run(myDialogWindow)
-	#mainFormThread = threading.Thread(target=Application.Run(myDialogWindow), args=(1,))
-	#mainFormThread.start()
-
-	#mainFormThread.join()
 
 	alreadyJoined = []
-<<<<<<< HEAD
 	t = DB.Transaction(doc, "AutoJoin elements")
 	t.Start()
-	#options = t.GetFailureHandlingOptions()
-	#options.SetFailuresPreprocessor(RegenFailuresSwallower())
-	#t.SetFailureHandlingOptions(options)
+	options = t.GetFailureHandlingOptions()
+	options.SetFailuresPreprocessor(WarningSwallower())
+	t.SetFailureHandlingOptions(options)
 
-=======
-	t = DB.Transaction(doc, "Join all selected elements")
-	t.Start()
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 	print("len firstSelection before joining {0}".format(len(firstSelection)))
 	for j, el in enumerate(firstSelection):
 		neighbours = [doc.GetElement(x) for x in getNeighbours(el, multiCatFilter, multiClassFilter, exclusionFilter)]
@@ -1028,17 +914,12 @@ if myDialogWindow.confirmed:
 				#print(("figuring out join status {0} with {1}".format(pair[0].Id, pair[1].Id)))
 				areJoined = DB.JoinGeometryUtils.AreElementsJoined(doc, pair[0], pair[1])
 				#print("elements {0} and {1} are joined {2}".format(pair[0].Id, pair[1].Id, areJoined))
-<<<<<<< HEAD
 				#t = DB.Transaction(doc, "Join {0}-{1} with {2}-{3}".format(pair[0].Id, pair[0].Category.Name, pair[1].Id, pair[1].Category.Name))
 				#t.Start()
-=======
-				
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				if not areJoined:
 					try:
 						DB.JoinGeometryUtils.JoinGeometry(doc, pair[0], pair[1])
 						joining = True
-<<<<<<< HEAD
 						#t.Commit()
 						#print("joining {0} with {1} - True".format(pair[0].Id, pair[1].Id))
 					except:
@@ -1047,15 +928,7 @@ if myDialogWindow.confirmed:
 						joining = False
 				else:
 					joining = False
-				print("JoinElementSwallower.hasMessage - {0}".format(JoinElementSwallower.hasMessage))
-=======
-						#print("joining {0} with {1} - True".format(pair[0].Id, pair[1].Id))
-					except:
-						#print("joining {0} with {1} - False {2}".format(pair[0].Id, pair[1].Id, sys.exc_info()))
-						joining = False
-				else:
-					joining = False
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
+				#print("JoinElementSwallower.hasMessage - {0}".format(JoinElementSwallower.hasMessage))
 				finalJoin = DB.JoinGeometryUtils.AreElementsJoined(doc, pair[0], pair[1])
 				#print("finalJoin {0} with {1} - {2}".format(pair[0].Id, pair[1].Id, finalJoin))
 				if finalJoin:
@@ -1064,36 +937,25 @@ if myDialogWindow.confirmed:
 					isCuttingElement = False
 				itemOnePriority = getElementPriority(pair[0])
 				itemTwoPriority = getElementPriority(pair[1])
-<<<<<<< HEAD
 				#t = DB.Transaction(doc, "Switch join Order {0}-{1} with {2}-{3}".format(pair[0].Id, pair[0].Category.Name, pair[1].Id, pair[1].Category.Name))
 				#t.Start()
-=======
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				if not isCuttingElement and (itemOnePriority < itemTwoPriority) and finalJoin:
 					try:
 						DB.JoinGeometryUtils.SwitchJoinOrder(doc, pair[0], pair[1])
 						switched = True
 					except:
 						switched = False
-<<<<<<< HEAD
 					#t.Commit()
-=======
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				elif isCuttingElement and (itemOnePriority > itemTwoPriority) and finalJoin:
 					try:
 						DB.JoinGeometryUtils.SwitchJoinOrder(doc, pair[0], pair[1])
 						switched = True
 					except:
 						switched = False
-<<<<<<< HEAD
 					#t.Commit()
 				else:
 					switched = False
 					#t.RollBack()
-=======
-				else:
-					switched = False
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 				if pBar:
 					pBar.updateProgressLabel("processing {0} of {1} - {2}-{3} with {4}-{5}".format(j, len(firstSelection), pair[0].Id, pair[0].Category.Name, pair[1].Id, pair[1].Category.Name))
 				alreadyJoined.append(checkAlreadyJoinedStr)
@@ -1121,7 +983,6 @@ if myDialogWindow.confirmed:
 		#emptyCList = Clist[DB.ElementId](emptyList)
 		#__revit__.ActiveUIDocument.Selection.SetElementIds(emptyCList)
 
-<<<<<<< HEAD
 	if pBar:
 		pBar.Close()
 	t.Commit()
@@ -1140,12 +1001,6 @@ if myDialogWindow.confirmed:
 				print("Unable to unjoin elements in warnings list {0}-{1}: {2}".format(failingElementsIds[0].IntegerValue, failingElementsIds[1].IntegerValue, sys.exc_info()))
 	t.Commit()
 
-=======
-	t.Commit()
-	if pBar:
-		pBar.Close()
-	
->>>>>>> ea92e0406d9dcfaeedcff3e16954bdf0707115a5
 	print("Script succesfully finished")
 
 else:

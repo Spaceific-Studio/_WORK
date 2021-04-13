@@ -1,9 +1,9 @@
 import clr
 clr.AddReference("RevitAPI")
 import Autodesk
-from Autodesk.Revit.DB import *
+import Autodesk.Revit.DB as DB
 #from Autodesk.Revit.DB import Transaction, IFailuresPreprocessor, BuiltInFailures, UV
-from System.Collections.Generic import List
+from System.Collections.Generic import List as CList
 
 doc = __revit__.ActiveUIDocument.Document
 active_view = doc.ActiveView
@@ -11,8 +11,10 @@ active_lvl = active_view.GenLevel
 
 selIds = uidoc.Selection.GetElementIds()
 element = doc.GetElement(selIds[0])
-myParams = element.GetOrderedParameters()
-paramToChange = element.Parameter[BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM]
+print("Selected element {0} - {1} - dir(element) {2}".format(element.Id, element.Category.Name, dir(element)))
+#myParams = element.GetOrderedParameters()
+paramToChange = element.Parameter[DB.BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM]
+print("paramToChange {0}".format(paramToChange.Definition.Name))
 
 #origin = element.GetTransform().Origin
 #p1 = origin
@@ -23,7 +25,7 @@ paramToChange = element.Parameter[BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM]
 
 class RoomWarningSwallower(IFailuresPreprocessor):
     def PreprocessFailures(self, failuresAccessor):
-        fail_list = List[FailureMessageAccessor]()
+        fail_list = CList[FailureMessageAccessor]()
         fail_acc_list = failuresAccessor.GetFailureMessages().GetEnumerator()
         print("isActive {}".format(failuresAccessor.IsActive()))
         for failure in fail_acc_list:
@@ -36,18 +38,45 @@ class RoomWarningSwallower(IFailuresPreprocessor):
             failure_default_resolution_caption = failure.GetDefaultResolutionCaption()
             failure_has_resolutions = failure.HasResolutions()
             failure_severity = failure.GetSeverity()
-            failure_type = BuiltInFailures.RoomFailures.RoomNotEnclosed
-            #if failure_id == failure_type:
-            #print("{0} with id: {1} of type: {2} removed! - {3}-{4}".format(failure_severity, failure_id.Guid, failure_id, failure_ElementIds, failure_AdditionalElementIds))
-            print("{0} with id: {1} description: {2}: id {3} - has resolutions: {4}\n default resolution caption {5}".format( \
+            roomNotEnclosed_failure_type = DB.BuiltInFailures.RoomFailures.RoomNotEnclosed
+            joiningDisjoint_failure_type = DB.BuiltInFailures.JoinElementsFailures.JoiningDisjointWarn
+            if failure_id == roomNotEnclosed_failure_type:
+                #print("{0} with id: {1} of type: {2} removed! - {3}-{4}".format(failure_severity, failure_id.Guid, failure_id, failure_ElementIds, failure_AdditionalElementIds))
+                print("{0} with id: {1} description: {2}: roomNotEnclosed_failure_type: {3} failure_id {4} id.ToSting {5} - has resolutions: {6}\n default resolution caption {7}".format( \
+                                                    failure_severity, \
+                                                    failure_id.Guid, \
+                                                    failure_descriptionText, \
+                                                    roomNotEnclosed_failure_type, \
+                                                    failure_id, \
+                                                    failure_id.ToString(), \
+                                                    failure_has_resolutions, \
+                                                    failure_default_resolution_caption))
+                failure.SetCurrentResolutionType(DB.FailureResolutionType.DeleteElements)
+                print("failure resolution to DeleteElements was set")
+                failuresAccessor.ResolveFailure(failure)
+                print("failure roomNotEnclosed was resolved")
+                failuresAccessor.DeleteWarning(failure)
+                print("failure warning was deleted")
+            elif failure_id == joiningDisjoint_failure_type:
+                print("{0} with id: {1} description: {2}: id {3} - has resolutions: {4}\n default resolution caption {5}".format( \
                                                     failure_severity, \
                                                     failure_id.Guid, \
                                                     failure_descriptionText, \
                                                     failure_id.ToString(), \
                                                     failure_has_resolutions, \
                                                     failure_default_resolution_caption))
-            failuresAccessor.DeleteWarning(failure)
-        return FailureProcessingResult.Continue
+                if failure_has_resolutions:
+                    
+                    #failuresAccessor.DeleteWarning(failure)
+                    failure.SetCurrentResolutionType(DB.FailureResolutionType.DetachElements)
+                    print("failure resolution to DetachElements was set")
+                    failuresAccessor.ResolveFailure(failure)
+                    print("failure joiningDisjoint was resolved")
+                    failuresAccessor.DeleteWarning(failure)
+                    print("failure warning was deleted")
+                else:
+                    failuresAccessor.DeleteWarning(failure)
+        return DB.FailureProcessingResult.Continue
 
 
 # "Start" the transaction

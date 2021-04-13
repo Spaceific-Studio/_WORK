@@ -168,6 +168,12 @@ def createExclusionMultiCategoryFilter():
 	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_IOSOpening)
 	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_WindowsOpeningCut)
 	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_DoorsOpeningCut)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainGrids)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullionsCut)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullions)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallMullionsHiddenLines)
+	listOfCategories.append(Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanelsHiddenLines)
 	colOfBIC = Clist[DB.BuiltInCategory](listOfCategories)
 	multiCategoryFilter = DB.ElementMulticategoryFilter(colOfBIC)
 	return multiCategoryFilter
@@ -196,9 +202,64 @@ def getAllModelElements(doc):
 	allElementsOfModel = map(lambda x: doc.GetElement(x), allIdsOfModelElements)
 	return allElementsOfModel
 
+def convertFromInternal(inValue):
+	displayUnitType = uidoc.Document.GetUnits().GetFormatOptions(DB.UnitType.UT_Length).DisplayUnits
+	#print("displayUnitType {}".format(displayUnitType))
+	return DB.UnitUtils.ConvertFromInternalUnits(inValue, displayUnitType)
+
+def convertToInternal(inValue):
+	displayUnitType = uidoc.Document.GetUnits().GetFormatOptions(DB.UnitType.UT_Length).DisplayUnits
+	#print("displayUnitType {}".format(displayUnitType))
+	return DB.UnitUtils.ConvertToInternalUnits(inValue, displayUnitType)
+
 def getNeighbours(inElement, multiCatFilter, multiClassFilter, exclusionFilter):
 	inElementBBox = inElement.get_BoundingBox(doc.ActiveView)
-	inElementOutline = DB.Outline(inElementBBox.Min, inElementBBox.Max)
+	virtualBBoxOffset = 50
+	newMin = DB.XYZ(convertToInternal(convertFromInternal(inElementBBox.Min.X)-virtualBBoxOffset), \
+					convertToInternal(convertFromInternal(inElementBBox.Min.Y)-virtualBBoxOffset), \
+					convertToInternal(convertFromInternal(inElementBBox.Min.Z)-virtualBBoxOffset))
+	newMax = DB.XYZ(convertToInternal(convertFromInternal(inElementBBox.Max.X)+virtualBBoxOffset), \
+					convertToInternal(convertFromInternal(inElementBBox.Max.Y)+virtualBBoxOffset), \
+					convertToInternal(convertFromInternal(inElementBBox.Max.Z)+virtualBBoxOffset))
+	print("inElementBBox.Min.X = {0}\n \
+			inElementBBox.Min.Y = {1}\n \
+			inElementBBox.Min.Z = {2}\n \
+			inElementBBox.Min.BasisX = {3}\n \
+			inElementBBox.Min.BasisY = {4}\n \
+			inElementBBox.Min.BasisZ = {5}\n \
+			inElementBBox.Max.X = {6}\n \
+			inElementBBox.Max.Y = {7}\n \
+			inElementBBox.Max.Z = {8}\n \
+			inElementBBox.Max.BasisX = {9}\n \
+			inElementBBox.Max.BasisY = {10}\n \
+			inElementBBox.Max.BasisZ = {11}\n \
+			newMin.X = {12}\n \
+			newMin.Y = {13}\n \
+			newMin.Z = {14}\n \
+			newMax.X = {15}\n \
+			newMax.Y = {16}\n \
+			newMax.Z = {17}\n \
+				".format(\
+				convertFromInternal(inElementBBox.Min.X), \
+				convertFromInternal(inElementBBox.Min.Y), \
+				convertFromInternal(inElementBBox.Min.Z), \
+				inElementBBox.Min.BasisX, \
+				inElementBBox.Min.BasisY, \
+				inElementBBox.Min.BasisZ, \
+				convertFromInternal(inElementBBox.Max.X), \
+				convertFromInternal(inElementBBox.Max.Y), \
+				convertFromInternal(inElementBBox.Max.Z), \
+				inElementBBox.Max.BasisX, \
+				inElementBBox.Max.BasisY, \
+				inElementBBox.Max.BasisZ, \
+				convertFromInternal(newMin.X), \
+				convertFromInternal(newMin.Y), \
+				convertFromInternal(newMin.Z), \
+				convertFromInternal(newMax.X), \
+				convertFromInternal(newMax.Y), \
+				convertFromInternal(newMax.Z)))
+	#inElementOutline = DB.Outline(inElementBBox.Min, inElementBBox.Max)
+	inElementOutline = DB.Outline(newMin, newMax)
 	bboxIntersectingFilter = DB.BoundingBoxIntersectsFilter(inElementOutline)
 	selfElementExclusionFilter = DB.ExclusionFilter(Clist[DB.ElementId]([inElement.Id]))
 	
@@ -239,9 +300,18 @@ allElementsCol = Clist[DB.Element](getAllModelElements(doc))
 multiCatFilter = createMultiCategoryFilter()
 multiClassFilter = createMultiClassFilter()
 multiExclCategoryFilter = createExclusionMultiCategoryFilter()
-allExcludedIds = DB.FilteredElementCollector(doc).WherePasses(multiExclCategoryFilter).ToElementIds()
-exclusionFilter = DB.ExclusionFilter(allExcludedIds)
+allExcludedIds = list(DB.FilteredElementCollector(doc).WherePasses(multiExclCategoryFilter).ToElementIds())
+#filter out all curtain walls
+allExcludedWallsIds = list(DB.FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.Wall))
+wallIdsToExclude = []
+for el in allExcludedWallsIds:
+	#print("allExcludedWalls {}".format(dir(el)))
+	if hasattr(el, "CurtainGrid"):
+		if el.CurtainGrid:
+			wallIdsToExclude.append(el.Id)
+allExcludedIds += wallIdsToExclude
 
+exclusionFilter = DB.ExclusionFilter(Clist[DB.ElementId](allExcludedIds))
 
 print("allExcludedIds length {}".format(len(allExcludedIds)))
 #uidoc.Selection.SetElementIds(allExcludedIds)
