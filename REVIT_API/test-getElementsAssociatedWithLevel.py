@@ -97,7 +97,7 @@ elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
 sys.path.append(libPath)
 sys.path.append(pythLibPath)
 
-from RevitSelection import getBuitInParameterInstance
+from RevitSelection import getBuiltInParameterInstance
 
 
 class InfoDialog(Form):
@@ -184,11 +184,11 @@ if len(selIds) > 0:
 	selectedElement = doc.GetElement(selIds[0])
 	#print(dir(selectedElement))
 	print(selectedElement)
-	bipLevelName = getBuitInParameterInstance("DATUM_TEXT")
+	bipLevelName = getBuiltInParameterInstance("DATUM_TEXT")
 
-	bipLevelElev = getBuitInParameterInstance("LEVEL_ELEV")
-	bipLevelUpToLevel = getBuitInParameterInstance("LEVEL_UP_TO_LEVEL")
-	bipElemeCategoryParam = getBuitInParameterInstance("ELEM_CATEGORY_PARAM")
+	bipLevelElev = getBuiltInParameterInstance("LEVEL_ELEV")
+	bipLevelUpToLevel = getBuiltInParameterInstance("LEVEL_UP_TO_LEVEL")
+	bipElemeCategoryParam = getBuiltInParameterInstance("ELEM_CATEGORY_PARAM")
 	print("bipLevelElev {}".format(bipLevelElev))
 	paramId = DB.ElementId(bipLevelElev)
 	print("paramId {}".format(paramId))

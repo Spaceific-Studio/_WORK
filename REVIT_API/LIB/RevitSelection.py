@@ -814,7 +814,18 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 	"""
 	info = kwargs['info'] if 'info' in kwargs else False
 	allParametersInfo = kwargs['allParametersInfo'] if 'allParametersInfo' in kwargs else False
-	bip = getBuitInParameterInstance(inName)
+	inBip = kwargs["bip"] if 'bip' in kwargs else None
+	#print("this is BIP param {0}".format(inName))
+	bip = getBuiltInParameterInstance(inName)
+	if bip:
+		pass
+		#print("this is BIP param {0}".format(inName))
+	else:
+		if inBip:
+			bip = inBip
+		else:
+			bip = None
+	#raise TypeError("bip {0} inName {1}".format(bip, inName))
 	returnValues = []
 	returnValuesAsString = []
 	allParametersNames = []
@@ -927,7 +938,7 @@ def setValuesByParameterName(inElements, inValues, inName, *args, **kwargs):
 		inName: type: string
 
 	"""
-	bip = getBuitInParameterInstance(inName)
+	bip = getBuiltInParameterInstance(inName)
 	returnValues = []
 	#firstTime = True
 	try:
@@ -1076,11 +1087,14 @@ def setParamAsElementId(inElement, inParameter, inValue):
 		else: 
 			raise TypeError("Wrong format of input value {0} of type {1}. It must be of type ElementId".format(inValue, type(inValue)))
 
-def getBuitInParameterInstance(inBuiltInParamName):
+def getBuiltInParameterInstance(inBuiltInParamName):
+	#print("RevitSelection.getBuiltInParameterInstance inBuiltInParamName {}".format(inBuiltInParamName))
 	builtInParams = Enum.GetValues(DB.BuiltInParameter)
 	returnVar = None
 	for bip in builtInParams:
-		if bip.ToString() == inBuiltInParamName:
+		#print("bip.ToString() {0} inBuiltInParamName {1}".format(bip.ToString(), inBuiltInParamName))
+		if bip.ToString() in inBuiltInParamName:
+			#print("bip.ToString() {0}".format(bip.ToString()))
 			param_ID = DB.ElementId(bip)
 			returnVar = bip
 			break
