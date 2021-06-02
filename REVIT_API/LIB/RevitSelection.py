@@ -34,18 +34,18 @@ if hasMainAttr:
 else:
 	import clr
 	clr.AddReference("RevitAPI")
-	import Autodesk
+	#import Autodesk
 	import Autodesk.Revit.DB as DB
 
 	clr.AddReference("RevitServices")
 	import RevitServices
 	from RevitServices.Persistence import DocumentManager
-	from RevitServices.Transactions import TransactionManager
+	#from RevitServices.Transactions import TransactionManager
 	doc = DocumentManager.Instance.CurrentDBDocument
 
 	clr.AddReference('ProtoGeometry')
-	from Autodesk.DesignScript.Geometry import *
-
+	import Autodesk.DesignScript.Geometry as DSGeometry
+	
 	# Import Element wrapper extension methods
 	clr.AddReference("RevitNodes")
 	import Revit
@@ -56,9 +56,9 @@ else:
 
 
 clr.AddReference("System")
+
 from System.Collections.Generic import List as Clist
 from System import Enum 
-
 from itertools import chain, groupby
 
 def Unwrap(item, *args):
@@ -91,11 +91,11 @@ def getLevelAbove(e):
 		return sortedLevels[index+1]
 
 def getLevels():
-	"""returns 1D list of Autodesk.Revit.DB.Element of all levels in active document
+	"""returns 1D list of DB.Element of all levels in active document
        
        args:
             
-       return: sorted list of Autodesk.Revit.DB.Element objects of levels according to elevation
+       return: sorted list of DB.Element objects of levels according to elevation
     """
 	allLevels = DB.FilteredElementCollector(doc) \
 				.OfCategory(DB.BuiltInCategory.OST_Levels) \
@@ -110,7 +110,7 @@ def getLevelIds(inLevels):
 	"""returns 1D list of int representation of ids of level elements in input
        
        args:
-            inLevels: list of Autodesk.Revit.DB.Element of category Autodesk.Revit.DB.BuiltInCategory.OST_Levels
+            inLevels: list of DB.Element of category DB.BuiltInCategory.OST_Levels
             
        return: list of level Ids - type: int
     """
@@ -124,13 +124,13 @@ def getLevelIds(inLevels):
 		return [int(str(level.Id))]
 
 def getElementLevelIdIndex(item, inlevelIds):
-	"""returns list index of document level Ids of Autodesk.Revit.DB.Element object
+	"""returns list index of document level Ids of DB.Element object
        
        args:
-            item: type: Autodesk.Revit.DB.Element
+            item: type: DB.Element
             inlevelIds: list of level Ids - type: [int, ...]
             
-       return: index of inlevelIds list of Autodesk.Revit.DB.Element - type: int
+       return: index of inlevelIds list of DB.Element - type: int
     """
 	elemLevId = int(str(item.LevelId))
 	categoryId = item.Category.Id
@@ -153,11 +153,11 @@ def getElementByClassName(inClass, *args, **kwargs):
 	"""returns 1D list of all Revit Elements in active view according to class name input
        
        args:
-            inClass: list of Revit class names inherited from Autodesk.Revit.DB.Element Class (e.g. [Autodesk.Revit.DB.ExtrusionRoof, ...])
+            inClass: list of Revit class names inherited from DB.Element Class (e.g. [DB.ExtrusionRoof, ...])
             args[0]: inExcludeElementCollection type: ICollection - optional list of elements intended to be excluded from final selection 
             
 			kwargs["curtainWall"]: type: bool if True, returns only curtain walls or curtain system objects, else if not set or False returns Wall objects except curtain walls
-       return: IList of Autodesk.Revit.DB.Element objects
+       return: IList of DB.Element objects
     """
 	curtainWall = kwargs["curtainWall"] if "curtainWall" in kwargs else False
 	elements = []
@@ -214,9 +214,9 @@ def getElementByClassName(inClass, *args, **kwargs):
 							.OfClass(i) \
 							.WherePasses(DB.ExclusionFilter(otherIds_collection)) \
 							.ToElements()
-			if i == Autodesk.Revit.DB.CurtainSystem:
+			if i == DB.CurtainSystem:
 				raise ValueError("CurtainSystem elements {0} - {1}".format(len(elements), elements))
-			elif i == Autodesk.Revit.DB.Wall:
+			elif i == DB.Wall:
 				pass
 				#raise ValueError("CurtainWall elements {0} - {1}".format(len(elements), elements))
 				#return elements
@@ -264,11 +264,11 @@ def getElementByClassNameAtLevels(inClass, inLevelIds, *args):
 	"""returns structured list of all Revit Elements in active view according to class name input
        
        args:
-            inClass: list of Revit class names inherited from Autodesk.Revit.DB.Element Class (e.g. [Autodesk.Revit.DB.ExtrusionRoof, ...])
+            inClass: list of Revit class names inherited from DB.Element Class (e.g. [DB.ExtrusionRoof, ...])
 			inLevelIds: list of level Ids type: list[int, ...]
             args[0]: inExcludeElementCollection type: ICollection - optional list of elements intended to be excluded from final selection 
             
-       return: list[level_1[Autodesk.Revit.DB.Element, ...], level_2[Autodesk.Revit.DB.Element, ...], ...]
+       return: list[level_1[DB.Element, ...], level_2[DB.Element, ...], ...]
     """
 	elements = []
 	allLevels = getLevels()
@@ -313,13 +313,13 @@ def getElementByClassNameAtLevels(inClass, inLevelIds, *args):
 	return elementsAtLevel
 
 def getElementByCategory(inCategory, *args):
-	"""returns 1D list of all Revit Elements in active view according to Autodesk.Revit.DB.BuiltInCategory member name
+	"""returns 1D list of all Revit Elements in active view according to DB.BuiltInCategory member name
        
        args:
-            inCategory: list of Autodesk.Revit.DB.BuiltInCategory member names (e.g. [Autodesk.Revit.DB.BuiltInCategory.OST_Walls, ...])
+            inCategory: list of DB.BuiltInCategory member names (e.g. [DB.BuiltInCategory.OST_Walls, ...])
             args[0]: inExcludeElementCollection type: ICollection - optional list of elements intended to be excluded from final selection 
             
-       return: IList of Autodesk.Revit.DB.Element objects
+       return: IList of DB.Element objects
     """
 	elements = []
 	if len(args) > 0:
@@ -355,14 +355,14 @@ def getElementByCategory(inCategory, *args):
 	return elements
 
 def getElementByCategoryAtLevels(inCategory, inLevelIds, *args):
-	"""returns structured list of all Revit Elements in active view according to Autodesk.Revit.DB.BuiltInCategory member name
+	"""returns structured list of all Revit Elements in active view according to DB.BuiltInCategory member name
        
        args:
-            inCategory: list of Autodesk.Revit.DB.BuiltInCategory member names (e.g. [Autodesk.Revit.DB.BuiltInCategory.OST_Walls, ...])
+            inCategory: list of DB.BuiltInCategory member names (e.g. [DB.BuiltInCategory.OST_Walls, ...])
 			inLevelIds: list of level Ids type: list[int, ...]
             args[0]: inExcludeElementCollection type: ICollection - optional list of elements intended to be excluded from final selection 
             
-       return: list[level_1[Autodesk.Revit.DB.Element, ...], level_2[Autodesk.Revit.DB.Element, ...], ...]
+       return: list[level_1[DB.Element, ...], level_2[DB.Element, ...], ...]
     """
 	elements = []
 	allLevels = getLevels()
@@ -409,16 +409,16 @@ def getElementByCategoryAtLevels(inCategory, inLevelIds, *args):
 	return elementsAtLevel
 
 def getInserts(item, *args, **kwargs):
-	"""returns inserts of element (Autodesk.Revit.DB.Element) if exist
+	"""returns inserts of element (DB.Element) if exist
 
 		args:
-			item: Autodesk.Revit.DB.Element
+			item: DB.Element
 			incopenings: option for included openings - default = True
 			incshadows = option for included shadows - default = True
 			incwalls = option for included walls - default = True
 			incshared = option for included shared element - default = True
 
-		return: list[Autodesk.Revit.DB.Element, ...]
+		return: list[DB.Element, ...]
 		"""
 	
 	incopenings = kwargs["incopenings"] if "incopenings" in kwargs else True
@@ -440,7 +440,7 @@ def getAllElements(doc, *args, **kwargs):
 	"""
 		acquire all Elements from active view
 
-		kwargs["toId"] type boolean: returns collection of Autodesk.Revit.DB.ElementId if True, else return Autodesk.Revit.DB.Element
+		kwargs["toId"] type boolean: returns collection of DB.ElementId if True, else return DB.Element
 		kwargs["inActiveView"] type bool: returns elements depending on active view if True, default = False
 	"""
 	toId = kwargs["toId"] if "toId" in kwargs else False
@@ -531,12 +531,12 @@ def getRevitGeometry(inElement, *args, **kwargs):
 	"""
 		get revit geometry from revit element
 
-		inElement: type: Autodesk.Revit.DB.Element
+		inElement: type: DB.Element
 		kwargs['only3D'] type: bool - returns only solid objects if true, else returns also 2D geometry as tuple(geos, geosNot3D, geosOther), default = True
 		kwargs['asDynamoGeometry'] - returns Autodesk.DesignScript.Geometry.Solid objects if True, default False
-		Returns: list[Autodesk.Revit.DB.Solid, ...] if only3D == True, else returns 
-					tuple(list[Autodesk.Revit.DB.Solid] - all 3D solids,
-						  list[Autodesk.Revit.DB.Solid] - Solids with zero Volume, 
+		Returns: list[DB.Solid, ...] if only3D == True, else returns 
+					tuple(list[DB.Solid] - all 3D solids,
+						  list[DB.Solid] - Solids with zero Volume, 
 						  list[...], other geometry)
 	"""
 	only3D = kwargs['only3D'] if 'only3D' in kwargs else True
@@ -601,7 +601,7 @@ def getDynamoGeometry(inElement, *args, **kwargs):
 	"""
 		get dynamo geometry from revit element
 
-		inElement: type: Autodesk.Revit.DB.Element
+		inElement: type: DB.Element
 		kwargs['only3D'] type: bool - returns only solid objects if true, else returns also 2D geometry as tuple(geos, geosNot3D, geosOther), default = True
 		kwargs['united'] type: bool - returns united solid of all solids in element if True, else returns separated geometry, default = True
 		Returns: list[Autodesk.DesignScript.Geometry.Solid, ...] if only3D == True, else returns 
@@ -639,7 +639,7 @@ def getDynamoGeometry(inElement, *args, **kwargs):
 								first = False
 							else:
 								try:
-									unitedSolid = Autodesk.DesignScript.Geometry.Solid.Union(unitedSolid, solid)
+									unitedSolid = DSGeometry.Solid.Union(unitedSolid, solid)
 								except Exception as ex:
 									pass
 									#Errors.catch(ex, "Unable to make union of solids in element {0} of geometry object {1}".format(inElement.Id.IntegerValue, i))
@@ -659,7 +659,7 @@ def getDynamoGeometry(inElement, *args, **kwargs):
 							first = False
 						else:
 							try:
-								unitedSolid = Autodesk.DesignScript.Geometry.Solid.Union(unitedSolid, solid)
+								unitedSolid = DSGeometry.Solid.Union(unitedSolid, solid)
 							except Exception as ex:
 								pass
 								#Errors.catch(ex, "Unable to make union of solids in element {0} of geometry object {1}".format(inElement.Id.IntegerValue, i))
@@ -681,17 +681,17 @@ def getDynamoGeometry(inElement, *args, **kwargs):
 def get_BoundingBox():
 	pass
 def convertGeometryInstance(inRevitGeo, elementlist):
-	"""returns converted geometry of Autodesk.Revit.DB.GeometryInstance
+	"""returns converted geometry of DB.GeometryInstance
 
 		args:
-			inRevitGeo: Autodesk.Revit.DB.GeometryInstance
+			inRevitGeo: DB.GeometryInstance
 			elementList: empty list - type list
 
-		return: list[Autodesk.Revit.DB.GeometryElement, ...]
+		return: list[DB.GeometryElement, ...]
 		"""
 	
 	for g in inRevitGeo:
-		if str(g.GetType()) == 'Autodesk.Revit.DB.GeometryInstance':
+		if str(g.GetType()) == 'DB.GeometryInstance':
 			elementlist = convertGeometryInstance(g.GetInstanceGeometry(), elementlist)
 		else:
 			try: 
@@ -722,7 +722,7 @@ def getElementAndCategory(inSelection):
 					returnElements.append(el)
 			returnTuple = (tuple(returnElements), tuple(returnCategories))
 		else:
-			raise ValueError("inSelection is not of type list[Autodesk.Revit.DB.Element] or Autodesk.Revit.DB.Element")
+			raise ValueError("inSelection is not of type list[DB.Element] or DB.Element")
 	except Exception as ex:
 		Errors.catch(ex, "Error in RevitSelection.getElementAndCategory()")
 		returnTuple = []
@@ -752,7 +752,7 @@ def getMaterialParameters(inItem):
 			listSorted = sorted(returnParameters)
 			return (returnParameters, elementProperty)
 		else:
-			raise ValueError("inItem is not of type Autodesk.Revit.DB.Material")
+			raise ValueError("inItem is not of type DB.Material")
 	except Exception as ex:
 		Errors.catch(ex, "Error in RevitSelection.getMaterialParameters()")
 		return []
@@ -807,7 +807,7 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 		get parameter value from element by parameter name
 
 		args:
-		inElement type: list(Autodesk.Revit.DB.Element,...)
+		inElement type: list(DB.Element,...)
 		inName: type: string
 		kwargs['info'] type: bool returns parameter info as string (element name, element Id, parameter name, parameter value as string) if True, default False
 		kwargs['allParametersInfo'] type: bool returns list of all parameters names of instance as a list default False
@@ -922,8 +922,8 @@ def setValuesByParameterName(inElements, inValues, inName, *args, **kwargs):
 		must be in Transaction block
 
 		args:
-		inElement type: list(Autodesk.Revit.DB.Element,...)
-		inValues type: list(Autodesk.Revit.DB.Element or str, or int, or float...)
+		inElement type: list(DB.Element,...)
+		inValues type: list(DB.Element or str, or int, or float...)
 		inName: type: string
 
 	"""
@@ -1077,7 +1077,7 @@ def setParamAsElementId(inElement, inParameter, inValue):
 			raise TypeError("Wrong format of input value {0} of type {1}. It must be of type ElementId".format(inValue, type(inValue)))
 
 def getBuitInParameterInstance(inBuiltInParamName):
-	builtInParams = System.Enum.GetValues(DB.BuiltInParameter)
+	builtInParams = Enum.GetValues(DB.BuiltInParameter)
 	returnVar = None
 	for bip in builtInParams:
 		if bip.ToString() == inBuiltInParamName:
@@ -1090,12 +1090,12 @@ def filterElementsByActiveViewIds(doc, inElements, **kwargs):
 	"""
 		Filter elements by active view parameters (active view phase, category...)
 
-		inElements> list[Autodesk.Revit.DB.Element]
+		inElements> list[DB.Element]
 		kwargs["rawOpening"] including wall elements of opening (raw openings geometry) type: bool
 		kwargs["toElement"] type: bool
 		kwargs["disablePhases"] type: bool select all elements independently on all phases, default = False
 		kwargs["onlyInActiveView"] tyep bool, select all elements independently on activeView, default = False
-		Returns: list[Autodesk.Revit.DB.ElementId] if kwargs["toElement"] == False or list[Autodesk.Revit.DB.Element] if kwargs["toElement"] == True 
+		Returns: list[DB.ElementId] if kwargs["toElement"] == False or list[DB.Element] if kwargs["toElement"] == True 
 	"""
 	
 
@@ -1112,7 +1112,7 @@ def filterElementsByActiveViewIds(doc, inElements, **kwargs):
 	
 
 	ids = [x.Id for x in inElements]
-	#colectionOfUniqueInsertIds = Clist[Autodesk.Revit.DB.ElementId](uIs)
+	#colectionOfUniqueInsertIds = Clist[DB.ElementId](uIs)
 	colectionOfElementsIds = Clist[DB.ElementId](ids)
 
 	# Get ActiveView phase ID

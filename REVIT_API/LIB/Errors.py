@@ -11,7 +11,7 @@ if "pydroid" in sys.prefix:
 else:
     import clr
     clr.AddReference("System.Drawing")
-    import System.Drawing
+    #import System.Drawing
     from System.Drawing import Color
 
 class Errors(object):

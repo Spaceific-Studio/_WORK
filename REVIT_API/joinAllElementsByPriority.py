@@ -226,6 +226,20 @@ def createMultiClassFilter():
 	multiClassFilter = DB.ElementMulticlassFilter(typeList)
 	return multiClassFilter
 
+def getActiveViewPhaseStatusFilter():
+	paramId = Autodesk.Revit.DB.ElementId(Autodesk.Revit.DB.BuiltInParameter.VIEW_PHASE)
+	param_provider = Autodesk.Revit.DB.ParameterValueProvider(paramId)
+	activeViewPhaseId = param_provider.GetElementIdValue(doc.ActiveView)
+	docPhases =  Autodesk.Revit.DB.FilteredElementCollector(doc) \
+								.OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Phases) \
+								.WhereElementIsNotElementType() \
+								.ToElements()
+
+	#Filter inserts visible only in active view and of Existing phase status - (ignore demolished elements in previous phases) 
+	myElementPhaseStatusFilter1 = Autodesk.Revit.DB.ElementPhaseStatusFilter(activeViewPhaseId, Autodesk.Revit.DB.ElementOnPhaseStatus.Existing, False)
+	myElementPhaseStatusFilter2 = Autodesk.Revit.DB.ElementPhaseStatusFilter(activeViewPhaseId, Autodesk.Revit.DB.ElementOnPhaseStatus.New,False)
+	return DB.LogicalOrFilter(myElementPhaseStatusFilter1, myElementPhaseStatusFilter2)
+	
 def getAllModelElements(doc):
 	multiCatFilter = createMultiCategoryFilter()
 	allIdsOfModelElements = DB.FilteredElementCollector(doc).WherePasses(multiCatFilter).WhereElementIsNotElementType().ToElementIds()
@@ -254,7 +268,7 @@ def convertToInternal(inValue):
 	#print("displayUnitType {}".format(displayUnitType))
 	return DB.UnitUtils.ConvertToInternalUnits(inValue, displayUnitType)
 
-def getNeighbours(inElement, multiCatFilter, multiClassFilter, exclusionFilter):
+def getNeighbours(inElement, multiCatFilter, multiClassFilter, exclusionFilter, activeViewPhaseStatusFilter):
 	inElementBBox = inElement.get_BoundingBox(doc.ActiveView)
 	virtualBBoxOffset = 50
 	newMin = DB.XYZ(convertToInternal(convertFromInternal(inElementBBox.Min.X)-virtualBBoxOffset), \
@@ -273,6 +287,7 @@ def getNeighbours(inElement, multiCatFilter, multiClassFilter, exclusionFilter):
 									.WherePasses(exclusionFilter) \
 									.WherePasses(bboxIntersectingFilter) \
 									.WherePasses(selfElementExclusionFilter) \
+									.WherePasses(activeViewPhaseStatusFilter) \
 									.WhereElementIsNotElementType() \
 									.ToElementIds()
 	insideElementsMulitClassIdsCol = DB.FilteredElementCollector(doc) \
@@ -280,6 +295,7 @@ def getNeighbours(inElement, multiCatFilter, multiClassFilter, exclusionFilter):
 										.WherePasses(exclusionFilter) \
 										.WherePasses(bboxIntersectingFilter) \
 										.WherePasses(selfElementExclusionFilter) \
+										.WherePasses(activeViewPhaseStatusFilter) \
 										.WhereElementIsNotElementType() \
 										.ToElementIds()
 
@@ -817,7 +833,7 @@ for el in allExcludedWallsIds:
 allExcludedIds += wallIdsToExclude
 
 exclusionFilter = DB.ExclusionFilter(Clist[DB.ElementId](allExcludedIds))
-
+activeViewPhaseStatusFilter = getActiveViewPhaseStatusFilter()
 
 print("allExcludedIds length {}".format(len(allExcludedIds)))
 #uidoc.Selection.SetElementIds(allExcludedIds)
@@ -826,11 +842,13 @@ print("allExcludedIds length {}".format(len(allExcludedIds)))
 firstSelectionMultiCatIdsCol = DB.FilteredElementCollector(doc, __revit__.ActiveUIDocument.Selection.GetElementIds()) \
 									.WherePasses(multiCatFilter) \
 									.WherePasses(exclusionFilter) \
+									.WherePasses(activeViewPhaseStatusFilter) \
 									.WhereElementIsNotElementType() \
 									.ToElementIds()
 firstSelectionMultiClassIdsCol = DB.FilteredElementCollector(doc, __revit__.ActiveUIDocument.Selection.GetElementIds()) \
 									.WherePasses(multiClassFilter) \
 									.WherePasses(exclusionFilter) \
+									.WherePasses(activeViewPhaseStatusFilter) \
 									.WhereElementIsNotElementType() \
 									.ToElementIds()
 firstSelectionMultiCat = [doc.GetElement(elId) for elId in firstSelectionMultiCatIdsCol]
@@ -897,7 +915,7 @@ if myDialogWindow.confirmed:
 
 	print("len firstSelection before joining {0}".format(len(firstSelection)))
 	for j, el in enumerate(firstSelection):
-		neighbours = [doc.GetElement(x) for x in getNeighbours(el, multiCatFilter, multiClassFilter, exclusionFilter)]
+		neighbours = [doc.GetElement(x) for x in getNeighbours(el, multiCatFilter, multiClassFilter, exclusionFilter, activeViewPhaseStatusFilter)]
 		for i, neighbour in enumerate(neighbours):
 			checkAlreadyJoinedStr = "{0}{1}".format(el.Id.IntegerValue, neighbour.Id.IntegerValue)
 			if not checkAlreadyJoinedStr in alreadyJoined:
