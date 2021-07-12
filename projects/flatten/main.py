@@ -144,7 +144,7 @@ def flattenList(inList, *args, **kwargs):
             returnItems = [inList]
     
     if  inLevel == 0:
-     print outLog
+     print (outLog)
      return returnItems
     else:
      return (returnItems, outLog)
@@ -205,7 +205,7 @@ def flattenBottomList(inList, *args, **kwargs):
     else:
      returnItems = [inList]
     if  inLevel == 0:
-     print outLog
+     print (outLog)
      return returnItems
     else:
      return (returnItems, outLog)
@@ -244,12 +244,12 @@ for i in range(0,6):
 outList = flattenList(myList, top=True)
 print(BACKGROUND_GRAY + "myList = {0}".format(myList)+ ENDC)
 print(BACKGROUND_GRAY + CYAN + "outList Top = {0}".format(outList,i)+ ENDC)
-print "\n"
-print "___________________________________\n"
-print "\n"
+print ("\n")
+print ("___________________________________\n")
+print ("\n")
 for i in range(0,6):
  outList = flattenList(testlist3, level=i)
  print(BACKGROUND_GRAY + "myList = {0}".format(myList)+ ENDC)
  print(BACKGROUND_GRAY + CYAN + "outList level_{1} = {0}".format(outList,i) + ENDC)
-print "\n"
+print ("\n")
 

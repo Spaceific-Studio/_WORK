@@ -227,7 +227,8 @@ class InputData():
             population = int("".join(InputData.POP_DATA[InputData.LOOKUP[k]][2].split(","))) if k in InputData.LOOKUP else None
             InputData.C_DATA[k]["population"] = population
             InputData.C_DATA[k]["c_pop"] = int(InputData.C_DATA[k]["confirmed"][-1]) / InputData.C_DATA[k]["population"] * 100 if InputData.C_DATA[k]["population"] else None
-            InputData.C_DATA[k]["d_c"] = int(InputData.C_DATA[k]["deads"][-1]) / int(InputData.C_DATA[k]["confirmed"][-1]) * 100 if InputData.C_DATA[k]["confirmed"][-1] != 0 else 0
+            #print("{0} {1} - {2}".format(InputData.C_DATA[k]["confirmed"][-1], countryDic["name"], type(InputData.C_DATA[k]["confirmed"][-1])))
+            InputData.C_DATA[k]["d_c"] = int(InputData.C_DATA[k]["deads"][-1]) / int(InputData.C_DATA[k]["confirmed"][-1]) * 100 if int(InputData.C_DATA[k]["confirmed"][-1]) != 0 else 0
             InputData.C_DATA[k]["d_pop"] = int(InputData.C_DATA[k]["deads"][-1]) / InputData.C_DATA[k]["population"] * 100 if InputData.C_DATA[k]["population"] else None
             
             if len(InputData.C_DATA[k]["confirmed"]) >= 7:
@@ -444,7 +445,7 @@ ccData = countrySorting(4, cData.copy())
     #1__sort counties by area
     #2__sort counties by density
 reservedStrings =["q", "p", "a", "de", "d", "c", "dc", "dp", "cp", "r", "ic", "id", ">", "<", "c100k", "std", "d1m"]
-coutriesOfIterest = [("Czechia", "CZE"),("Slovakia", "SVK"), ("US", "USA"), ("Italy", "ITA"), ("Spain", "ESP"), ("Croatia", "CRO"), ("Montenegro", "MTN"), ("Slovenia", "SLO"), ("United Kingdom", "UK"), ("Russia", "RUS"), ("Brazil", "BRA"), ("Germany", "GER"), ("Austria", "AUT"), ("Denmark", "DEN"), ("Belgium","BEL"), ("Netherlands", "NED"), ("France", "FRA"), ("Iceland", "ICE"), ("New Zealand", "NZL"), ("Israel", "IZR"), ("Greece", "GRE"), ("Japan", "JAP"), ("China", "CHI"), ("Switzerland", "SUI"), ("Sweden", "SWE"), ("Finland", "FIN"), ("Norway", "NOR"), ("Romania", "ROM"), ("Argentina", "ARG"), ("Turkey", "TUR"), ("Belarus", "BLR"), ("Mali", "MAL"), ("Hungary", "HUN"), ("Poland", "POL"), ("Estonia", "EST"), ("Pakistan", "PAK"), ("Ecuador", "ECU"), ("Colombia", "COL"), ("India", "IND"), ("Bahrain", "BAH"), ("Lebanon", "LEB"), ("Venezuela", "VEN"), ("Mexico", "MEX##"), ("South Korea", "SKO"), ("Singapore", "SIN"), ("Thailand", "THJ")]
+coutriesOfIterest = [("Czechia", "CZE"),("Slovakia", "SVK"), ("US", "USA"), ("Italy", "ITA"), ("Spain", "ESP"), ("Croatia", "CRO"), ("Montenegro", "MTN"), ("Slovenia", "SLO"), ("United Kingdom", "UK"), ("Ireland", "IRL"), ("Russia", "RUS"), ("Brazil", "BRA"), ("Germany", "GER"), ("Austria", "AUT"), ("Denmark", "DEN"), ("Belgium","BEL"), ("Netherlands", "NED"), ("France", "FRA"), ("Iceland", "ICE"), ("New Zealand", "NZL"), ("Australia", "AUS"), ("Israel", "IZR"), ("Greece", "GRE"), ("Japan", "JAP"), ("China", "CHI"), ("Switzerland", "SUI"), ("Sweden", "SWE"), ("Finland", "FIN"), ("Norway", "NOR"), ("Romania", "ROM"), ("Argentina", "ARG"), ("Turkey", "TUR"), ("Belarus", "BLR"), ("Mali", "MAL"), ("Hungary", "HUN"), ("Poland", "POL"), ("Estonia", "EST"), ("Pakistan", "PAK"), ("Ecuador", "ECU"), ("Colombia", "COL"), ("India", "IND"), ("Bahrain", "BAH"), ("Lebanon", "LEB"), ("Venezuela", "VEN"), ("Mexico", "MEX##"), ("South Korea", "SKO"), ("Singapore", "SIN"), ("Thailand", "THJ"), ("Seychelles", "SEY")]
 
 inputText = "\n"
 for i, c in enumerate(coutriesOfIterest):

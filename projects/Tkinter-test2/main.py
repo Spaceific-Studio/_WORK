@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- 
-from Tkinter import *
-import Tkinter as tk
+from tkinter import *
+import tkinter as tk
 
 # hlavni = Tk()
 # hlavni.geometry("500x500")
@@ -127,7 +127,7 @@ class zoomer(Tk):
         self.rb3.grid()
 
     def radiobuttonAction(self):
-        print self.rbVar.get()
+        print(self.rbVar.get())
         
 
     def zoom_in(self):

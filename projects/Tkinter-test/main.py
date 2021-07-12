@@ -16,9 +16,9 @@ myBinRule = getBinRuleFromHex(myHexRule)
 CSV_logPath = r"C:/_WORK/PYTHON/CELULAR_AUTOMAT-2D/LOG/"
 logReadPath = CSV_logPath + "CA2D9_" + myHexRule + "_" + str(resX) + "x" + str(resY) + ".csv"
 logWritePath = CSV_logPath + "CA2D9_" + myHexRule + "_" + str(resX) + "x" + str(resY) + ".csv"
-print myHexRule
+print(myHexRule)
 myCaImgs = run(resX, resY, layCount, myBinRule, logWritePath, True)
-print myCaImgs
+print(myCaImgs)
 myTkImgs = []
 for i, img in enumerate(myCaImgs):
     image = ImageTk.PhotoImage(img)
@@ -40,7 +40,7 @@ def clickMe():
     #action.configure(text="myHexRule = " + name.get())
     myHexRule = name.get()
     aLabel.configure(text="myHexRule = " + name.get())
-    print myHexRule
+    print (myHexRule)
 #Changing our Label
 ttk.Label(win, text="Enter a name").grid(column=0, row=0)
 
@@ -58,7 +58,7 @@ for x, im in enumerate(myTkImgs):
 
 action = ttk.Button(win, text="Enter a hexadecimal Rule number", command = clickMe)
 action.grid(column=1, row = 0)
-print action.keys()
+print (action.keys())
 
 x_image = 'cross-on.gif'
 x_image_for_button = PhotoImage(file=x_image)
