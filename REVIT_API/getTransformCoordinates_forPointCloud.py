@@ -19,6 +19,12 @@ element = doc.GetElement(selIds[0])
 print(dir(element))
 print(element)
 
+test_E1_BasisX = DB.XYZ(-3.28083989501312, 4.01787007594276E-16, 0)
+test_E2_BasisX = DB.XYZ(6.192188785639E-15, -3.28083989501312, 0)
+testAngleDifRad = test_E1_BasisX.AngleTo(test_E2_BasisX)
+testAngleDifDegrees = DB.UnitUtils.Convert(testAngleDifRad, DB.DisplayUnitType.DUT_RADIANS, DB.DisplayUnitType.DUT_DECIMAL_DEGREES)
+print("testAngleDifDegrees {0}".format(testAngleDifDegrees))
+
 #inserted target revit model
 tm_BasisX = DB.XYZ(-3.28083558509697, -0.00531791981143481, 0)
 tm_BasisY = DB.XYZ(0.00531791981143481, -3.28083558509697, 0)
@@ -78,11 +84,15 @@ if isinstance(element, Autodesk.Revit.DB.PointCloudInstance):
 
 	if moveElement:
 		#original position of PCL
+		fromPoint = origin
+		difVec = DB.XYZ(0.275887, 0.515614, 0.063912)
+		toPoint = fromPoint.Subtract(difVec)
 		#toPoint = DB.XYZ(197.600419011, -57.284730545, -0.1508510770)
-		toPoint = pp_Origin
+		#toPoint = pp_Origin
 		#toPoint = DB.XYZ(0, 0, 0)
 		#moveVec = toPoint.Subtract(origin)
-		moveVec = toPoint.Subtract(ip_Origin)
+		#moveVec = toPoint.Subtract(ip_Origin)
+		moveVec = toPoint.Subtract(fromPoint)
 		print("moveVec {0}".format(moveVec))
 		t = DB.Transaction(doc, 'Moving Element')
 		# Begin new transaction

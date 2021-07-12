@@ -2,6 +2,7 @@
 # Copyright(c) 2020, Daniel Gercak
 #Script for parameters update of family "Prostup (SWECO)"
 #resource_path: H:\_WORK\PYTHON\REVIT_API\vyska_prostupu.py
+#from typing import Type
 from Autodesk.Revit.DB import *
 from Autodesk.Revit.DB.Architecture import *
 #from Autodesk.Revit.DB.Analysis import *
@@ -30,6 +31,7 @@ clr.AddReferenceByPartialName('System.Windows.Forms')
 #from System.Reflection import BindingFlags
 from System.Drawing import *
 from System.Windows.Forms import *
+from System import Enum
 #from System.ComponentModel import BindingList
 
 
@@ -136,14 +138,49 @@ class TabForm(Form):
 		self.dgv.CellClick += self.cellClick
 		self.dgv.ColumnHeaderMouseClick += self.ColumnHeaderMouseClick
 		self.dgv.SelectionChanged += self.selectionChanged
-		self.dgv.DataBindingComplete += self.DataBindingComplete		
+		self.dgv.DataBindingComplete += self.DataBindingComplete
+		#self.markBip = getBuiltInParameterInstance("ALL_MODEL_MARK")
+		#self.typeMarkBip = getBuiltInParameterInstance("ALL_MODEL_TYPE_MARK")
 
-		self.columnNames = ("Element_Id", "Category", "Element_Name", "parameter_{}".format(self.parameterName))
+		self.columnNames = ("Element_Id", "Category", "Element_Name", "parameter_{}".format(self.parameterName), "Mark", "Type mark")
 		self.columnAscendingSort = {}
 		for colName in self.columnNames:
 			self.columnAscendingSort[colName] = True
 
+		
+		""" bipNames = Enum.GetNames(BuiltInParameter)
+		bipNamesStr = []
+		bipParsed = []
+		for i, bipName in enumerate(bipNames):
+			bipP = Enum.TryParse(bipName, BuiltInParameter)
+			bipParsed.append(bipP)
+			bipNamesStr.append(bipName)
+		bipNamesStrSorted = sorted(bipNamesStr)
+		for i, bP in bipParsed:
+			print("bipParsed {0} - {1} - {2}".format(i, bP, type(bP)))
+		for i, bipNameStr in enumerate(bipNamesStrSorted):
+			print("bipNames {0} - {1}".format(i, bipNameStr))
+		bips = Enum.GetValues(BuiltInParameter)
+		bipsStr = []
+		for i, bip in enumerate(bips):
+			bipsStr.append(bip.ToString())
+			#print("{0} - {1} - {2}".format(i, bip.ToString(), type(bip)))
+			if bip.ToString() == "EDITED_BY":
+				print("EDITED_BY- {0}".format(i))
+		bipsStrSorted = sorted(bipsStr)
+		for bipStr in bipsStrSorted:
+			print("{}".format(bipStr))
+		raise TypeError("sss") """
+
 		self.values = getValuesByParameterName(self.elements, self.parameterName, doc)
+		self.markBip = BuiltInParameter.ALL_MODEL_MARK
+		self.typeMarkBip = BuiltInParameter.ALL_MODEL_TYPE_MARK
+		self.markValues = getValuesByParameterName(self.elements, "ALL_MODEL_MARK", doc, bip = self.markBip)
+		self.typeMarkValues = getValuesByParameterName(self.elements, "ALL_MODEL_TYPE_MARK", doc, bip = self.typeMarkBip)
+		for i, value in enumerate(self.markValues):
+			print("self.markValues {0} - {1}".format(i, value))
+		for i, value in enumerate(self.typeMarkValues):
+			print("self.typeMarkValues {0} - {1}".format(i, value))
 		""" tableObjectList = []
 		tableDicList = []
 		for i,v in enumerate(self.elements):
@@ -259,16 +296,20 @@ class TabForm(Form):
 	def getDataSources(self, inTableData, **kwargs):
 		tableObjectList = []
 		tableDicList = []
-		sortColumnIndex = kwargs["sortColumnIndex"] if "sortColumnIndex" in kwargs else None
+		sortColumnIndex = kwargs["sortColumnIndex"] if "sortColumnIndex" in kwargs else None		
 		for i,v in enumerate(inTableData):
 			elId = v.Id.ToString()
 			elCategory = "{}".format(v.Category.Name)
 			parameterValue = "{}".format(self.values[i])
+			markValue = "{}".format(self.markValues[i])
+			typeMarkValue = "{}".format(self.typeMarkValues[i])
 			elName = "{}".format(v.Name if hasattr(v, "Name") else v.FamilyName)
 			dic = {self.columnNames[0] : elId, \
 											self.columnNames[1] : elCategory, \
 											self.columnNames[2] : elName, \
-											self.columnNames[3] : parameterValue}
+											self.columnNames[3] : parameterValue, \
+											self.columnNames[4] : markValue, \
+											self.columnNames[5] : typeMarkValue}
 			rowObj = Dic2obj(dic)
 			tableDicList.append(dic)
 			tableObjectList.append(rowObj)
@@ -299,9 +340,15 @@ class TabForm(Form):
 
 	def DataBindingComplete(self, sender, event):
 		self.arangeColumns()
+		""" self.idColumnIndex = self.dgv.Columns[self.columnNames[0]].Index
+		self.categoryColumnIndex = self.dgv.Columns[self.columnNames[1]].Index
+		self.elementNameColumnIndex = self.dgv.Columns[self.columnNames[2]].Index
+		self.parameterColumnIndex = self.dgv.Columns[self.columnNames[3]].Index
+		self.markColumnIndex = self.dgv.Columns[self.columnNames[4]].Index
+		self.typeMarkColumnIndex = self.dgv.Columns[self.columnNames[5]].Index """
 		TabForm.userSelectedRowIndices = self.getRowIndiciesFromStrIds(TabForm.userSelectedStrIds)
 		TabForm.selectedRowIndices = self.getRowIndiciesFromStrIds(TabForm.selectedRowStrIds)
-		print("DataBindingComplete {0} {1}".format(sender, event))		
+		print("DataBindingComplete {0} {1}".format(sender, event))
 		#self.markSelected()
 		TabForm.selectedRowStrIds = self.strSelectedIdsHolder
 		self.dgv.ClearSelection()
@@ -310,7 +357,7 @@ class TabForm(Form):
 	def ColumnHeaderMouseClick(self, sender, event):
 		#print("ColumnHeader {0} was clicked".format(event.ColumnIndex))
 		#tableDicList, tableObjectList = self.getDataSources(self.ids, sortColumnIndex = event.ColumnIndex)
-		print("getDataSources - 2")
+		print("Column.DisplayIndex {0} - ColumnIndex {1}".format(self.dgv.Columns[event.ColumnIndex].DisplayIndex, event.ColumnIndex))
 		self.strSelectedIdsHolder = TabForm.selectedRowStrIds[:]
 		tableDicList, tableObjectList = self.getDataSources(self.elements, sortColumnIndex = event.ColumnIndex)
 		""" for item in tableObjectList:
@@ -335,17 +382,27 @@ class TabForm(Form):
 			elif col.Name == self.columnNames[1]:
 				print("column {0} was updated".format(col.Name))
 				col.SortMode = DataGridViewColumnSortMode.Programmatic
-				col.DisplayIndex = 1
+				col.DisplayIndex = 3
 				col.ReadOnly = True
 			elif col.Name == self.columnNames[2]:
 				print("column {0} was updated".format(col.Name))
 				col.SortMode = DataGridViewColumnSortMode.Programmatic
-				col.DisplayIndex = 2
+				col.DisplayIndex = 4
 				col.ReadOnly = True
 			elif col.Name == self.columnNames[3]:
 				print("column {0} was updated".format(col.Name))
 				col.SortMode = DataGridViewColumnSortMode.Programmatic
-				col.DisplayIndex = 3
+				col.DisplayIndex = 5
+				col.ReadOnly = True
+			elif col.Name == self.columnNames[4]:
+				print("column {0} was updated".format(col.Name))
+				col.SortMode = DataGridViewColumnSortMode.Programmatic
+				col.DisplayIndex = 1
+				col.ReadOnly = True
+			elif col.Name == self.columnNames[5]:
+				print("column {0} was updated".format(col.Name))
+				col.SortMode = DataGridViewColumnSortMode.Programmatic
+				col.DisplayIndex = 2
 				col.ReadOnly = True
 			
 
@@ -445,16 +502,20 @@ class TabForm(Form):
 
 	def updateDGV(self):		
 		print("len(self.dgv.SelectedRows) {}".format(len(self.dgv.SelectedRows)))
-		values = getValuesByParameterName(self.elements, self.parameterName, doc)
-		for i, row in enumerate(self.dgv.Rows):
-			row.Cells[3].Value = values[i] if i < len(self.dgv.Rows)-1 else row.Cells[3].Value
+		self.values = getValuesByParameterName(self.elements, self.parameterName, doc)
+		""" for i, row in enumerate(self.dgv.Rows):
+			row.Cells[self.parameterColumnIndex].Value = self.values[i] if i < len(self.dgv.Rows)-1 else row.Cells[self.parameterColumnIndex].Value
+		self.dgv.Refresh() """
+		for i, row in enumerate(self.dgv.SelectedRows):
+			row.Cells[self.parameterColumnIndex].Value = self.values[row.Index]
 		self.dgv.Refresh()
 		
 
 	def setParametersOfSelected(self, sender, event):
 		elementsToSet = []
 		for i,row in enumerate(self.dgv.SelectedRows):
-			elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[0].FormattedValue]
+			#print("elId {}".format(self.dgv.Rows[row.Index].Cells[3].FormattedValue))
+			elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue]			
 			el = doc.GetElement(elId)
 			elementsToSet.append(el)
 			#elParams = el.GetOrderedParameters()
@@ -491,6 +552,11 @@ class TabForm(Form):
 		
 	def selectionChanged(self, sender, event):
 		self.idColumnIndex = self.dgv.Columns[self.columnNames[0]].Index
+		self.categoryColumnIndex = self.dgv.Columns[self.columnNames[1]].Index
+		self.elementNameColumnIndex = self.dgv.Columns[self.columnNames[2]].Index
+		self.parameterColumnIndex = self.dgv.Columns[self.columnNames[3]].Index
+		self.markColumnIndex = self.dgv.Columns[self.columnNames[4]].Index
+		self.typeMarkColumnIndex = self.dgv.Columns[self.columnNames[5]].Index
 		elNames = []
 		selectedElements = []
 		selectedElementsId = []
@@ -498,7 +564,7 @@ class TabForm(Form):
 		TabForm.selectedRowIndices = []
 		TabForm.selectedRowIds = []
 		for i,row in enumerate(self.dgv.SelectedRows):
-			elementName = self.dgv.Rows[row.Index].Cells[2].FormattedValue
+			elementName = self.dgv.Rows[row.Index].Cells[self.elementNameColumnIndex].FormattedValue
 			#print("X SelectionChanged Rows[row.Index].Cells[2].FormattedValue - {}".format(elementName))
 			if elementName not in elNames:
 				elNames.append(elementName)
@@ -551,6 +617,14 @@ class TabForm(Form):
 			if args[0].Column.Name == self.columnNames[3]:
 				print("column {0} added".format(args[0].Column.Name))
 				args[0].Column.DisplayIndex = 3
+				args[0].Column.ReadOnly = True
+			if args[0].Column.Name == self.columnNames[4]:
+				print("column {0} added".format(args[0].Column.Name))
+				args[0].Column.DisplayIndex = 4
+				args[0].Column.ReadOnly = True
+			if args[0].Column.Name == self.columnNames[5]:
+				print("column {0} added".format(args[0].Column.Name))
+				args[0].Column.DisplayIndex = 5
 				args[0].Column.ReadOnly = True
 
 

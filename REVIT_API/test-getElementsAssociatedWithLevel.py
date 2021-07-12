@@ -26,19 +26,20 @@ if hasMainAttr:
 	    from Autodesk.Revit.UI.Selection import *
 	    import Autodesk.Revit.DB as DB
 	    import Autodesk.Revit.UI as UI
-	    import Autodesk
-	    import System
-	    import threading
-	    from System.Collections.Generic import List as Clist
+	    #import Autodesk
+	    #import System
+	    #import threading
 	    #import System.Drawing
 	    import clr
 	    clr.AddReferenceByPartialName('System.Windows.Forms')
 	    clr.AddReference("System.Drawing")
-	    clr.AddReference('System')
+	    clr.AddReference("System.Collections")
+	    #clr.AddReference('System')
 	    #import System.Windows.Forms
-	    from System.Threading import ThreadStart, Thread
+	    #from System.Threading import ThreadStart, Thread
 	    from System.Windows.Forms import *
 	    from System.Drawing import *
+	    from System.Collections.Generic import List as Clist
 	    doc = __revit__.ActiveUIDocument.Document
 	    uidoc = __revit__.ActiveUIDocument
 	    #clr.AddReference("RevitServices")
@@ -96,7 +97,8 @@ elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
 sys.path.append(libPath)
 sys.path.append(pythLibPath)
 
-from RevitSelection import getBuitInParameterInstance
+from RevitSelection import getBuiltInParameterInstance
+
 
 class InfoDialog(Form):
 	def __init__(self, inWarningText):
@@ -177,99 +179,109 @@ class InfoDialog(Form):
 			#Application.Exit()
 
 selIds = list(__revit__.ActiveUIDocument.Selection.GetElementIds())
-doc = __revit__.ActiveUIDocument.Document
-selectedElement = doc.GetElement(selIds[0])
-#print(dir(selectedElement))
-print(selectedElement)
-bipLevelName = getBuitInParameterInstance("DATUM_TEXT")
-bipLevelElev = getBuitInParameterInstance("LEVEL_ELEV")
-bipLevelUpToLevel = getBuitInParameterInstance("LEVEL_UP_TO_LEVEL")
-bipElemeCategoryParam = getBuitInParameterInstance("ELEM_CATEGORY_PARAM")
-print("bipLevelElev {}".format(bipLevelElev))
-paramId = DB.ElementId(bipLevelElev)
-print("paramId {}".format(paramId))
+if len(selIds) > 0:
+	doc = __revit__.ActiveUIDocument.Document
+	selectedElement = doc.GetElement(selIds[0])
+	#print(dir(selectedElement))
+	print(selectedElement)
+	bipLevelName = getBuiltInParameterInstance("DATUM_TEXT")
 
-for i, param in enumerate(selectedElement.Parameters):
-	print("{0} - {1}\n parameter type {2}\n storageType {3}\n id {4}\n hasValue {5}\n builtInParam {6}\n".format(i, \
-																				param.Definition.Name, \
-																				param.Definition.ParameterType, \
-																				param.StorageType, \
-																				param.Id, \
-																				param.HasValue, \
-																				param.Definition.BuiltInParameter)) 
+	bipLevelElev = getBuiltInParameterInstance("LEVEL_ELEV")
+	bipLevelUpToLevel = getBuiltInParameterInstance("LEVEL_UP_TO_LEVEL")
+	bipElemeCategoryParam = getBuiltInParameterInstance("ELEM_CATEGORY_PARAM")
+	print("bipLevelElev {}".format(bipLevelElev))
+	paramId = DB.ElementId(bipLevelElev)
+	print("paramId {}".format(paramId))
 
-""" hasInternalElement = True if hasattr(selectedElement, "InternalElement") else False
-print("hasInternalElement {}".format(hasInternalElement))
-internalElement = selectedElement.InternalElement if hasattr(selectedElement, "InternalElement") else None
-print("internalElement {}".format(internalElement))
+	for i, param in enumerate(selectedElement.Parameters):
+		print("{0} - {1}\n parameter type {2}\n storageType {3}\n id {4}\n hasValue {5}\n builtInParam {6}\n".format(i, \
+																					param.Definition.Name, \
+																					param.Definition.ParameterType, \
+																					param.StorageType, \
+																					param.Id, \
+																					param.HasValue, \
+																					param.Definition.BuiltInParameter)) 
 
-hasElement = True if hasattr(selectedElement, "Element") else False
-print("hasElement {}".format(hasElement))
-internalElement = selectedElement.Element if hasattr(selectedElement, "Element") else None
-print("internalElement {}".format(internalElement)) """
+	""" hasInternalElement = True if hasattr(selectedElement, "InternalElement") else False
+	print("hasInternalElement {}".format(hasInternalElement))
+	internalElement = selectedElement.InternalElement if hasattr(selectedElement, "InternalElement") else None
+	print("internalElement {}".format(internalElement))
 
-if isinstance(selectedElement, DB.Level):
-	paramProv = DB.ParameterValueProvider(paramId) if paramId else None
-	print("paramProvider {}".format(paramProv))
-	isString = paramProv.IsStringValueSupported(selectedElement)
-	print("isString {}".format(isString))
-	isElementId = paramProv.IsElementIdValueSupported(selectedElement)
-	print("IsElementId {}".format(isElementId))
-	isInteger = paramProv.IsIntegerValueSupported(selectedElement)
-	print("isInteger {}".format(isInteger))
-	isDouble = paramProv.IsDoubleValueSupported(selectedElement)
-	print("isDouble {}".format(isDouble))
-	globalParamValue = paramProv.GetAssociatedGlobalParameterValue(selectedElement)
-	print("globalParamValue {}".format(globalParamValue))
-	
+	hasElement = True if hasattr(selectedElement, "Element") else False
+	print("hasElement {}".format(hasElement))
+	internalElement = selectedElement.Element if hasattr(selectedElement, "Element") else None
+	print("internalElement {}".format(internalElement)) """
+
+	if isinstance(selectedElement, DB.Level):
+		paramProv = DB.ParameterValueProvider(paramId) if paramId else None
+		print("paramProvider {}".format(paramProv))
+		isString = paramProv.IsStringValueSupported(selectedElement)
+		print("isString {}".format(isString))
+		isElementId = paramProv.IsElementIdValueSupported(selectedElement)
+		print("IsElementId {}".format(isElementId))
+		isInteger = paramProv.IsIntegerValueSupported(selectedElement)
+		print("isInteger {}".format(isInteger))
+		isDouble = paramProv.IsDoubleValueSupported(selectedElement)
+		print("isDouble {}".format(isDouble))
+		globalParamValue = paramProv.GetAssociatedGlobalParameterValue(selectedElement)
+		print("globalParamValue {}".format(globalParamValue))
+		
 
 
-	#levelNameElementParamId = paramProv.GetElementIdValue(selectedElement)
-	#levelNameParam = paramProv.GetStringValue(selectedElement)
-	
-	print("Selected Level - {0}".format(selectedElement.Name))
+		#levelNameElementParamId = paramProv.GetElementIdValue(selectedElement)
+		#levelNameParam = paramProv.GetStringValue(selectedElement)
+		
+		print("Selected Level - {0}".format(selectedElement.Name))
 
-	#print bipLevelElev
-	if isDouble:
-		levelElevParamDouble = selectedElement.Parameter[bipLevelElev].AsDouble()
-		levelElevParamDoubleConverted = DB.UnitUtils.ConvertFromInternalUnits(levelElevParamDouble, selectedElement.Parameter[bipLevelElev].DisplayUnitType)
-		print("Selected Level elevation - {0}".format(levelElevParamDoubleConverted))
+		#print bipLevelElev
+		if isDouble:
+			levelElevParamDouble = selectedElement.Parameter[bipLevelElev].AsDouble()
+			levelElevParamDoubleConverted = DB.UnitUtils.ConvertFromInternalUnits(levelElevParamDouble, selectedElement.Parameter[bipLevelElev].DisplayUnitType)
+			print("Selected Level elevation - {0}".format(levelElevParamDoubleConverted))
 
-	#print bipLevelName
-	levelNameParamString = selectedElement.Parameter[bipLevelName].AsString()
-	print("Selected Level Name - {0}".format(levelNameParamString))
+		#print bipLevelName
+		levelNameParamString = selectedElement.Parameter[bipLevelName].AsString()
+		print("Selected Level Name - {0}".format(levelNameParamString))
 
-	#bipLevelUpToLevel
-	levelUpToLevelParamElementId = selectedElement.Parameter[bipLevelUpToLevel].AsElementId()
-	levelUpToLevelParamElementToBelong = selectedElement.Parameter[bipLevelUpToLevel].Element.Name
-	print("Level Above Id - {0}".format(levelUpToLevelParamElementId if levelUpToLevelParamElementId else None))
-	levelUpToLevelParamElement = doc.GetElement(levelUpToLevelParamElementId) if levelUpToLevelParamElementId else None
-	print("Level Above - {0}".format(levelUpToLevelParamElement if levelUpToLevelParamElement else None))
-	print("Level Above 2- {0}".format(levelUpToLevelParamElementToBelong if levelUpToLevelParamElementToBelong else None))
+		#bipLevelUpToLevel
+		levelUpToLevelParamElementId = selectedElement.Parameter[bipLevelUpToLevel].AsElementId()
+		levelUpToLevelParamElementToBelong = selectedElement.Parameter[bipLevelUpToLevel].Element.Name
+		print("Level Above Id - {0}".format(levelUpToLevelParamElementId if levelUpToLevelParamElementId else None))
+		levelUpToLevelParamElement = doc.GetElement(levelUpToLevelParamElementId) if levelUpToLevelParamElementId else None
+		print("Level Above - {0}".format(levelUpToLevelParamElement if levelUpToLevelParamElement else None))
+		print("Level Above 2- {0}".format(levelUpToLevelParamElementToBelong if levelUpToLevelParamElementToBelong else None))
 
-	# print bipElemeCategoryParam
-	elementCategoryParamElementId = selectedElement.Parameter[bipElemeCategoryParam].AsElementId()
-	ppElementCategoryParam = DB.ParameterValueProvider(elementCategoryParamElementId)
-	print("ppElementCategoryParam  {0}".format(ppElementCategoryParam  if ppElementCategoryParam else None))
-	#strValue = ppElementCategoryParam.GetStringValue(selectedElement)
-	print("ppElementCategoryParam  IsElementIdValueSupported {0}".format(ppElementCategoryParam.IsElementIdValueSupported(selectedElement)))
-	print("Element category parameter Id {0}".format(elementCategoryParamElementId if elementCategoryParamElementId else None))
-	elementCategoryParamElement = doc.GetElement(elementCategoryParamElementId)
-	print("Element category parameter Element {0}".format(elementCategoryParamElement if elementCategoryParamElement else None))
-	print("Element category {0}".format(elementCategoryParamElement if elementCategoryParamElement else None))
+		# print bipElemeCategoryParam
+		elementCategoryParamElementId = selectedElement.Parameter[bipElemeCategoryParam].AsElementId()
+		ppElementCategoryParam = DB.ParameterValueProvider(elementCategoryParamElementId)
+		print("ppElementCategoryParam  {0}".format(ppElementCategoryParam  if ppElementCategoryParam else None))
+		#strValue = ppElementCategoryParam.GetStringValue(selectedElement)
+		print("ppElementCategoryParam  IsElementIdValueSupported {0}".format(ppElementCategoryParam.IsElementIdValueSupported(selectedElement)))
+		print("Element category parameter Id {0}".format(elementCategoryParamElementId if elementCategoryParamElementId else None))
+		elementCategoryParamElement = doc.GetElement(elementCategoryParamElementId)
+		print("Element category parameter Element {0}".format(elementCategoryParamElement if elementCategoryParamElement else None))
+		print("Element category {0}".format(elementCategoryParamElement if elementCategoryParamElement else None))
 
-	selectedIdsCol = DB.FilteredElementCollector(doc).WherePasses(DB.ElementLevelFilter(selectedElement.Id)).ToElementIds()
-	filteredElements = list(selectedIdsCol)
-	print(filteredElements)
-	if hasattr(filteredElements, "__iter__"):
-		for i, v in enumerate(filteredElements):
-			print("{0} - {1}".format(i, v.ToString()))
-		#selectedIdsCol = Clist[DB.ElementId](self.selectedIds)
-		myDialogWindow = InfoDialog("Click OK to select elements associated with selected level {0} : {1}".format(selectedElement.Name, levelElevParamDoubleConverted))
+		selectedIdsCol = DB.FilteredElementCollector(doc).WherePasses(DB.ElementLevelFilter(selectedElement.Id)).ToElementIds()
+		filteredElements = list(selectedIdsCol)
+		print(filteredElements)
+		if hasattr(filteredElements, "__iter__"):
+			for i, v in enumerate(filteredElements):
+				print("{0} - {1}".format(i, v.ToString()))
+			#selectedIdsCol = Clist[DB.ElementId](self.selectedIds)			
+			if selectedIdsCol:
+				myDialogWindow = InfoDialog("Click OK to select elements associated with selected level {0} : {1}".format(selectedElement.Name, levelElevParamDoubleConverted))
+				Application.Run(myDialogWindow)
+				uidoc.Selection.SetElementIds(selectedIdsCol)
+				uidoc.ShowElements(selectedIdsCol)
+			else:
+				myDialogWindow = InfoDialog("No elements are associated with level {0} : {1}".format(selectedElement.Name, levelElevParamDoubleConverted))
+				Application.Run(myDialogWindow)
+				uidoc.Selection.SetElementIds(Clist[DB.ElementId]([]))
+	else:
+		myDialogWindow = InfoDialog("Selected element is not of type Autodesk.Revit.DB.Level")
 		Application.Run(myDialogWindow)
-		uidoc.Selection.SetElementIds(selectedIdsCol)
-		uidoc.ShowElements(selectedIdsCol)
 else:
-	myDialogWindow = InfoDialog("Selected element is not of type Autodesk.Revit.DB.Level")
+	myDialogWindow = InfoDialog("You must select Level element")
 	Application.Run(myDialogWindow)
 

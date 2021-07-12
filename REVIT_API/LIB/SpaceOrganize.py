@@ -40,7 +40,8 @@ else:
 	else:
 	    import clr
 	    clr.AddReference('ProtoGeometry')
-	    from Autodesk.DesignScript.Geometry import *
+	    #from Autodesk.DesignScript.Geometry import *
+	    import Autodesk.DesignScript.Geometry as DSGeometry
 	    hasAutodesk = True
 
 try:
@@ -97,16 +98,16 @@ import heapq
 class SolidPoint():
 	def __init__(self, inSolid):		
 		self.solid = inSolid
-		boundingBox = BoundingBox.ByGeometry(self.solid)
-		cuboid = BoundingBox.ToCuboid(boundingBox)
-		centroid = Solid.Centroid(cuboid)
+		boundingBox = DSGeometry.BoundingBox.ByGeometry(self.solid)
+		cuboid = DSGeometry.BoundingBox.ToCuboid(boundingBox)
+		centroid = DSGeometry.Solid.Centroid(cuboid)
 		self.point = centroid
 
 class KD_Tree():
 	def __init__(self, inPoints):
 		if isinstance(inPoints, list) or isinstance(inPoints, tuple):
 			if hasAutodesk:
-			    if len(inPoints) > 0 and (inPoints[0].__class__.__name__ == "SolidPoint" or isinstance(inPoints[0], Autodesk.DesignScrtipt.Geometry.Point)):
+			    if len(inPoints) > 0 and (inPoints[0].__class__.__name__ == "SolidPoint" or isinstance(inPoints[0], DSGeometry.Point)):
 				    self.points = self.transformDSPoints(inPoints)
 				    self.dsPoints = inPoints
 				    self.dim = 3
@@ -118,7 +119,7 @@ class KD_Tree():
 				else:
 					self.dsPoints = []
 			else:
-				raise TypeError("items in list are not of type Autodesk.DesignScrtipt.Geometry.Point or of type tuple e.g. (0.12, 0.10, 0.5) it's of type: {0}".format(type(inPoints[0])))
+				raise TypeError("items in list are not of type DSGeometry.Point or of type tuple e.g. (0.12, 0.10, 0.5) it's of type: {0}".format(type(inPoints[0])))
 		else:
 			raise TypeError("Argument in KD_Tree constructor must be of type list or tuple")
 		self.setup()

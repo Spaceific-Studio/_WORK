@@ -6,16 +6,17 @@
 
 import sys
 import time
-import traceback
+sTime = time.time()
+#import traceback
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
 sys.path.append(pyt_path)
 sys.path.append(lib_path)
 
 from itertools import chain, groupby
-from RevitSelection import *
+#from RevitSelection import *
 import RevitSelection as RevitSelection
-from ListUtils import *
+#from ListUtils import *
 import ListUtils as ListUtils
 from Errors import *
 from SpaceOrganize import *
@@ -28,20 +29,23 @@ clr.ImportExtensions(Revit.Elements)
 # Import geometry conversion extension methods
 clr.ImportExtensions(Revit.GeometryConversion)
 
-#import windows forms
-clr.AddReference("System.Windows.Forms")
-clr.AddReference("System.Drawing")
-import System.Drawing
-import System.Windows.Forms as WF
-from System.Drawing import *
-from System.Windows.Forms import Application, Button, Form, ComboBox, Label, TextBox, DockStyle, AnchorStyles
 
+
+#import windows forms
+#clr.AddReference("System.Windows.Forms")
+#clr.AddReference("System.Drawing")
+#import System.Drawing
+#import System.Windows.Forms as WF
+#from System.Drawing import *
+#from System.Windows.Forms import Application, Button, Form, ComboBox, Label, TextBox, DockStyle, AnchorStyles
+eTime = time.time()
+myTime = eTime - sTime
 # Import DocumentManager and TransactionManager
 clr.AddReference("RevitServices")
 import RevitServices
-from RevitServices.Persistence import DocumentManager
+#from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
-doc = DocumentManager.Instance.CurrentDBDocument
+#doc = DocumentManager.Instance.CurrentDBDocument
 
 clr.AddReference("System")
 from System.Collections.Generic import List as Clist
@@ -49,18 +53,19 @@ from System.Collections.Generic import IEnumerable as iEnum
 
 # Import RevitAPI
 clr.AddReference("RevitAPI")
-import Autodesk
-import Autodesk.Revit.DB
-#import Autodesk.Revit.DB as DB
+#import Autodesk
+import Autodesk.Revit.DB as DB
+#import DB as DB
 
 clr.AddReference('RevitAPIUI')
-from Autodesk.Revit.UI.Selection import *
+from Autodesk.Revit.UI.Selection import SelectableInViewFilter
 
 #clr.AddReference('DSCoreNodes')
 #from DSCore import List, Solid
 
 clr.AddReference('ProtoGeometry')
-from Autodesk.DesignScript.Geometry import *
+import Autodesk.DesignScript.Geometry as DSGeometry
+
 
 #Revit to dynamo model
 class RTD_model(object):
@@ -72,42 +77,44 @@ class RTD_model(object):
 		inDoc:	CurrentDBDocument type: DocumentManager.Instance.CurrentDBDocument
 		*args[0]: excludeElements type: list[Revit.DB.Element, ...] elements supposed to be excluded from selection
 		*kwargs: inc_invis type: bool - sets the option property "IncludeNonVisibleObjects" 
-										used in Autodesk.Revit.DB.Element.Geometry[Autodesk.Revit.DB.Options().IncludeNonVisibleObjects]
+										used in DB.Element.Geometry[DB.Options().IncludeNonVisibleObjects]
 				 incopenings type: bool
 				 incshadows type: bool
 				 incwalls type: bool
 				 incshared type: bool sets the option property for
-				 					Autodesk.Revit.DB.Element.FindInserts(incopenings,incshadows,incwalls,incshared)
+				 					DB.Element.FindInserts(incopenings,incshadows,incwalls,incshared)
 		Returns: 
 	"""
 	# roof class names
-	roofCNs = [Autodesk.Revit.DB.ExtrusionRoof, Autodesk.Revit.DB.FootPrintRoof]
+	roofCNs = [DB.ExtrusionRoof, DB.FootPrintRoof]
 	# floor class names
-	floorCNs = [Autodesk.Revit.DB.Floor, Autodesk.Revit.DB.HostedSweep]
+	floorCNs = [DB.Floor, DB.HostedSweep]
 	# wall class names
-	wallCNs = [Autodesk.Revit.DB.Wall, Autodesk.Revit.DB.CurtainSystem]
+	wallCNs = [DB.Wall, DB.CurtainSystem]
 	# column categories 
-	columnCgs = [Autodesk.Revit.DB.BuiltInCategory.OST_Columns, Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns]
+	columnCgs = [DB.BuiltInCategory.OST_Columns, DB.BuiltInCategory.OST_StructuralColumns]
 	# structural frame categories 
-	structFrameCgs = [Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming]
+	structFrameCgs = [DB.BuiltInCategory.OST_StructuralFraming]
 	# curtain system categories 
-	#curtainSystemCgs = [Autodesk.Revit.DB.BuiltInCategory.OST_Curtain_Systems]
+	#curtainSystemCgs = [DB.BuiltInCategory.OST_Curtain_Systems]
 	# windows categories
-	windowsCgs = [Autodesk.Revit.DB.BuiltInCategory.OST_Windows]
-	doorsCgs = [Autodesk.Revit.DB.BuiltInCategory.OST_Doors]
+	windowsCgs = [DB.BuiltInCategory.OST_Windows]
+	doorsCgs = [DB.BuiltInCategory.OST_Doors]
 
 	# openings category
-	openingsCNs = [Autodesk.Revit.DB.Opening]
+	openingsCNs = [DB.Opening]
 
 
 	def __init__(self, inDoc, *args, **kwargs):
+		self.timeRecord = {"import time" : myTime}
 		self.setup(inDoc, *args, **kwargs)
+		#self.doc
 
 	def setup(self, inDoc, *args, **kwargs):
 		"""
 			instance parameter setup
 		"""
-
+		sTime = time.time()
 		self.doc = inDoc
 		if "inc_invis" in kwargs:
 			self.inc_invis = kwargs["inc_invis"]
@@ -146,44 +153,52 @@ class RTD_model(object):
 				if hasattr(x, "Id"):
 					myId = x.Id
 					#when elements not unwrapped
-					myElementId = Autodesk.Revit.DB.ElementId(myId)
+					myElementId = DB.ElementId(myId)
 					myElementIds.append(myElementId)
 
-			self.exclude_element_collection = Clist[Autodesk.Revit.DB.ElementId](myElementIds)
+			self.exclude_element_collection = Clist[DB.ElementId](myElementIds)
 		else:
-			self.exclude_element_collection =  Clist[Autodesk.Revit.DB.ElementId]([])
+			self.exclude_element_collection =  Clist[DB.ElementId]([])
 		#raise ValueError("self.exclude_element_collection {0}".format(len(self.exclude_element_collection)))
-		self.detail_lvl = Autodesk.Revit.DB.ViewDetailLevel.Coarse
+		self.detail_lvl = DB.ViewDetailLevel.Coarse
 		#include invisible objects
 		self.inc_invis = False
 		self.view = self.doc.ActiveView
-		self.geo_options = Autodesk.Revit.DB.Options()
+		self.geo_options = DB.Options()
 		if self.view == None: geo_options.DetailLevel = self.detail_lvl
 		self.geo_options.IncludeNonVisibleObjects = self.inc_invis
 		if self.view != None: self.geo_options.View = self.view
 
-		self.allLevels = getLevels()
-		self.levelIds = getLevelIds(self.allLevels)
-
+		#self.allLevels = getLevels()
+		#self.levelIds = getLevelIds(self.allLevels)
+		eTime = time.time()
+		myTime = eTime - sTime
+		self.timeRecord["initial setup"] = "{0:.2f}s".format(myTime)
 		sTime = time.time()
 		self.structuredElements = self.getStructuredElements()
+		eTime = time.time()
+		myTime = eTime - sTime
+		self.timeRecord["structuredElements setup"] = "{0:.2f}s".format(myTime)
 		#raise TypeError("Structured Ellements{0}".format(self.structuredElements))
 			
 		# Dynamo solids must be created before appending opening elements to self.unwrappedElements because of 
 		# throwing exception while trying to get geometry from elements in mode wihout openings, which 
 		# must be done in transaction where openings are deleted and then deletion is undone 
+		sTime = time.time()
 		self.dynamoSolids = self.getDynamoModel(True)
-		#raise TypeError("dynamoSolids {0}".format(self.dynamoSolids))
+		#raise TypeError("dynamoSolids {0}".format(len(self.dynamoSolids)))
 
 		eTime = time.time()
 		myTime = eTime - sTime
+		self.timeRecord["dynamoSolids setup"] = "{0:.2f}s".format(myTime)
 		#Errors.catchVar(self.structuredElements,"self.structuredElements + time dynamoSolids - {0:.5f} s".format(myTime))
 		#Errors.catchVar(self.dynamoSolids,"self.dynamoSolids + time dynamoSolids - {0:.5f} s".format(myTime))
 		 
 		#Errors.catchVar(self.dynamoSolids, "self.dynamoSolids")
 		#raise ValueError("self.dynamoSolids {0}".format(len(self.dynamoSolids), self.dynamoSolids))
 		#self.dynamoSolids.append(self.dynamoOpeningSolids)
-		self.dynamoSolidsWithOpenings = self.getDynamoModel(False, incCW = True)
+
+		""" self.dynamoSolidsWithOpenings = self.getDynamoModel(False, incCW = True)
 		#Errors.catchVar(self.dynamoSolidsWithOpenings,"self.dynamoSolidsWithOpenings".format())
 		try:
 			flattenedSolids = ListUtils.flatList(self.dynamoSolids)
@@ -202,19 +217,19 @@ class RTD_model(object):
 		sTime = time.time()
 		
 		try:
-			self.unitedSolid = Autodesk.DesignScript.Geometry.Solid.ByUnion(filteredFlattenedSolids)
+			self.unitedSolid = DSGeometry.Solid.ByUnion(filteredFlattenedSolids)
 		except Exception:
 			#raise TypeError("{0}".format(traceback.print_exc()))
 			self.unitedSolid = None
 		Errors.catchVar(self.unitedSolid, "self.unitedSolid")
-		
+		 """
 		""" 
 		try:
 			#get openings by subtracting united solid without openings and with united solid with openings
-			self.unitedSolidWithOpenings = Autodesk.DesignScript.Geometry.Solid.ByUnion(filteredFlattenedSolidsWithOpenings)
-			self.subtractedOpenings = Autodesk.DesignScript.Geometry.Solid.DifferenceAll(self.unitedSolid, Clist[Autodesk.DesignScript.Geometry.Solid]([self.unitedSolidWithOpenings]))
-			self.subtractedOpenings = Autodesk.DesignScript.Geometry.PolySurface.BySolid(self.subtractedOpenings)
-			self.subtractedOpenings = Autodesk.DesignScript.Geometry.PolySurface.ExtractSolids(self.subtractedOpenings)
+			self.unitedSolidWithOpenings = DSGeometry.Solid.ByUnion(filteredFlattenedSolidsWithOpenings)
+			self.subtractedOpenings = DSGeometry.Solid.DifferenceAll(self.unitedSolid, Clist[DSGeometry.Solid]([self.unitedSolidWithOpenings]))
+			self.subtractedOpenings = DSGeometry.PolySurface.BySolid(self.subtractedOpenings)
+			self.subtractedOpenings = DSGeometry.PolySurface.ExtractSolids(self.subtractedOpenings)
 			if len(self.subtractedOpenings) != len(self.openingFills):
 				ModelConsistency.catch("Err_05", "Model Consistency Error in RTD_model.setup()")
 			eTime = time.time()
@@ -222,8 +237,8 @@ class RTD_model(object):
 			Errors.catchVar(self.subtractedOpenings, "self.subtractedOpenings + time self.unitedSolids{0:.5f} s".format(myTime))
 
 			#extract inner and outer shells from the unitedSolid
-			polySurfaces = Autodesk.DesignScript.Geometry.PolySurface.BySolid(self.unitedSolid)
-			extractedSolids = list(Autodesk.DesignScript.Geometry.PolySurface.ExtractSolids(polySurfaces))
+			polySurfaces = DSGeometry.PolySurface.BySolid(self.unitedSolid)
+			extractedSolids = list(DSGeometry.PolySurface.ExtractSolids(polySurfaces))
 
 			
 			#group all extracted solids by outer shells and assigning inner shells to them
@@ -247,16 +262,16 @@ class RTD_model(object):
 			self.outerShellPolysurfaces = []
 			self.rawOuterShellAreas = []
 			for outerShell in self.outerShells:
-				pSurface = Autodesk.DesignScript.Geometry.PolySurface.BySolid(outerShell)
+				pSurface = DSGeometry.PolySurface.BySolid(outerShell)
 				self.outerShellPolysurfaces.append(pSurface)
 				self.rawOuterShellAreas.append(pSurface.Area * 0.000001)
 
 			#collection of all door and window elements gathered by RevitSelection.getInserts method in RTD_Model.getDynamoModel()
 			sTime = time.time()
 			openingFillsIds = [x.Id for x in self.openingFills]
-			openingFillsCol = Clist[Autodesk.Revit.DB.ElementId](openingFillsIds)
-			self.doors = list(DB.FilteredElementCollector(doc, openingFillsCol).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Doors))
-			self.windows = list(DB.FilteredElementCollector(doc, openingFillsCol).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Windows))
+			openingFillsCol = Clist[DB.ElementId](openingFillsIds)
+			self.doors = list(DB.FilteredElementCollector(doc, openingFillsCol).OfCategory(DB.BuiltInCategory.OST_Doors))
+			self.windows = list(DB.FilteredElementCollector(doc, openingFillsCol).OfCategory(DB.BuiltInCategory.OST_Windows))
 			#Errors.catchVar(self.windows, "self.doors")
 			#creating SolidPoints containig center point of opening solids and subtracted solid 
 			solidPoints = []
@@ -319,9 +334,9 @@ class RTD_model(object):
 		solids = []
 		for el in inElements:
 			dynGeo = RevitSelection.getDynamoGeometry(el)
-			boundingBox = Autodesk.DesignScript.Geometry.BoundingBox.ByGeometry(dynGeo)
-			cuboid = Autodesk.DesignScript.Geometry.BoundingBox.ToCuboid(boundingBox)
-			centroid = Autodesk.DesignScript.Geometry.Solid.Centroid(cuboid)
+			boundingBox = DSGeometry.BoundingBox.ByGeometry(dynGeo)
+			cuboid = DSGeometry.BoundingBox.ToCuboid(boundingBox)
+			centroid = DSGeometry.Solid.Centroid(cuboid)
 			nearestSolidPoint = inKd_tree.get_nearest(inKd_tree.DSPointsTree, centroid, 3, inKd_tree.dist_sq_dim, return_distances=False)
 			try:
 				if nearestSolidPoint.solid.DoesIntersect(cuboid):
@@ -358,120 +373,120 @@ class RTD_model(object):
 		return item.Category.Name
 
 	def getStructuredElements(self):
-		allElementsIds = RevitSelection.getAllElements(doc, toId = True)
-		#allElementsIdsCol = Clist[Autodesk.Revit.DB.ElementId](allElementsIds)
+		allElementsIds = RevitSelection.getAllElements(self.doc, toId = True)
+		#allElementsIdsCol = Clist[DB.ElementId](allElementsIds)
 		if len(self.exclude_element_collection) > 0:
-			roofs = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs, False)) \
+			roofs = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Roofs, False)) \
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			floors = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Floors, False)) \
+			floors = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Floors, False)) \
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			walls = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Walls, False)) \
+			walls = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Walls, False)) \
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			structuralFrames = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming, False)) \
+			structuralFrames = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_StructuralFraming, False)) \
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			# structuralColumns = list(DB.FilteredElementCollector(doc, allElementsIds) \
-			# 						.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns, False)) \
+			# structuralColumns = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+			# 						.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_StructuralColumns, False)) \
 			# 						.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 			#						.WhereElementIsNotElementType() \
 			# 						.ToElements() )
-			structuralColumns = list(DB.FilteredElementCollector(doc) \
-									.OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns) \
-									.OfClass(Autodesk.Revit.DB.FamilyInstance) \
+			structuralColumns = list(DB.FilteredElementCollector(self.doc) \
+									.OfCategory(DB.BuiltInCategory.OST_StructuralColumns) \
+									.OfClass(DB.FamilyInstance) \
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 									.WhereElementIsNotElementType()
 			 						.ToElements() )
 			columns = list(DB.FilteredElementCollector(doc) \
-									.OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Columns) \
-									.OfClass(Autodesk.Revit.DB.FamilyInstance) \
+									.OfCategory(DB.BuiltInCategory.OST_Columns) \
+									.OfClass(DB.FamilyInstance) \
 									.WhereElementIsNotElementType()
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 			 						.ToElements() )
 			structuralColumns += columns
-			structuralFoundation = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation, False)) \
+			structuralFoundation = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_StructuralFoundation, False)) \
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			# curtainWalls = curtainSystem = list(DB.FilteredElementCollector(doc, allElementsIds) \
-			# 						.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Curtain_Systems, False)) \
+			# curtainWalls = curtainSystem = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+			# 						.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Curtain_Systems, False)) \
 			# 						.ToElements() )
-			#curtainSystems = list(DB.FilteredElementCollector(doc, allElementsIds) \
-			#						.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Curtain_Systems, False)) \
+			#curtainSystems = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+			#						.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Curtain_Systems, False)) \
 			#						.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 			#						.ToElements() )
 			curtainWalls = list(RevitSelection.getElementByClassName(RTD_model.wallCNs, self.exclude_element_collection, curtainWall = True))
-			doors = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Doors, False)) \
+			doors = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Doors, False)) \
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() ) 
-			windows = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Windows, False)) \
+			windows = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Windows, False)) \
 									.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
 		else:
-			roofs = list(DB.FilteredElementCollector(doc, allElementsIds) \
-								.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Roofs, False)) \
+			roofs = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+								.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Roofs, False)) \
 								.WhereElementIsNotElementType() \
 								.ToElements() )
-			floors = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Floors, False)) \
+			floors = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Floors, False)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			walls = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Walls, False)) \
+			walls = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Walls, False)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			structuralFrames = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming, False)) \
+			structuralFrames = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_StructuralFraming, False)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			# structuralColumns = list(DB.FilteredElementCollector(doc, allElementsIds) \
-			# 						.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns, False)) \
+			# structuralColumns = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+			# 						.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_StructuralColumns, False)) \
 			#						.WhereElementIsNotElementType() \
 			# 						.ToElements() )
-			structuralColumns = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns) \
-									.OfClass(Autodesk.Revit.DB.FamilyInstance) \
+			structuralColumns = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.OfCategory(DB.BuiltInCategory.OST_StructuralColumns) \
+									.OfClass(DB.FamilyInstance) \
 									.WhereElementIsNotElementType()
 			 						.ToElements() )
-			columns = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Columns) \
-									.OfClass(Autodesk.Revit.DB.FamilyInstance) \
+			columns = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.OfCategory(DB.BuiltInCategory.OST_Columns) \
+									.OfClass(DB.FamilyInstance) \
 									.WhereElementIsNotElementType()
 			 						.ToElements() )
 			structuralColumns += columns
-			structuralFoundation = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation, False)) \
+			structuralFoundation = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_StructuralFoundation, False)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			# curtainWalls = curtainSystem = list(DB.FilteredElementCollector(doc, allElementsIds) \
-			# 						.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Curtain_Systems, False)) \
+			# curtainWalls = curtainSystem = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+			# 						.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Curtain_Systems, False)) \
 			# 						.ToElements() )
-			#curtainSystems = list(DB.FilteredElementCollector(doc, allElementsIds) \
-			#						.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Curtain_Systems, False)) \
+			#curtainSystems = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+			#						.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Curtain_Systems, False)) \
 			#						.WherePasses(DB.ExclusionFilter(self.exclude_element_collection)) \
 			#						.ToElements() )
 			curtainWalls = list(RevitSelection.getElementByClassName(RTD_model.wallCNs, self.exclude_element_collection, curtainWall = True))
-			doors = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Doors, False)) \
+			doors = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Doors, False)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
-			windows = list(DB.FilteredElementCollector(doc, allElementsIds) \
-									.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Windows, False)) \
+			windows = list(DB.FilteredElementCollector(self.doc, allElementsIds) \
+									.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Windows, False)) \
 									.WhereElementIsNotElementType() \
 									.ToElements() )
 			self.doorsAndWindowsFills = doors + windows
@@ -515,7 +530,7 @@ class RTD_model(object):
 	# 	model = self.getDynamoModel(removeInserts)
 	# 	flattenModel = ListUtils.flatList(model)
 	# 	try:
-	# 		unitedSolid = Autodesk.DesignScript.Geometry.Solid.ByUnion(flattenModel)
+	# 		unitedSolid = DSGeometry.Solid.ByUnion(flattenModel)
 	# 	except Exception as ex:
 	# 		Errors.catch(ex, "Solid.ByUnion in RTD_model.getModelOfOneSolidByUnion() failed")
 	# 		unitedSolid = []
@@ -532,21 +547,21 @@ class RTD_model(object):
 	# 	rawInserts = ListUtils.flatList(ListUtils.processList(RevitSelection.getInserts, inElements, incopenings = True, incshadows = False, incwalls = False, incshared = True))
 		
 	# 	rawInsertsIds = [x.Id for x in rawInserts]
-	# 	rawInsertsIdsCol = Clist[Autodesk.Revit.DB.ElementId](rawInsertsIds)
-	# 	paramId = Autodesk.Revit.DB.ElementId(Autodesk.Revit.DB.BuiltInParameter.VIEW_PHASE)
-	# 	param_provider = Autodesk.Revit.DB.ParameterValueProvider(paramId)
+	# 	rawInsertsIdsCol = Clist[DB.ElementId](rawInsertsIds)
+	# 	paramId = DB.ElementId(DB.BuiltInParameter.VIEW_PHASE)
+	# 	param_provider = DB.ParameterValueProvider(paramId)
 	# 	activeViewPhaseId = param_provider.GetElementIdValue(self.doc.ActiveView)
 
-	# 	myElementPhaseStatusFilter1 = Autodesk.Revit.DB.ElementPhaseStatusFilter(activeViewPhaseId, Autodesk.Revit.DB.ElementOnPhaseStatus.Existing, False)
-	# 	myElementPhaseStatusFilter2 = Autodesk.Revit.DB.ElementPhaseStatusFilter(activeViewPhaseId, Autodesk.Revit.DB.ElementOnPhaseStatus.New,False)
+	# 	myElementPhaseStatusFilter1 = DB.ElementPhaseStatusFilter(activeViewPhaseId, DB.ElementOnPhaseStatus.Existing, False)
+	# 	myElementPhaseStatusFilter2 = DB.ElementPhaseStatusFilter(activeViewPhaseId, DB.ElementOnPhaseStatus.New,False)
 
-	# 	insertOpenings = Autodesk.Revit.DB.FilteredElementCollector(self.doc, rawInsertsIdsCol) \
-	# 																		.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
+	# 	insertOpenings = DB.FilteredElementCollector(self.doc, rawInsertsIdsCol) \
+	# 																		.WherePasses(DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
 	# 																			,myElementPhaseStatusFilter2)) \
-	# 																		.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Walls, True)) \
+	# 																		.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Walls, True)) \
 	# 																		.ToElements()
-	# 	insertWalls = Autodesk.Revit.DB.FilteredElementCollector(self.doc, rawInsertsIdsCol) \
-	# 																		.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Walls, False)) \
+	# 	insertWalls = DB.FilteredElementCollector(self.doc, rawInsertsIdsCol) \
+	# 																		.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Walls, False)) \
 	# 																		.ToElementIds()
 
 	# 	filteredWalls = []
@@ -559,8 +574,8 @@ class RTD_model(object):
 	# 		# Get the min and max values of the elements bounding box.
 	# 		el_bb_max = el_bb.Max
 	# 		el_bb_min = el_bb.Min
-	# 		filteredWall = Autodesk.Revit.DB.FilteredElementCollector(self.doc, insertWalls) \
-	# 																		.WherePasses(Autodesk.Revit.DB.BoundingBoxIntersectsFilter(Autodesk.Revit.DB.Outline(el_bb_min, el_bb_max))) \
+	# 		filteredWall = DB.FilteredElementCollector(self.doc, insertWalls) \
+	# 																		.WherePasses(DB.BoundingBoxIntersectsFilter(DB.Outline(el_bb_min, el_bb_max))) \
 	# 																		.ToElements()
 	# 		if len(list(filteredWall)) > 0:
 	# 			filteredWalls += filteredWall		
@@ -571,19 +586,19 @@ class RTD_model(object):
 		"""
 			Filter elements by active view parameters (active view phase, category...)
 
-			inElements> list[Autodesk.Revit.DB.Element]
+			inElements> list[DB.Element]
 			kwargs["rawOpening"] including wall elements of opening (raw openings geometry) type: bool
 			kwargs["toElement"] type: bool
 		
-			Returns: list[Autodesk.Revit.DB.ElementId] if kwargs["toElement"] == False or list[Autodesk.Revit.DB.Element] if kwargs["toElement"] == True 
+			Returns: list[DB.ElementId] if kwargs["toElement"] == False or list[DB.Element] if kwargs["toElement"] == True 
 		"""
 		
 
 		if "rawOpening" in kwargs and kwargs["rawOpening"] == True:
-			includeCategories = [Autodesk.Revit.DB.BuiltInCategory.OST_Walls]
+			includeCategories = [DB.BuiltInCategory.OST_Walls]
 			includeClasses = []
 		else:
-			includeCategories = [Autodesk.Revit.DB.BuiltInCategory.OST_Doors, Autodesk.Revit.DB.BuiltInCategory.OST_Windows]
+			includeCategories = [DB.BuiltInCategory.OST_Doors, DB.BuiltInCategory.OST_Windows]
 			includeClasses = [DB.Opening]
 
 		toElement = True if "toElement" in kwargs and kwargs["toElement"] == True else False
@@ -591,64 +606,64 @@ class RTD_model(object):
 		
 
 		ids = [x.Id for x in inElements]
-		#colectionOfUniqueInsertIds = Clist[Autodesk.Revit.DB.ElementId](uIs)
-		colectionOfElementsIds = Clist[Autodesk.Revit.DB.ElementId](ids)
-
+		#colectionOfUniqueInsertIds = Clist[DB.ElementId](uIs)
+		colectionOfElementsIds = Clist[DB.ElementId](ids)
+		#raise TypeError("colectionOfElementsIds {}".format(len(colectionOfElementsIds)))
 		# Get ActiveView phase ID
-		paramId = Autodesk.Revit.DB.ElementId(Autodesk.Revit.DB.BuiltInParameter.VIEW_PHASE)
-		param_provider = Autodesk.Revit.DB.ParameterValueProvider(paramId)
+		paramId = DB.ElementId(DB.BuiltInParameter.VIEW_PHASE)
+		param_provider = DB.ParameterValueProvider(paramId)
 		activeViewPhaseId = param_provider.GetElementIdValue(self.doc.ActiveView)
-		docPhases =  Autodesk.Revit.DB.FilteredElementCollector(self.doc) \
-									.OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Phases) \
+		docPhases =  DB.FilteredElementCollector(self.doc) \
+									.OfCategory(DB.BuiltInCategory.OST_Phases) \
 									.WhereElementIsNotElementType() \
 									.ToElements()
 
 		#Filter inserts visible only in active view and of Existing phase status - (ignore demolished elements in previous phases) 
-		myElementPhaseStatusFilter1 = Autodesk.Revit.DB.ElementPhaseStatusFilter(activeViewPhaseId, Autodesk.Revit.DB.ElementOnPhaseStatus.Existing, False)
-		myElementPhaseStatusFilter2 = Autodesk.Revit.DB.ElementPhaseStatusFilter(activeViewPhaseId, Autodesk.Revit.DB.ElementOnPhaseStatus.New,False)
+		myElementPhaseStatusFilter1 = DB.ElementPhaseStatusFilter(activeViewPhaseId, DB.ElementOnPhaseStatus.Existing, False)
+		myElementPhaseStatusFilter2 = DB.ElementPhaseStatusFilter(activeViewPhaseId, DB.ElementOnPhaseStatus.New,False)
 
-		includeCategoryFilters = [Autodesk.Revit.DB.ElementCategoryFilter(x) for x in includeCategories]
-		includeClassesFilters = [Autodesk.Revit.DB.ElementClassFilter(x) for x in includeClasses]
+		includeCategoryFilters = [DB.ElementCategoryFilter(x) for x in includeCategories]
+		includeClassesFilters = [DB.ElementClassFilter(x) for x in includeClasses]
 		categoryAndClassFilters = includeCategoryFilters + includeClassesFilters
 			
 		# if len(colectionOfElementsIds) > 0:
 		# 	if toElement == True:
-		# 		filteredElementsByActiveViewIds = Autodesk.Revit.DB.FilteredElementCollector(self.doc, colectionOfElementsIds) \
-		# 																	.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(categoryAndClassFilters)) \
+		# 		filteredElementsByActiveViewIds = DB.FilteredElementCollector(self.doc, colectionOfElementsIds) \
+		# 																	.WherePasses(DB.LogicalOrFilter(categoryAndClassFilters)) \
 		# 																	.WherePasses(SelectableInViewFilter(self.doc, self.doc.ActiveView.Id)) \
-		# 																	.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
+		# 																	.WherePasses(DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
 		# 																								,myElementPhaseStatusFilter2)) \
-		# 																	.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Walls, True)) \
+		# 																	.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Walls, True)) \
 		# 																	.ToElements()
 		# 	else:
-		# 		filteredElementsByActiveViewIds = Autodesk.Revit.DB.FilteredElementCollector(self.doc, colectionOfElementsIds) \
-		# 																	.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(categoryAndClassFilters)) \
+		# 		filteredElementsByActiveViewIds = DB.FilteredElementCollector(self.doc, colectionOfElementsIds) \
+		# 																	.WherePasses(DB.LogicalOrFilter(categoryAndClassFilters)) \
 		# 																	.WherePasses(SelectableInViewFilter(self.doc, self.doc.ActiveView.Id)) \
-		# 																	.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
+		# 																	.WherePasses(DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
 		# 																								,myElementPhaseStatusFilter2)) \
-		# 																	.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Walls, True)) \
+		# 																	.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Walls, True)) \
 		# 																	.ToElementIds()
 		# else:
 		# 	filteredElementsByActiveViewIds = []
 
 		if len(colectionOfElementsIds) > 0:
 			if toElement == True:
-				filteredElementsByActiveViewIds = Autodesk.Revit.DB.FilteredElementCollector(self.doc, colectionOfElementsIds) \
+				filteredElementsByActiveViewIds = DB.FilteredElementCollector(self.doc, colectionOfElementsIds) \
 																			.WherePasses(SelectableInViewFilter(self.doc, self.doc.ActiveView.Id)) \
-																			.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
+																			.WherePasses(DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
 																										,myElementPhaseStatusFilter2)) \
-																			.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Walls, True)) \
+																			.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Walls, True)) \
 																			.ToElements()
 			else:
-				filteredElementsByActiveViewIds = Autodesk.Revit.DB.FilteredElementCollector(self.doc, colectionOfElementsIds) \
+				filteredElementsByActiveViewIds = DB.FilteredElementCollector(self.doc, colectionOfElementsIds) \
 																			.WherePasses(SelectableInViewFilter(self.doc, self.doc.ActiveView.Id)) \
-																			.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
+																			.WherePasses(DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
 																										,myElementPhaseStatusFilter2)) \
-																			.WherePasses(Autodesk.Revit.DB.ElementCategoryFilter(Autodesk.Revit.DB.BuiltInCategory.OST_Walls, True)) \
+																			.WherePasses(DB.ElementCategoryFilter(DB.BuiltInCategory.OST_Walls, True)) \
 																			.ToElementIds()
 		else:
 			filteredElementsByActiveViewIds = []
-
+		#raise TypeError("filteredElementsByActiveViewIds {}".format(len(filteredElementsByActiveViewIds)))
 		return filteredElementsByActiveViewIds
 
 	def getDynamoModel(self, removeInserts, **kwargs):
@@ -662,14 +677,20 @@ class RTD_model(object):
 		
 		#self.unwrappedElements = self.getUnwrappedElements()
 		try:
-			self.inserts = ListUtils.flatList(ListUtils.processList(RevitSelection.getInserts, self.structuredElements))
+			#self.inserts = ListUtils.flatList(ListUtils.processList(RevitSelection.getInserts, self.structuredElements))
+			self.inserts = ListUtils.processList(RevitSelection.getInserts, self.structuredElements)
 			#self.openingWalls = filter(lambda x: x.Category.Name == "Walls", self.inserts)
 			
 		except Exception as ex:
 			# if error accurs anywhere in the process catch it
-			Errors.catch(ex, "Getting inserts RTD_model.getDynamoModel() failed.")
-			self.inserts = []		
-		
+			raise TypeError(sys.exc_info())
+			Errors.catch(ex, "Getting inserts RTD_model.getDynamoModel() failed. {0}".format(sys.exc_info()))
+			self.inserts = []
+		try:
+			self.inserts = ListUtils.flatList(self.inserts)
+		except:
+			Errors.catch(ex, "flattening inserts RTD_model.getDynamoModel() failed. {0}".format(sys.exc_info()))
+		#raise TypeError("self.inserts {0}".format([x.Id.IntegerValue for x in self.inserts]))
 		# try:
 		# 	uniqueInserts = self.getUniqueElements(inserts)
 		# except Exception as ex:
@@ -679,40 +700,40 @@ class RTD_model(object):
 
 		# #uIs = [x.Id for x in uniqueInserts]
 		# uIs = [x.Id for x in self.inserts]
-		# #colectionOfUniqueInsertIds = Clist[Autodesk.Revit.DB.ElementId](uIs)
-		# colectionOfInsertIds = Clist[Autodesk.Revit.DB.ElementId](uIs)
+		# #colectionOfUniqueInsertIds = Clist[DB.ElementId](uIs)
+		# colectionOfInsertIds = Clist[DB.ElementId](uIs)
 		# # Get ActiveView phase ID
-		# paramId = Autodesk.Revit.DB.ElementId(Autodesk.Revit.DB.BuiltInParameter.VIEW_PHASE)
-		# param_provider = Autodesk.Revit.DB.ParameterValueProvider(paramId)
+		# paramId = DB.ElementId(DB.BuiltInParameter.VIEW_PHASE)
+		# param_provider = DB.ParameterValueProvider(paramId)
 		# activeViewPhaseId = param_provider.GetElementIdValue(self.doc.ActiveView)
-		# docPhases =  Autodesk.Revit.DB.FilteredElementCollector(self.doc) \
-		# 							.OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Phases) \
+		# docPhases =  DB.FilteredElementCollector(self.doc) \
+		# 							.OfCategory(DB.BuiltInCategory.OST_Phases) \
 		# 							.WhereElementIsNotElementType() \
 		# 							.ToElements()
 		# # docPhaseNames = [x.Name for x in docPhases]
 
 		# #Filter inserts visible only in active view and of Existing phase status - (ignore demolished elements in previous phases) 
-		# myElementPhaseStatusFilter1 = Autodesk.Revit.DB.ElementPhaseStatusFilter(activeViewPhaseId, Autodesk.Revit.DB.ElementOnPhaseStatus.Existing, False)
-		# myElementPhaseStatusFilter2 = Autodesk.Revit.DB.ElementPhaseStatusFilter(activeViewPhaseId, Autodesk.Revit.DB.ElementOnPhaseStatus.New,False)
-		# includeCategories = [Autodesk.Revit.DB.BuiltInCategory.OST_Doors, Autodesk.Revit.DB.BuiltInCategory.OST_Windows]
+		# myElementPhaseStatusFilter1 = DB.ElementPhaseStatusFilter(activeViewPhaseId, DB.ElementOnPhaseStatus.Existing, False)
+		# myElementPhaseStatusFilter2 = DB.ElementPhaseStatusFilter(activeViewPhaseId, DB.ElementOnPhaseStatus.New,False)
+		# includeCategories = [DB.BuiltInCategory.OST_Doors, DB.BuiltInCategory.OST_Windows]
 		# includeClasses = [DB.Opening]
 
-		# includeCategoryFilters = [Autodesk.Revit.DB.ElementCategoryFilter(x) for x in includeCategories]
-		# includeClassesFilters = [Autodesk.Revit.DB.ElementClassFilter(x) for x in includeClasses]
+		# includeCategoryFilters = [DB.ElementCategoryFilter(x) for x in includeCategories]
+		# includeClassesFilters = [DB.ElementClassFilter(x) for x in includeClasses]
 		# categoryAndClassFilters = includeCategoryFilters + includeClassesFilters
 
 		# #if len(colectionOfUniqueInsertIds) > 0:
 		# if len(colectionOfInsertIds) > 0:
-		# 	self.filteredInsertsByActiveViewIds = Autodesk.Revit.DB.FilteredElementCollector(self.doc, colectionOfInsertIds) \
-		# 																.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(categoryAndClassFilters)) \
+		# 	self.filteredInsertsByActiveViewIds = DB.FilteredElementCollector(self.doc, colectionOfInsertIds) \
+		# 																.WherePasses(DB.LogicalOrFilter(categoryAndClassFilters)) \
 		# 																.WherePasses(SelectableInViewFilter(self.doc, self.doc.ActiveView.Id)) \
-		# 																.WherePasses(Autodesk.Revit.DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
+		# 																.WherePasses(DB.LogicalOrFilter(myElementPhaseStatusFilter1 \
 		# 																							,myElementPhaseStatusFilter2)) \
 		# 																.ToElementIds()
 		# else:
 		self.filteredInsertsByActiveViewIds = self.filterElementsByActiveViewIds(self.inserts)
-		#raise TypeError("len self.filteredInsertsByActiveViewIds {}".format(self.filteredInsertsByActiveViewIds))
-		self.openingFills = filter(lambda x: x.Category.Name != "Walls", [doc.GetElement(x) for x in list(self.filteredInsertsByActiveViewIds)])
+		#raise TypeError("len self.filteredInsertsByActiveViewIds {}".format(len(list(self.filteredInsertsByActiveViewIds))))
+		self.openingFills = filter(lambda x: x.Category.Name != "Walls", [self.doc.GetElement(x) for x in list(self.filteredInsertsByActiveViewIds)])
 		try:
 			if removeInserts:
 				self.mySolids = self.getDynamoSolids(self.structuredElements , self.filteredInsertsByActiveViewIds, **kwargs)
@@ -722,8 +743,10 @@ class RTD_model(object):
 				self.mySolids = self.getDynamoSolids(self.structuredElements , *args, **kwargs)
 			#myTestSolids = getDynamoSolids(unWrapedTestElements, filteredInsertsByActiveViewIds, True)
 		except Exception as ex:
-			Errors.catch(ex, "getDynamoSolids in RTD_model.getDynamoModel() failed")
+			#raise TypeError("self.getDynamoSolids {}".format(sys.exc_info()))
+			Errors.catch(ex, "getDynamoSolids in RTD_model.getDynamoModel() failed {}".format(sys.exc_info()))
 			self.mySolids = []
+		#raise TypeError("self.getDynamoSolids {}".format(Errors.report))
 		#Errors.catchVar("self.mySolids", self.mySolids)
 		#raise ValueError("self.mySolids {0}".format(len(self.mySolids), self.mySolids))
 		return self.mySolids
@@ -732,9 +755,9 @@ class RTD_model(object):
 	# 	"""
 	# 	acquire only unique elements filtered by Element.Id
 
-	# 	arg: List[Autodesk.Revit.DB.Element]
+	# 	arg: List[DB.Element]
 		
-	# 	Returns: List[Autodesk.Revit.DB.Element]
+	# 	Returns: List[DB.Element]
 	# 	"""
 	# 	try:
 	# 		#make list of unique elements by filtering inserts list 
@@ -760,19 +783,25 @@ class RTD_model(object):
 	# 		Errors.catch(ex, "Creating unique element list in RTD_model.getUniqueElements() failed.")
 	# 		return []
 
+	def compareDeletedId(self, inItem, deletedElementList):
+		if inItem.Id.IntegerValue in deletedElementList:
+			return None
+		else:
+			return inItem
+
 	def getDynamoSolids(self, unWrappedElements, *args, **kwargs):
 		"""
 			acquire dynamo geometry as structured List 
 			Element must be unwrapped - use Unwrap() function to each item before input as List
 			Optional argument is list of inserts to exclude from final geometry (e.g. windows, doors... )
 
-			arg: unWrappedElements type: List[Autodesk.Revit.DB.Element]
+			arg: unWrappedElements type: List[DB.Element]
 			
-			args[0]: element Ids of filtered inserts by active view and phase filter - type: List[Autodesk.Revit.DB.ElementId]
+			args[0]: element Ids of filtered inserts by active view and phase filter - type: List[DB.ElementId]
 			kwargs["incCW"] type: bool - including curtain walls if true, default = True
 			Returns: Structured list of Autodesk.DesignScript.Geometry.Solid. See getDynamoSolid()
 		"""
-		detail_lvl = Autodesk.Revit.DB.ViewDetailLevel.Coarse
+		detail_lvl = DB.ViewDetailLevel.Coarse
 		#include invisible objects
 		inc_invis = False
 		view = self.doc.ActiveView
@@ -782,16 +811,30 @@ class RTD_model(object):
 		else:
 			uniqueInsertIds = []
 			remove_inserts = False
+		lenUniqueInsertsIds = len(uniqueInsertIds)
+		uniqueInsertIdsInt = [x.IntegerValue for x in uniqueInsertIds]
+		#containsId = ListUtils.processList(compareId, unWrappedElements, [x.IntegerValue for x in uniqueInsertIds])
+		#raise TypeError("containsId {0}".format(containsId))
 		#raise TypeError("len uniqueInsertIds {}".format(len(uniqueInsertIds)))
 		TransactionManager.Instance.EnsureInTransaction(self.doc)
-		trans = Autodesk.Revit.DB.SubTransaction(self.doc)
-		
-		myIsValidObject = [] 		
-		if remove_inserts == True and len(uniqueInsertIds) > 0:		
+		trans = DB.SubTransaction(self.doc)
+		deletedIdsInt = None
+		myIsValidObject = [] 	
+		#raise TypeError("len(uniqueInsertIds) {}".format(len(uniqueInsertIds)))	
+		if remove_inserts == True and lenUniqueInsertsIds > 0:
+			#raise TypeError("lenUniqueInsertsIds {0} ".format(lenUniqueInsertsIds))	
+			trans.Start()
+			deletedIds = self.doc.Delete(uniqueInsertIds)
+			deletedIdsInt = [x.IntegerValue for x in deletedIds]
+			trans.RollBack()
+			TransactionManager.Instance.TransactionTaskDone()
+			unWrappedElements = ListUtils.processList(self.compareDeletedId, unWrappedElements, deletedIdsInt)
+			#raise TypeError("len unWrappedElements {}".format(len(unWrappedElements)))
 			trans.Start()
 			try:					
 				try:				
 					self.doc.Delete(uniqueInsertIds)
+					#raise TypeError("deletedIds {0} <<<>>> uniqueInsertsIds {1}".format([x.IntegerValue for x in deletedIds], uniqueInsertIdsInt))
 					#t.Commit()
 					self.doc.Regenerate()
 				except Exception as ex:
@@ -800,29 +843,33 @@ class RTD_model(object):
 					# if error accurs anywhere in the process catch it
 					Errors.catch(ex, "Deleting inserts in RTD_model.getDynamoModel().getDynamoSolid() failed.")
 				
-				geo_options = Autodesk.Revit.DB.Options()
+				geo_options = DB.Options()
 				if view == None: geo_options.DetailLevel = detail_lvl
 				geo_options.IncludeNonVisibleObjects = inc_invis
 				if view != None: geo_options.View = view
 				#raise TypeError("len unWrappedElements {}".format(len(unWrappedElements)))
 				#areValidObjects = ListUtils.processList(self.isValid, unWrappedElements)
 				#raise TypeError("areValidObjects {}".format(areValidObjects))
+				
+				#raise TypeError("lenUniqueInsertsIds {0} ".format(lenUniqueInsertsIds))
 				try:	
 					returnSolids = ListUtils.processList(self.getDynamoSolid,unWrappedElements, geo_options, **kwargs)
 					
 				except Exception as ex:
 					Errors.catch(ex, "Exception in RTD_model.getDynamoSolids() - \
 						returnSolids = ListUtils.processList(self.getDynamoSolid,unWrappedElements, geo_options) failed.")
-					return []
+					returnSolids = []
 
 				trans.RollBack()
+				#trans.Commit()
 				TransactionManager.Instance.TransactionTaskDone()
 				return returnSolids
 			except Exception as ex:
 				trans.RollBack()
 				Errors.catch(ex, "Exception remove_inserts == True block in RTD_model.getDynamoSolids()")
-		elif remove_inserts == False or len(uniqueInsertIds) == 0:
-			geo_options = Autodesk.Revit.DB.Options()
+		elif remove_inserts == False or lenUniqueInsertsIds == 0:
+			raise TypeError("lenUniqueInsertsIds {0} ".format(lenUniqueInsertsIds))
+			geo_options = DB.Options()
 			if view == None: geo_options.DetailLevel = detail_lvl
 			geo_options.IncludeNonVisibleObjects = inc_invis
 			if view != None: geo_options.View = view
@@ -833,6 +880,7 @@ class RTD_model(object):
 				Errors.catch(ex, "Exception in elif block of (if remove_inserts == True and len(uniqueInsertIds) \
 								in ListUtils.processList(getDynamoSolid,unWrappedElements, geo_options) in RTD_model.getDynamoSolids() failed.")
 				return []
+
 	def isValid(self, item):
 		return False if item.IsValidObject == False else True
 	def getDynamoSolid(self, item, *args, **kwargs):
@@ -840,9 +888,9 @@ class RTD_model(object):
 			acquire dynamo geometry as Solid from Revit.DB.Element object
 			Element must be unwrapped - use Unwrap() function before input as item
 
-			arg: item type: Autodesk.Revit.DB.Element object
+			arg: item type: DB.Element object
 			
-			args[0]: Geometry options type: Autodesk.Revit.DB.Options
+			args[0]: Geometry options type: DB.Options
 			kwargs["incCW"] type: bool - including curtain walls if true, default = True
 
 			Returns: dynamoGeometry type: Autodesk.DesignScript.Geometry.Solid
@@ -857,41 +905,50 @@ class RTD_model(object):
 		geo_options = args[0] if len(args) > 0 else self.geo_options 
 		incCW = kwargs['incCW'] if 'incCW' in kwargs else True
 		#incCW = False
-		if item.GetType().Name == "CurtainSystem" or (item.GetType().Name == "Wall" and item.CurtainGrid != None):
-			try:
-				if incCW == True:
-					return self.getCurtainWallSimplyfiedGeometry(item, thickness=80)
-				else:
-					return None
-			except Exception as ex:
-				Errors.catch(ex, "getCurtainWallSimplyfiedGeometry in RTD_model.getDynamoSolid() failed.")
-		elif self.isValid(item):
-			
-			""" if type(item) !=list:
-				revitGeo = item.Geometry[geo_options]
-				try:		
-					revit_geos = convertGeometryInstance(revitGeo, list())
+		if item:
+			if item.GetType().Name == "CurtainSystem" or (item.GetType().Name == "Wall" and item.CurtainGrid != None):
+				try:
+					if incCW == True:
+						return self.getCurtainWallSimplyfiedGeometry(item, thickness=80)
+					else:
+						return None
 				except Exception as ex:
-					Errors.catch(ex, "convertGeometryInstance in RTD_model.getDynamoSolid() failed.")
+					Errors.catch(ex, "getCurtainWallSimplyfiedGeometry in RTD_model.getDynamoSolid() failed.")
+			elif self.isValid(item):
+				
+				""" if type(item) !=list:
+					revitGeo = item.Geometry[geo_options]
+					try:		
+						revit_geos = convertGeometryInstance(revitGeo, list())
+					except Exception as ex:
+						Errors.catch(ex, "convertGeometryInstance in RTD_model.getDynamoSolid() failed.")
 
-			#errorReport.append("length of revit_geos list: {}".format(len(revit_geos)))
-			try:
-				if len(revit_geos) != 0:
-					revit_geo = revit_geos[0]
-				else:		
-					revit_geo = None
-					raise TypeError("Variable revit_geos is unassigned or is list. For next process is variable of type GeometryElement necessary.")
-			except Exception as ex:
-				Errors.catch(ex) """
-
-			try:
-				#dynamoGeometry = revit_geo.ToProtoType()
-				dynamoGeometry = item.ToDSType(False).Geometry()
-			except Exception as ex:
-				#Errors.catch(ex, "error in converting geometry in RTD_model.getDynamoSolid() dynamoGeometry = revit_geo.ToProtoType() item ID = {}".format(item.Id.IntegerValue))
-				raise TypeError("Could not convert element Id - {0} to dynamogeometry ".format(item.Id.IntegerValue))
-				dynamoGeometry = None
-			return dynamoGeometry if not hasattr(dynamoGeometry, "__iter__") else dynamoGeometry[0]
+				#errorReport.append("length of revit_geos list: {}".format(len(revit_geos)))
+				try:
+					if len(revit_geos) != 0:
+						revit_geo = revit_geos[0]
+					else:		
+						revit_geo = None
+						raise TypeError("Variable revit_geos is unassigned or is list. For next process is variable of type GeometryElement necessary.")
+				except Exception as ex:
+					Errors.catch(ex) """
+				try:
+					#dynamoGeometry = revit_geo.ToProtoType()
+					dynamoGeometry = item.ToDSType(False).Geometry()
+				except Exception as ex:
+					#Errors.catch(ex, "error in converting geometry in RTD_model.getDynamoSolid() dynamoGeometry = revit_geo.ToProtoType() item ID = {}".format(item.Id.IntegerValue))
+					raise TypeError("Could not convert element Id - {0} to dynamogeometry ".format(item.Id.IntegerValue))
+					dynamoGeometry = None
+				#return dynamoGeometry if not hasattr(dynamoGeometry, "__iter__") else dynamoGeometry[0]
+				if not hasattr(dynamoGeometry, "__iter__"):
+					return dynamoGeometry
+				elif len(dynamoGeometry) > 0:
+					return dynamoGeometry[0]
+				#return None
+			else:
+				return None
+		else:
+			return None
 
 	def getCurtainWallSimplyfiedGeometry(self, inElement, **kwargs):
 		thickness = kwargs["thickness"] if "thickness" in kwargs else 25
@@ -901,18 +958,18 @@ class RTD_model(object):
 			for curtainGrid in curtainSystemGridsIterator:
 				curtainSystemSurfaces = []
 				for cell in curtainGrid.GetCurtainCells():				
-					curtainSystemSurfaces += [Autodesk.DesignScript.Geometry.Surface.ByPatch(Autodesk.DesignScript.Geometry.PolyCurve.ByJoinedCurves([y.ToProtoType() for y in x])) for x in cell.CurveLoops]
+					curtainSystemSurfaces += [DSGeometry.Surface.ByPatch(DSGeometry.PolyCurve.ByJoinedCurves([y.ToProtoType() for y in x])) for x in cell.CurveLoops]
 				cells += ListUtils.flatList(curtainSystemSurfaces)
-			polySurface = Autodesk.DesignScript.Geometry.PolySurface.ByJoinedSurfaces(cells)
-			solid = Autodesk.DesignScript.Geometry.Surface.Thicken(polySurface, thickness, True)
+			polySurface = DSGeometry.PolySurface.ByJoinedSurfaces(cells)
+			solid = DSGeometry.Surface.Thicken(polySurface, thickness, True)
 			return solid
 		elif inElement.GetType().Name == "Wall":		
 			curtainWallGridCells = inElement.CurtainGrid.GetCurtainCells()
 			curtainSystemSurfaces = []
 			for cell in curtainWallGridCells:				
-				curtainSystemSurfaces += [Autodesk.DesignScript.Geometry.Surface.ByPatch(Autodesk.DesignScript.Geometry.PolyCurve.ByJoinedCurves([y.ToProtoType() for y in x])) for x in cell.CurveLoops]
-			polySurface = Autodesk.DesignScript.Geometry.PolySurface.ByJoinedSurfaces(curtainSystemSurfaces)
-			solid = Autodesk.DesignScript.Geometry.Surface.Thicken(polySurface, thickness, True)
+				curtainSystemSurfaces += [DSGeometry.Surface.ByPatch(DSGeometry.PolyCurve.ByJoinedCurves([y.ToProtoType() for y in x])) for x in cell.CurveLoops]
+			polySurface = DSGeometry.PolySurface.ByJoinedSurfaces(curtainSystemSurfaces)
+			solid = DSGeometry.Surface.Thicken(polySurface, thickness, True)
 			return solid
 	
 	def groupSolids(self, inList, inLevel = 0):
@@ -974,14 +1031,14 @@ class RTD_model(object):
 		self.openedOuterShellPolysurfaces = []
 		self.closedOuterShellPolysurfaces = []
 		for outerShell in inOuterShells:
-			outerShellpolySurface = Autodesk.DesignScript.Geometry.PolySurface.BySolid(outerShell)
+			outerShellpolySurface = DSGeometry.PolySurface.BySolid(outerShell)
 			outerShellSurfaces = list(outerShellpolySurface.Surfaces())
 			outerShellSurfaces.sort(key = lambda c : c.Area, reverse=False)
 			removedSurface = outerShellSurfaces.pop(0)
 			#del outerShellSurfaces[0]	
-			openedOuterShellPolysurface = Autodesk.DesignScript.Geometry.PolySurface.ByJoinedSurfaces(outerShellSurfaces)
-			closedOuterShellPolysurface = Autodesk.DesignScript.Geometry.Surface.Join(openedOuterShellPolysurface, removedSurface)
-			#closedOuterShellPolysurface = Autodesk.DesignScript.Geometry.PolySurface.ByJoinedSurfaces(closedOuterShellSurfaces)
+			openedOuterShellPolysurface = DSGeometry.PolySurface.ByJoinedSurfaces(outerShellSurfaces)
+			closedOuterShellPolysurface = DSGeometry.Surface.Join(openedOuterShellPolysurface, removedSurface)
+			#closedOuterShellPolysurface = DSGeometry.PolySurface.ByJoinedSurfaces(closedOuterShellSurfaces)
 			#filterMask = openedOuterShellPolysurface.DoesIntersect(inSolids)
 			intersectedElements = processList(self.doesIntersect, inSolids, closedOuterShellPolysurface, removedSurface)
 			returnCategories = []
@@ -994,7 +1051,7 @@ class RTD_model(object):
 				returnItems = []
 				for i, item in enumerate(category):
 					myType = type(item)
-					if  myType == Autodesk.DesignScript.Geometry.Solid and intersectedElements[c][i] == True:
+					if  myType == DSGeometry.Solid and intersectedElements[c][i] == True:
 						intersection = item.Intersect(closedOuterShellPolysurface)
 						if ListUtils.isIterable(intersection):
 							filteredIntersection = filter(lambda x: x.__class__.__name__ == "Surface", intersection)
@@ -1016,7 +1073,7 @@ class RTD_model(object):
 	def doesIntersect(self, item, *args):
 		inPolysurface = args[0]
 		inRemovedSurface = args[1] if len(args) > 1 else None
-		if type(item) == Autodesk.DesignScript.Geometry.Solid:
+		if type(item) == DSGeometry.Solid:
 			if item.DoesIntersect(inPolysurface):
 				return True
 			elif item.DoesIntersect(inRemovedSurface):
@@ -1048,11 +1105,11 @@ class EnAnalyse(object):
 		filteredFlattenedSolids = filter(lambda x: x!=None, flattenedSolids)
 		filteredFlattenedSolidsWithOpenings = filter(lambda x: x!=None, flattenedSolidsWithOpenings)
 		#make solid union of all solids representing element geometry and extract inner and outer shells from this union
-		self.unitedSolid = Autodesk.DesignScript.Geometry.Solid.ByUnion(filteredFlattenedSolids)
-		self.unitedSolidWithOpenings = Autodesk.DesignScript.Geometry.Solid.ByUnion(filteredFlattenedSolidsWithOpenings)
+		self.unitedSolid = DSGeometry.Solid.ByUnion(filteredFlattenedSolids)
+		self.unitedSolidWithOpenings = DSGeometry.Solid.ByUnion(filteredFlattenedSolidsWithOpenings)
 		
-		polySurfaces = Autodesk.DesignScript.Geometry.PolySurface.BySolid(self.unitedSolid)
-		extractedSolids = list(Autodesk.DesignScript.Geometry.PolySurface.ExtractSolids(polySurfaces))
+		polySurfaces = DSGeometry.PolySurface.BySolid(self.unitedSolid)
+		extractedSolids = list(DSGeometry.PolySurface.ExtractSolids(polySurfaces))
 
 		self.groupedSolids = self.groupSolids(extractedSolids)
 		#model consistency test for outer and inner solids (outer solid is at index 0 inner solids are at indices > 0)
@@ -1065,12 +1122,12 @@ class EnAnalyse(object):
 		self.outerShellPolysurfaces = []
 		self.rawOuterShellAreas = []
 		for outerShell in self.outerShells:
-			pSurface = Autodesk.DesignScript.Geometry.PolySurface.BySolid(outerShell)
+			pSurface = DSGeometry.PolySurface.BySolid(outerShell)
 			self.outerShellPolysurfaces.append(pSurface)
 			self.rawOuterShellAreas.append(pSurface.Area * 0.000001)
 		
 		"""
-		#outerShellpolySurface = Autodesk.DesignScript.Geometry.PolySurface.BySolid(self.outerShells[0])
+		#outerShellpolySurface = DSGeometry.PolySurface.BySolid(self.outerShells[0])
 		
 		"""
 		self.facesArea = ListUtils.processList(self.getFacesArea, self.outerShellIntersectingSurfaces)
@@ -1080,7 +1137,7 @@ class EnAnalyse(object):
 		"""
 
 		self.quantities = ListUtils.processList(self.getQuantities, self.model.outerShellIntersectingSurfaces)
-		self.overalAreaOfEnvelope = [Autodesk.DesignScript.Geometry.PolySurface.BySolid(x).Area/1000000 for x in self.model.outerShells]
+		self.overalAreaOfEnvelope = [DSGeometry.PolySurface.BySolid(x).Area/1000000 for x in self.model.outerShells]
 		self.overalAreaOfEnvelopeSurfaces = []
 		self.openingsArea = []
 		self.nonTransparentConstructionArea = []
@@ -1092,12 +1149,12 @@ class EnAnalyse(object):
 			self.nonTransparentConstructionArea.append(self.getQuantityAreas(obj[:4]))	
 
 		self.averageHeatTransferCoefficient = self.getAHTC(self.quantities)
-		# # points = [Autodesk.DesignScript.Geometry.Point.ByCoordinates(0,0), \
-		# # 		  Autodesk.DesignScript.Geometry.Point.ByCoordinates(10000,0), \
-		# # 		  Autodesk.DesignScript.Geometry.Point.ByCoordinates(10000,10000), \
-		# # 		  Autodesk.DesignScript.Geometry.Point.ByCoordinates(0,10000)
+		# # points = [DSGeometry.Point.ByCoordinates(0,0), \
+		# # 		  DSGeometry.Point.ByCoordinates(10000,0), \
+		# # 		  DSGeometry.Point.ByCoordinates(10000,10000), \
+		# # 		  DSGeometry.Point.ByCoordinates(0,10000)
 		# # 		]
-		# #self.surfaceArea = Autodesk.DesignScript.Geometry.Surface.ByPerimeterPoints(points).Area
+		# #self.surfaceArea = DSGeometry.Surface.ByPerimeterPoints(points).Area
 		self.facesArea = ListUtils.processList(self.getFacesArea, self.quantities)
 
 		
@@ -1135,7 +1192,7 @@ class EnAnalyse(object):
 
 			returns Average Heat Transfer Coefficient (AHTC) of outer shell:
 
-			item:  Autodesk.Revit.DB.Element
+			item:  DB.Element
 			
 			return: avgThCon type: float
 		"""		
@@ -1175,14 +1232,14 @@ class EnAnalyse(object):
 		"""
 			returns tuple of geometry and quantities associated with material parameters prepared for next evaluation:
 
-			item:  Autodesk.Revit.DB.Element				  
+			item:  DB.Element				  
 			
 			return: (
-					 Autodesk.Revit.DB.Element,
+					 DB.Element,
 					 elementCategory type: str, 
 					 list[Autodesk.DesignScript.Geometry.surface, ...], 
-					 list[list[Autodesk.Revit.DB.Material, Autodesk.Revit.DB.Material.Name, thermalConductivity type: float], Autodesk.Revit.DB.WallType.ThermalProperties.HeatTransferCoefficient type: float] 
-					 	or list[Autodesk.Revit.DB.Material, Autodesk.Revit.DB.RoofType.ThermalProperties.HeatTransferCoefficient type: float]
+					 list[list[DB.Material, DB.Material.Name, thermalConductivity type: float], DB.WallType.ThermalProperties.HeatTransferCoefficient type: float] 
+					 	or list[DB.Material, DB.RoofType.ThermalProperties.HeatTransferCoefficient type: float]
 					 structureWidth type: list[overalWidth type: int, list[layerWidth type: int, ..]]
 					 area type: float
 					 )
@@ -1193,7 +1250,7 @@ class EnAnalyse(object):
 		structureWidth = "Width Not Acquired Yet !!!"
 		elementCategory = "Category Not Acquired Yet !!!"
 		if type(item)== tuple:
-			if isinstance(item[-1], Autodesk.Revit.DB.Element):
+			if isinstance(item[-1], DB.Element):
 				if item[-1].__class__.__name__ == "CurtainSystem" or item[-1].__class__.__name__ == "Wall":
 					if item[-1].GetType().Name == "CurtainSystem" or (item[-1].GetType().Name == "Wall" and item[-1].CurtainGrid != None):
 						structureMaterial = "this is CurtainSystem with assigned heat transfer coeficient"
@@ -1209,13 +1266,13 @@ class EnAnalyse(object):
 					structureWidth = self.getCompoundStructureLayersWidth(item[-1].FloorType)
 				elif self.model.getCategoryName(item[-1]) == "Windows":
 					structureMaterial = "this is Window with assigned heat transfer coeficient"
-					overalWidth = Autodesk.Revit.DB.UnitUtils.ConvertFromInternalUnits( \
-						item[-1].Host.Width, Autodesk.Revit.DB.DisplayUnitType.DUT_MILLIMETERS)
+					overalWidth = DB.UnitUtils.ConvertFromInternalUnits( \
+						item[-1].Host.Width, DB.DisplayUnitType.DUT_MILLIMETERS)
 					structureWidth = overalWidth
 				elif self.model.getCategoryName(item[-1]) == "Doors":
 					structureMaterial = "this is Door with assigned heat transfer coeficient"
-					overalWidth = Autodesk.Revit.DB.UnitUtils.ConvertFromInternalUnits( \
-						item[-1].Host.Width, Autodesk.Revit.DB.DisplayUnitType.DUT_MILLIMETERS)
+					overalWidth = DB.UnitUtils.ConvertFromInternalUnits( \
+						item[-1].Host.Width, DB.DisplayUnitType.DUT_MILLIMETERS)
 					structureWidth = overalWidth
 				else:
 					myElementCategory = item[-1].Category.Name
@@ -1280,8 +1337,8 @@ class EnAnalyse(object):
 						assProperties = None
 					if assProperties:
 						tC = assProperties.ThermalConductivity
-						thermalConductivity = Autodesk.Revit.DB.UnitUtils.ConvertFromInternalUnits( \
-								tC, Autodesk.Revit.DB.DisplayUnitType.DUT_WATTS_PER_METER_KELVIN)
+						thermalConductivity = DB.UnitUtils.ConvertFromInternalUnits( \
+								tC, DB.DisplayUnitType.DUT_WATTS_PER_METER_KELVIN)
 					else:
 						thermalConductivity = None					#thermalConductivity = assProperties.ThermalConductivity
 										
@@ -1295,10 +1352,10 @@ class EnAnalyse(object):
 		"""
 			returns list of materials according to layers for objects that has GetCompoundStructure callable attribute:
 
-			arg1: item type Autodesk.Revit.DB.Element > All classes inherited from Autodesk.Revit.DB.Element containing 
-				  GetCompoundStructure() method -(e.g. Autodesk.Revit.DB.WallType, Autodesk.Revit.DB.RoofType, Autodesk.Revit.DB.FloorType)
+			arg1: item type DB.Element > All classes inherited from DB.Element containing 
+				  GetCompoundStructure() method -(e.g. DB.WallType, DB.RoofType, DB.FloorType)
 			
-			return: list[Autodesk.Revit.DB.Material, ...]
+			return: list[DB.Material, ...]
 		"""
 		cStructure = None
 		if hasattr(item[-1], "RoofType"):
@@ -1310,8 +1367,8 @@ class EnAnalyse(object):
 		elif hasattr(item[-1], "WallType"):
 			cStructure = item[-1].WallType.GetCompoundStructure()			
 			htc = item[-1].WallType.ThermalProperties.HeatTransferCoefficient
-			#heatTransferCoeficient = Autodesk.Revit.DB.UnitUtils.ConvertFromInternalUnits( \
-			#				tC, Autodesk.Revit.DB.DisplayUnitType.DUT_WATTS_PER_METER_KELVIN)
+			#heatTransferCoeficient = DB.UnitUtils.ConvertFromInternalUnits( \
+			#				tC, DB.DisplayUnitType.DUT_WATTS_PER_METER_KELVIN)
 		else:
 			htc = None
 		materials = []
@@ -1334,8 +1391,8 @@ class EnAnalyse(object):
 							#thermalConductivity = assProperties
 						if assProperties:
 							tC = assProperties.ThermalConductivity
-							thermalConductivity = Autodesk.Revit.DB.UnitUtils.ConvertFromInternalUnits( \
-								tC, Autodesk.Revit.DB.DisplayUnitType.DUT_WATTS_PER_METER_KELVIN)						
+							thermalConductivity = DB.UnitUtils.ConvertFromInternalUnits( \
+								tC, DB.DisplayUnitType.DUT_WATTS_PER_METER_KELVIN)						
 						else:
 							thermalConductivity = None
 							ModelConsistency.catch("Err_03", item[-1].Id)
@@ -1358,8 +1415,8 @@ class EnAnalyse(object):
 					if assProperties:
 						#thermalConductivity = assProperties
 						tC = assProperties.ThermalConductivity
-						thermalConductivity = Autodesk.Revit.DB.UnitUtils.ConvertFromInternalUnits( \
-							tC, Autodesk.Revit.DB.DisplayUnitType.DUT_WATTS_PER_METER_KELVIN)
+						thermalConductivity = DB.UnitUtils.ConvertFromInternalUnits( \
+							tC, DB.DisplayUnitType.DUT_WATTS_PER_METER_KELVIN)
 					else:
 						thermalConductivity = None					
 					materialName = material.Name
@@ -1379,20 +1436,20 @@ class EnAnalyse(object):
 
 	def getCompoundStructureLayersWidth(self, item):
 		"""
-			returns Width parameter of Autodesk.Revit.DB.Element that has GetCompoundStructure callable attribute:
+			returns Width parameter of DB.Element that has GetCompoundStructure callable attribute:
 
-			arg1: item type Autodesk.Revit.DB.Element > All classes inherited from Autodesk.Revit.DB.Element containing 
-				  GetCompoundStructure() method -(e.g. Autodesk.Revit.DB.WallType, Autodesk.Revit.DB.RoofType, Autodesk.Revit.DB.FloorType)
+			arg1: item type DB.Element > All classes inherited from DB.Element containing 
+				  GetCompoundStructure() method -(e.g. DB.WallType, DB.RoofType, DB.FloorType)
 			
-			return: list[Autodesk.Revit.DB.Material, ...]
+			return: list[DB.Material, ...]
 		"""
 		try:
 			if hasattr(item, "GetCompoundStructure"):
-				overalWidth = Autodesk.Revit.DB.UnitUtils.ConvertFromInternalUnits( \
-						item.GetCompoundStructure().GetWidth(), Autodesk.Revit.DB.DisplayUnitType.DUT_MILLIMETERS)
+				overalWidth = DB.UnitUtils.ConvertFromInternalUnits( \
+						item.GetCompoundStructure().GetWidth(), DB.DisplayUnitType.DUT_MILLIMETERS)
 				layers = item.GetCompoundStructure().GetLayers()
-				widthsInMm = [Autodesk.Revit.DB.UnitUtils.ConvertFromInternalUnits( \
-								x.Width, Autodesk.Revit.DB.DisplayUnitType.DUT_MILLIMETERS) \
+				widthsInMm = [DB.UnitUtils.ConvertFromInternalUnits( \
+								x.Width, DB.DisplayUnitType.DUT_MILLIMETERS) \
 								for x in layers]
 				return (overalWidth, widthsInMm)
 			else:
@@ -1403,7 +1460,7 @@ class EnAnalyse(object):
 	def doesIntersect(self, item, *args):
 		inPolysurface = args[0]
 		inRemovedSurface = args[1] if len(args) > 1 else None
-		if type(item) == Autodesk.DesignScript.Geometry.Solid:
+		if type(item) == DSGeometry.Solid:
 			if item.DoesIntersect(inPolysurface):
 				return True
 			elif item.DoesIntersect(inRemovedSurface):
@@ -1414,13 +1471,13 @@ class EnAnalyse(object):
 			return []	
 
 	def prepareOuterShellSolidForIntersection(self, inOuterShellSolid, **kwargs):
-		pSurface = Autodesk.DesignScript.Geometry.PolySurface.BySolid(inOuterShellSolid)
-		surfaces = Autodesk.DesignScript.Geometry.PolySurface.Surfaces(pSurface)
+		pSurface = DSGeometry.PolySurface.BySolid(inOuterShellSolid)
+		surfaces = DSGeometry.PolySurface.Surfaces(pSurface)
 		surfaces.sort(key = lambda c : c.Area, reverse=False)
 		smallestFace = surfaces[0]
 		surfacesWithoutSmallest = surfaces[:-(len(surfaces)-1)]
-		polySurface = Autodesk.DesignScript.Geometry.PolySurface.ByJoinedSurfaces(surfacesWithoutSmallest)
-		joinedSurfaces = Autodesk.DesignScript.Geometry.Surface.Join(polySurface, smallestFace)
+		polySurface = DSGeometry.PolySurface.ByJoinedSurfaces(surfacesWithoutSmallest)
+		joinedSurfaces = DSGeometry.Surface.Join(polySurface, smallestFace)
 
 class MaterialMapper():
 	def __init__(self):

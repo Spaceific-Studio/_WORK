@@ -27,6 +27,7 @@ if hasMainAttr:
 	    from Autodesk.Revit.UI.Selection import *
 	    import Autodesk.Revit.DB as DB
 	    import Autodesk.Revit.UI as UI
+	    import Autodesk.Revit.DB.Analysis as AN
 	    import Autodesk
 	    import System
 	    import threading
@@ -129,13 +130,6 @@ def pickobject(inStatus):
     __window__.Show()
     #__window__.Topmost = True
     return picked
-
-priorityLookup = [	[Autodesk.Revit.DB.BuiltInCategory.OST_Columns, Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns], \
-					Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming, \
-					[Autodesk.Revit.DB.FootPrintRoof, Autodesk.Revit.DB.ExtrusionRoof], \
-					Autodesk.Revit.DB.Wall, \
-					[Autodesk.Revit.DB.Floor, Autodesk.Revit.DB.SlabEdge], \
-					Autodesk.Revit.DB.BuiltInCategory.OST_Ceilings]
 
 def createMultiCategoryFilter():
 	listOfCategories = list()
@@ -311,9 +305,21 @@ def getNeighbours(inElement, multiCatFilter, multiClassFilter, exclusionFilter, 
 	return insideElementsMulitCatIds + insideElementsMulitClassIds
 
 
-allElementsCol = Clist[DB.Element](getAllModelElements(doc))
+#allElementsCol = Clist[DB.Element](getAllModelElements(doc))
+anOptions = AN.BuildingEnvelopeAnalyzerOptions()
+anOptions.AnalyzeEnclosedSpaceVolumes = False
+#anOptions.GridCellSize = convertToInternal(2500)
+anOptions.OptimizeGridCellSize = True
+analyzer = AN.BuildingEnvelopeAnalyzer.Create(doc, anOptions)
+envelopeElementsCol = analyzer.GetBoundingElements()
+elIds = []
+for linkedElId in envelopeElementsCol:
+	elIds.append(doc.GetElement(linkedElId.HostElementId).Id)
+	print("LinkedElementId {0}".format(doc.GetElement(linkedElId.LinkedElementId)))
+	print("HostElementId {0}".format(doc.GetElement(linkedElId.HostElementId)))
+elIdsCol = Clist[DB.ElementId](elIds)
 
-multiCatFilter = createMultiCategoryFilter()
+""" multiCatFilter = createMultiCategoryFilter()
 multiClassFilter = createMultiClassFilter()
 multiExclCategoryFilter = createExclusionMultiCategoryFilter()
 allExcludedIds = list(DB.FilteredElementCollector(doc).WherePasses(multiExclCategoryFilter).ToElementIds())
@@ -356,8 +362,24 @@ for i, neighbour in enumerate([doc.GetElement(x) for x in selNeighbours]):
 	#print(neighbour)
 	print("{0}-{1}-{2}".format(i, neighbour.Id, neighbour.Category.Name))
 selNeighboursCol = Clist[DB.ElementId](selNeighbours + [firstSelection[0].Id])
-t = DB.Transaction(doc, "Isolate neighbours")
+ """
+t = DB.Transaction(doc, "Isolate envelope")
 t.Start()
-uidoc.ActiveView.IsolateElementsTemporary(selNeighboursCol)
+uidoc.ActiveView.IsolateElementsTemporary(elIdsCol)
 t.Commit()
+
+openedForms = list(Application.OpenForms)
+
+for i, oForm in enumerate(openedForms):
+	#print(str(i))
+	#print(oForm)
+	if "RevitPythonShell" in str(oForm):
+		#print("Totot je oForm {0}".format(oForm))
+		rpsOutput = oForm
+	else:
+		rpsOutput = None
+
+if rpsOutput:
+	rpsOutput.Show()
+	rpsOutput.TopMost = True
 #input("Waiting for keypress...")
