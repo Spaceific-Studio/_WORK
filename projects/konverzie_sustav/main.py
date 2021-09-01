@@ -49,11 +49,14 @@ print (len(alphaNum))
 string1 = "TQB54"
 string2 = "GLC"
 string3 = "U5"
+string4 = "37J"
 int1 = int(string1,36)
 int2 = int(string2,36)
 int3 = int(string3,36)
+int4 = int(string4,36)
 print ("{fStr} ->> int1 = {fInt}".format(fStr = str, fInt = int1))
 print ("{fStr} ->> int2 = {fInt}".format(fStr = str, fInt = int2))
+print ("{fStr} ->> int4 = {fInt}".format(fStr = str, fInt = int4))
 bin1 = "{:b}".format(int1)
 print ("{fStr} ->> bin1 = {fBin}".format(fStr = str, fBin = bin1))
 hex1 = "{:x}".format(int1)

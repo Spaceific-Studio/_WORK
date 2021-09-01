@@ -86,20 +86,32 @@ class App(Frame):
         ovalCenter = (self.ovalX, self.ovalY)
         oval2Center = (self.oval2X, self.oval2Y)
         tCoords = self.get2CTangent(ovalCenter, self.ovalRadius, oval2Center, self.oval2Radius)
-        self.v.set("{0:3.2f} - {1:3.2f}".format(tCoords[0], tCoords[1]))
+        self.v.set("{0:3.2f} - {1:3.2f} -{2:3.2f} - {3:3.2f}\ntheta {4:3.2f}".format(tCoords[0], tCoords[1], self.arcBP1StartAngle, self.conjSegVecAngle, self.theta))
         baseOvalBBox = ((self.basePoint2[0]-self.baseRadius, self.basePoint2[1] - self.baseRadius), (self.basePoint2[0]+self.baseRadius, self.basePoint2[1] + self.baseRadius))
         ovalBbox = ((ovalCenter[0]-self.ovalRadius, ovalCenter[1]-self.ovalRadius),(ovalCenter[0]+self.ovalRadius, ovalCenter[1]+self.ovalRadius))
         oval2Bbox = ((oval2Center[0]-self.oval2Radius, oval2Center[1]-self.oval2Radius),(oval2Center[0]+self.oval2Radius, oval2Center[1]+self.oval2Radius))
         self.canvas.create_oval(ovalBbox)
         self.canvas.create_oval(oval2Bbox)
+        
+        self.canvas.create_arc(ovalBbox, fill="Orange", style="pieslice", start=self.arcBP2StartAngle, extent=360-self.archExtendAngle)
+        self.canvas.create_arc(oval2Bbox, fill="Orange", style="pieslice", start=self.arcBP1StartAngle, extent=self.archExtendAngle)
+        
         self.canvas.create_oval(baseOvalBBox, fill="Yellow")
         self.canvas.create_line([ovalCenter, oval2Center], fill="Yellow")
         self.canvas.create_line([self.basePoint1, self.bTP1], fill="Cyan")
         self.canvas.create_line([self.basePoint1, self.bTP2], fill="Red")
+        self.canvas.create_line([self.tP1r[0], self.tP1r[1], self.tP2r[0], self.tP2r[1]])
+        self.canvas.create_line([self.tP1l[0], self.tP1l[1], self.tP2l[0], self.tP2l[1]])
         #drawing points
         radius = 5
-        ovalBBox = ((self.tP1r[0]-radius, self.tP1r[1]-radius), (self.tP1r[0]+radius, self.tP1r[1]+radius))
-        self.canvas.create_oval(ovalBBox)
+        ovalTP1rBBox = ((self.tP1r[0]-radius, self.tP1r[1]-radius), (self.tP1r[0]+radius, self.tP1r[1]+radius))
+        ovalTP2rBBox = ((self.tP2r[0]-radius, self.tP2r[1]-radius), (self.tP2r[0]+radius, self.tP2r[1]+radius))
+        self.canvas.create_oval(ovalTP1rBBox)
+        self.canvas.create_oval(ovalTP2rBBox)
+        ovalTP1lBBox = ((self.tP1l[0]-radius, self.tP1l[1]-radius), (self.tP1l[0]+radius, self.tP1l[1]+radius))
+        ovalTP2lBBox = ((self.tP2l[0]-radius, self.tP2l[1]-radius), (self.tP2l[0]+radius, self.tP2l[1]+radius))
+        self.canvas.create_oval(ovalTP1lBBox)
+        self.canvas.create_oval(ovalTP2lBBox)
         
 #        for point in self.insertedPoints:
 #            ovalBBox = ((point[0]-radius, point[1]-radius), (point[0]+radius, point[1]+radius))
@@ -186,8 +198,13 @@ class App(Frame):
         bP2Np = np.asarray(self.basePoint2, dtype = np. float32)
         bPSubtracted = np.subtract(bP1Np, bP2Np)
         bpNorm = np.linalg.norm(bPSubtracted)
+        
         # if length between center points is heigher then R1 + R2
-        if bpNorm > inR1 + inR2:
+        #if bpNorm > inR1 + inR2:
+        if bpNorm + self.radius1 > self.radius2:
+            self.conjSegVecNp = np.asarray(self.conjSegVec, dtype = np.float32)
+            self.conjSegVecNorm = np.linalg.norm(self.conjSegVecNp)
+            self.conjSegVecUnit = np.multiply(self.conjSegVecNp, 1/self.conjSegVecNorm)
             # base Tangent Point1
             self.bTP1 =self.getTangentPoint(self.basePoint1, self.basePoint2, self.baseRadius, left = False)
             bTP1Np = np.asarray(self.bTP1, dtype = np. float32)
@@ -195,12 +212,40 @@ class App(Frame):
             self.tP1rNorm = np.linalg.norm(self.tP1rVec)
             self.tP1rUnit = np.multiply(self.tP1rVec, 1/self.tP1rNorm)
             self.tP1r = np.add(self.basePoint2,np.multiply(self.tP1rUnit, self.radius2))
+            self.tP2r = np.add(self.basePoint1,np.multiply(self.tP1rUnit, self.radius1))
             # base Tangent Point2
             self.bTP2 =self.getTangentPoint(self.basePoint1, self.basePoint2, self.baseRadius, left = True)
+            bTP2Np = np.asarray(self.bTP2, dtype = np. float32)
+            self.tP1lVec = np.subtract( bTP2Np, bP2Np)
+            self.tP1lNorm = np.linalg.norm(self.tP1lVec)
+            self.tP1lUnit = np.multiply(self.tP1lVec, 1/self.tP1lNorm)
+            self.tP1l = np.add(self.basePoint2,np.multiply(self.tP1lUnit, self.radius2))
+            self.tP2l = np.add(self.basePoint1,np.multiply(self.tP1lUnit, self.radius1))
+            xAxis = np.asarray((1,0), dtype = np.float32)
+            if self.conjSegVecUnit[1] > 0:
+                self.conjSegVecAngle = np.rad2deg(math.acos(xAxis.dot(self.conjSegVecUnit)))
+            else:
+                self.conjSegVecAngle = 360 - np.rad2deg(math.acos(xAxis.dot(self.conjSegVecUnit)))
+            self.theta =180 - np.rad2deg(math.acos(self.conjSegVecUnit.dot(self.tP1rUnit))) if inR1 > inR2 else np.rad2deg(math.acos(self.conjSegVecUnit.dot(self.tP1rUnit)))
+            self.thetaBP2 = np.rad2deg(math.acos(self.conjSegVecUnit.dot(self.tP1rUnit))) if inR1 > inR2 else np.rad2deg(math.acos(self.conjSegVecUnit.dot(self.tP1rUnit)))
+            self.archExtendAngle = self.theta*2
+            
+            self.arcBP1StartAngle = 180 - self.conjSegVecAngle - self.theta if inR1 > inR2 else -self.conjSegVecAngle - self.theta
+            self.arcBP2StartAngle = -self.conjSegVecAngle - self.thetaBP2 if inR1 > inR2 else  360 -self.conjSegVecAngle + self.thetaBP2
+            
         else:
             self.bTP1 = self.basePoint2
             self.bTP2 = self.basePoint2
             self.tP1r = self.basePoint2
+            self.tP2r = self.basePoint1
+            self.tP1l = self.basePoint2
+            self.tP2l = self.basePoint1
+            self.arcBP1StartAngle = 0
+            self.arcBP2StartAngle = 0
+            self.conjSegVecAngle = 0
+            self.archExtendAngle =0
+            self.theta = 0
+            
             
         
         return self.conjSegVec
