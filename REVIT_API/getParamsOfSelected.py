@@ -51,6 +51,7 @@ class TabForm(Form):
 	userSelectedRowIndices = []
 
 	def __init__(self, tableData, elements, parameterName, inUserSelectedStrIds):
+		self.initialSetup = True
 		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
 		print("script directory: {}".format(self.scriptDir))
 		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
@@ -62,31 +63,22 @@ class TabForm(Form):
 		self.elementsNumber = len(self.elements)
 		self.parameterName = parameterName
 		self.parameter = nameToParamDic[self.parameterName]
-		self.strSelectedIdsHolder = []
+		#self.strSelectedIdsHolder = []
 		TabForm.userSelectedStrIds = inUserSelectedStrIds
 		#self.ControlAdded += self.control_Added
 		self.cCount = 0
 		
 		self.InitializeComponent()
 		
-		#column count check in ColumnAded function
-		
-		
-
-		
-		
-
 	def InitializeComponent(self):
 		self.Text = "Table of elements with selected parameter: " + self.parameterName
-		self.Width = 800
-		self.Height = 500
+		self.Width = 1200
+		self.Height = 800
 		self.StartPosition = FormStartPosition.CenterScreen
 		self.TopMost = True
 		self.filteredElements = 0
-		self.setupDataGridView()
 		
-		
-		
+		self.setupDataGridView()		
 		
 	def setupDataGridView(self):
 		self.dgvPanel = Panel()
@@ -177,10 +169,10 @@ class TabForm(Form):
 		self.typeMarkBip = BuiltInParameter.ALL_MODEL_TYPE_MARK
 		self.markValues = getValuesByParameterName(self.elements, "ALL_MODEL_MARK", doc, bip = self.markBip)
 		self.typeMarkValues = getValuesByParameterName(self.elements, "ALL_MODEL_TYPE_MARK", doc, bip = self.typeMarkBip)
-		for i, value in enumerate(self.markValues):
-			print("self.markValues {0} - {1}".format(i, value))
-		for i, value in enumerate(self.typeMarkValues):
-			print("self.typeMarkValues {0} - {1}".format(i, value))
+		#for i, value in enumerate(self.markValues):
+			#print("self.markValues {0} - {1}".format(i, value))
+		#for i, value in enumerate(self.typeMarkValues):
+			#print("self.typeMarkValues {0} - {1}".format(i, value))
 		""" tableObjectList = []
 		tableDicList = []
 		for i,v in enumerate(self.elements):
@@ -212,14 +204,13 @@ class TabForm(Form):
 		self.isolateButton.Text = "Isolate selected elements"
 		self.isolateButton.Height = 30
 		self.isolateButton.Click += self.isolateSelectedElements
-		self.isolateButton.Location = Point(0,120)
+		self.isolateButton.Location = Point(0,30)
 		self.isolateButton.AutoSize = True
 		self.buttonPanel.Controls.Add(self.isolateButton)
 
 		self.setParameterButton = Button()
 		self.setParameterButton.Text = "Set Value For Selected"
-		self.setParameterButton.Height = 30
-		self.setParameterButton.Location = Point(0,60)
+		self.setParameterButton.Height = 60
 		self.setParameterButton.Click += self.setParametersOfSelected
 		self.buttonPanel.Controls.Add(self.setParameterButton)
 
@@ -243,20 +234,22 @@ class TabForm(Form):
 		
 
 		#self.isolateButton.Width = self.buttonPanel.Width
-		self.setParameterButton.Width = self.buttonPanel.Width
+		self.setParameterButton.Width = self.buttonPanel.Width / 2
+		self.setParameterButton.Location = Point(self.buttonPanel.Width/2,0)
 		self.setParameterTextBox.Width = self.buttonPanel.Width
-		self.isolateButton.Width = self.buttonPanel.Width
+		self.isolateButton.Width = self.buttonPanel.Width / 2
 		self.setParameterTextBox.Location = Point(0,0)
 
 		
 		#self.createDGVbyRows(tableDicList)
 
 		self.testButton = Button()
-		self.testButton.Text = "Test"
+		self.testButton.Text = "Select and return"
 		self.testButton.Height = 30
-		self.testButton.Location = Point(0,90)
-		self.testButton.Click += self.backColorChanged
-		self.testButton.Width = self.buttonPanel.Width
+		self.testButton.Location = Point(0,0)
+		self.testButton.Click += self.selectAndReturn
+
+		self.testButton.Width = self.buttonPanel.Width / 2
 		self.buttonPanel.Controls.Add(self.testButton)	
 		#self.setParameterButton.Enabled = False
 		#self.setParameterButton.Enabled = True
@@ -331,34 +324,51 @@ class TabForm(Form):
 		#if e.Control.Name == "Button Panel":
 		#	self.setSelectedRows()
 
-	def backColorChanged(self, sender, event):
-		print("BackColorChanged")
-		self.dgv.ClearSelection()
-		for i in TabForm.selectedRowIndices:
-			print("row to select {0}".format(self.dgv.Rows[i].Index))
-			self.dgv.Rows[i].Selected = True
+	def selectAndReturn(self, sender, event):
+		elNames = []
+		selectedElements = []
+		selectedElementsId = []
+		strIds = []
+		for i,row in enumerate(self.dgv.SelectedRows):
+			elementName = self.dgv.Rows[row.Index].Cells[self.elementNameColumnIndex].FormattedValue
+			#print("X SelectionChanged Rows[row.Index].Cells[2].FormattedValue - {}".format(elementName))
+			if elementName not in elNames:
+				elNames.append(elementName)
+			strId = self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue
+			elId = viewElementsIdsDict[strId]
+			strIds.append(strId)
+			#print("SelectionChanged viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[1].FormattedValue] - {}".format(elId))
+			selectedElements.append(doc.GetElement(elId))
+			selectedElementsId.append(elId)
+			TabForm.selectedRowIndices.append(row.Index)
+			TabForm.selectedRowStrIds.append(self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue)
+		
+		#print("SelectionChanged selectedElementsId - {}".format(selectedElementsId))
+		elementIdsCol = Clist[ElementId](selectedElementsId)
+		uidoc.Selection.SetElementIds(elementIdsCol)
+		MainForm.selectedRowStrIds = strIds
+		print("MainForm.selectedRowStrIds {}".format(MainForm.selectedRowStrIds))
+		self.Close()
 
 	def DataBindingComplete(self, sender, event):
 		self.arangeColumns()
-		""" self.idColumnIndex = self.dgv.Columns[self.columnNames[0]].Index
-		self.categoryColumnIndex = self.dgv.Columns[self.columnNames[1]].Index
-		self.elementNameColumnIndex = self.dgv.Columns[self.columnNames[2]].Index
-		self.parameterColumnIndex = self.dgv.Columns[self.columnNames[3]].Index
-		self.markColumnIndex = self.dgv.Columns[self.columnNames[4]].Index
-		self.typeMarkColumnIndex = self.dgv.Columns[self.columnNames[5]].Index """
 		TabForm.userSelectedRowIndices = self.getRowIndiciesFromStrIds(TabForm.userSelectedStrIds)
 		TabForm.selectedRowIndices = self.getRowIndiciesFromStrIds(TabForm.selectedRowStrIds)
 		print("DataBindingComplete {0} {1}".format(sender, event))
 		#self.markSelected()
-		TabForm.selectedRowStrIds = self.strSelectedIdsHolder
+		TabForm.selectedRowStrIds = MainForm.selectedRowStrIds
 		self.dgv.ClearSelection()
+
 		self.setSelectedRows()
+		self.initialSetup = False
+		
 	
 	def ColumnHeaderMouseClick(self, sender, event):
 		#print("ColumnHeader {0} was clicked".format(event.ColumnIndex))
 		#tableDicList, tableObjectList = self.getDataSources(self.ids, sortColumnIndex = event.ColumnIndex)
 		print("Column.DisplayIndex {0} - ColumnIndex {1}".format(self.dgv.Columns[event.ColumnIndex].DisplayIndex, event.ColumnIndex))
-		self.strSelectedIdsHolder = TabForm.selectedRowStrIds[:]
+		print("ColumnHeaderMouseClick TabForm.selectedRowStrIds {0}".format(TabForm.selectedRowStrIds[:]))
+		MainForm.selectedRowStrIds = TabForm.selectedRowStrIds[:]
 		tableDicList, tableObjectList = self.getDataSources(self.elements, sortColumnIndex = event.ColumnIndex)
 		""" for item in tableObjectList:
 			print("{0} - {1} - {2}".format(item.Num, item.Id, item.Category)) """
@@ -417,7 +427,7 @@ class TabForm(Form):
 	def markSelected(self):
 		for i, row in enumerate(self.dgv.Rows):
 			currentId = row.Cells[self.idColumnIndex].FormattedValue
-			if currentId in self.strSelectedIdsHolder:
+			if currentId in MainForm.selectedRowStrIds:
 				self.dgv.Rows[i].Selected = True
 			else:
 				self.dgv.Rows[i].Selected = False
@@ -463,7 +473,6 @@ class TabForm(Form):
 			self.setParametersOfSelected(self.setParameterTextBox, event)
 
 	def cellClick(self, sender, e):
-
 		if e.RowIndex >=0:
 			print("{0} Row, {1} Column button clicked".format(e.RowIndex +1, e.ColumnIndex +1))
 			for x in self.elements:
@@ -479,9 +488,9 @@ class TabForm(Form):
 			iDs = []
 			for row in self.dgv.SelectedRows:
 				for x in self.elements:
-					if x.Id.ToString() == "{0}".format(self.dgv.Rows[row.Index].Cells[0].FormattedValue):
+					if x.Id.ToString() == "{0}".format(self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue):
 						iDs.append(x.Id)
-				print("Isolated element on row {0} Id {1}".format(row.Index, self.dgv.Rows[row.Index].Cells[0].Value))
+				print("Isolated element on row {0} Id {1}".format(row.Index, self.dgv.Rows[row.Index].Cells[self.idColumnIndex].Value))
 			elementIdsCol = Clist[ElementId](iDs)
 			t = Transaction(doc, "Temporary Isolate Selected Elements")
 			#transaction Start
@@ -499,15 +508,20 @@ class TabForm(Form):
 			#uidoc.Selection.Clear()
 			sender.Text = "Isolate selected elements"
 			t.Commit()
+		myDialogWindow.Close()
 
 	def updateDGV(self):		
-		print("len(self.dgv.SelectedRows) {}".format(len(self.dgv.SelectedRows)))
+		#print("len(self.dgv.SelectedRows) {}".format(len(self.dgv.SelectedRows)))
 		self.values = getValuesByParameterName(self.elements, self.parameterName, doc)
+		idValueDic = {}
+		for i, el in enumerate(self.elements):
+			idValueDic[el.Id.ToString()] = self.values[i]
+		#print("idValueDic {}".format(idValueDic))
 		""" for i, row in enumerate(self.dgv.Rows):
 			row.Cells[self.parameterColumnIndex].Value = self.values[i] if i < len(self.dgv.Rows)-1 else row.Cells[self.parameterColumnIndex].Value
 		self.dgv.Refresh() """
-		for i, row in enumerate(self.dgv.SelectedRows):
-			row.Cells[self.parameterColumnIndex].Value = self.values[row.Index]
+		for i, row in enumerate(self.dgv.Rows):
+			row.Cells[self.parameterColumnIndex].Value = idValueDic[row.Cells[self.idColumnIndex].FormattedValue]
 		self.dgv.Refresh()
 		
 
@@ -515,7 +529,7 @@ class TabForm(Form):
 		elementsToSet = []
 		for i,row in enumerate(self.dgv.SelectedRows):
 			#print("elId {}".format(self.dgv.Rows[row.Index].Cells[3].FormattedValue))
-			elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue]			
+			elId = viewElementsIdsDict[row.Cells[self.idColumnIndex].FormattedValue]			
 			el = doc.GetElement(elId)
 			elementsToSet.append(el)
 			#elParams = el.GetOrderedParameters()
@@ -563,18 +577,19 @@ class TabForm(Form):
 		elParamValues = []
 		TabForm.selectedRowIndices = []
 		TabForm.selectedRowIds = []
+		TabForm.selectedRowStrIds = []
 		for i,row in enumerate(self.dgv.SelectedRows):
 			elementName = self.dgv.Rows[row.Index].Cells[self.elementNameColumnIndex].FormattedValue
 			#print("X SelectionChanged Rows[row.Index].Cells[2].FormattedValue - {}".format(elementName))
 			if elementName not in elNames:
 				elNames.append(elementName)
-				elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue]
-				#print("SelectionChanged viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[1].FormattedValue] - {}".format(elId))
+			elId = viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue]
+			#print("SelectionChanged viewElementsIdsDict[self.dgv.Rows[row.Index].Cells[1].FormattedValue] - {}".format(elId))
 			selectedElements.append(doc.GetElement(elId))
 			selectedElementsId.append(elId)
 			TabForm.selectedRowIndices.append(row.Index)
 			TabForm.selectedRowStrIds.append(self.dgv.Rows[row.Index].Cells[self.idColumnIndex].FormattedValue)
-			#print("{0} - Selected element Id: {1} with value {2}".format(i, self.dgv.Rows[row.Index].Cells[0].FormattedValue, self.dgv.Rows[row.Index].Cells[3].FormattedValue))
+		#print("selectionChanged() TabForm.selectedRowStrIds {}".format(TabForm.selectedRowStrIds))
 
 		#for el in selectedElements:
 		elemParamValues = getValuesByParameterName(selectedElements, self.parameterName, doc)
@@ -592,7 +607,7 @@ class TabForm(Form):
 			self.setParameterTextBox.Text = ""
 			self.setParameterTextBox.ForeColor = Color.Black
 		else:
-			self.setParameterTextBox.Text = "**multiple values selected** - {0}, elemParamValues {1}".format(len(uniqueValues), elemParamValues)
+			self.setParameterTextBox.Text = "**multiple values selected** - {0}".format(elemParamValues)
 			self.setParameterTextBox.ForeColor = Color.Gray
 		self.setParameterTextBox.Refresh()
 		#print("rows selected: {0}, unique element names: {1}, uniqueValues {2}".format(len(self.dgv.SelectedRows), len(elNames), len(uniqueValues)))
@@ -630,6 +645,8 @@ class TabForm(Form):
 
 
 class MainForm(Form):
+	userSelectedStrIds = []
+	selectedRowStrIds = []
 	def __init__(self, tableData, elements, inViewSelectionIdStrings):
 		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
 		print("script directory: {}".format(self.scriptDir))

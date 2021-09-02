@@ -178,7 +178,7 @@ if myInput == "y" or myInput == "Y" or myInput == "yes" or myInput == "YES":
     ascii_letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     if my2Input == "r" or my2Input == "R" or my2Input == "rename" or my2Input == "RENAME":
         renameFiles = renameFiles(flattened)
-    elif my2Input == "REC" or my2Input == "rev" or my2Input == "reversed" or my2Input == "REVERSED":
+    elif my2Input == "REV" or my2Input == "rev" or my2Input == "reversed" or my2Input == "REVERSED":
         renameFilesReversed = renameFilesReversed(flattened)
     #reRenamedFiles = renameFilesReversed(renamedFiles)
 
