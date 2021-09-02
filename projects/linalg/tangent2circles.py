@@ -10,7 +10,7 @@ import platform
 
 def pushButton(event):
     label1.config(text="{0}".format(event.widget.cget("text")))
-
+#--
 
 class App(Frame):
     def __init__(self, master):
