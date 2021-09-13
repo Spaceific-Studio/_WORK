@@ -15,7 +15,8 @@ import numpy as np
 
 """
 
-dirPath = r"D:/DANO/FDATA/_OTHER/ME"
+#dirPath = r"D:/DANO/FDATA/_OTHER/ME"
+dirPath = r"D:/DANO/MDATA/Metallica"
 
 def readDirFiles(inDirPath):
     myFiles = []
@@ -75,7 +76,7 @@ def walkDirs(inDirPath,inLevel):
 # def addZeroes(inFiles, inRequiredDigitCount):
 #     returnList = []
 #     for i, f in  enumerate(inFiles):
-#         returnList.append(adjustFileName(f, inRequiredDigitCount, i))
+#         returnList.append(adjustFilyeName(f, inRequiredDigitCount, i))
 #     return returnList
 
 def flatten(l): 
