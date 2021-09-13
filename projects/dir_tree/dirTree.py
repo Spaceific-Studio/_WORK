@@ -5,17 +5,25 @@ def dirTree(inObj, **kwargs):
 	#print("objList")
 	#print(objList)
 	#print("level - {0}".format(level))
+	stringReturn = True
+	returnList = []
+	returnString = ""
 	if level < maxLevel:
-		for attr in dir(inObj):
+		for attr in sorted(dir(inObj), reverse=True):
 			if hasattr(getattr(inObj, attr), "__call__"):
 				attrObject = getattr(inObj, attr)
 				#print("attr - {0} - {1}".format(attr, attrObject))
-				returnList = dirTree(attrObject, objList = objList.append(attrObject) if objList else [], level = level +1, maxLevel = maxLevel)
+				returnList.append(dirTree(attrObject, objList = objList.append(attrObject) if objList else [], level = level +1, maxLevel = maxLevel))
+				offset = "\t" * level
+				offset = offset + attr
+				print(offset + "<>")
+				returnString = ", ".join(dirTree(attrObject, objList = objList.append(attrObject) if objList else [], level = level +1, maxLevel = maxLevel))
 			else:
-				returnList = attr
-		return returnList
+				returnList.append(attr)
+			returnItem = returnString if stringReturn else returnList
+		return returnItem
 	else:
-		return None
+		return inObj.__class__.__name__
 
 def dirOneLevel(inObj, **kwargs):
 	objList = kwargs['objList'] if 'objList' in kwargs else []
@@ -33,7 +41,7 @@ def dirOneLevel(inObj, **kwargs):
 
 
 #dirOneLevel(__file__)
-print(dirTree(__file__))
+print(dirTree(__file__, maxLevel = 2))
 
 #print("{0}".format(dir(__file__.istitle.__name__)))
 
