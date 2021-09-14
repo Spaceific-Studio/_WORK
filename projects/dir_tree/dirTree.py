@@ -1,47 +1,62 @@
-def dirTree(inObj, **kwargs):
-	objList = kwargs['objList'] if 'objList' in kwargs else []
+import sys
+import os
+savePath = "h:\\_WORK\\C#\\TEST\\"
+saveName = "revit_classes.txt"
+
+
+def ensure_dir(file_path):
+    directory = os.path.dirname(file_path) 
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+def get_all_objects(**kwargs):
+	"""Return a list of all live Python
+	objects, not including the list itself."""
+	#gcl = gc.get_objects()
+	maxLevel = kwargs['maxLevel'] if 'maxLevel' in kwargs else 2
+	gcl = [[attr, getattr(__file__, attr)] for attr in dir(__file__)]
+	olist = []
+	seen = {}
+	# Just in case:
+	seen[id(gcl)] = None
+	seen[id(olist)] = None
+	seen[id(seen)] = None
+	# _getr does the real work.
+	get_refs(gcl, olist, seen, maxLevel = maxLevel)
+	return olist
+
+def get_refs(slist, olist, seen, **kwargs):
 	level = kwargs['level'] if 'level' in kwargs else 0
 	maxLevel = kwargs['maxLevel'] if 'maxLevel' in kwargs else 2
-	#print("objList")
-	#print(objList)
-	#print("level - {0}".format(level))
-	stringReturn = True
-	returnList = []
-	returnString = ""
-	if level < maxLevel:
-		for attr in sorted(dir(inObj), reverse=True):
-			if hasattr(getattr(inObj, attr), "__call__"):
-				attrObject = getattr(inObj, attr)
-				#print("attr - {0} - {1}".format(attr, attrObject))
-				returnList.append(dirTree(attrObject, objList = objList.append(attrObject) if objList else [], level = level +1, maxLevel = maxLevel))
-				offset = "\t" * level
-				offset = offset + attr
-				print(offset + "<>")
-				returnString = ", ".join(dirTree(attrObject, objList = objList.append(attrObject) if objList else [], level = level +1, maxLevel = maxLevel))
-			else:
-				returnList.append(attr)
-			returnItem = returnString if stringReturn else returnList
-		return returnItem
-	else:
-		return inObj.__class__.__name__
-
-def dirOneLevel(inObj, **kwargs):
-	objList = kwargs['objList'] if 'objList' in kwargs else []
-	#print("objList")
-	#print(objList)
-	for attr in dir(inObj):
-		if hasattr(getattr(inObj, attr), "__call__"):
-			attrstring = " a - "
-			for a in dir(getattr(inObj, attr)):
-				attrstring += "{0}".format(a)
-			print(attrstring)
-		attrObject = getattr(inObj, attr)
-		print("attrObject")
-		print("{0} - {1}".format(attr, attrObject))
-
-
+	onlyNames = kwargs['onlyNames'] if 'onlyNames' in kwargs else True
+	for e in slist:
+		if id(e[1]) in seen:
+			continue
+		seen[id(e[1])] = None
+		olist.append(e[1]) if not onlyNames else olist.append(e[0])
+		#tl = gc.get_referents(e)
+		tl = [["{0}>>{1}".format(e[0], attr), getattr(e[1], attr)] for attr in dir(e[1])]
+		if tl and level < maxLevel:
+			get_refs(tl, olist, seen, level=level+1, maxLevel = maxLevel, onlyNames = onlyNames)
 #dirOneLevel(__file__)
-print(dirTree(__file__, maxLevel = 2))
+#print(dirTree(__file__, maxLevel = 2))
+#gcl = [getattr(__file__, attr) for attr in dir(__file__)]
+#print(gcl)
+allObjects = get_all_objects(maxLevel = 4)
+#print("len(allObjects) - {0} : {1}".format(len(allObjects), allObjects))
+outStr = ""
+for i, v in enumerate(allObjects):
+	outStr += "\n{0:0>5} : {1}".format(i, v)
+#print(outStr)
+ensure_dir(savePath)
+try:
+	with open(os.path.join(savePath, saveName),'w') as sFile:
+		sFile.write(outStr)
+except Exception as ex:
+	import traceback
+	exc_info = sys.exc_info()
+	traceback.print_exception(*exc_info)
+
 
 #print("{0}".format(dir(__file__.istitle.__name__)))
 

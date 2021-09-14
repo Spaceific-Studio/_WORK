@@ -43,7 +43,7 @@ print("len(gcl) - {0}".format(len(gcl)))
 #print(["{0:0>5} - {1}".format(x, gcl[x]) for x in range(20)])
 allObjects = get_all_objects()
 print("len(allObjects) - {0}".format(len(allObjects)))
-searchString = "object"
+searchString = "Selection"
 printNames = True
 count = 0
 for i, x in enumerate(allObjects):
