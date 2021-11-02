@@ -46,17 +46,35 @@ print("onesBinDec {0}".format(onesBinDec))
 print("onesBinDecRev {0}".format(onesBinDecRev))
 
 print (len(alphaNum))
-string1 = "TQB54"
-string2 = "GLC"
-string3 = "U5"
-string4 = "37J"
-int1 = int(string1,36)
-int2 = int(string2,36)
+#string1 = "TQB54"
+
+string3 = "GLC"
+string4 = "U5"
+string5 = "37J"
+
+int1 = 1666597438632046
+myString1 = base_repr(int1, base=36)
+int2 = 2521268150118790373416267
+myString2 = base_repr(int2, base=36)
+
 int3 = int(string3,36)
 int4 = int(string4,36)
+int5 = int(string5,36)
+
+print("myString1 {0}".format(myString1.lower()))
+myString2First = myString2[0]
+myString2 = myString2.lower()
+listStr2 = []
+listStr2[:0] = myString2
+listStr2[0] = myString2First
+
+myString2 = myString2.lower()
+#myString2[0] = myString2First
+print("myString2 {0}".format("".join(listStr2)))
 print ("{fStr} ->> int1 = {fInt}".format(fStr = str, fInt = int1))
 print ("{fStr} ->> int2 = {fInt}".format(fStr = str, fInt = int2))
 print ("{fStr} ->> int4 = {fInt}".format(fStr = str, fInt = int4))
+print ("{fStr} ->> int5 = {fInt}".format(fStr = str, fInt = int5))
 bin1 = "{:b}".format(int1)
 print ("{fStr} ->> bin1 = {fBin}".format(fStr = str, fBin = bin1))
 hex1 = "{:x}".format(int1)
