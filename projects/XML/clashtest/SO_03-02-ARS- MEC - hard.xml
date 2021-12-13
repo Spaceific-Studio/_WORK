@@ -1,0 +1,2990 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<exchange xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" units="m" filename="" filepath="">
+  <batchtest name="Report" internal_name="Report" units="m">
+    <clashtests>
+      <clashtest name="SO_03-02-ARS- MEC - hard" test_type="hard" status="ok" tolerance="0.010" merge_composites="1">
+        <linkage mode="none"/>
+        <left>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/ASR-SO_03-02-Clash</locator>
+          </clashselection>
+        </left>
+        <right>
+          <clashselection selfintersect="0" primtypes="1">
+            <locator>lcop_selection_set_tree/MEC-SO_03-02-FOR_ASR-Clash</locator>
+          </clashselection>
+        </right>
+        <rules/>
+        <summary total="63" new="63" active="0" reviewed="0" approved="0" resolved="0">
+          <testtype>Hard</testtype>
+          <teststatus>OK</teststatus>
+        </summary>
+        <clashresults>
+          <clashresult name="Clash1" guid="794d3e18-abe2-4214-8952-359ea01db70a" href="SO_03-02-ARS- MEC - hard_files\cd000001.jpg" status="new" distance="-0.418">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701239.844" y="-1089519.744" z="374.450"/>
+            </clashpoint>
+            <gridlocation>J-3 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>CEMENTOVÝ POTĚR</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3601639</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash2" guid="522d564e-d4c6-4e4d-a097-239c359c5692" href="SO_03-02-ARS- MEC - hard_files\cd000002.jpg" status="new" distance="-0.237">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701247.784" y="-1089527.257" z="372.265"/>
+            </clashpoint>
+            <gridlocation>J-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1121298</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Beton, vyztužený</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3172130</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash3" guid="adaf3788-7f94-4deb-8ef4-e02c992adb03" href="SO_03-02-ARS- MEC - hard_files\cd000003.jpg" status="new" distance="-0.231">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701248.792" y="-1089525.102" z="373.478"/>
+            </clashpoint>
+            <gridlocation>J-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1121298</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Beton, vyztužený</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3172427</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash4" guid="277d4de7-2986-4013-98ef-aa65ceafdcbf" href="SO_03-02-ARS- MEC - hard_files\cd000004.jpg" status="new" distance="-0.226">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701250.685" y="-1089521.053" z="372.443"/>
+            </clashpoint>
+            <gridlocation>K-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1121298</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Beton, vyztužený</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3841718</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash5" guid="a272821e-1b6e-4f2b-8a14-f49c2b0cff0f" href="SO_03-02-ARS- MEC - hard_files\cd000005.jpg" status="new" distance="-0.217">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701250.396" y="-1089520.362" z="374.450"/>
+            </clashpoint>
+            <gridlocation>K-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1043255</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: ŽB deska 430mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3840555</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash6" guid="130c3e17-df32-4ff3-9a23-f6b4f570e444" href="SO_03-02-ARS- MEC - hard_files\cd000006.jpg" status="new" distance="-0.213">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701239.151" y="-1089521.598" z="374.500"/>
+            </clashpoint>
+            <gridlocation>J-3 : 1NP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Interior Floors</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3601427</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash7" guid="527072d3-ad28-4b13-86d2-41ed5a2eebf6" href="SO_03-02-ARS- MEC - hard_files\cd000007.jpg" status="new" distance="-0.204">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701239.783" y="-1089519.725" z="371.200"/>
+            </clashpoint>
+            <gridlocation>J-3 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1590179</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: PODLAHA - BETONOVÁ MAZANINA 50 mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3145968</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash8" guid="a73d18ed-4462-4f75-ad8c-c09c1d41af46" href="SO_03-02-ARS- MEC - hard_files\cd000008.jpg" status="new" distance="-0.189">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701251.105" y="-1089520.154" z="373.529"/>
+            </clashpoint>
+            <gridlocation>K-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1121298</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Beton, vyztužený</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3189224</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash9" guid="3d88c3a0-954e-4e9f-981a-121b7a1607de" href="SO_03-02-ARS- MEC - hard_files\cd000009.jpg" status="new" distance="-0.151">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701240.842" y="-1089517.570" z="374.500"/>
+            </clashpoint>
+            <gridlocation>K-3 : 1NP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Interior Floors</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3601134</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash10" guid="c2432ab3-5c43-446c-abf3-b2530b7f8cb0" href="SO_03-02-ARS- MEC - hard_files\cd000010.jpg" status="new" distance="-0.106">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701242.117" y="-1089515.155" z="374.500"/>
+            </clashpoint>
+            <gridlocation>K-3 : 1NP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Interior Floors</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3600921</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash11" guid="aa20434b-4ef8-47ac-a121-3e336f871136" href="SO_03-02-ARS- MEC - hard_files\cd000011.jpg" status="new" distance="-0.100">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701239.842" y="-1089520.296" z="371.000"/>
+            </clashpoint>
+            <gridlocation>J-3 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1013235</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SANACE ŽB TRÁMŮ A STROPU</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3145968</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash12" guid="3d89ed92-ff93-4559-bb07-d0a7f0a34760" href="SO_03-02-ARS- MEC - hard_files\cd000012.jpg" status="new" distance="-0.099">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701254.084" y="-1089508.116" z="365.029"/>
+            </clashpoint>
+            <gridlocation>O-1 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2867288</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SANACE ŽB STĚN A SLOUPŮ</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4046104</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash13" guid="a6287cd1-28ed-4889-aa84-b47d6cb4020f" href="SO_03-02-ARS- MEC - hard_files\cd000013.jpg" status="new" distance="-0.098">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701238.656" y="-1089520.926" z="371.879"/>
+            </clashpoint>
+            <gridlocation>J-3 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2866764</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Basic Wall</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Walls: Basic Wall: ŽB 600mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4046540</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash14" guid="a1248394-f477-4c15-b8f1-4125aa64c503" href="SO_03-02-ARS- MEC - hard_files\cd000014.jpg" status="new" distance="-0.098">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701239.842" y="-1089518.390" z="371.886"/>
+            </clashpoint>
+            <gridlocation>K-3 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2866827</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Basic Wall</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Walls: Basic Wall: ŽB 600mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4046566</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash15" guid="5d231055-f5f2-411b-bed1-381c78ac3b37" href="SO_03-02-ARS- MEC - hard_files\cd000015.jpg" status="new" distance="-0.097">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701240.678" y="-1089515.186" z="371.845"/>
+            </clashpoint>
+            <gridlocation>K-3 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2866828</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Basic Wall</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Walls: Basic Wall: ŽB 600mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4046582</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash16" guid="20098662-f001-4406-852a-7020eac0436a" href="SO_03-02-ARS- MEC - hard_files\cd000016.jpg" status="new" distance="-0.097">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701250.163" y="-1089514.336" z="369.685"/>
+            </clashpoint>
+            <gridlocation>M-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2867421</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Beton, vyztužený</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3775777</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash17" guid="6fe9782d-185f-41b2-b132-15317816456e" href="SO_03-02-ARS- MEC - hard_files\cd000017.jpg" status="new" distance="-0.092">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701242.490" y="-1089530.354" z="369.446"/>
+            </clashpoint>
+            <gridlocation>I-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2867520</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SANACE ŽB STĚN A SLOUPŮ</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4045814</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash18" guid="f110d656-a32d-4387-82ed-954d22196fa3" href="SO_03-02-ARS- MEC - hard_files\cd000018.jpg" status="new" distance="-0.091">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701242.254" y="-1089530.906" z="369.528"/>
+            </clashpoint>
+            <gridlocation>I-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2867520</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SANACE ŽB STĚN A SLOUPŮ</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3775404</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash19" guid="f6c3be80-578d-402b-a6fb-2cc4804fc759" href="SO_03-02-ARS- MEC - hard_files\cd000019.jpg" status="new" distance="-0.090">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701240.437" y="-1089537.304" z="364.825"/>
+            </clashpoint>
+            <gridlocation>F-1 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2867207</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SANACE ŽB STĚN A SLOUPŮ</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4046250</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash20" guid="e6686f47-da3b-4396-b9a8-2ec654e35ca9" href="SO_03-02-ARS- MEC - hard_files\cd000020.jpg" status="new" distance="-0.089">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701250.458" y="-1089514.496" z="369.489"/>
+            </clashpoint>
+            <gridlocation>L-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2867475</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Beton, vyztužený</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3775777</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash21" guid="db3ee20c-97ce-45de-9ab6-5a18596b1bff" href="SO_03-02-ARS- MEC - hard_files\cd000021.jpg" status="new" distance="-0.088">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701249.850" y="-1089521.415" z="374.450"/>
+            </clashpoint>
+            <gridlocation>K-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2926709</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: ŽB deska 430mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3839624</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash22" guid="7de06652-e50c-46ed-bcb1-aa8d9f55ee1a" href="SO_03-02-ARS- MEC - hard_files\cd000022.jpg" status="new" distance="-0.088">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701242.530" y="-1089511.224" z="371.700"/>
+            </clashpoint>
+            <gridlocation>L-3 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2866866</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Basic Wall</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Walls: Basic Wall: ŽB 600mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4046695</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash23" guid="f97cc292-2c1b-4d25-94df-3231450b7d9e" href="SO_03-02-ARS- MEC - hard_files\cd000023.jpg" status="new" distance="-0.087">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701245.962" y="-1089529.957" z="372.086"/>
+            </clashpoint>
+            <gridlocation>I-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1122470</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: Schodnice – 340/10</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3166792</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash24" guid="6712d180-c624-41d2-855b-ab0a9f68c412" href="SO_03-02-ARS- MEC - hard_files\cd000024.jpg" status="new" distance="-0.087">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701245.962" y="-1089529.957" z="372.086"/>
+            </clashpoint>
+            <gridlocation>I-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1122470</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Schodnice – 340/10</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: Schodnice – 340/10</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3166792</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash25" guid="b53e04e7-f260-4c5b-92e0-159c1da26edd" href="SO_03-02-ARS- MEC - hard_files\cd000025.jpg" status="new" distance="-0.087">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701249.760" y="-1089514.832" z="369.485"/>
+            </clashpoint>
+            <gridlocation>L-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2867475</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SANACE ŽB STĚN A SLOUPŮ</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4046027</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash26" guid="fb13b7d6-a282-4470-a7a3-f181aa75f715" href="SO_03-02-ARS- MEC - hard_files\cd000026.jpg" status="new" distance="-0.087">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701249.454" y="-1089522.303" z="374.450"/>
+            </clashpoint>
+            <gridlocation>K-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2926707</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: ŽB deska 430mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3912142</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash27" guid="3936a76e-199e-4ab4-add1-323fdf1f410b" href="SO_03-02-ARS- MEC - hard_files\cd000027.jpg" status="new" distance="-0.084">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701246.596" y="-1089527.392" z="374.500"/>
+            </clashpoint>
+            <gridlocation>J-1 : 1NP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Interior Floors</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3161965</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash28" guid="849fa76c-098b-4aa5-8069-542dec6a3aad" href="SO_03-02-ARS- MEC - hard_files\cd000028.jpg" status="new" distance="-0.083">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701246.596" y="-1089527.393" z="374.450"/>
+            </clashpoint>
+            <gridlocation>J-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1857640</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: ŽB deska 430mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3161965</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash29" guid="25ad35d7-e120-4316-8258-59d9cd69debd" href="SO_03-02-ARS- MEC - hard_files\cd000029.jpg" status="new" distance="-0.078">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701234.122" y="-1089529.208" z="372.048"/>
+            </clashpoint>
+            <gridlocation>H-3 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2866923</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Basic Wall</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Walls: Basic Wall: ŽB 600mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4046634</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash30" guid="72cc05e0-0546-4fb6-b7f7-925dc494ddbd" href="SO_03-02-ARS- MEC - hard_files\cd000030.jpg" status="new" distance="-0.072">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701250.677" y="-1089520.479" z="374.500"/>
+            </clashpoint>
+            <gridlocation>K-1 : 1NP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Interior Floors</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3840555</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash31" guid="56cd3c22-0021-4664-ab9e-d82568fa1fc3" href="SO_03-02-ARS- MEC - hard_files\cd000031.jpg" status="new" distance="-0.072">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701245.677" y="-1089530.497" z="372.068"/>
+            </clashpoint>
+            <gridlocation>I-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1122469</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: Schodnice – 340/10</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3166792</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash32" guid="2abaafa5-c637-4d18-97ad-5bba3d7cd4a3" href="SO_03-02-ARS- MEC - hard_files\cd000032.jpg" status="new" distance="-0.072">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701245.677" y="-1089530.497" z="372.068"/>
+            </clashpoint>
+            <gridlocation>I-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1122469</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Schodnice – 340/10</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: Schodnice – 340/10</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3166792</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash33" guid="3de1949b-21af-4f0b-87c6-0ad4dc1dfa53" href="SO_03-02-ARS- MEC - hard_files\cd000033.jpg" status="new" distance="-0.058">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701245.793" y="-1089524.782" z="371.000"/>
+            </clashpoint>
+            <gridlocation>J-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1013235</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SANACE ŽB TRÁMŮ A STROPU</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3617220</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Vřetenové nástěnné šoupatko DN1000</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipe Accessories</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash34" guid="0b6c20cf-2bec-4a56-88c0-af0462ece169" href="SO_03-02-ARS- MEC - hard_files\cd000034.jpg" status="new" distance="-0.050">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701245.792" y="-1089524.781" z="371.150"/>
+            </clashpoint>
+            <gridlocation>J-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1590179</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: PODLAHA - BETONOVÁ MAZANINA 50 mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3617220</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Vřetenové nástěnné šoupatko DN1000</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipe Accessories</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash35" guid="66f0cba7-870c-47a3-98ed-5fac83f3ea8c" href="SO_03-02-ARS- MEC - hard_files\cd000035.jpg" status="new" distance="-0.033">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701236.326" y="-1089524.495" z="371.520"/>
+            </clashpoint>
+            <gridlocation>I-3 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2866989</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Basic Wall</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Walls: Basic Wall: ŽB 600mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3836540</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Nerez ocel 1.4404</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash36" guid="45b392e8-eecd-4b57-ba5e-f64cb942f9e7" href="SO_03-02-ARS- MEC - hard_files\cd000036.jpg" status="new" distance="-0.018">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701252.225" y="-1089506.193" z="371.743"/>
+            </clashpoint>
+            <gridlocation>O-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2085832</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3153777</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash37" guid="60c61a06-6ef3-4cbb-8e3b-46d3a5678c7b" href="SO_03-02-ARS- MEC - hard_files\cd000037.jpg" status="new" distance="-0.018">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701252.225" y="-1089506.193" z="371.743"/>
+            </clashpoint>
+            <gridlocation>O-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2085832</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SCHODNICE - UPE160</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3153777</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash38" guid="25b514f2-e8fe-454b-bc88-59af6c2665de" href="SO_03-02-ARS- MEC - hard_files\cd000038.jpg" status="new" distance="-0.018">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701261.230" y="-1089486.964" z="371.740"/>
+            </clashpoint>
+            <gridlocation>S-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2112840</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SCHODNICE - UPE160</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3169569</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash39" guid="e2fb16a8-0249-4156-97fe-940319be8e13" href="SO_03-02-ARS- MEC - hard_files\cd000039.jpg" status="new" distance="-0.018">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701261.230" y="-1089486.964" z="371.740"/>
+            </clashpoint>
+            <gridlocation>S-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2112840</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3169569</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash40" guid="ef3d7ef9-0140-48e8-af8b-9a3bc2938994" href="SO_03-02-ARS- MEC - hard_files\cd000040.jpg" status="new" distance="-0.015">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701244.963" y="-1089512.607" z="371.707"/>
+            </clashpoint>
+            <gridlocation>L-3 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1922773</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>blok1</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Walls</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3164293</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash41" guid="3323a473-52d7-488b-8624-b2284862bfcf" href="SO_03-02-ARS- MEC - hard_files\cd000041.jpg" status="new" distance="-0.014">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701250.904" y="-1089515.105" z="371.675"/>
+            </clashpoint>
+            <gridlocation>L-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2114430</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>blok1</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Walls</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3163783</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash42" guid="6fe08b59-6672-42e1-b128-d01c5a4213ed" href="SO_03-02-ARS- MEC - hard_files\cd000042.jpg" status="new" distance="-0.014">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701250.421" y="-1089519.816" z="374.500"/>
+            </clashpoint>
+            <gridlocation>K-1 : 1NP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Interior Floors</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3189222</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash43" guid="c851d46a-bcb4-403e-804d-90e1b0ada1df" href="SO_03-02-ARS- MEC - hard_files\cd000043.jpg" status="new" distance="-0.013">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701250.421" y="-1089519.817" z="374.450"/>
+            </clashpoint>
+            <gridlocation>K-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1043255</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: ŽB deska 430mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3189222</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash44" guid="a102d193-6733-4d43-8997-8b2f27817efc" href="SO_03-02-ARS- MEC - hard_files\cd000044.jpg" status="new" distance="-0.013">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701251.928" y="-1089506.827" z="371.743"/>
+            </clashpoint>
+            <gridlocation>O-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2085831</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3153777</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash45" guid="b689984b-72f7-4544-8401-4fb387a00bf1" href="SO_03-02-ARS- MEC - hard_files\cd000045.jpg" status="new" distance="-0.013">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701251.928" y="-1089506.827" z="371.743"/>
+            </clashpoint>
+            <gridlocation>O-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2085831</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SCHODNICE - UPE160</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3153777</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash46" guid="fc3ddb5e-973f-413e-8f77-bfd00ddd3f4a" href="SO_03-02-ARS- MEC - hard_files\cd000046.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701240.519" y="-1089535.167" z="364.462"/>
+            </clashpoint>
+            <gridlocation>F-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1646362</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: PODLAHA - SPÁDOVÝ BETON (S) SXX 200mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4155989</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Podpěra - uložení kluzné</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipe Fittings</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash47" guid="ac8bdd92-2f6a-406a-85ae-142eddee86f9" href="SO_03-02-ARS- MEC - hard_files\cd000047.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701252.440" y="-1089507.066" z="371.732"/>
+            </clashpoint>
+            <gridlocation>O-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2085831</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3169422</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash48" guid="d16a2907-6231-4d15-b269-ca22ac0f45f6" href="SO_03-02-ARS- MEC - hard_files\cd000048.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701252.440" y="-1089507.066" z="371.732"/>
+            </clashpoint>
+            <gridlocation>O-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2085831</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SCHODNICE - UPE160</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3169422</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash49" guid="3c34de7c-e760-40e9-bf9f-7863fb014782" href="SO_03-02-ARS- MEC - hard_files\cd000049.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701252.761" y="-1089506.443" z="371.727"/>
+            </clashpoint>
+            <gridlocation>O-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2085832</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3169422</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash50" guid="0d457064-ad79-4ad8-a572-15afbf3eb551" href="SO_03-02-ARS- MEC - hard_files\cd000050.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701252.761" y="-1089506.443" z="371.727"/>
+            </clashpoint>
+            <gridlocation>O-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2085832</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SCHODNICE - UPE160</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3169422</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash51" guid="bff51820-e7e3-419d-8d44-1d102497d565" href="SO_03-02-ARS- MEC - hard_files\cd000051.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701261.703" y="-1089487.185" z="371.737"/>
+            </clashpoint>
+            <gridlocation>S-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2112840</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SCHODNICE - UPE160</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3153740</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash52" guid="c60aedea-7f9e-48fc-b6a8-72b84a81c283" href="SO_03-02-ARS- MEC - hard_files\cd000052.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701261.703" y="-1089487.185" z="371.737"/>
+            </clashpoint>
+            <gridlocation>S-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2112840</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3153740</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash53" guid="35f483aa-7cbe-45fa-8442-6f49aeebb4b4" href="SO_03-02-ARS- MEC - hard_files\cd000053.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701261.357" y="-1089487.796" z="371.726"/>
+            </clashpoint>
+            <gridlocation>S-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2112839</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3153740</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash54" guid="c10282d4-8aaf-4896-9848-a89f080dc3a8" href="SO_03-02-ARS- MEC - hard_files\cd000054.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701261.357" y="-1089487.796" z="371.726"/>
+            </clashpoint>
+            <gridlocation>S-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2112839</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SCHODNICE - UPE160</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3153740</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash55" guid="ed25a283-7136-4e13-aaa4-0e83722ae7d9" href="SO_03-02-ARS- MEC - hard_files\cd000055.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701241.507" y="-1089533.053" z="364.462"/>
+            </clashpoint>
+            <gridlocation>H-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1646415</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: PODLAHA - SPÁDOVÝ BETON (S) SXX 200mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4155858</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Podpěra - uložení kluzné</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipe Fittings</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash56" guid="6a634702-7023-47be-bba8-d05c7be1f921" href="SO_03-02-ARS- MEC - hard_files\cd000056.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701237.622" y="-1089529.513" z="364.537"/>
+            </clashpoint>
+            <gridlocation>I-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1646415</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: PODLAHA - SPÁDOVÝ BETON (S) SXX 200mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4169492</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Podpěra - uložení kluzné</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipe Fittings</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash57" guid="1c064c03-7da9-477c-85c2-8877923955d7" href="SO_03-02-ARS- MEC - hard_files\cd000057.jpg" status="new" distance="-0.012">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701237.220" y="-1089530.373" z="364.537"/>
+            </clashpoint>
+            <gridlocation>H-2 : -2PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1646415</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: PODLAHA - SPÁDOVÝ BETON (S) SXX 200mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>4169505</value>
+                </objectattribute>
+                <layer>-2PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Podpěra - uložení kluzné</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipe Fittings</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash58" guid="0abe6113-12d4-4501-8e91-d9063c47a5cb" href="SO_03-02-ARS- MEC - hard_files\cd000058.jpg" status="new" distance="-0.011">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701247.098" y="-1089527.925" z="374.500"/>
+            </clashpoint>
+            <gridlocation>J-1 : 1NP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Interior Floors</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3689190</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash59" guid="28facf58-af54-4bdc-bbbb-879c283fa6f7" href="SO_03-02-ARS- MEC - hard_files\cd000059.jpg" status="new" distance="-0.011">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701247.084" y="-1089527.922" z="374.450"/>
+            </clashpoint>
+            <gridlocation>J-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1857640</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: ŽB deska 430mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3689190</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash60" guid="93e2a554-400f-4e36-90a3-ee96c567e99c" href="SO_03-02-ARS- MEC - hard_files\cd000060.jpg" status="new" distance="-0.010">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701260.973" y="-1089487.617" z="371.733"/>
+            </clashpoint>
+            <gridlocation>S-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2112839</value>
+                </objectattribute>
+                <layer>&lt;No level&gt;</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Stringer</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3169569</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash61" guid="113cbf10-91e4-4835-a0f9-9c7e77eb9686" href="SO_03-02-ARS- MEC - hard_files\cd000061.jpg" status="new" distance="-0.010">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701260.973" y="-1089487.617" z="371.733"/>
+            </clashpoint>
+            <gridlocation>S-2 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2112839</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>SCHODNICE - UPE160</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Supports: Stringer: SCHODNICE - UPE160</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3169569</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash62" guid="7bce3f50-1f51-4421-9d59-396328536986" href="SO_03-02-ARS- MEC - hard_files\cd000062.jpg" status="new" distance="-0.010">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701246.518" y="-1089528.743" z="374.450"/>
+            </clashpoint>
+            <gridlocation>J-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>2799123</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>CEMENTOVÝ POTĚR</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Solid</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3168230</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+          <clashresult name="Clash63" guid="f930060c-b799-4025-b175-70328dc0adc0" href="SO_03-02-ARS- MEC - hard_files\cd000063.jpg" status="new" distance="-0.010">
+            <description>Hard</description>
+            <resultstatus>New</resultstatus>
+            <clashpoint>
+              <pos3f x="-701246.518" y="-1089528.743" z="374.450"/>
+            </clashpoint>
+            <gridlocation>J-1 : -1PP</gridlocation>
+            <createddate>
+              <date year="2021" month="12" day="9" hour="15" minute="23" second="38"/>
+            </createddate>
+            <clashobjects>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>1857640</value>
+                </objectattribute>
+                <layer>1NP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Floor</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Floors: Floor: ŽB deska 430mm</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+              <clashobject>
+                <objectattribute>
+                  <name>Element ID</name>
+                  <value>3168230</value>
+                </objectattribute>
+                <layer>-1PP</layer>
+                <smarttags>
+                  <smarttag>
+                    <name>Item Name</name>
+                    <value>Pipe Types</value>
+                  </smarttag>
+                  <smarttag>
+                    <name>Item Type</name>
+                    <value>Pipes: Pipe Types: Černá ocel</value>
+                  </smarttag>
+                </smarttags>
+              </clashobject>
+            </clashobjects>
+          </clashresult>
+        </clashresults>
+      </clashtest>
+    </clashtests>
+    <selectionsets/>
+  </batchtest>
+</exchange>
