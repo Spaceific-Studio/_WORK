@@ -17,35 +17,50 @@ tree = ET.parse(filePath)
 root = tree.getroot()
 #print("dir root {0}".format(dir(root)))
 #print("root.getchildren {0}".format(root.getchildren()))
+clashTestNames = []
+clashTestResults = []
+for clashTest in root.iter('clashtest'):
+	clashTestNames.append(clashTest.attrib['name'])
+	print("clashtests {0}".format(clashTestNames[-1]))
+	clashResults = []
+	for clashResult in root.iter('clashresult'):
+		clashResultAttrs = {}
+		#print("clashResult {0}".format(clashResult.attrib['name']))
+		clashResultObjsAttrs = []
+		for clashObject in clashResult.iter('clashobject'):
+			clashObjAttribNames = []
+			clashObjAttribValues = []
+			for clashObjAttrName in clashObject.iter('name'):
+				clashObjAttribNames.append(clashObjAttrName.text)
+				#print("clashObjectAttrName {0}".format(clashObjAttrName.text))
+			for clashObjAttrValue in clashObject.iter('value'):
+				clashObjAttribValues.append(clashObjAttrValue.text)
+				#print("clashObjectAttrName {0}".format(clashObjAttrValue.text))
+			zipObj = zip(clashObjAttribNames, clashObjAttribValues)
+			clashObjDict = dict(zipObj)
+			clashResultObjsAttrs.append(clashObjDict)
+		pos3fList = [x for x in clashResult.iter('pos3f')]
+		clashResultPos = pos3fList[0] if len(pos3fList) >0 else None
+		posDict ={}
+		xPos = clashResultPos.attrib['x']
+		yPos = clashResultPos.attrib['y']
+		zPos = clashResultPos.attrib['z']
+		posDict ={}
+		posDict['x'] = xPos
+		posDict['y'] = yPos
+		posDict['z'] = zPos
+		clashResultAttrs['clashResultPos'] = posDict
+		clashResultAttrs['clashResultName'] = clashResult.attrib['name']
+		clashResultAttrs['clashResultHref'] = clashResult.attrib['href']
+		clashResultAttrs['clashResultObjsAttrs'] = clashResultObjsAttrs
+		print("{0}\n\telement_1-ID {1}, item name {2}, item type {3}\n\telement_2-ID {4} item name {5}, item type {6}\n\tx:{7}\n\ty:{8}\n\tz:{9}\n\thref:{10}\n".format(clashResultAttrs['clashResultName'], clashResultAttrs['clashResultObjsAttrs'][0]['Element ID'], clashResultAttrs['clashResultObjsAttrs'][0]['Item Name'], clashResultAttrs['clashResultObjsAttrs'][0]['Item Type'], clashResultAttrs['clashResultObjsAttrs'][1]['Element ID'], clashResultAttrs['clashResultObjsAttrs'][1]['Item Name'], clashResultAttrs['clashResultObjsAttrs'][1]['Item Type'], clashResultAttrs['clashResultPos']['x'], clashResultAttrs['clashResultPos']['y'], clashResultAttrs['clashResultPos']['z'], clashResultAttrs['clashResultHref']))
+		clashResults.append(clashResultAttrs)
+	clashTestResults.append(clashResults)
+zipObj2 = zip(clashTestNames, clashTestResults)
+clashTestsDict = dict(zipObj2)
 
-for clashResult in root.iter('clashresult'):
-	clashResultAttrs = {}
-	#print("clashResult {0}".format(clashResult.attrib['name']))
-	clashResultObjsAttrs = []
-	for clashObject in clashResult.iter('clashobject'):
-		clashObjAttribNames = []
-		clashObjAttribValues = []
-		for clashObjAttrName in clashObject.iter('name'):
-			clashObjAttribNames.append(clashObjAttrName.text)
-			#print("clashObjectAttrName {0}".format(clashObjAttrName.text))
-		for clashObjAttrValue in clashObject.iter('value'):
-			clashObjAttribValues.append(clashObjAttrValue.text)
-			#print("clashObjectAttrName {0}".format(clashObjAttrValue.text))
-		zipObj = zip(clashObjAttribNames, clashObjAttribValues)
-		clashObjDict = dict(zipObj)
-		clashResultObjsAttrs.append(clashObjDict)
-	pos3fList = [x for x in clashResult.iter('pos3f')]
-	clashResultPos = pos3fList[0] if len(pos3fList) >0 else None
-	posDict ={}
-	xPos = clashResultPos.attrib['x']
-	yPos = clashResultPos.attrib['y']
-	posDict ={}
-	posDict['x'] = xPos
-	posDict['y'] = yPos
-	clashResultAttrs['clashResultPos'] = posDict
-	clashResultAttrs['clashResultName'] = clashResult.attrib['name']
-	clashResultAttrs['clashResultObjsAttrs'] = clashResultObjsAttrs
-	print("{0}\n\telement_1-ID {1}, item name {2}, item type {3}\n\telement_2-ID {4} item name {5}, item type {6}\n\tx:{7}\n\ty:{8}\n".format(clashResultAttrs['clashResultName'], clashResultAttrs['clashResultObjsAttrs'][0]['Element ID'], clashResultAttrs['clashResultObjsAttrs'][0]['Item Name'], clashResultAttrs['clashResultObjsAttrs'][0]['Item Type'], clashResultAttrs['clashResultObjsAttrs'][1]['Element ID'], clashResultAttrs['clashResultObjsAttrs'][1]['Item Name'], clashResultAttrs['clashResultObjsAttrs'][1]['Item Type'], clashResultAttrs['clashResultPos']['x'], clashResultAttrs['clashResultPos']['y']))
+for k, v in clashTestsDict.items():
+	print("{0}:{1} length{2} : ".format(k, v, len(v)))
 #for element in root.iter('clashobject'):
 #	print("clashobject {}".format([x for x in element.iter('objectattribute')]))
 #for item in root.iterfind('batchtest'):
