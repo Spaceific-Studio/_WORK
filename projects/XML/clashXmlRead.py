@@ -1,14 +1,20 @@
 import xml.etree.ElementTree as ET
 import os
+from tkinter import *
+from PIL import Image, ImageDraw, ImageTk
 #import xmltodict
 
 cwd = os.getcwd()
 print("cwd {0}".format(cwd))
-fName = "SO_03-02-ARS- MEC - hard.xml"
+testName = "SO_03-02-ARS- MEC - hard"
+fFormat = "xml"
+fName = "{0}.{1}".format(testName, fFormat)
 subDir1 = "clashtest"
 filePath = os.path.join(cwd, subDir1)
 filePath = os.path.join(filePath, fName)
+imgDir = os.path.join(cwd, subDir1,"{0}_files".format(testName))
 print("filePath {0}".format(filePath))
+print("imgDir {0}".format(imgDir))
 with open(filePath) as xmlFile:
 	data = xmlFile.read().replace("\n", "")
 #xmlDict = xmltodict.parse(data)
@@ -23,7 +29,7 @@ for clashTest in root.iter('clashtest'):
 	clashTestNames.append(clashTest.attrib['name'])
 	print("clashtests {0}".format(clashTestNames[-1]))
 	clashResults = []
-	for clashResult in root.iter('clashresult'):
+	for clashResult in clashTest.iter('clashresult'):
 		clashResultAttrs = {}
 		#print("clashResult {0}".format(clashResult.attrib['name']))
 		clashResultObjsAttrs = []
@@ -53,36 +59,126 @@ for clashTest in root.iter('clashtest'):
 		clashResultAttrs['clashResultName'] = clashResult.attrib['name']
 		clashResultAttrs['clashResultHref'] = clashResult.attrib['href']
 		clashResultAttrs['clashResultObjsAttrs'] = clashResultObjsAttrs
-		print("{0}\n\telement_1-ID {1}, item name {2}, item type {3}\n\telement_2-ID {4} item name {5}, item type {6}\n\tx:{7}\n\ty:{8}\n\tz:{9}\n\thref:{10}\n".format(clashResultAttrs['clashResultName'], clashResultAttrs['clashResultObjsAttrs'][0]['Element ID'], clashResultAttrs['clashResultObjsAttrs'][0]['Item Name'], clashResultAttrs['clashResultObjsAttrs'][0]['Item Type'], clashResultAttrs['clashResultObjsAttrs'][1]['Element ID'], clashResultAttrs['clashResultObjsAttrs'][1]['Item Name'], clashResultAttrs['clashResultObjsAttrs'][1]['Item Type'], clashResultAttrs['clashResultPos']['x'], clashResultAttrs['clashResultPos']['y'], clashResultAttrs['clashResultPos']['z'], clashResultAttrs['clashResultHref']))
+		#print("{0}\n\telement_1-ID {1}, item name {2}, item type {3}\n\telement_2-ID {4} item name {5}, item type {6}\n\tx:{7}\n\ty:{8}\n\tz:{9}\n\thref:{10}\n".format(clashResultAttrs['clashResultName'], clashResultAttrs['clashResultObjsAttrs'][0]['Element ID'], clashResultAttrs['clashResultObjsAttrs'][0]['Item Name'], clashResultAttrs['clashResultObjsAttrs'][0]['Item Type'], clashResultAttrs['clashResultObjsAttrs'][1]['Element ID'], clashResultAttrs['clashResultObjsAttrs'][1]['Item Name'], clashResultAttrs['clashResultObjsAttrs'][1]['Item Type'], clashResultAttrs['clashResultPos']['x'], clashResultAttrs['clashResultPos']['y'], clashResultAttrs['clashResultPos']['z'], clashResultAttrs['clashResultHref']))
 		clashResults.append(clashResultAttrs)
 	clashTestResults.append(clashResults)
 zipObj2 = zip(clashTestNames, clashTestResults)
 clashTestsDict = dict(zipObj2)
 
-for k, v in clashTestsDict.items():
-	print("{0}:{1} length{2} : ".format(k, v, len(v)))
-#for element in root.iter('clashobject'):
-#	print("clashobject {}".format([x for x in element.iter('objectattribute')]))
-#for item in root.iterfind('batchtest'):
-#	print("iterfind tag {0}, iterfind attrib {1}".format(item.tag, item.attrib))
-#	for tests in item.iterfind('clashtests'):
-#		print("clashtests tag {0}, clashtest attrib {1}".format(tests.tag, tests.attrib))
-#		for test in tests.iterfind('clashtest'):
-#			print("clashtest tag {0}, clashtest attrib {1}".format(test.tag, test.attrib))
-#			for results in test.iterfind('clashresults'):
-#				print("clashresults tag {0}, clashresults attrib {1}".format(results.tag, results.attrib))
-#				for result in results.iterfind('clashresult'):
-					#print("clashresult tag {0}, clashresult attrib {1}".format(result.tag, result.attrib))
-#					for clashObject in result.iterfind('clashobjects'):
-#						for element in clashObject.iterfind('clashobject'):
-#							print('clashobject {0}'.format(element.getchildren()))
-#						print("clashObject {}".format(clashObject))
-#					print("{0} - {1}".format(result.attrib['name'], result.attrib['guid']))
-#batchTests = root.iterfind('batchtests')
-#print("batchTests:\n{0}".format(batchTests))
-#for clashTest in batchTests.findall('clashtests'):
-#	print("clashTests:\n{0}".format(clashTests))
-#for i, child in enumerate(root.iter()):
-#	print("i-{0}, child.findall {1}".format(i, child.findall('clashresults')))
-	#print("root child {0:3>0} - {1}:{2}".format(i, child.tag, child.attrib))
+values = clashTestsDict.values()
+
+for i, v in enumerate(values):
+	pass
+	#print("{0}:length{1} : ".format(v, len(v)))
+
+class App(Frame):
+	def __init__(self, master, inClashTestDict):
+			#attribs:
+			#inClashTestDict:dict
+			#input dictionary of structure
+			#{
+			# 'clashResultPos':dict
+			# {
+			#  'x':str, 'y':str, 'z': str
+			# },
+			# 'name':str, 'href':str,
+			# 'clashResultObjsAttrs':dict
+			#  {
+			#   [#1-first element to clash test
+			#    {'Element ID':str, 'Item Name':str, 'Item Type':str}
+			#    },
+			#    #2-second element to clash test
+			#    {'Element ID':str, 'Item Name':str, 'Item Type':str}
+			#    }
+			#   ]
+			#  }
+			#}
+		Frame.__init__(self, master, bg = "yellow", bd = 1)
+		#self.createWidgets()
+		#self.setGlobals()
+		self.dataDict = inClashTestDict
+		#self.clashData = inClashTestDict.values()
+		self.master = master
+		self.screen_width = master.winfo_screenwidth()
+		self.screen_height = master.winfo_screenheight()
+		self.fHeight1 = self.screen_height*0.65
+		self.fHeight2 = self.screen_height*0.3
+		self.fWidth1 = self.screen_width*0.95
+		
+		self.clashData = [x for x in [y for y in inClashTestDict.values()]]
+		self.setup()
+		
+		
+		
+	def setup(self):
+		self.fr1 = Frame(self.master, height=self.fHeight1, width=self.fWidth1, bg='yellow')
+		self.fr1.grid(row=0, column=0, sticky=W)
+		self.lst = []
+		#self.fillData()
+		dataDictValues = self.dataDict.values()
+		self.setupTable(len(self.clashData[0]),5)
+	
+	def setupTable(self, rCount, cCount):
+		self.textVar = StringVar()
+		self.infoText = Label(self.fr1, text="textInfo", textvariable=self.textVar)
+		self.infoText.grid(row=0, column=2, sticky=NSEW)
+		
+		cells ={}
+		cWeight = int(100/cCount)
+		results = [x for x in self.clashData[0]]
+		for c in range(cCount):
+			for r in range(rCount):
+				
+				if c == 0:
+					self.fr1.columnconfigure(c,weight=1)
+					self.fr1.rowconfigure(r,weight=20)
+					href_t = results[r]['clashResultHref']
+					href = "/".join(href_t.split("\\"))
+					imgPath = os.path.join(cwd, subDir1, href)
+					pilImg = Image.open(r"{0}".format(imgPath))
+					pilImgR = pilImg.resize((90,90))
+					img = ImageTk.PhotoImage(pilImgR)
+				#self.cell = Label(self.fr1, width=30, fg='red', font=('Arial',4), text="{0},{1}".format(r,c))
+					self.cell = Button(self.fr1, text="{0},{1}".format(r,c), image=img, font=('Arial',4), width=90, height=90, fg='gray')
+					self.cell.imgList = []
+					self.cell.imgList.append(img)
+				elif c == 1:
+					cText = results[r]['clashResultName']
+					self.cell = Label(self.fr1, width=7, fg='black', font=('Arial',4), text="{0}".format(cText))
+				elif c == 2:
+					cText = results[r]['clashResultObjsAttrs'][0]['Element ID']
+					self.cell = Label(self.fr1, width=7, fg='red', font=('Arial',4, 'bold'), text="{0}".format(cText))
+					self.cell.bind("<ButtonRelease-1>", self.updateInfoText)
+				elif c == 3:
+					cText = results[r]['clashResultObjsAttrs'][1]['Element ID']
+					self.cell.bind("<ButtonRelease-1>", self.updateInfoText)
+					self.cell = Label(self.fr1, width=10, fg='blue', font=('Arial',4, 'bold'), text="{0}".format(cText))
+				elif c == 4:
+					cText = results[r]['clashResultHref']
+					self.cell = Label(self.fr1, fg='grey', font=('Arial',4), text="{0}".format(cText))
+					#self.cell.insert(END, self.lst[r][c])
+				self.cell.grid(row=r,column=c,sticky=NSEW)
+				#self.cell.bind("<ButtonRelease-1>", self.updateInfoText)
+				
+				cells[(r,c)] = self.cell
+	
+	def updateInfoText(self, event):
+		self.textVar.set(event.widget.cget('text')) 
+				
+	def fillData(self):
+		#tests = self.clashData.values()
+		for i, test in enumerate(self.clashData):
+			for k, v in enumerate(test):
+				self.lst.append((v['clashResultName'],v))
+			#self.lst.append((k, v['clashResultObjsAttrs'][0]['Element ID']))
+
+
+mainWindow = Tk()
+mainWindow.grid()
+mainWindow.grid_propagate(1)
+
+app = App(mainWindow, clashTestsDict)
+app.master.title("Transform app")
+app.mainloop()
+
 	
