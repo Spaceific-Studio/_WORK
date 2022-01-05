@@ -88,7 +88,7 @@ def loadDirs(inDirPath, inRange):
         myDirs.sort()
     if inRange[0] <= len(myDirs):
         startLayer = inRange[0]
-        print "startLayer: " +str(startLayer) + " total dirs " + str(len(myDirs))
+        print ("startLayer: " +str(startLayer) + " total dirs " + str(len(myDirs)))
     else:
         return []
     if inRange[len(inRange)-1] <= len(myDirs):
@@ -106,12 +106,12 @@ def loadDirs(inDirPath, inRange):
 #    print f[inRange[0]:inRange[len(inRange)-1]]
     f.sort()
 #    print f[inRange[0]:inRange[len(inRange)-1]]
-    print "endLayer: " + str(endLayer)
+    print("endLayer: " + str(endLayer))
     return f[inRange[0]: (inRange[len(inRange)-1])+1]
     
 def getCross(inRules, inInspArraySequence, inWidth, inLogData):
-    print "inRules"
-    print inRules
+    print("inRules")
+    print(inRules)
     dirPath = r"/storage/emulated/0/CA/_moje pokusy/cross_test.png"  
     recSize = inWidth / (len(inRules)*4+1.0)
     crossSize = recSize * 3
@@ -225,7 +225,7 @@ def readCSV_Log(inPath):
     inspArrayRange = getInspArrayRangeZero(5)
     firstOcure = getInspArrayRangeZero(5)
     if osPath.isfile(inPath) == True:
-        print "Log File Exists: " + inPath
+        print("Log File Exists: " + inPath)
         f = open(inPath, "r")
         with f:
             reader = csv.reader(f)
@@ -248,32 +248,32 @@ def readCSV_Log(inPath):
 #                    myRows = []
 #                    myCounts = []
     else:
-        print "Log File Doesn't Exist: "
+        print("Log File Doesn't Exist: ")
     return [firstOcure, inspArrayRange]
 
 def run(inDirPath):
     myDirs = loadDirs(inDirPath, range(0, 40))
     for i in myDirs:
-        print i
+        print(i)
     myData = loadLayers(myDirs)
-    print "\n" 
-    print "myData: " 
-    print "myDataLen " + str(len(myData))
+    print("\n")
+    print("myData: ")
+    print("myDataLen " + str(len(myData)))
     for i, d in enumerate(myData):
-        print "DIR_NUMBER: " + str(i)
-        print "resX: " + str(d[1])
-        print "resY: " + str(d[2])
-        print "ruleNumber: " 
-        print d[4]
+        print("DIR_NUMBER: " + str(i))
+        print("resX: " + str(d[1]))
+        print("resY: " + str(d[2]))
+        print("ruleNumber: ")
+        print(d[4])
 #        print myDirs[i]
         a=0
         for j in d[0]:
-            print str(a)
-            print j
+            print(str(a))
+            print(j)
             a += 1
     myAnalyzeData = createColorAnalyze(myData, savePath, logReadDir)
     for i in myAnalyzeData:
-        print i
+        print(i)
      
 def getInvertedDigit(inRule, inPos):
     returnString = ""

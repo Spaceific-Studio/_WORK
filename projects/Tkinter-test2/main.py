@@ -73,6 +73,7 @@ import tkinter as tk
 class zoomer(Tk):
 
     def __init__(self):
+        #Frame.__init__(self, master, bg = "yellow", bd = 1)
         x=100
         y=100
         Tk.__init__(self)
@@ -81,8 +82,10 @@ class zoomer(Tk):
         self.size_y = y
 
         #SIZE
-        self.app_sizex = 200
-        self.app_sizey = 200
+        self.scrollBarWidth = 50
+        self.screen_width = self.winfo_screenwidth() - self.scrollBarWidth
+        self.app_sizex = self.screen_width
+        self.app_sizey = 800
         fontSize=int(x/20)
 
         self.title("Graphic")
@@ -98,6 +101,55 @@ class zoomer(Tk):
         self.canvas.create_line(self.border,   self.border, x-self.border, y-self.border)
         text1=self.canvas.create_text(50, 50, fill="white",font=("Purisa", fontSize))
         self.canvas.itemconfig(text1, text="Graphic Text")
+        self.canvasHeight = 2000
+        self.interior = interior = Frame(self.canvas, height=self.canvasHeight, width=200, bg="cyan")
+        #interior_id = self.canvas.create_window(0,0, window=interior, anchor=NW)
+        
+        def _configure_interior(event):
+        # update the scrollbars to match the size of the inner frame
+        	size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
+        	self.canvas.config(scrollregion="0 0 %s %s" % size)
+        	if interior.winfo_reqwidth() != self.canvas.winfo_width():
+        		# update the canvas's width to fit the inner frame
+        		self.canvas.config(width=interior.winfo_reqwidth())
+        interior.bind('<Configure>', _configure_interior)
+        
+        def _configure_canvas(event):
+        	if interior.winfo_reqwidth() != self.canvas.winfo_width():
+        		# update the inner frame's width to fill the canvas
+        		pass
+        		#self.canvas.itemconfigure(interior_id, width=self.canvas.winfo_width())
+        self.canvas.bind('<Configure>', _configure_canvas)
+        
+        self.offset_y = 0
+        self.prevy = 0
+        self.scrollposition = 1
+        
+        def on_press(event):
+            self.offset_y = event.y_root
+            #if self.scrollposition < 1:   #commenting out these 2 lines fixed an old scrolling issue that kept resetting the position
+            #self.scrollposition = 1
+            if self.scrollposition > self.canvasHeight:
+            	self.scrollposition = self.canvasheight
+            self.canvas.yview_moveto(self.scrollposition / self.canvasHeight)
+        
+        def on_touch_scroll(event):
+        	nowy = event.y_root
+        	sectionmoved = 30  # speed of scroll
+        	if nowy > (self.prevy):
+        		event.delta = -sectionmoved
+        	elif nowy < (self.prevy):
+        		event.delta = sectionmoved
+        	else:
+        		event.delta = 0
+        	
+        	self.prevy= nowy
+        	self.scrollposition += event.delta
+        	self.canvas.yview_moveto(self.scrollposition/ self.canvasHeight)
+        #self.bind("<Enter>", lambda _: self.bind_all('<Button-1>', on_press), '+')  #what does this line do?  apparently not needed
+        #self.bind("<Leave>", lambda _: self.unbind_all('<Button-1>'), '+')          ##what does this line do?  apparently not needed
+        self.bind("<Enter>", lambda _: self.bind_all('<B1-Motion>', on_touch_scroll), '+')
+        self.bind("<Leave>", lambda _: self.unbind_all('<B1-Motion>'), '+')
 
         #SCROLLING BARS
         self.vbar=Scrollbar(self,orient=VERTICAL)
@@ -125,7 +177,9 @@ class zoomer(Tk):
         self.rb3 = tk.Radiobutton(self, indicatoron = 0, text = "Initialiii", command=self.radiobuttonAction,
                                     variable = self.rbVar, value = 2)
         self.rb3.grid()
-
+        
+		
+        
     def radiobuttonAction(self):
         print(self.rbVar.get())
         
@@ -154,5 +208,11 @@ class zoomer(Tk):
 
 
 if __name__ == '__main__':
-    my_gui=zoomer()
+	#mainWindow = Tk()
+	#mainWindow.grid()
+	#mainWindow.grid_propagate(1)
+	#app = zoomer(mainWindow)
+	#app.master.title("zoom app")
+	#app.mainloop()
+    my_gui=zoomer()	
     my_gui.mainloop()
