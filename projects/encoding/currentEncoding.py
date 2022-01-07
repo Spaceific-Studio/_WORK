@@ -11,9 +11,9 @@ print("current encoding: {0}".format(sys.stdin.encoding))
 
 #pip.main(['install', 'python-magic'])
 
-path = r"/storage/emulated/0/Download"
+path = r"/storage/emulated/0/Download/ASSEMBLY_CODE"
 #fileName = "revit_classes.txt"
-fileName = "2022_01_04-SNIM-Assembly_code_ANSI.txt"
+fileName = "2022_01_04-SNIM-UTF-8.txt"
 filePath = os.path.join(path, fileName)
 #blob = open(filePath, 'rb').read()
 #m = magic.open(magic.MAGIC_MIME_ENCODING)

@@ -1,4 +1,5 @@
 import chardet
+#from fold_to_ascii import fold
 from chardet.universaldetector import UniversalDetector
 import os
 dir = r"/storage/emulated/0/Download/"
