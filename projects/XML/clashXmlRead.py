@@ -1,12 +1,21 @@
 import xml.etree.ElementTree as ET
 import os
 from tkinter import *
+from tkinter import filedialog
 from PIL import Image, ImageDraw, ImageTk
 import time
 #import xmltodict
 
 cwd = os.getcwd()
 print("cwd {0}".format(cwd))
+fileDialogWindow = Tk()
+#print("dir Tk {0}".format(dir(fileDialogWindow)))
+#raise TypeError("Tk.winfo.height {0}".format(fileDialogWindow.winfo.height))
+fileDialogWindow.configure(height=900)
+fileDialogWindow.file_name = filedialog.askopenfile(initialdir=cwd, title="Open clash xml file", filetypes=(("xml files", "*.xml"), ("all files", "*.*")))
+print("Selected file: {0}".format(fileDialogWindow.file_name.name))
+#raise TypeError(" {0}".format(fileDialogWindow.file_name))
+fileDialogWindow.destroy()
 testName = "SO_03-02-ARS- MEC - hard"
 fFormat = "xml"
 fName = "{0}.{1}".format(testName, fFormat)
@@ -95,6 +104,7 @@ class VerticalScrolledFrame(Frame):
 		self.canvasHeight = self.canvas.winfo_reqheight()
 		self.canvas.xview_moveto(0)
 		self.canvas.yview_moveto(0)
+		self.canvasCPosY = self.canvas.winfo_y()
 		
 		self.clashData = [x for x in [y for y in inClashTestDict.values()]]
 		#Slowest update time
@@ -103,6 +113,7 @@ class VerticalScrolledFrame(Frame):
 		self.timeVar = StringVar()
 		self.pointerVar = StringVar()
 		self.dPointerVar = StringVar()
+		self.canvasSPosYVar =  StringVar()
 		self.countDownVar = StringVar()
 		self.moveVar = StringVar()
 		self.setup()
@@ -110,6 +121,7 @@ class VerticalScrolledFrame(Frame):
 		def configure_fr1(event):
 			size = (self.fr1.winfo_reqwidth(), self.fr1.winfo_reqheight())
 			self.canvas.config(scrollregion="0 0 %s %s" % size)
+			self.canvas.config(bg="black")
 			if self.fr1.winfo_reqwidth() != self.canvas.winfo_width():
 				# update the canvas's width to fit the inner frame
 				self.canvas.config(width=self.fr1.winfo_reqwidth())
@@ -140,6 +152,7 @@ class VerticalScrolledFrame(Frame):
 			pointerYpos = event.widget.winfo_pointerxy()[1]
 			self.cPointerPosY = event.widget.winfo_pointerxy()[1]
 			self.deltaPointerY = self.sPointerPosY - self.cPointerPosY
+			#self.canvasCPosY = self.canvasSPosY + self.deltaPointerY
 			self.canvasCPosY = self.canvasSPosY + self.deltaPointerY
 			self.canvas.yview_moveto(self.canvasCPosY/(self.canvasHeight*4))
 			
@@ -148,7 +161,9 @@ class VerticalScrolledFrame(Frame):
 	
 		def scrollOnPress(event):
 			self.scrollSTime = time.time()
-			self.canvasSPosY = self.canvas.winfo_rooty()
+			#self.canvasSPosY = self.canvas.winfo_y()
+			self.canvasSPosY = self.canvasCPosY
+			self.canvasSPosYVar.set("pointer {0}, canvasSPosY {1}".format(event.widget.winfo_pointerxy(), self.canvas.winfo_y()))
 			self.sPointerPosY = event.widget.winfo_pointerxy()[1]
 			self.pointerVar.set("pointer {0}, sPointerPosY {1}".format(event.widget.winfo_pointerxy(), self.sPointerPosY))
 	
@@ -194,9 +209,9 @@ class VerticalScrolledFrame(Frame):
 		#self.bind("<ButtonPress-1>", scrollOnPress)
 		self.bind("<Enter>", lambda _: self.bind_all('<ButtonPress-1>', scrollOnPress), '+')
 		self.bind("<Leave>", lambda _: self.unbind_all('<ButtonPress-1>'), '+')
-		self.bind("<ButtonRelease-1>", scrollOnRelease)
-		#self.bind("<Enter>", lambda _: self.bind_all('<ButtonRelease-1>', scrollOnRelease), '+')
-		#self.bind("<Leave>", lambda _: self.unbind_all('<ButtonRelease-1>'), '+')
+		#self.bind("<ButtonRelease-1>", scrollOnRelease)
+		self.bind("<Enter>", lambda _: self.bind_all('<ButtonRelease-1>', scrollOnRelease), '+')
+		self.bind("<Leave>", lambda _: self.unbind_all('<ButtonRelease-1>'), '+')
 		
 		#self.bind("<Enter>", lambda _: self.bind_all('<Button-1>', on_press), '+')
 		#self.bind("<Leave>", lambda _: self.unbind_all('<Button-1>'), '+')
@@ -224,7 +239,7 @@ class VerticalScrolledFrame(Frame):
 		self.textVar = StringVar()
 		#self.infoText = Label(self.fr1, text="textInfo", textvariable=self.textVar)
 		#self.infoText.grid(row=0, column=2, sticky=NSEW)
-		
+		bgCol = "orange"
 		cells ={}
 		cWeight = int(100/cCount)
 		results = [x for x in self.clashData[0]]
@@ -241,23 +256,23 @@ class VerticalScrolledFrame(Frame):
 					pilImgR = pilImg.resize((90,90))
 					img = ImageTk.PhotoImage(pilImgR)
 					#self.cell = Label(self.fr1, width=30, fg='red', font=('Arial',4), text="{0},{1}".format(r,c))
-					self.cell = Button(self.fr1, text="{0},{1}".format(r,c), image=img, font=('Arial',4), width=90, height=90, fg='gray')
+					self.cell = Button(self.fr1, text="{0},{1}".format(r,c), image=img, font=('Arial',4), width=90, height=90, bg=bgCol, fg='gray')
 					self.cell.imgList = []
 					self.cell.imgList.append(img)
 				elif c == 1:
 					cText = results[r]['clashResultName']
-					self.cell = Label(self.fr1, width=7, fg='black', font=('Arial',4), text="{0}".format(cText))
+					self.cell = Label(self.fr1, width=7, fg='white', font=('Arial',4), bg=bgCol, text="{0}".format(cText))
 				elif c == 2:
 					cText = results[r]['clashResultObjsAttrs'][0]['Element ID']
-					self.cell = Label(self.fr1, width=7, fg='red', font=('Arial',4, 'bold'), text="{0}".format(cText))
+					self.cell = Label(self.fr1, width=7, bg=bgCol, fg='red', font=('Arial',4, 'bold'), text="{0}".format(cText))
 					self.cell.bind("<ButtonRelease-1>", self.updateInfoText)
 				elif c == 3:
 					cText = results[r]['clashResultObjsAttrs'][1]['Element ID']
 					self.cell.bind("<ButtonRelease-1>", self.updateInfoText)
-					self.cell = Label(self.fr1, width=10, fg='blue', font=('Arial',4, 'bold'), text="{0}".format(cText))
+					self.cell = Label(self.fr1, width=10, bg=bgCol, fg='green', font=('Arial',4, 'bold'), text="{0}".format(cText))
 				elif c == 4:
 					cText = results[r]['clashResultHref']
-					self.cell = Label(self.fr1, fg='grey', font=('Arial',4), text="{0}".format(cText))
+					self.cell = Label(self.fr1, bg=bgCol, fg='grey', font=('Arial',4), text="{0}".format(cText))
 					#self.cell.insert(END, self.lst[r][c])
 				self.cell.grid(row=r,column=c,sticky=NSEW)
 				#self.cell.bind("<ButtonRelease-1>", self.updateInfoText)
@@ -295,10 +310,30 @@ if __name__ == "__main__":
             #self.screen_width = root.winfo_screenwidth()
             #self.screen_height = root.winfo_screenheight()
             #print(self.screen_height)
-            self.frame = VerticalScrolledFrame(root, clashTestsDict, width=self.winfo_screenwidth(), height=500, bg ="red")
-            self.frame.pack(side=LEFT, fill=BOTH, expand=TRUE)
-            #self.label = Label(self.frame, text="Shrink the window to activate the scrollbar.")
-            #self.label.pack()
+            
+            #MAIN FRAME
+            self.frame = VerticalScrolledFrame(root, clashTestsDict, width=self.winfo_screenwidth(), height=100, bg ="red")
+            self.frame.pack(side=TOP, fill=BOTH, expand=TRUE)
+            
+            #INFO FRAME
+            self.infoFrame = Frame(root, bg="yellow")
+            self.infoFrame.pack(side=BOTTOM, fill=BOTH, expand=TRUE)
+            
+            #COUNTDOWN LABEL
+            self.countDownLabel = Label(self.infoFrame, textvariable=self.frame.countDownVar, text="Shrink the window to activate the scrollbar.")
+            self.countDownLabel.pack(side=TOP)
+            #POINTER LABEL
+            self.pointerLabel = Label(self.infoFrame, textvariable=self.frame.pointerVar, text="Shrink the window to activate the scrollbar.")
+            self.pointerLabel.pack(side=TOP)
+            #DeltaPOINTER LABEL
+            self.dPointerLabel = Label(self.infoFrame, textvariable=self.frame.dPointerVar, text="Shrink the window to activate the scrollbar.")
+            self.dPointerLabel.pack(side=TOP)
+            #MOVE LABEL
+            self.moveLabel = Label(self.infoFrame, textvariable=self.frame.moveVar, text="Shrink the window to activate the scrollbar.")
+            self.moveLabel.pack(side=TOP)
+            #TIME LABEL
+            self.timeLabel = Label(self.infoFrame, textvariable=self.frame.timeVar, text="Shrink the window to activate the scrollbar.")
+            self.timeLabel.pack(side=TOP)
             """
             buttons = []
             for i in range(20):
