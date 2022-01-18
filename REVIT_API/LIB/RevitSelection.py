@@ -972,7 +972,7 @@ def setValuesByParameterName(inElements, inValues, inName, *args, **kwargs):
 					else: 
 						raise TypeError("Wrong format of input value {0} of type {1}. It must be of type str".format(inValues[i], type(inValues[i])))
 				if parameterVP.IsElementIdValueSupported(el):
-					if type(inValues[i]) == ElementId:
+					if type(inValues[i]) == DB.ElementId:
 						myParam = el.Parameter[bip].Set(inValues[i])
 						returnValues.append("parameter {0} as ElementIdValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValues[i]))
 					else: 

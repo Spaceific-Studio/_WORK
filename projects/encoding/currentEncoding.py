@@ -2,7 +2,10 @@ import sys
 import os
 import codecs
 import io
-import chardet
+#import chardet
+import pip
+
+pip.main(["install","chardet"])
 #from bs4 import UnicodeDammit
 
 print("current encoding: {0}".format(sys.stdin.encoding))
@@ -12,8 +15,9 @@ print("current encoding: {0}".format(sys.stdin.encoding))
 #pip.main(['install', 'python-magic'])
 
 path = r"/storage/emulated/0/Download"
+path = r"C:/ProgramData/Autodesk/RVT 2020/Libraries/Czech"
 #fileName = "revit_classes.txt"
-fileName = "2022_01_04-SNIM-Assembly_code_ANSI.txt"
+fileName = "UniformatClassifications.txt"
 filePath = os.path.join(path, fileName)
 #blob = open(filePath, 'rb').read()
 #m = magic.open(magic.MAGIC_MIME_ENCODING)
