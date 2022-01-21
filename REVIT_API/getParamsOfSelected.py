@@ -9,13 +9,23 @@ from Autodesk.Revit.DB.Architecture import *
 from Autodesk.Revit.UI import *
 from Autodesk.Revit.UI.Selection import *
 
+
+
 import sys
 from operator import attrgetter
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
+sys.path.append(lib_path)
 import os
 #if "Windows" in platform.uname():
 	#lib_path = r'H:/_WORK/PYTHON/LIB'
-lib_path = r'H:/_WORK/PYTHON/REVIT_API/LIB'
-sys.path.append(lib_path)
+
+try:
+	sys.modules['__main__']
+	hasMainAttr = True	
+except:
+	hasMainAttr = False
 
 from RevitSelection import getFamilyInstancesByName, getValuesByParameterName, setValuesByParameterName, filterElementsByActiveViewIds, getAllElements
 
@@ -26,6 +36,7 @@ from System.Collections.Generic import List as Clist
 #clr.AddReferenceByPartialName('PresentationCore')
 #clr.AddReferenceByPartialName('PresentationFramework')
 clr.AddReferenceByPartialName('System.Windows.Forms')
+clr.AddReferenceByPartialName('System.Drawing')
 #import System.Windows
 #import System.Drawing
 #from System.Reflection import BindingFlags
@@ -52,9 +63,18 @@ class TabForm(Form):
 
 	def __init__(self, tableData, elements, parameterName, inUserSelectedStrIds):
 		self.initialSetup = True
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
+		if hasMainAttr:
+			try:
+				#if script runs within C# IronPython hosting environment
+				cwd = __scriptDir__
+			except Exception as ex:
+				#if script runs within RevitPythonShell environment
+				cwd = "\\".join(__file__.split("\\")[:-1]) + "LIB\\"
+		else:
+			cwd = os.getcwd()
+		self.scriptDir = "\\".join(__file__.split("\\")[:-1]) 
 		print("script directory: {}".format(self.scriptDir))
-		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
+		iconFilename = os.path.join(self.scriptDir, 'spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
 		self.Icon = icon	
 
@@ -648,9 +668,18 @@ class MainForm(Form):
 	userSelectedStrIds = []
 	selectedRowStrIds = []
 	def __init__(self, tableData, elements, inViewSelectionIdStrings):
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
+		if hasMainAttr:
+			try:
+				#if script runs within C# IronPython hosting environment
+				cwd = __scriptDir__
+			except Exception as ex:
+				#if script runs within RevitPythonShell environment
+				cwd = "\\".join(__file__.split("\\")[:-1]) + "LIB\\"
+		else:
+			cwd = os.getcwd()
+		self.scriptDir = "\\".join(__file__.split("\\")[:-1]) 
 		print("script directory: {}".format(self.scriptDir))
-		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
+		iconFilename = os.path.join(self.scriptDir, 'spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
 		self.Icon = icon	
 

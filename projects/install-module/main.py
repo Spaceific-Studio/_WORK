@@ -8,8 +8,8 @@ from PIL import Image
 #import pyglet
 
 print(dir(pip))
-#pip.main(['install', r'D:/DANO/INSTALL/PYTHON3/scipy-1.3.0.tar.gz'])
-#help(pip)
+pip.__main__(['install', 'chardet'])
+help(pip)
 #os.system(r"/data/user/0/org.qpython.qpy/files/bin/pip install gmpy2-2.1.0a1-cp27-cp27mu-manylinux1_x86_64.whl")
 #cfg_vars = distutils.sysconfig.get_config_vars()
 #include_dir = cfg_vars['CONFINCLUDEDIR']
