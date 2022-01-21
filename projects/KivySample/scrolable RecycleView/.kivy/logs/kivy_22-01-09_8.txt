@@ -1,0 +1,24 @@
+[INFO   ] Logger: Record log in /storage/emulated/0/_WORK/projects/KivySample/scrolable RecycleView/.kivy/logs/kivy_22-01-09_8.txt
+[INFO   ] Kivy: v2.0.0
+[INFO   ] Kivy: Installed at "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/__init__.py"
+[INFO   ] Python: v3.9.7 (default, Oct  6 2021, 01:34:26) 
+[GCC 11.1.0]
+[INFO   ] Python: Interpreter at "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/bin/python3"
+[INFO   ] Factory: 186 symbols loaded
+[INFO   ] Image: Providers: img_tex, img_dds, img_sdl2, img_pil (img_ffpyplayer ignored)
+[INFO   ] Window: Provider: sdl2
+[INFO   ] GL: Using the "OpenGL ES 2" graphics system
+[INFO   ] GL: Backend used <sdl2>
+[INFO   ] GL: OpenGL version <b'OpenGL ES 3.2 v1.r26p0-01eac0.035aefc9426b37ec2259de8e3dc4e984'>
+[INFO   ] GL: OpenGL vendor <b'ARM'>
+[INFO   ] GL: OpenGL renderer <b'Mali-G52 MC2'>
+[INFO   ] GL: OpenGL parsed version: 3, 2
+[INFO   ] GL: Texture max size <8192>
+[INFO   ] GL: Texture max units <16>
+[INFO   ] Window: auto add sdl2 input provider
+[INFO   ] Window: virtual keyboard not allowed, single mode, not docked
+[INFO   ] Text: Provider: sdl2
+[WARNING] Base: Unknown <android> provider
+[INFO   ] Base: Start application main loop
+[INFO   ] GL: NPOT texture support is available
+[INFO   ] Base: Leaving application in progress...

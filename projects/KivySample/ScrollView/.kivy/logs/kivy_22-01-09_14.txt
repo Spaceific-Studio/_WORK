@@ -1,0 +1,79 @@
+[INFO   ] Logger: Record log in /storage/emulated/0/_WORK/projects/KivySample/ScrollView/.kivy/logs/kivy_22-01-09_14.txt
+[INFO   ] Kivy: v2.0.0
+[INFO   ] Kivy: Installed at "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/__init__.py"
+[INFO   ] Python: v3.9.7 (default, Oct  6 2021, 01:34:26) 
+[GCC 11.1.0]
+[INFO   ] Python: Interpreter at "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/bin/python3"
+[INFO   ] Factory: 186 symbols loaded
+[INFO   ] Image: Providers: img_tex, img_dds, img_sdl2, img_pil (img_ffpyplayer ignored)
+[INFO   ] Window: Provider: sdl2
+[INFO   ] GL: Using the "OpenGL ES 2" graphics system
+[INFO   ] GL: Backend used <sdl2>
+[INFO   ] GL: OpenGL version <b'OpenGL ES 3.2 v1.r26p0-01eac0.035aefc9426b37ec2259de8e3dc4e984'>
+[INFO   ] GL: OpenGL vendor <b'ARM'>
+[INFO   ] GL: OpenGL renderer <b'Mali-G52 MC2'>
+[INFO   ] GL: OpenGL parsed version: 3, 2
+[INFO   ] GL: Texture max size <8192>
+[INFO   ] GL: Texture max units <16>
+[INFO   ] Window: auto add sdl2 input provider
+[INFO   ] Window: virtual keyboard not allowed, single mode, not docked
+[INFO   ] Text: Provider: sdl2
+[WARNING] stderr: Traceback (most recent call last):
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 242, in create_handler
+[WARNING] stderr:     return eval(value, idmap), bound_list
+[WARNING] stderr:   File "<string>", line 17, in <module>
+[WARNING] stderr: IndexError: list index out of range
+[WARNING] stderr: 
+[WARNING] stderr: During handling of the above exception, another exception occurred:
+[WARNING] stderr: 
+[WARNING] stderr: Traceback (most recent call last):
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 695, in _apply_rule
+[WARNING] stderr:     value, bound = create_handler(
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 245, in create_handler
+[WARNING] stderr:     raise BuilderException(rule.ctx, rule.line,
+[WARNING] stderr: kivy.lang.builder.BuilderException: Parser: File "<inline>", line 17:
+[WARNING] stderr: ...
+[WARNING] stderr:      15:        text_size: self.width, None
+[WARNING] stderr:      16:        
+[WARNING] stderr: >>   17:        height: self.texture_size[2]
+[WARNING] stderr:      18:        
+[WARNING] stderr: ...
+[WARNING] stderr: IndexError: list index out of range
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 242, in create_handler
+[WARNING] stderr:     return eval(value, idmap), bound_list
+[WARNING] stderr:   File "<string>", line 17, in <module>
+[WARNING] stderr: 
+[WARNING] stderr: 
+[WARNING] stderr: During handling of the above exception, another exception occurred:
+[WARNING] stderr: 
+[WARNING] stderr: Traceback (most recent call last):
+[WARNING] stderr:   File "/storage/emulated/0/_WORK/projects/KivySample/ScrollView/scrollViewExample.py", line 5, in <module>
+[WARNING] stderr:     root = Builder.load_string(r'''
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 408, in load_string
+[WARNING] stderr:     self._apply_rule(
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 710, in _apply_rule
+[WARNING] stderr:     raise BuilderException(rule.ctx, rule.line,
+[WARNING] stderr: kivy.lang.builder.BuilderException: Parser: File "<inline>", line 17:
+[WARNING] stderr: ...
+[WARNING] stderr:      15:        text_size: self.width, None
+[WARNING] stderr:      16:        
+[WARNING] stderr: >>   17:        height: self.texture_size[2]
+[WARNING] stderr:      18:        
+[WARNING] stderr: ...
+[WARNING] stderr: BuilderException: Parser: File "<inline>", line 17:
+[WARNING] stderr: ...
+[WARNING] stderr:      15:        text_size: self.width, None
+[WARNING] stderr:      16:        
+[WARNING] stderr: >>   17:        height: self.texture_size[2]
+[WARNING] stderr:      18:        
+[WARNING] stderr: ...
+[WARNING] stderr: IndexError: list index out of range
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 242, in create_handler
+[WARNING] stderr:     return eval(value, idmap), bound_list
+[WARNING] stderr:   File "<string>", line 17, in <module>
+[WARNING] stderr: 
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 695, in _apply_rule
+[WARNING] stderr:     value, bound = create_handler(
+[WARNING] stderr:   File "/data/user/0/ru.iiec.pydroid3/files/aarch64-linux-android/lib/python3.9/site-packages/kivy/lang/builder.py", line 245, in create_handler
+[WARNING] stderr:     raise BuilderException(rule.ctx, rule.line,
+[WARNING] stderr: 
