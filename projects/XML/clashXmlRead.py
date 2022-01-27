@@ -4,20 +4,35 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageDraw, ImageTk
 import time
+import kiwi
 #import xmltodict
 
 cwd = os.getcwd()
 print("cwd {0}".format(cwd))
-fileDialogWindow = Tk()
-#print("dir Tk {0}".format(dir(fileDialogWindow)))
-#raise TypeError("Tk.winfo.height {0}".format(fileDialogWindow.winfo.height))
-fileDialogWindow.configure(height=900)
-fileDialogWindow.file_name = filedialog.askopenfile(initialdir=cwd, title="Open clash xml file", filetypes=(("xml files", "*.xml"), ("all files", "*.*")))
-print("Selected file: {0}".format(fileDialogWindow.file_name.name))
-#raise TypeError(" {0}".format(fileDialogWindow.file_name))
-fileDialogWindow.destroy()
-testName = "SO_03-02-ARS- MEC - hard"
-fFormat = "xml"
+#runFileDialog = True
+runFileDialog = False
+haveFileName = False
+if runFileDialog:
+	fileDialogWindow = Tk()
+	#print("dir Tk {0}".				format(dir(fileDialogWindow)))
+	#raise TypeError("Tk.winfo.height {0}".format(fileDialogWindow.winfo.height))
+	fileDialogWindow.configure(height=900)
+	fileDialogWindow.file_name = filedialog.askopenfile(initialdir=cwd, title="Open clash xml file", filetypes=(("xml files", "*.xml"), ("all files", "*.*")))
+	print("Selected file: {0}".format(fileDialogWindow.file_name.name))
+	try:
+		fdFName = fileDialogWindow.file_name.name
+		testName = fdFName.split("/")[-1].split(".")[0]
+		fFormat = fdFName.split("/")[-1].split(".")[1]
+		haveFileName = True
+		fileDialogWindow.destroy()
+	except Exception as ex:
+		haveFileName = False
+elif not haveFileName:
+	testName = "SO_03-02-ARS- MEC - hard"
+	fFormat = "xml"
+#raise TypeError("fdName {0}.{1}".format(testName, fFormat))
+#testName = "SO_03-02-ARS- MEC - hard"
+#fFormat = "xml"
 fName = "{0}.{1}".format(testName, fFormat)
 subDir1 = "clashtest"
 filePath = os.path.join(cwd, subDir1)
@@ -105,6 +120,9 @@ class VerticalScrolledFrame(Frame):
 		self.canvas.xview_moveto(0)
 		self.canvas.yview_moveto(0)
 		self.canvasCPosY = self.canvas.winfo_y()
+		self.accel = 0.8
+		self.fps = 30
+		self.idle = int(1000/self.fps)
 		
 		self.clashData = [x for x in [y for y in inClashTestDict.values()]]
 		#Slowest update time
@@ -116,7 +134,11 @@ class VerticalScrolledFrame(Frame):
 		self.canvasSPosYVar =  StringVar()
 		self.countDownVar = StringVar()
 		self.moveVar = StringVar()
+		self.speedVar = StringVar()
+		self.posDevVar = StringVar()
+		
 		self.setup()
+		
 		
 		def configure_fr1(event):
 			size = (self.fr1.winfo_reqwidth(), self.fr1.winfo_reqheight())
@@ -148,70 +170,159 @@ class VerticalScrolledFrame(Frame):
 			# canvas.yview_scroll(-1*(evt.delta), 'units') # For MacOS
 			self.canvas.yview_scroll( int(-1*(evt.delta/120)) , 'units') # For windows
 		
+		def timeUpdate(*args):
+			
+			self.now = time.time() - self.scrollSTime
+			
+			
+			#if now < 20:
+			#if now < 2:
+			if self.cScrollSpeed > 20 and not self.screenTouched:
+				updateCanvasPosition()
+				self.scrollLoop = self.after(self.idle, timeUpdate)
+			elif not self.screenTouched:
+				updateCanvasPosition()
+			elif hasattr(self, "scrollLoop"):
+				self.after_cancel(self.scrollLoop)
+		
 		def onScrollMove(event):
 			pointerYpos = event.widget.winfo_pointerxy()[1]
 			self.cPointerPosY = event.widget.winfo_pointerxy()[1]
-			self.deltaPointerY = self.sPointerPosY - self.cPointerPosY
-			#self.canvasCPosY = self.canvasSPosY + self.deltaPointerY
-			self.canvasCPosY = self.canvasSPosY + self.deltaPointerY
-			self.canvas.yview_moveto(self.canvasCPosY/(self.canvasHeight*4))
+			self.dPointerPosY = self.cPointerPosY - self.pPointerPosY
+			self.cMoveTime = time.time()
+			self.dMoveTime =  self.cMoveTime - self.pMoveTime
+			self.deltaPointerY = self.cPointerPosY - self.sPointerPosY
+			#if not hasattr(self, "canvasCPosY"):
+			#self.canvasCPosY = self.vscrollbar.get()[0]*(self.fr1.winfo_reqheight() + self.deltaPointerY)
+			#else:
+			self.canvasCPosY = self.canvasSPosY - self.deltaPointerY
+			"""	
+			if self.canvasSPosY + self.deltaPointerY >= 0 or self.canvasSPosY + self.deltaPointerY <= self.fr1.winfo_reqheight() - self.canvasHeight:
+				self.canvasCPosY = self.canvasSPosY + self.deltaPointerY
+				self.canvas.yview_moveto(self.canvasCPosY/(self.fr1.winfo_reqheight()))
+			"""
+			#self.moveVar.set("canvasSPosY {0}, self.deltaPointerY {1} self.canvasCPosY {2}".format(self.canvasSPosY, self.deltaPointerY, self.canvasCPosY))
+			#self.moveVar.set("self.canvasCPosY {0:.2f}, fr1.reqheight {1} self.canvasCPosY {2}".format(self.canvasCPosY, self.fr1.winfo_reqheight() - self.canvas.winfo_reqheight(), self.canvasCPosY))
+			
+			self.pMoveTime = self.cMoveTime
+			self.cScrollSpeed = self.dPointerPosY/self.dMoveTime
+			self.pointerVar.set("deltaPointer {0}, sPointerPosY {1}".format(self.deltaPointerY, self.sPointerPosY))
+			
+			self.pPointerPosY = self.cPointerPosY
+			#updateCanvasPosition()
+			self.speedVar.set("dPPosY {0:.2f}, dMTime {1:.2f} scrollSpeed {2:.2f}".format(self.dPointerPosY, self.dMoveTime, self.cScrollSpeed))
 			
 			
-			self.moveVar.set("canvasSPosY {0}, self.deltaPointerY {1} self.canvasCPosY {2}".format(self.canvasSPosY, self.deltaPointerY, self.canvasCPosY))
 	
 		def scrollOnPress(event):
+			self.screenTouched = True
+			if hasattr(self, "scrollLoop"):
+				self.after_cancel(self.scrollLoop)
 			self.scrollSTime = time.time()
-			#self.canvasSPosY = self.canvas.winfo_y()
-			self.canvasSPosY = self.canvasCPosY
-			self.canvasSPosYVar.set("pointer {0}, canvasSPosY {1}".format(event.widget.winfo_pointerxy(), self.canvas.winfo_y()))
+			#pointer Y start position
 			self.sPointerPosY = event.widget.winfo_pointerxy()[1]
-			self.pointerVar.set("pointer {0}, sPointerPosY {1}".format(event.widget.winfo_pointerxy(), self.sPointerPosY))
+			#pointer Y current position
+			self.cPointerPosY = event.widget.winfo_pointerxy()[1]
+			#pointer Y prev position
+			self.pPointerPosY = event.widget.winfo_pointerxy()[1]
+			#pointer Y difference between current and prev event position
+			self.dPointerPosY = 0
+			#time of previous event
+			self.pMoveTime = time.time()
+			#time difference between previous and current event
+			self.dMoveTime = 0
+			#pointer Y current position
+			#canvas Y start position
+			self.canvasSPosY = self.canvas.winfo_y()
+			#canvas Y release position
+			self.canvasCPosY = self.canvasSPosY
+			#canvas Y release position
+			if not hasattr(self, "canvasRPosY"):
+				self.canvasRPosY = 0
+			#if not hasattr(self, "canvasCPosY"):
+				#self.canvasCPosY =  self.vscrollbar.get()[0]*(self.fr1.winfo_reqheight() + self.deltaPointerY)
+			#else:
+				#self.canvasCPosY = self.canvasSPosY + self.deltaPointerY
+			#self.canvasSPosY = self.canvas.winfo_y()
+			#self.canvasSPosY = self.canvasCPosY
+			#self.focus_set()
+			#self.canvasSPosY = self.vscrollbar.get()[0]*(self.fr1.winfo_reqheight() - self.winfo_screenheight())
+			#self.canvasSPosYVar.set("cCpPosY {0} cSPosY {1} cRpPosY{2}".format(event.widget.winfo_pointerxy(), self.canvas.winfo_y(), self.canvasRPosY))
+			
+			#self.pointerVar.set("pointer {0}, sPointerPosY {1}".format(event.widget.winfo_pointerxy(), self.sPointerPosY))
 	
 		def scrollOnRelease(event):
+			self.screenTouched = False
+			if not hasattr(self, "cScrollSpeed"):
+				self.cScrollSpeed = 0
 			self.scrollETime = time.time()
 			dTime = self.scrollETime - self.scrollSTime
+			self.canvasRPosY = self.canvasCPosY
+			#if not hasattr(self, "canvasCPosY"):
+				#self.canvasCPosY = self.vscrollbar.get()[0]*(self.fr1.winfo_reqheight())
+			#self.cPointerPosY = event.widget.winfo_pointerxy()[1]
 			self.timeVar.set("scrollDTime{0:.3f}".format(dTime))
-			self.ePointerPosY = event.widget.winfo_pointerxy()[1]
-			#delta of start and end pointer position
-			self.dPointerPosY = self.ePointerPosY - self.sPointerPosY
-			if self.dPointerPosY > 0:
-				self.countDown = self.dPointerPosY - 1
-			else:
-				self.countDown = self.dPointerPosY + 1
-			self.dPointerVar.set("dPointerPosY {0}".format(self.dPointerPosY))
-			updateCanvasPosition()
+			#self.canvasSPosYVar.set("cCrPosY {0} cSPosY {1} cRrPosY{2}".format(self.canvasCPosY, self.canvas.winfo_y(), self.canvasRPosY))
+			#self.after_cancel(self.scrollLoop)
+			#self.speedVar.set("dPPosY {0:.2f}, dMTime {1:.2f} scrollSpeed {2:.2f}".format(self.dPointerPosY, self.dMoveTime, self.cScrollSpeed))
+			#self.canvas.yview_moveto(self.canvasCPosY/(self.fr1.winfo_reqheight()*4))
+			#self.cScrollSpeed = 500
+			timeUpdate()
+			
+			#updateCanvasPosition()
 			
 		def updateCanvasPosition(*args):
 			#currentUpdateTime
-			if len(args) >1:
-				print("args[0] {0}, args[1] {1}".format(args[0], args[1]))
-			if self.countDown != 0:
-				self.cUTime = int(abs(1/(self.countDown / self.dPointerPosY)) * self.sUTime)
+			if len(args) >0:
+				event = args[0]
+				#print("args[0] {0}, args[1] {1}".format(args[0], args[1]))
+			if not self.screenTouched:
+				self.cScrollSpeed *= self.accel
+				self.canvasCPosY += self.cScrollSpeed
 			else:
-				self.cUTime = self.sUTime
-			if self.countDown >0:
-				self.countDown -=1
-				self.countDownNorm = self.countDown / self.dPointerPosY
-				self.countDownVar.set("{0} norm {1:.3f}".format(self.countDown, self.countDownNorm))
-				self.after(self.cUTime, updateCanvasPosition)
-			elif self.countDown <0:
-				self.countDown +=1
-				self.countDownNorm = self.countDown / self.dPointerPosY
-				self.countDownVar.set("{0} norm {1:.3f}".format(self.countDown, self.countDownNorm))
-				self.canvas.yview_moveto(self.canvasCPosY)
-				self.after(self.cUTime, updateCanvasPosition)
-			else:
-				 pass	
+				pass
+			#self.speedVar.set("dPPosY {0:.2f}, dMTime {1:.2f} scrollSpeed {2:.2f}".format(self.dPointerPosY, self.dMoveTime, self.cScrollSpeed))
+			#self.timeVar.set("now {0:.3f}".format(self.now if hasattr(self, "now") else 0))
+			#if not hasattr(self, "canvasCPosY"):
+				#self.canvasCPosY = self.vscrollbar.get()[0]*(self.fr1.winfo_reqheight() + self.cScrollSpeed)
+			#else:
+			
+			self.moveVar.set("CPosY {0:.2f}, fr1.reqheight {1} sb.get() {2}".format(self.canvasCPosY, self.fr1.winfo_reqheight() - self.canvas.winfo_reqheight(), self.vscrollbar.get()[0]*self.fr1.winfo_reqheight()))
+			
+			self.canvas.yview_moveto(self.canvasCPosY/(self.fr1.winfo_reqheight()))
+			
+			vsbPosYNorm = self.vscrollbar.get()[0]
+			vsbPosY = vsbPosYNorm * self.fr1.winfo_reqheight()
+			#self.vscrollbar.get()[0]*(self.fr1.winfo_reqheight() - self.winfo_screenheight())
+			posDev = self.canvasCPosY - vsbPosY
+			self.posDevVar.set("vsbYNorm {0:.3f} vsbY {1:.3f} pDev{2:.3f}".format(vsbPosYNorm, vsbPosY, posDev))
+			
+			#self.canvasSPosYVar.set("cCuPosY {0} cSPosY {1} cRuPosY{2}".format(self.canvasCPosY, self.canvas.winfo_y(), self.canvasRPosY))
+				#self.after(self.cUTime, updateCanvasPosition)
+			#else:
+				 #pass	
 		
 		#self.bind("<B1-Motion>", onScrollMove)
-		self.bind("<Enter>", lambda _: self.bind_all('<B1-Motion>', onScrollMove), '+')
-		self.bind("<Leave>", lambda _: self.unbind_all('<B1-Motion>'), '+')
-		#self.bind("<ButtonPress-1>", scrollOnPress)
+		#self.bind('<Enter>', lambda _: self.bind_all('<ButtonPress-1>', timeUpdate), '+')
 		self.bind("<Enter>", lambda _: self.bind_all('<ButtonPress-1>', scrollOnPress), '+')
 		self.bind("<Leave>", lambda _: self.unbind_all('<ButtonPress-1>'), '+')
+		#self.bind('<Map>', timeUpdate, '+')
+		self.bind("<Enter>", lambda _: self.bind_all('<B1-Motion>', onScrollMove), '+')
+		#self.bind("<Enter>", lambda _: self.bind('<B1-Motion>', onScrollMove), '+')
+		self.bind("<Leave>", lambda _: self.unbind_all('<B1-Motion>'), '+')
+		#self.bind("<Leave>", lambda _: self.unbind('<B1-Motion>'), '+')
+		#self.bind("<ButtonPress-1>", scrollOnPress)
+		#self.bind("<Enter>", lambda _: self.bind_all('<ButtonPress-1>', scrollOnPress), '+')
+		#self.bind("<Enter>", lambda _: self.bind_all('<ButtonPress-1>', scrollOnPress), '+')
+		
+		
+		#self.bind("<Leave>", lambda _: self.unbind_all('<ButtonPress-1>'), '+')
+		#self.bind("<Leave>", lambda _: self.unbind('<ButtonPress-1>'), '+')
+		#self.bind("<Enter>", lambda _: self.bind_all('<ButtonPress-1>', scrollOnPress), '+')
+		#self.bind("<Leave>", lambda _: self.unbind_all('<ButtonPress-1>'), '+')
 		#self.bind("<ButtonRelease-1>", scrollOnRelease)
 		self.bind("<Enter>", lambda _: self.bind_all('<ButtonRelease-1>', scrollOnRelease), '+')
-		self.bind("<Leave>", lambda _: self.unbind_all('<ButtonRelease-1>'), '+')
+		#self.bind("<Leave>", lambda _: self.unbind_all('<ButtonRelease-1>'), '+')
 		
 		#self.bind("<Enter>", lambda _: self.bind_all('<Button-1>', on_press), '+')
 		#self.bind("<Leave>", lambda _: self.unbind_all('<Button-1>'), '+')
@@ -319,9 +430,9 @@ if __name__ == "__main__":
             self.infoFrame = Frame(root, bg="yellow")
             self.infoFrame.pack(side=BOTTOM, fill=BOTH, expand=TRUE)
             
-            #COUNTDOWN LABEL
-            self.countDownLabel = Label(self.infoFrame, textvariable=self.frame.countDownVar, text="Shrink the window to activate the scrollbar.")
-            self.countDownLabel.pack(side=TOP)
+            #canvasSPosY LABEL
+            self.cCPosYLabel = Label(self.infoFrame, textvariable=self.frame.canvasSPosYVar, text="Shrink the window to activate the scrollbar.")
+            self.cCPosYLabel.pack(side=TOP)
             #POINTER LABEL
             self.pointerLabel = Label(self.infoFrame, textvariable=self.frame.pointerVar, text="Shrink the window to activate the scrollbar.")
             self.pointerLabel.pack(side=TOP)
@@ -334,6 +445,12 @@ if __name__ == "__main__":
             #TIME LABEL
             self.timeLabel = Label(self.infoFrame, textvariable=self.frame.timeVar, text="Shrink the window to activate the scrollbar.")
             self.timeLabel.pack(side=TOP)
+            #SPEED LABEL
+            self.speedLabel = Label(self.infoFrame, textvariable=self.frame.speedVar, text="Shrink the window to activate the scrollbar.")
+            self.speedLabel.pack(side=TOP)
+            #Position deviation LABEL
+            self.posDevLabel = Label(self.infoFrame, textvariable=self.frame.posDevVar, text="Shrink the window to activate the scrollbar.")
+            self.posDevLabel.pack(side=TOP)
             """
             buttons = []
             for i in range(20):

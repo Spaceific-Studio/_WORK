@@ -51,6 +51,7 @@ print (len(alphaNum))
 string3 = "GLC"
 string4 = "U5"
 string5 = "37J"
+#string7 = "Lokomotiva-1982"
 
 int1 = 1666597438632046
 myString1 = base_repr(int1, base=36)
@@ -60,6 +61,7 @@ myString2 = base_repr(int2, base=36)
 int3 = int(string3,36)
 int4 = int(string4,36)
 int5 = int(string5,36)
+#int7 = int(string7,36)
 
 print("myString1 {0}".format(myString1.lower()))
 myString2First = myString2[0]
@@ -75,6 +77,7 @@ print ("{fStr} ->> int1 = {fInt}".format(fStr = str, fInt = int1))
 print ("{fStr} ->> int2 = {fInt}".format(fStr = str, fInt = int2))
 print ("{fStr} ->> int4 = {fInt}".format(fStr = str, fInt = int4))
 print ("{fStr} ->> int5 = {fInt}".format(fStr = str, fInt = int5))
+#print ("{fStr} ->> int7 = {fInt}".format(fStr = string7, fInt = int7))
 bin1 = "{:b}".format(int1)
 print ("{fStr} ->> bin1 = {fBin}".format(fStr = str, fBin = bin1))
 hex1 = "{:x}".format(int1)
