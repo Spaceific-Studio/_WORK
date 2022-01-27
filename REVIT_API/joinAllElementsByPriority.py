@@ -80,28 +80,50 @@ try:
 except:
 	hasAutodesk = False
 
+try:
+	runFromCsharp = True if "__csharp__" in dir() else False
+	#UI.TaskDialog.Show("Run from C#", "Script is running from C#")
+except:
+	runFromCsharp = False
+
+
 print("module : {0} ; hasMainAttr = {1}".format(__file__, hasMainAttr))
 print("module : {0} ; hasAutodesk = {1}".format(__file__, hasAutodesk))
 
-if sys.platform.startswith('linux'):
-	libPath = r"/storage/emulated/0/_WORK/REVIT_API/LIB"
-elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
-	scriptDir = "\\".join(__file__.split("\\")[:-1])
-	scriptDisk = __file__.split(":")[0]
-	if scriptDisk == "B" or scriptDisk == "b":
-		libPath = r"B:/Podpora Revit/Rodiny/141/_STAVEBNI/_REVITPYTHONSHELL/LIB"
-	elif scriptDisk == "C" or scriptDisk == "c":
-		libPath = r"C:/_WORK/PYTHON/REVIT_API/LIB"
-	elif scriptDisk == "H" or scriptDisk == "h":
-		libPath = r"H:/_WORK/PYTHON/REVIT_API/LIB"
+print("cwd: {}".format(os.getcwd()))
 
-if sys.platform.startswith('linux'):
-	pythLibPath = r"/storage/emulated/0/_WORK/LIB"
-#elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
-#	pythLibPath = r"C:/_WORK/PYTHON/LIB"
+#searches for directory for library used by RevitPythonShell. Example h:\_WORK\PYTHON\REVIT_API\LIB\__init__.py
+splittedFile = __file__.split("\\")
+rpsFileDir = "\\".join(splittedFile[:-1]) if len(splittedFile) > 2 else ""
+#rpsPyFilePath, rpsPyFileDNames, rpsPyFileFNames = walkDir(rpsFileDir)
+rpsPyFilePath, rpsPyFileDNames, rpsPyFileFNames = next(os.walk(rpsFileDir))
 
-sys.path.append(libPath)
-#sys.path.append(pythLibPath)
+#searches for library in Spaceific-Studio addin folder. Example: C:\users\CZDAGE\AppData\Roaming\Autodesk\Revit\Addins\2020\Spaceific-Studio\__init__.py
+splittedFile = __file__.split("\\")
+addinPyFileLibDir = "\\".join(splittedFile[:-2]) if len(splittedFile) > 2 else ""
+#addinPyFileLibPath, addinPyFileDNames, addinPyFileFNames = walkDir(addinPyFileLibDir)
+addinPyFileLibPath, addinPyFileDNames, addinPyFileFNames = next(os.walk(addinPyFileLibDir))
+
+if "LIB" in rpsPyFileDNames:
+	lib_path = os.path.join(rpsPyFilePath, "LIB")
+elif "__init__.py" in addinPyFileFNames:
+	lib_path = addinPyFileLibPath
+else:
+	lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
+print("__file__: {}".format(__file__))
+print("rpsFileDir: {}".format(rpsFileDir))
+print("rpsPyFilePath: {}".format(rpsPyFilePath))
+print("rpsPyFileDNames: {}".format(rpsPyFileDNames))
+print("rpsPyFileFNames: {}".format(rpsPyFileFNames))
+print("addinPyFileLibDir: {}".format(addinPyFileLibDir))
+print("addinPyFileLibPath: {}".format(addinPyFileLibPath))
+print("addinPyFileFNames: {}".format(addinPyFileFNames))
+print("addinPyFileDNames: {}".format(addinPyFileDNames))
+#print("pyFilePath: {}".format(pyFilePath))
+#lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
+print("lib_path: {}".format(lib_path))
+sys.path.append(lib_path)
+
 
 from itertools import combinations
 
@@ -342,9 +364,19 @@ for i in bic:
 
 class MainForm(Form):
 	def __init__(self, inPriorityLookup):
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
-		print(self.scriptDir)
-		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
+		#self.scriptDir = "\\".join(__file__.split("\\")[:-1])
+		#print(self.scriptDir)
+		#cwd = os.getcwd()
+		if hasMainAttr:
+			try:
+				#if script runs within C# IronPython hosting environment
+				cwd = __scriptDir__
+			except Exception as ex:
+				#if script runs within RevitPythonShell environment
+				cwd = "\\".join(__file__.split("\\")[:-1]) + "LIB\\"
+		else:
+			cwd = os.getcwd()
+		iconFilename = os.path.join(lib_path, 'spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
 		self.Icon = icon	
 
@@ -608,9 +640,16 @@ class MainForm(Form):
 
 class ProgressBarDialog(Form):
 	def __init__(self, inMax):
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
-		print(self.scriptDir)
-		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
+		if hasMainAttr:
+			try:
+				#if script runs within C# IronPython hosting environment
+				cwd = __scriptDir__
+			except Exception as ex:
+				#if script runs within RevitPythonShell environment
+				cwd = "\\".join(__file__.split("\\")[:-1]) + "LIB\\"
+		else:
+			cwd = os.getcwd()
+		iconFilename = os.path.join(lib_path, 'spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
 		self.Icon = icon	
 
@@ -668,37 +707,43 @@ class ProgressBarDialog(Form):
 		self.Controls.Add(self.cancelButton)
 
 	def updateProgressLabel(self, inText):
-		self.progressLabel.Text = str(inText)
+		pass
+		self.progressLabel.Text = "{0}".format(inText)
 
 	def UpdateProgress(self):
 		self.pb.Value +=1
 	
 	def close(self, sender, event):
 		scriptCancelled = True
-		openedForms = list(Application.OpenForms)
-		infotext = ""
-		rpsOpenedForms = []
-		for i, oForm in enumerate(openedForms):
-			#print(str(i))
-			#print(oForm)
-			infotext += "; {}".format(oForm)
-			if "RevitPythonShell" in str(oForm):
-				#print("Totot je oForm {0}".format(oForm))
-				rpsOutput = oForm.Show()
-				rpsOpenedForms.append(oForm)
-			else:
-				rpsOutput = None
-		#self.infoLabel2.Text = infotext
-		if len(rpsOpenedForms) > 0:
-			lastForm = rpsOpenedForms[-1]
-			lastForm.Show()
-			if len(rpsOpenedForms) > 1:
-				rpsOFormsToClose = rpsOpenedForms[:-1]
-				for oFormToClose in rpsOFormsToClose:
-					oFormToClose.Close()
-		lastForm.Show()
-		self.Close()
-		lastForm.Close()
+		if runFromCsharp == False:
+			openedForms = list(Application.OpenForms)
+			infotext = ""
+			rpsOpenedForms = []
+			for i, oForm in enumerate(openedForms):
+				#print(str(i))
+				#print(oForm)
+				infotext += "; {}".format(oForm)
+				if "RevitPythonShell" in str(oForm):
+					#print("Totot je oForm {0}".format(oForm))
+					rpsOutput = oForm.Show()
+					rpsOpenedForms.append(oForm)
+				else:
+					rpsOutput = None
+			#self.infoLabel2.Text = infotext
+			if len(rpsOpenedForms) > 0:
+				lastForm = rpsOpenedForms[-1]
+				lastForm.Show()
+				if len(rpsOpenedForms) > 1:
+					rpsOFormsToClose = rpsOpenedForms[:-1]
+					for oFormToClose in rpsOFormsToClose:
+						oFormToClose.Close()
+				lastForm.Show()
+				self.Close()
+				lastForm.Close()
+		else:
+			lastForm = None
+			self.Close()
+		
 		
 class WarningSwallower(IFailuresPreprocessor):
 	def PreprocessFailures(self, failuresAccessor):
@@ -877,24 +922,28 @@ for i, el in enumerate(firstSelection):
 		familyName = None
 	print("{0}-{1} {2} {3} familyName {4}".format(i, el.Id, el.Category.Name, name, familyName))
 
-openedForms = list(Application.OpenForms)
-for i, oForm in enumerate(openedForms):
-	#print(str(i))
-	#print(oForm)
-	if "RevitPythonShell" in str(oForm):
-		#print("Totot je oForm {0}".format(oForm))
-		rpsOutput = oForm
+if runFromCsharp == False:
+	openedForms = list(Application.OpenForms)
+	for i, oForm in enumerate(openedForms):
+		#print(str(i))
+		#print(oForm)
+		if "RevitPythonShell" in str(oForm):
+			#print("Totot je oForm {0}".format(oForm))
+			rpsOutput = oForm
+		else:
+			rpsOutput = None
+	#print("__main__.OpenForms {}".format(list(Application.OpenForms)))
+	#rpsOutput = list(Application.OpenForms)[0]
+
+
+	if rpsOutput:
+		pass
+		rpsOutput.Hide()
 	else:
-		rpsOutput = None
-#print("__main__.OpenForms {}".format(list(Application.OpenForms)))
-#rpsOutput = list(Application.OpenForms)[0]
-
-
-if rpsOutput:
-	pass
-	rpsOutput.Hide()
+		pass
 else:
-	pass
+	rpsOutput = None
+
 myDialogWindow = MainForm(priorityLookup)
 myDialogWindow.updateInfoLabel("Number of elements to process - {0}".format(len(firstSelection)))
 Application.Run(myDialogWindow)
@@ -1041,6 +1090,6 @@ else:
 				time.sleep(5)
 				for oFormToClose in rpsOFormsToClose:
 					oFormToClose.Close()
-
-if rpsOutput:
+if runFromCsharp == False or "rpsOutput" in dir():
+	if rpsOutput:
 		rpsOutput.Show()

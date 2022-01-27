@@ -15,9 +15,43 @@ import sys
 from operator import attrgetter
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 sys.path.append(pyt_path)
-lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
-sys.path.append(lib_path)
+
 import os
+
+print("cwd: {}".format(os.getcwd()))
+
+#searches for directory for library used by RevitPythonShell. Example h:\_WORK\PYTHON\REVIT_API\LIB\__init__.py
+splittedFile = __file__.split("\\")
+rpsFileDir = "\\".join(splittedFile[:-1]) if len(splittedFile) > 2 else ""
+#rpsPyFilePath, rpsPyFileDNames, rpsPyFileFNames = walkDir(rpsFileDir)
+rpsPyFilePath, rpsPyFileDNames, rpsPyFileFNames = next(os.walk(rpsFileDir))
+
+#searches for library in Spaceific-Studio addin folder. Example: C:\users\CZDAGE\AppData\Roaming\Autodesk\Revit\Addins\2020\Spaceific-Studio\__init__.py
+splittedFile = __file__.split("\\")
+addinPyFileLibDir = "\\".join(splittedFile[:-2]) if len(splittedFile) > 2 else ""
+#addinPyFileLibPath, addinPyFileDNames, addinPyFileFNames = walkDir(addinPyFileLibDir)
+addinPyFileLibPath, addinPyFileDNames, addinPyFileFNames = next(os.walk(addinPyFileLibDir))
+
+if "LIB" in rpsPyFileDNames:
+	lib_path = os.path.join(rpsPyFilePath, "LIB")
+elif "__init__.py" in addinPyFileFNames:
+	lib_path = addinPyFileLibPath
+else:
+	lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
+print("__file__: {}".format(__file__))
+print("rpsFileDir: {}".format(rpsFileDir))
+print("rpsPyFilePath: {}".format(rpsPyFilePath))
+print("rpsPyFileDNames: {}".format(rpsPyFileDNames))
+print("rpsPyFileFNames: {}".format(rpsPyFileFNames))
+print("addinPyFileLibDir: {}".format(addinPyFileLibDir))
+print("addinPyFileLibPath: {}".format(addinPyFileLibPath))
+print("addinPyFileFNames: {}".format(addinPyFileFNames))
+print("addinPyFileDNames: {}".format(addinPyFileDNames))
+#print("pyFilePath: {}".format(pyFilePath))
+#lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
+print("lib_path: {}".format(lib_path))
+sys.path.append(lib_path)
+
 #if "Windows" in platform.uname():
 	#lib_path = r'H:/_WORK/PYTHON/LIB'
 
@@ -72,9 +106,11 @@ class TabForm(Form):
 				cwd = "\\".join(__file__.split("\\")[:-1]) + "LIB\\"
 		else:
 			cwd = os.getcwd()
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1]) 
-		print("script directory: {}".format(self.scriptDir))
-		iconFilename = os.path.join(self.scriptDir, 'spaceific_64x64_sat_X9M_icon.ico')
+		#self.scriptDir = "\\".join(__file__.split("\\")[:-1]) 
+		#print("script directory: {}".format(self.scriptDir))
+		#self.libDir = "\\".join(__file__.split("\\")[:-2]) 
+		#print("Lib directory: {}".format(self.scriptDir))
+		iconFilename = os.path.join(lib_path, 'spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
 		self.Icon = icon	
 
@@ -677,9 +713,10 @@ class MainForm(Form):
 				cwd = "\\".join(__file__.split("\\")[:-1]) + "LIB\\"
 		else:
 			cwd = os.getcwd()
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1]) 
-		print("script directory: {}".format(self.scriptDir))
-		iconFilename = os.path.join(self.scriptDir, 'spaceific_64x64_sat_X9M_icon.ico')
+		#self.scriptDir = "\\".join(__file__.split("\\")[:-1]) 
+		#print("script directory: {}".format(self.scriptDir))
+		#print("cwd: {}".format(cwd))
+		iconFilename = os.path.join(lib_path, 'spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
 		self.Icon = icon	
 
