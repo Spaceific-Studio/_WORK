@@ -7,6 +7,41 @@ if "IronPython" in sys.prefix:
 	pytPath = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 	sys.path.append(pytPath)
 import os
+
+print("cwd: {}".format(os.getcwd()))
+
+#searches for directory for library used by RevitPythonShell. Example h:\_WORK\PYTHON\REVIT_API\LIB\__init__.py
+splittedFile = __file__.split("\\")
+rpsFileDir = "\\".join(splittedFile[:-1]) if len(splittedFile) > 2 else ""
+#rpsPyFilePath, rpsPyFileDNames, rpsPyFileFNames = walkDir(rpsFileDir)
+rpsPyFilePath, rpsPyFileDNames, rpsPyFileFNames = next(os.walk(rpsFileDir))
+
+#searches for library in Spaceific-Studio addin folder. Example: C:\users\CZDAGE\AppData\Roaming\Autodesk\Revit\Addins\2020\Spaceific-Studio\__init__.py
+splittedFile = __file__.split("\\")
+addinPyFileLibDir = "\\".join(splittedFile[:-2]) if len(splittedFile) > 2 else ""
+#addinPyFileLibPath, addinPyFileDNames, addinPyFileFNames = walkDir(addinPyFileLibDir)
+addinPyFileLibPath, addinPyFileDNames, addinPyFileFNames = next(os.walk(addinPyFileLibDir))
+
+if "LIB" in rpsPyFileDNames:
+	lib_path = os.path.join(rpsPyFilePath, "LIB")
+elif "__init__.py" in addinPyFileFNames:
+	lib_path = addinPyFileLibPath
+else:
+	lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
+print("__file__: {}".format(__file__))
+print("rpsFileDir: {}".format(rpsFileDir))
+print("rpsPyFilePath: {}".format(rpsPyFilePath))
+print("rpsPyFileDNames: {}".format(rpsPyFileDNames))
+print("rpsPyFileFNames: {}".format(rpsPyFileFNames))
+print("addinPyFileLibDir: {}".format(addinPyFileLibDir))
+print("addinPyFileLibPath: {}".format(addinPyFileLibPath))
+print("addinPyFileFNames: {}".format(addinPyFileFNames))
+print("addinPyFileDNames: {}".format(addinPyFileDNames))
+#print("pyFilePath: {}".format(pyFilePath))
+#lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
+print("lib_path: {}".format(lib_path))
+sys.path.append(lib_path)
+
 import platform
 import time
 from itertools import combinations
@@ -20,49 +55,49 @@ except:
 if hasMainAttr:
 	#import clr
 	if "pydroid" in sys.prefix:
-	    pass
+		pass
 	elif "Python38" in sys.prefix:
-	    pass
+		pass
 	else:
-	    from Autodesk.Revit.UI.Selection import *
-	    import Autodesk.Revit.DB as DB
-	    import Autodesk.Revit.UI as UI
-	    import System
-	    import clr
-	    #import threading
-	    clr.AddReferenceByPartialName('System.Windows.Forms')
-	    clr.AddReference('System')
-	    clr.AddReference("System.Drawing")
-	    #import System.Windows.Forms
-	    from System.Windows.Forms import *
-	    from System.Drawing import *
-	    #from Windows import Threading
-	    from System.Threading import ThreadStart, Thread
-	    #Dispatcher, DispatcherPriority
-	    doc = __revit__.ActiveUIDocument.Document
-	    uidoc = __revit__.ActiveUIDocument
-	    #clr.AddReference("RevitServices")
-	    #import RevitServices
-	    #from RevitServices.Transactions import TransactionManager
-	    pass
+		from Autodesk.Revit.UI.Selection import *
+		import Autodesk.Revit.DB as DB
+		import Autodesk.Revit.UI as UI
+		import System
+		import clr
+		#import threading
+		clr.AddReferenceByPartialName('System.Windows.Forms')
+		clr.AddReference('System')
+		clr.AddReference("System.Drawing")
+		#import System.Windows.Forms
+		from System.Windows.Forms import *
+		from System.Drawing import *
+		#from Windows import Threading
+		from System.Threading import ThreadStart, Thread
+		#Dispatcher, DispatcherPriority
+		doc = __revit__.ActiveUIDocument.Document
+		uidoc = __revit__.ActiveUIDocument
+		#clr.AddReference("RevitServices")
+		#import RevitServices
+		#from RevitServices.Transactions import TransactionManager
+		pass
 
 else:
 	if "pydroid" in sys.prefix:
-	    pass
+		pass
 	elif "Python38" in sys.prefix:
-	    pass
+		pass
 	else:
-	    import clr
-	    clr.AddReference('ProtoGeometry')
-	    from Autodesk.DesignScript.Geometry import *
-	    clr.AddReference("RevitAPI")
-	    import Autodesk
-	    import Autodesk.Revit.DB as DB
-	    clr.AddReference("RevitServices")
-	    import RevitServices
-	    from RevitServices.Persistence import DocumentManager
-	    from RevitServices.Transactions import TransactionManager
-	    doc = DocumentManager.Instance.CurrentDBDocument
+		import clr
+		clr.AddReference('ProtoGeometry')
+		from Autodesk.DesignScript.Geometry import *
+		clr.AddReference("RevitAPI")
+		import Autodesk
+		import Autodesk.Revit.DB as DB
+		clr.AddReference("RevitServices")
+		import RevitServices
+		from RevitServices.Persistence import DocumentManager
+		from RevitServices.Transactions import TransactionManager
+		doc = DocumentManager.Instance.CurrentDBDocument
 
 try:
 	import Autodesk
@@ -75,19 +110,23 @@ print("module : {0} ; hasMainAttr = {1}".format(__file__, hasMainAttr))
 print("module : {0} ; hasAutodesk = {1}".format(__file__, hasAutodesk))
 
 if sys.platform.startswith('linux'):
-    libPath = r"/storage/emulated/0/_WORK/REVIT_API/LIB"
+	libPath = r"/storage/emulated/0/_WORK/REVIT_API/LIB"
 elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
-    scriptDir = "\\".join(__file__.split("\\")[:-1])
-    scriptDisk = __file__.split(":")[0]
-    if scriptDisk == "B" or scriptDisk == "b":
-        libPath = r"B:/Podpora Revit/Rodiny/141/_STAVEBNI/_REVITPYTHONSHELL/LIB"
-    elif scriptDisk == "H" or scriptDisk == "h":
-        libPath = r"H:/_WORK/PYTHON/REVIT_API/LIB"
+	#scriptDir = "\\".join(__file__.split("\\")[:-1])
+	cwd = os.getcwd()    
+	scriptDisk = cwd.split(":")[0]
+	#UI.TaskDialog.Show("cwd", "{0}:{1}".format(cwd, scriptDisk))
+	if scriptDisk == "B" or scriptDisk == "b":
+		libPath = r"B:/Podpora Revit/Rodiny/141/_STAVEBNI/_REVITPYTHONSHELL/LIB"
+	elif scriptDisk == "C" or scriptDisk == "c":
+		libPath = r"C:/Users/CZDAGE/OneDrive - Sweco AB/Old Home Drive/_WORK/PYTHON/REVIT_API/LIB/"
+	elif scriptDisk == "H" or scriptDisk == "h":
+		libPath = r"H:/_WORK/PYTHON/REVIT_API/LIB"
 
 if sys.platform.startswith('linux'):
-    pythLibPath = r"/storage/emulated/0/_WORK/LIB"
+	pythLibPath = r"/storage/emulated/0/_WORK/LIB"
 elif sys.platform.startswith('win') or sys.platform.startswith('cli'):
-    pythLibPath = r"H:/_WORK/PYTHON/LIB"
+	pythLibPath = r"H:/_WORK/PYTHON/LIB"
 
 sys.path.append(libPath)
 sys.path.append(pythLibPath)
@@ -98,27 +137,28 @@ uidoc = __revit__.ActiveUIDocument
 doc = __revit__.ActiveUIDocument.Document
 
 def pickobjects(inStatus):
-    __window__.Hide()
-    picked = uidoc.Selection.PickElementsByRectangle(inStatus)
-    __window__.Show()
-    #__window__.Topmost = True
-    return picked
+	__window__.Hide()
+	picked = uidoc.Selection.PickElementsByRectangle(inStatus)
+	__window__.Show()
+	#__window__.Topmost = True
+	return picked
 
 def pickobject(inStatus):
-    from Autodesk.Revit.UI.Selection import ObjectType
-    __window__.Hide()
-    picked = uidoc.Selection.PickObject(ObjectType.Element, inStatus)
-    __window__.Show()
-    #__window__.Topmost = True
-    return picked
+	from Autodesk.Revit.UI.Selection import ObjectType
+	__window__.Hide()
+	picked = uidoc.Selection.PickObject(ObjectType.Element, inStatus)
+	__window__.Show()
+	#__window__.Topmost = True
+	return picked
 
 class InfoDialog(Form):
 	def __init__(self, inText):
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
-		print(self.scriptDir)
-		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
+		cwd = os.getcwd()
+		#self.scriptDir = "\\".join(__file__.split("\\")[:-1])
+		#print(self.scriptDir)
+		iconFilename = os.path.join(lib_path, 'spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
-		self.Icon = icon	
+		self.Icon = icon
 
 		self.InfoText = inText
 		
@@ -148,11 +188,12 @@ class InfoDialog(Form):
 
 class ProgressBarDialog(Form):
 	def __init__(self, inMax):
-		self.scriptDir = "\\".join(__file__.split("\\")[:-1])
-		print(self.scriptDir)
-		iconFilename = os.path.join(self.scriptDir, 'LIB\\spaceific_64x64_sat_X9M_icon.ico')
+		cwd = os.getcwd()
+		#self.scriptDir = "\\".join(__file__.split("\\")[:-1])
+		#print(self.scriptDir)
+		iconFilename = os.path.join(lib_path, 'spaceific_64x64_sat_X9M_icon.ico')
 		icon = Icon(iconFilename)
-		self.Icon = icon	
+		self.Icon = icon
 
 		self.Text = 'Unjoin All Selected Elements - Script by Spaceific-Studio'
 		self.TopMost = True
@@ -260,6 +301,7 @@ for i, el1 in enumerate(firstSelection):
 	pBar.UpdateProgress()
 t.Commit()
 pBar.Close()
-rpsOutput.Show()
-rpsOutput.TopMost = True
+if rpsOutput:
+	rpsOutput.Show()
+	rpsOutput.TopMost = True
 
