@@ -149,6 +149,240 @@ def getElementLevelIdIndex(item, inlevelIds):
 					levIdIndex = 10000
 	return (levIdIndex)
 
+def getValueByParameterName(el, inName, doc, *args, **kwargs):
+	"""
+		get parameter value from element by parameter name
+
+		args:
+		inElement type: list(DB.Element,...)
+		inName: type: string
+		kwargs['info'] type: bool returns parameter info as string (element name, element Id, parameter name, parameter value as string) if True, default False
+		kwargs['allParametersInfo'] type: bool returns list of all parameters names of instance as a list default False
+	"""
+	info = kwargs['info'] if 'info' in kwargs else False
+	allParametersInfo = kwargs['allParametersInfo'] if 'allParametersInfo' in kwargs else False
+	inBip = kwargs["bip"] if 'bip' in kwargs else None
+	#print("this is BIP param {0}".format(inName))
+	try:
+		bip = getBuiltInParameterInstance(inName)
+	except Exception as ex:
+		bip = None
+	if bip:
+		pass
+		#print("this is BIP param {0}".format(inName))
+	else:
+		if inBip:
+			bip = inBip
+		else:
+			bip = None
+	#raise TypeError("bip {0} inName {1}".format(bip, inName))
+	#returnValues = []
+	returnValue = None
+	returnValueAsString = ""
+	allParametersNames = []
+	firstTime = True
+	
+	if not el.LookupParameter(inName) and not bip:
+		typeElement = doc.GetElement(el.GetTypeId())
+		#print("{0} {1} is typeParameter of type {2}".format(el.Id, inName, typeElement.FamilyName))
+		#el = typeElement
+	#elif not el.LookupParameter(inName) and bip:
+	else:
+		typeElement = None
+	parameterFound = False
+	if bip:
+		parameterFound = True
+		param_ID = DB.ElementId(bip)
+		parameterVP = DB.ParameterValueProvider(param_ID)
+		if parameterVP.IsDoubleValueSupported(el):
+			returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameterVP.GetDoubleValue(el), DB.DisplayUnitType.DUT_MILLIMETERS)
+		elif parameterVP.IsIntegerValueSupported(el):
+			returnValue = parameterVP.GetIntegerValue(el)
+		elif parameterVP.IsStringValueSupported(el):
+			returnValue = parameterVP.GetStringValue(el) if parameterVP.GetStringValue(el) != None else ""
+		elif parameterVP.IsElementIdValueSupported(el):
+			returnValue = parameterVP.GetElementIdValue(el).IntegerValue
+		else:
+			returnValue = ""
+	
+	else:
+		if not typeElement:
+			parameter = el.LookupParameter(inName)
+			if parameter:					
+				if parameter.StorageType == DB.StorageType.Double:
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id)
+					returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS)
+				if parameter.StorageType == DB.StorageType.Integer:
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id)
+					returnValue = parameter.AsInteger()
+				if parameter.StorageType == DB.StorageType.String:
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsString(), el.Id)
+					returnValue = parameter.AsString() if parameter.AsString() != None else ""
+				if parameter.StorageType == DB.StorageType.ElementId:
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id)
+					returnValue = parameter.AsElementId()
+				parameterFound = True
+			else:
+				raise RuntimeError("parameter {0} not in {1}".format(inName, el.Id.IntegerValue))
+		else:
+			parameter = typeElement.LookupParameter(inName)
+			if parameter:					
+				if parameter.StorageType == DB.StorageType.Double:
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id)
+					returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS)
+				if parameter.StorageType == DB.StorageType.Integer:
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id)
+					returnValue = parameter.AsInteger()
+				if parameter.StorageType == DB.StorageType.String:
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsString(), el.Id)
+					returnValue = parameter.AsString() if parameter.AsString() != None else ""
+				if parameter.StorageType == DB.StorageType.ElementId:
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id)
+					returnValue = parameter.AsElementId()
+			else:
+				raise RuntimeError("parameter {0} not in {1}".format(typeElement.Name, el.Id.IntegerValue))
+	if info:
+		return returnValueAsString
+	elif allParametersInfo:
+		return allParametersNames
+	else:
+		return returnValue
+
+def setValueByParameterName(el, inValue, inName, doc, *args, **kwargs):
+	"""
+		set parameter value from element by parameter name
+		must be in Transaction block
+
+		args:
+		inElement type: list(DB.Element,...)
+		inValues type: list(DB.Element or str, or int, or float...)
+		inName: type: string
+
+	"""
+	inBip = kwargs["bip"] if 'bip' in kwargs else None
+	#print("this is BIP param {0}".format(inName))
+	bip = getBuiltInParameterInstance(inName)
+	if bip:
+		pass
+		#print("this is BIP param {0}".format(inName))
+	else:
+		if inBip:
+			bip = inBip
+		else:
+			bip = None
+
+	#returnValues = []
+	returnValue = None
+	#firstTime = True
+	try:
+		#TransactionManager.Instance.EnsureInTransaction(doc)
+		#trans = SubTransaction(doc)
+		#trans.Start()
+		parameterFound = False
+		if bip:
+			parameterFound = True
+			param_ID = DB.ElementId(bip)
+			parameterVP = DB.ParameterValueProvider(param_ID)
+			if parameterVP.IsDoubleValueSupported(el):
+				if type(inValue) == float:
+					returnValue = "parameter {0} as DoubleValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
+					myParam = el.Parameter[bip].Set(inValue)
+				else: 
+					raise TypeError("Wrong format of input value {0} of type {1}. It must be of type int or float".format(inValue, type(inValue)))
+			if parameterVP.IsIntegerValueSupported(el):
+				if type(inValue) == int:
+					myParam = el.Parameter[bip].Set(inValue)
+					turnValue = "parameter {0} as IntegerValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
+				else: 
+					raise TypeError("Wrong format of input value {0} of type {1}. It must be of type int".format(inValue, type(inValue)))
+			if parameterVP.IsStringValueSupported(el):
+				if type(inValue) == str:
+					#paramElementId = parameterVP.Parameter
+					#paramElement = doc.GetElement(paramElementId)
+					if el.Parameter[bip] != None:
+						myParam = el.Parameter[bip].Set(inValue)
+						returnValue = "parameter {0} as StringValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
+					else:
+						returnValue = "el is None!!"
+				else: 
+					raise TypeError("Wrong format of input value {0} of type {1}. It must be of type str".format(inValue, type(inValue)))
+			if parameterVP.IsElementIdValueSupported(el):
+				if type(inValue) == DB.ElementId:
+					myParam = el.Parameter[bip].Set(inValue)
+					returnValue = "parameter {0} as ElementIdValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
+				else: 
+					raise TypeError("Wrong format of input value {0} of type {1}. It must be of type ElementId".format(inValue, type(inValue)))
+		
+		else:
+			if el.GetTypeId().IntegerValue > -1:
+				typeElement = doc.GetElement(el.GetTypeId())
+				parameter = typeElement.LookupParameter(inName)
+				if parameter:
+					if parameter.StorageType == DB.StorageType.Double:
+						returnValue = setParameterAsDouble(el, parameter, inValue)
+					if parameter.StorageType == DB.StorageType.Integer:
+						returnValue = setParameterAsInteger(el, parameter, inValue)
+					if parameter.StorageType == DB.StorageType.String:
+						returnValue = setParameterAsString(el, parameter, inValue)
+					if parameter.StorageType == DB.StorageType.ElementId:
+						returnValue = setParamAsElementId(el, parameter, inValue)
+					parameterFound = True
+				
+				else:
+					elparameter = el.LookupParameter(inName)
+					if elparameter:
+					# parameters = el.GetOrderedParameters()
+					# for parameter in parameters:
+						# if parameter.Definition.Name == inName:
+						if elparameter.StorageType == DB.StorageType.Double:
+							returnValue = setParameterAsDouble(el, elparameter, inValue)
+						if elparameter.StorageType == DB.StorageType.Integer:
+							returnValue = setParameterAsInteger(el, elparameter, inValue)
+						if elparameter.StorageType == DB.StorageType.String:
+							returnValue = setParameterAsString(el, elparameter, inValue)
+						if elparameter.StorageType == DB.StorageType.ElementId:
+							returnValue= setParamAsElementId(el, elparameter, inValue)
+						parameterFound = True
+							# if not firstTime:
+							# 	break					
+		#TransactionManager.Instance.TransactionTaskDone()
+		if not parameterFound:
+			raise NameError("Parameter name {0} not found in element {1}".format(inName, el.Id.IntegerValue))
+		#firstTime = False
+		else:
+			return returnValue
+		
+	except:
+		
+		import traceback
+		errorReport = traceback.format_exc()
+		#trans.RollBack()
+		#TransactionManager.Instance.TransactionTaskDone()
+		raise RuntimeError("Parameter name {0} not set !!! {1}".format(inName, errorReport))
+
+def getBuiltInParameterInstance(inBuiltInParamName):
+	#print("RevitSelection.getBuiltInParameterInstance inBuiltInParamName {}".format(inBuiltInParamName))
+	#builtInParams = Enum.GetValues(DB.BuiltInParameter)
+	#bipNames = Enum.GetNames(DB.BuiltInParameter)
+	returnVar = None
+	''' for bip in builtInParams:
+		#print("bip.ToString() {0} inBuiltInParamName {1}".format(bip.ToString(), inBuiltInParamName))
+		if bip.ToString() in inBuiltInParamName:
+			#print("bip.ToString() {0}".format(bip.ToString()))
+			param_ID = DB.ElementId(bip)
+			returnVar = bip
+			break '''
+	try:
+		value = Enum.Parse(DB.BuiltInParameter, inBuiltInParamName, False)
+		if Enum.IsDefined(DB.BuiltInParameter, value):
+			returnVar = value
+		else:
+			returnVar = None
+	except Exception as ex:
+		#Errors.catch("Nevhodná (neexistujici) hodnota stringu pro funkci Enum.Parse", ex)
+		returnVar = None
+	return returnVar
+
 def getElementByClassName(inClass, *args, **kwargs):
 	"""returns 1D list of all Revit Elements in active view according to class name input
        
@@ -873,7 +1107,8 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 						returnValues.append(parameter.AsElementId())
 					parameterFound = True
 				else:
-					raise RuntimeError("parameter {0} not in {1}".format(inName, el.Id.IntegerValue))
+					#raise RuntimeError("parameter {0} not in {1}".format(inName, el.Id.IntegerValue))
+					returnValues = None
 			else:
 				parameter = typeElement.LookupParameter(inName)
 				if parameter:					
@@ -890,7 +1125,8 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id))
 						returnValues.append(parameter.AsElementId())
 				else:
-					raise RuntimeError("parameter {0} not in {1}".format(typeElement.Name, el.Id.IntegerValue))
+					#raise RuntimeError("parameter {0} not in {1}".format(typeElement.Name, el.Id.IntegerValue))
+					returnValues = None
 
 			""" parameters = el.GetOrderedParameters()
 			

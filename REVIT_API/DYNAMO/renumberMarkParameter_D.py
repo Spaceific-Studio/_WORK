@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright(c) 2022, Daniel Gercak
-#Script for selecting and grouping elements by levels and other parameters for dynamo 
-#resource_path: H:\_WORK\PYTHON\REVIT_API\Group_geometry_node.py
+#Script for creating number sequence of elements for selected parameter
+#resource_path: H:\_WORK\PYTHON\REVIT_API\DYNAMO\renumberMarkParameter_D.py
 
 import sys
 import re
@@ -699,6 +699,8 @@ def doTest(inElement, inParamName):
 inElements = IN[0]
 markBipName = "ALL_MODEL_MARK"
 writeParamName = IN[1]
+inStartPosition = IN[2] if len(IN)>2 else None
+
 #writeParamName = "Komentář 2"
 #writeParamName = "ALL_MODEL_MARK"
 assemblyCodeBipName = "UNIFORMAT_CODE"
@@ -743,7 +745,10 @@ trans.Start()
 results = []
 for k,group in groups.items():
 	for i, item in enumerate(group):
-		writeStr = "{0:0>3}".format(i+1)
+		if inStartPosition:
+			writeStr = "{0:0>3}".format(inStartPosition + i)
+		else:
+			writeStr = "{0:0>3}".format(i+1)
 		results.append(setValueByParameterName(item[2], writeStr, writeParamName, doc))
 trans.Commit()
 TransactionManager.Instance.TransactionTaskDone()
