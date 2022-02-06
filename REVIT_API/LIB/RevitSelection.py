@@ -1085,7 +1085,7 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 			elif parameterVP.IsStringValueSupported(el):
 				returnValues.append(parameterVP.GetStringValue(el) if parameterVP.GetStringValue(el) != None else "")
 			elif parameterVP.IsElementIdValueSupported(el):
-				returnValues.append(parameterVP.GetElementIdValue(el).IntegerValue)
+				returnValues.append(doc.GetElement(parameterVP.GetElementIdValue(el)).Name if hasattr(doc.GetElement(parameterVP.GetElementIdValue(el), "Name")) else "N/A")
 			else:
 				returnValues.append("")
 		
@@ -1104,7 +1104,7 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 						returnValues.append(parameter.AsString() if parameter.AsString() != None else "")
 					if parameter.StorageType == DB.StorageType.ElementId:
 						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id))
-						returnValues.append(parameter.AsElementId())
+						returnValues.append(doc.GetElement(parameter.AsElementId()).Name if hasattr(doc.GetElement(parameter.AsElementId()), "Name") else "N/A")
 					parameterFound = True
 				else:
 					#raise RuntimeError("parameter {0} not in {1}".format(inName, el.Id.IntegerValue))
@@ -1123,7 +1123,7 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 						returnValues.append(parameter.AsString() if parameter.AsString() != None else "")
 					if parameter.StorageType == DB.StorageType.ElementId:
 						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id))
-						returnValues.append(parameter.AsElementId())
+						returnValues.append(doc.GetElement(parameter.AsElementId()).Name if hasattr(doc.GetElement(parameter.AsElementId()), "Name") else "N/A")
 				else:
 					#raise RuntimeError("parameter {0} not in {1}".format(typeElement.Name, el.Id.IntegerValue))
 					returnValues = None
