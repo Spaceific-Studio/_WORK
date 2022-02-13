@@ -138,6 +138,7 @@ class TabForm(Form):
 		self.StartPosition = FormStartPosition.CenterScreen
 		self.TopMost = True
 		self.filteredElements = 0
+		self.Resize += self.configureButtons
 		try:
 			self.setupDataGridView()
 		except Exception as ex:
@@ -147,20 +148,40 @@ class TabForm(Form):
 	def setupDataGridView(self):
 		self.dgvPanel = Panel()
 		self.dgvPanel.Dock = DockStyle.Fill
+		#self.dgvPanel.Dock = DockStyle.Top
 		self.dgvPanel.AutoSize = False
 		self.dgvPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
 		self.dgvPanel.AutoScroll = True
 
+		self.inputPanel = Panel()
+		self.inputPanel.Dock = DockStyle.Bottom
+		self.inputPanel.AutoSize = True
+		self.inputPanel.Name = "Input Panel"
+		self.inputPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
+		self.inputPanel.AutoScroll = True
+		self.inputPanel.BackColor = Color.Yellow
+
 		self.inputTextPanel = Panel()
-		self.inputTextPanel.Dock = DockStyle.Bottom
+		self.inputTextPanel.Dock = DockStyle.Top
+		self.inputTextPanel.Anchor = AnchorStyles.Left
 		self.inputTextPanel.AutoSize = True
 		self.inputTextPanel.Name = "Button Panel"
 		self.inputTextPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
 		self.inputTextPanel.AutoScroll = True
-		self.inputTextPanel.BackColor = Color.White
+		self.inputTextPanel.BackColor = Color.Orange
+
+		self.inputTBPanel = Panel()
+		self.inputTBPanel.Dock = DockStyle.Top
+		self.inputTBPanel.Anchor = AnchorStyles.Right
+		self.inputTBPanel.AutoSize = True
+		self.inputTBPanel.Name = "TextBox Panel"
+		self.inputTBPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
+		self.inputTBPanel.AutoScroll = True
+		self.inputTBPanel.BackColor = Color.Cyan
 
 		self.buttonPanel = Panel()
 		self.buttonPanel.Dock = DockStyle.Bottom
+		self.buttonPanel.Anchor = AnchorStyles.Left
 		self.buttonPanel.AutoSize = True
 		self.buttonPanel.Name = "Button Panel"
 		self.buttonPanel.Height = 80
@@ -271,19 +292,40 @@ class TabForm(Form):
 		#print("tableDicList - {}".format(tableDicList))
 		
 		self.createDGVbyDataSource(tableObjectList)
+
 		self.isolateButton = Button()
 		self.isolateButton.Text = "Isolate selected elements"
 		self.isolateButton.Height = 30
 		self.isolateButton.Click += self.isolateSelectedElements
-		self.isolateButton.Location = Point(0,30)
-		self.isolateButton.AutoSize = True
+		#self.isolateButton.Location = Point(0,30)
+		self.isolateButton.Dock = DockStyle.Left
+		self.isolateButton.Anchor = AnchorStyles.Left
+		#self.isolateButton.AutoSize = True
 		self.buttonPanel.Controls.Add(self.isolateButton)
+
+		self.parameterCB = ComboBox()
+		#self.parameterCB.Width = 150
+		#self.parameterCB.Parent = self
+		self.parameterCB.Anchor = AnchorStyles.Top
+		self.parameterCB.Dock = DockStyle.Top
+		self.parameterCB.Items.AddRange(tuple(["a", "b", "c"]))
+		#self.parameterCB.SelectionChangeCommitted += self.OnChanged
+		self.parameterCB.Text = "--SELECT--"
+		#self.parameterCB.DrawMode = DrawMode.OwnerDrawVariable
+		self.parameterCB.DropDownStyle = ComboBoxStyle.DropDown
+		#self.parameterCB.DrawItem += self.comboBoxDrawItem
+		
 
 		self.setParameterButton = Button()
 		self.setParameterButton.Text = "Set Value For Selected"
 		self.setParameterButton.Height = 60
+		self.setParameterButton.Anchor = AnchorStyles.Top
+		self.setParameterButton.Dock = DockStyle.Top
 		self.setParameterButton.Click += self.setParametersOfSelected
-		self.buttonPanel.Controls.Add(self.setParameterButton)
+		self.setParameterButton.AutoSize = True
+		
+		#self.inputTBPanel.Controls.Add(self.setParameterButton)
+		self.setParameterButton.Width = self.inputTBPanel.Width
 
 		self.setParameterTextBox = TextBox()
 		#self.setParameterTextBox.FontHeight = 20
@@ -291,25 +333,37 @@ class TabForm(Form):
 		self.setParameterTextBox.Text = "Text"
 		self.setParameterTextBox.Name = "setParameterTextBox"
 		self.setParameterTextBox.ScrollBars = ScrollBars.Vertical
-		self.setParameterTextBox.Location = Point(0,0)
+		#self.setParameterTextBox.Location = Point(0,0)
+		self.setParameterTextBox.Dock = DockStyle.Top
+		self.setParameterTextBox.Anchor = AnchorStyles.Left
 		self.setParameterTextBox.Multiline = True
 		self.setParameterTextBox.KeyDown += self.setParameterSubmit
 
-		#self.buttonPanel.Controls.Add(self.setParameterTextBox)		
-		self.dgvPanel.Controls.Add(self.dgv)
-		self.inputTextPanel.Controls.Add(self.setParameterTextBox)
+		#self.buttonPanel.Controls.Add(self.setParameterTextBox)	
+		
 
+		self.dgvPanel.Controls.Add(self.dgv)
+		self.inputPanel.Controls.Add(self.inputTextPanel)
+		self.inputPanel.Controls.Add(self.inputTBPanel)
+		
+		self.inputTextPanel.Controls.Add(self.setParameterTextBox)
+		self.inputTBPanel.Controls.Add(self.parameterCB)
+		self.inputTBPanel.Controls.Add(self.setParameterButton)
+		
+		
 		self.Controls.Add(self.dgvPanel)
-		self.Controls.Add(self.inputTextPanel)
+		self.Controls.Add(self.inputPanel)
 		self.Controls.Add(self.buttonPanel)
 		
 
 		#self.isolateButton.Width = self.buttonPanel.Width
-		self.setParameterButton.Width = self.buttonPanel.Width / 2
-		self.setParameterButton.Location = Point(self.buttonPanel.Width/2,0)
-		self.setParameterTextBox.Width = self.buttonPanel.Width
+		self.parameterCB.Width = self.inputPanel.Width /2
+		self.setParameterTextBox.Width = self.inputPanel.Width /2
+		self.setParameterButton.Width = self.inputPanel.Width /2
 		self.isolateButton.Width = self.buttonPanel.Width / 2
-		self.setParameterTextBox.Location = Point(0,0)
+		#self.inputTextPanel.Width = self.inputPanel.Width / 2
+		#self.inputTBPanel.Width =  self.inputPanel.Width / 2
+		#self.setParameterTextBox.Location = Point(0,0)
 
 		
 		#self.createDGVbyRows(tableDicList)
@@ -317,7 +371,9 @@ class TabForm(Form):
 		self.testButton = Button()
 		self.testButton.Text = "Select and return"
 		self.testButton.Height = 30
-		self.testButton.Location = Point(0,0)
+		#self.testButton.Location = Point(0,0)
+		self.testButton.Dock = DockStyle.Top
+		self.testButton.Anchor = AnchorStyles.Right
 		self.testButton.Click += self.selectAndReturn
 
 		self.testButton.Width = self.buttonPanel.Width / 2
@@ -325,7 +381,16 @@ class TabForm(Form):
 		#self.setParameterButton.Enabled = False
 		#self.setParameterButton.Enabled = True
 		
+	def configureButtons(self, sender, event):
+		#self.inputTextPanel.Width = self.inputPanel.Width / 2
+		#self.inputTBPanel.Width =  self.inputPanel.Width / 2
+		self.parameterCB.Width = self.inputPanel.Width /2
+		self.setParameterTextBox.Width = self.inputPanel.Width /2
+		self.setParameterButton.Width = self.inputPanel.Width /2
 
+		self.isolateButton.Width = self.buttonPanel.Width / 2
+		self.isolateButton.Width = self.buttonPanel.Width / 2
+		self.testButton.Width = self.buttonPanel.Width / 2
 
 	def createDGVbyDataSource(self, inObjList):
 		"""
