@@ -137,8 +137,11 @@ class TabForm(Form):
 		self.Height = 800
 		self.buttonPanelHeight = 40
 		self.inputPanelHeight = 80
+		self.dgvPanelHeight = 200
 		self.StartPosition = FormStartPosition.CenterScreen
 		self.TopMost = True
+		#self.Dock = DockStyle.Fill
+		self.BackColor = Color.Green
 		self.filteredElements = 0
 
 		self.Resize += self.configureButtonsEvent
@@ -150,14 +153,19 @@ class TabForm(Form):
 		
 	def setupDataGridView(self):
 		self.dgvPanel = Panel()
+		#self.dgvPanel.Dock = DockStyle.Fill
 		self.dgvPanel.Dock = DockStyle.Fill
-		#self.dgvPanel.Dock = DockStyle.Top
-		self.dgvPanel.AutoSize = False
+		#self.dgvPanel.Anchor = (AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom)
+		
+		#self.dgvPanel.Right = self.dgvPanel.Right + 30
+		self.dgvPanel.AutoSize = True
 		self.dgvPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
+		self.dgvPanel.BackColor = Color.Blue
 		self.dgvPanel.AutoScroll = True
 
 		self.inputPanel = Panel()
 		self.inputPanel.Dock = DockStyle.Bottom
+		#self.inputPanel.Anchor = (AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right)
 		#self.inputPanel.AutoSize = True
 		self.inputPanel.Name = "Input Panel"
 		#self.inputPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
@@ -165,28 +173,31 @@ class TabForm(Form):
 		self.inputPanel.BackColor = Color.Yellow
 
 		self.inputTextPanel = Panel()
-		self.inputTextPanel.Dock = DockStyle.Top
-		self.inputTextPanel.Anchor = AnchorStyles.Left
+		self.inputTextPanel.Dock = DockStyle.Right
+		#self.inputTextPanel.Anchor = (AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top)
+		#self.inputTextPanel.Anchor = (AnchorStyles.Right | AnchorStyles.Left)
 		#self.inputTextPanel.AutoSize = True
 		self.inputTextPanel.Name = "Button Panel"
 		#self.inputTextPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
 		#self.inputTextPanel.AutoScroll = True
-		self.inputTextPanel.BackColor = Color.Orange
+		self.inputTextPanel.BackColor = Color.White
 
 		self.inputCBPanel = Panel()
-		self.inputCBPanel.Dock = DockStyle.Top
-		self.inputCBPanel.Anchor = AnchorStyles.Right
+		self.inputCBPanel.Dock = DockStyle.Right
+		#self.inputCBPanel.Anchor = (AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Top)
+		#self.inputCBPanel.Anchor = (AnchorStyles.Right | AnchorStyles.Left)
+		#self.inputCBPanel.Margin = Padding(0,0,0,0)
 		#self.inputCBPanel.AutoSize = True
 		self.inputCBPanel.Name = "TextBox Panel"
 		#self.inputCBPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
 		#self.inputCBPanel.AutoScroll = True
-		self.inputCBPanel.BackColor = Color.Cyan
+		self.inputCBPanel.BackColor = Color.White
 
 		self.buttonPanel = Panel()
 		self.buttonPanel.Dock = DockStyle.Bottom
-		#self.buttonPanel.Anchor = AnchorStyles.Left
-		self.buttonPanel.AutoSize = True
-		self.buttonPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
+		#self.buttonPanel.Anchor = (AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left)
+		#self.buttonPanel.AutoSize = True
+		#self.buttonPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
 		self.buttonPanel.Name = "Button Panel"
 			
 		#self.buttonPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink
@@ -205,7 +216,7 @@ class TabForm(Form):
 		self.dgv.BorderStyle = BorderStyle.Fixed3D
 		self.dgv.EditMode = DataGridViewEditMode.EditOnEnter
 		self.dgv.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right)
-		#self.dgv.Dock = DockStyle.Fill
+		self.dgv.Dock = DockStyle.Fill
 		self.dgv.ColumnHeadersDefaultCellStyle.Font = Font(self.dgv.ColumnHeadersDefaultCellStyle.Font, FontStyle.Bold)
 		headerCellStyle = self.dgv.ColumnHeadersDefaultCellStyle.Clone()
 		headerCellStyle.BackColor = Color.LightSkyBlue
@@ -214,7 +225,10 @@ class TabForm(Form):
 		self.dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.AliceBlue
 		self.dgv.ColumnHeadersDefaultCellStyle = headerCellStyle
 		self.dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-		self.dgv.Dock = DockStyle.Fill
+		#self.dgv.Dock = DockStyle.Fill
+		#self.dgv.Anchor = (AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom)
+		#self.dgv.Margin = 0
+		#self.dgv.Bottom = 0
 		self.dgv.AutoResizeColumns()
 		self.dgv.CellClick += self.cellClick
 		self.dgv.ColumnHeaderMouseClick += self.ColumnHeaderMouseClick
@@ -300,7 +314,7 @@ class TabForm(Form):
 		self.isolateButton = Button()
 		self.isolateButton.Text = "Isolate selected elements"
 		self.isolateButton.Click += self.isolateSelectedElements
-		self.isolateButton.Dock = DockStyle.Top
+		self.isolateButton.Dock = DockStyle.Right
 		#self.isolateButton.Anchor = AnchorStyles.Right
 		#self.isolateButton.AutoSize = True
 		
@@ -309,7 +323,7 @@ class TabForm(Form):
 		self.testButton.Text = "Select and return"
 		#self.testButton.Height = self.buttonPanelHeight
 		self.testButton.Click += self.selectAndReturn
-		self.testButton.Dock = DockStyle.Top
+		self.testButton.Dock = DockStyle.Right
 		#self.testButton.Anchor = AnchorStyles.Left
 		#self.testButton.AutoSize = True
 		
@@ -343,43 +357,32 @@ class TabForm(Form):
 		self.setParameterTextBox.ScrollBars = ScrollBars.Vertical
 		#self.setParameterTextBox.Location = Point(0,0)
 		self.setParameterTextBox.Dock = DockStyle.Top
-		self.setParameterTextBox.Anchor = AnchorStyles.Left
+		#self.setParameterTextBox.Anchor = AnchorStyles.Left
 		self.setParameterTextBox.Multiline = True
 		self.setParameterTextBox.KeyDown += self.setParameterSubmit
 
 		
-
+		
 		# create DGV panel
 		self.Controls.Add(self.dgvPanel)
 		self.dgvPanel.Controls.Add(self.dgv)
 
 		# create Input panel
+		self.Controls.Add(self.inputPanel)
+		self.inputPanel.Controls.Add(self.inputTextPanel)
+		self.inputPanel.Controls.Add(self.inputCBPanel)
 		
 		self.inputTextPanel.Controls.Add(self.setParameterTextBox)
-		self.inputPanel.Controls.Add(self.inputCBPanel)
 		self.inputCBPanel.Controls.Add(self.setParameterButton)
 		self.inputCBPanel.Controls.Add(self.parameterCB)
-		self.inputPanel.Controls.Add(self.inputCBPanel)
-		self.Controls.Add(self.inputPanel)
+		
+		
 
 		# create Button panel
 		self.Controls.Add(self.buttonPanel)
 		self.buttonPanel.Controls.Add(self.isolateButton)
 		self.buttonPanel.Controls.Add(self.testButton)
 
-			
-		
-		#
-		
-		
-
-		
-		
-		
-		
-		
-		
-		
 		self.configureButtons()
 		
 		#self.isolateButton.Width = self.buttonPanel.Width	
@@ -387,22 +390,20 @@ class TabForm(Form):
 		#self.inputCBPanel.Width =  self.inputPanel.Width / 2
 		#self.setParameterTextBox.Location = Point(0,0)
 
-		
-		
-		
 		#self.createDGVbyRows(tableDicList)
-
-			
+	
 		#self.setParameterButton.Enabled = False
 		#self.setParameterButton.Enabled = True
 		
 	def configureButtons(self):
+		#self.dgvPanel.Margin = Padding(0,0,0,0)
 		self.inputTextPanel.Width = self.Width / 2
 		self.inputCBPanel.Width =  self.Width / 2
-		self.inputPanel.Width = self.Width
+		#self.inputPanel.Width = self.Width
 		self.inputPanel.Height = self.inputPanelHeight
-		self.buttonPanel.Width = self.Width
+		#self.buttonPanel.Width = self.Width
 		self.buttonPanel.Height = self.buttonPanelHeight
+		self.dgvPanel.Height = self.dgvPanelHeight
 		#self.inputCBPanel.Width = self.inputPanel.Width/2
 		#self.inputTextPanel.Width = self.inputPanel.Width/2
 
