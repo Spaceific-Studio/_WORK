@@ -333,9 +333,10 @@ class TabForm(Form):
 		#self.parameterCB.Parent = self
 		#self.parameterCB.Anchor = AnchorStyles.Left
 		self.parameterCB.Dock = DockStyle.Top
-		self.parameterCB.Items.AddRange(tuple(["a", "b", "c"]))
-		#self.parameterCB.SelectionChangeCommitted += self.OnChanged
+		#elf.parameterCB.Items.AddRange(tuple(["a", "b", "c"]))
+		self.parameterCB.SelectionChangeCommitted += self.OnChanged
 		self.parameterCB.Text = "--SELECT--"
+		
 		#self.parameterCB.DrawMode = DrawMode.OwnerDrawVariable
 		self.parameterCB.DropDownStyle = ComboBoxStyle.DropDown
 		#self.parameterCB.DrawItem += self.comboBoxDrawItem
@@ -346,6 +347,7 @@ class TabForm(Form):
 		self.setParameterButton.Height = 60
 		#self.setParameterButton.Anchor = AnchorStyles.Right
 		self.setParameterButton.Dock = DockStyle.Top
+		
 		self.setParameterButton.Click += self.setParametersOfSelected
 		self.setParameterButton.AutoSize = True
 		
@@ -356,10 +358,11 @@ class TabForm(Form):
 		self.setParameterTextBox.Name = "setParameterTextBox"
 		self.setParameterTextBox.ScrollBars = ScrollBars.Vertical
 		#self.setParameterTextBox.Location = Point(0,0)
-		self.setParameterTextBox.Dock = DockStyle.Top
+		self.setParameterTextBox.Dock = DockStyle.Fill
 		#self.setParameterTextBox.Anchor = AnchorStyles.Left
 		self.setParameterTextBox.Multiline = True
 		self.setParameterTextBox.KeyDown += self.setParameterSubmit
+		self.setParameterButton.Enabled = False
 
 		
 		
@@ -397,7 +400,7 @@ class TabForm(Form):
 		
 	def configureButtons(self):
 		#self.dgvPanel.Margin = Padding(0,0,0,0)
-		self.inputTextPanel.Width = self.Width / 2
+		self.inputTextPanel.Width = (self.Width / 2) - 15
 		self.inputCBPanel.Width =  self.Width / 2
 		#self.inputPanel.Width = self.Width
 		self.inputPanel.Height = self.inputPanelHeight
@@ -412,7 +415,7 @@ class TabForm(Form):
 		self.testButton.Width = self.Width / 2
 		self.setParameterButton.Width = self.Width /2
 		self.parameterCB.Width = self.Width /2
-		self.setParameterTextBox.Width = self.Width /2
+		#self.setParameterTextBox.Width = self.Width /2
 		self.setParameterTextBox.Height = self.inputPanelHeight
 
 	def configureButtonsEvent(self, sender, event):
@@ -620,13 +623,34 @@ class TabForm(Form):
 		for i in TabForm.userSelectedRowIndices:
 			self.dgv.Rows[i].DefaultCellStyle = selectedRow
 		
-		if self.parameter.IsReadOnly or self.parameter.StorageType == StorageType.ElementId:
+		if self.parameter.IsReadOnly:
 			self.setParameterButton.Enabled = False
 			self.setParameterTextBox.Enabled = False
+			self.parameterCB.Enabled = False
 			self.dgv.Columns[self.columnNames[3]].ReadOnly = True
+		elif self.parameter.StorageType == StorageType.ElementId:
+			self.parameElIdTypesDict = {}
+			self.setParameterButton.Enabled = True
+			self.setParameterTextBox.Enabled = False
+			self.parameterCB.Enabled = True
+			self.dgv.Columns[self.columnNames[3]].ReadOnly = True
+			try:
+				el = self.elements[0]
+				parameter = el.LookupParameter(self.parameterName)
+				parameterValueAsId = parameter.AsElementId()
+				print("parameterValueAsId: {0}".format(parameterValueAsId))
+				elIdParameterType = doc.GetElement(parameterValueAsId).GetType()
+				paramElements = FilteredElementCollector(doc).OfClass(elIdParameterType).WhereElementIsNotElementType().ToElements()
+				for paramEl in paramElements:
+					self.parameElIdTypesDict[paramEl.Name] = paramEl.Id
+			except Exception as ex:
+				paramElNames = []
+				print("elIdParameterType error: {0}".format(ex))
+			self.parameterCB.Items.AddRange(tuple(self.parameElIdTypesDict.keys()))
 		else:
 			self.setParameterButton.Enabled = True
 			self.setParameterTextBox.Enabled = True
+			self.parameterCB.Enabled = False
 
 	def setParameterSubmit(self, sender, event):
 		#print("key was pressed in {0}, dir(event): {1}".format(sender.Name, dir(event)))
@@ -644,6 +668,10 @@ class TabForm(Form):
 					elId = []
 			elementsCol = Clist[ElementId](elId)
 			#uidoc.Selection.SetElementIds(elementsCol)
+
+	def OnChanged(self, sender, event):
+		if self.parameterCB.Text != "--SELECT--":
+			self.setParameterButton.Enabled =True
 
 	def isolateSelectedElements(self, sender, event):
 		if sender.Text == "Isolate selected elements":
@@ -697,12 +725,32 @@ class TabForm(Form):
 			#elParams = el.GetOrderedParameters()
 			#for elParam in elParams:
 			#	if elParam.Definition.Name == self.parameterName:
-		valuesToSet = [self.setParameterTextBox.Text for x in elementsToSet]
-
-		t = Transaction(doc, "Set Parameters for selected elements")
-		t.Start()
-		parameterNameValuesSet = setValuesByParameterName(elementsToSet, valuesToSet, self.parameterName)	
-		t.Commit()
+		if self.parameter.StorageType == StorageType.ElementId:
+			valuesToSet = [self.parameElIdTypesDict[self.parameterCB.SelectedItem] for x in elementsToSet]
+		else:
+			valuesToSet = [self.setParameterTextBox.Text for x in elementsToSet]
+		try:
+			t = Transaction(doc, "Set Parameters for selected elements")
+			t.Start()
+			parameterNameValuesSet = setValuesByParameterName(elementsToSet, valuesToSet, self.parameterName)	
+			t.Commit()
+		except:
+			t.RollBack()
+			import traceback
+			errorReport = traceback.format_exc()
+			myDialog = TaskDialog("Parameter Set Error")
+			myDialog.MainInstruction = "Parameter name {0} not set !!!".format(self.parameterName)
+			myDialog.ExpandedContent = errorReport
+			myDialog.TopMost()
+			myDialog.Show()
+			openedForms = list(Application.OpenForms)
+			rpsOpenedForms = []
+			lastForm = rpsOpenedForms[-1] if len(openedForms) > 0 else None
+			if lastForm:
+				lastForm.TopMost = True
+				lastForm.Show()
+				
+			#raise RuntimeError("Parameter name {0} not set !!! {1}".format(self.parameterName, errorReport))
 		self.updateDGV()
 		#print("\nVýsledek: \n")
 		#for i, x in enumerate(parameterNameValuesSet):
@@ -982,8 +1030,10 @@ class MainForm(Form):
 
 	def close(self, sender, event):
 		self.Close()
+
 	def OnChanged(self, sender, event):
 		self.label.Text = sender.Text
+
 
 def getMembers(inElements):
 	uniqueParams = {}
