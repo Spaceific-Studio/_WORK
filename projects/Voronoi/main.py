@@ -10,12 +10,12 @@ import matplotlib.pyplot as plt
 import platform
 import itertools
 import heapq
-
+print("cwd {}".format(os.getcwd()))
 
 if "Windows" in platform.uname():
     lib_path = r'C:/_WORK/PYTHON/LIB'
 else:
-    lib_path = r"/storage/18D4-6C41/PYTHON/LIB"
+    lib_path = r"/storage/emulated/0/_WORK/LIB/"
 sys.path.append(lib_path)
 import ListUtils
 from NumpyUtils import *
