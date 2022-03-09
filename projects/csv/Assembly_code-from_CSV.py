@@ -37,7 +37,7 @@ class InputData():
 	def __init__(self, inPath, inSavePath):
 		""" if not InputData.FIRST_LINE:
 			InputData.FIRST_LINE = ["Region", "Confirmed", "Deads", "Recovered","D/C %", "C/Pop%", "c7D100k ", "d7D1m ", "incC8DStd%"] """
-		self.fileName = "SNIM-from_excel_txt_s_tabulatory.txt"
+		self.fileName = "SNIM-from_excel_txt-unicode.txt"
 		self.saveFileName = "2022_03_09-SNIM-Assembly_utf-16-FULL.txt"
 		self.savePath = inSavePath
 
