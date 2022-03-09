@@ -207,8 +207,8 @@ class CaAPP(tk.Frame):
         CaAPP.BIN_RULE = getBinRuleFromHex(CaAPP.HEX_RULE)
         
     def setPaths(self):
-        self.CSV_logPath = r"H:/_WORK/DATA/PYTHON/CELULAR_AUTOMAT-2D/LOG/"
-        self.saveCAimagesPath = r"H:/_WORK/DATA/PYTHON/CELULAR_AUTOMAT-2D/RNDCA2D9-sequence/interesting/"
+        self.CSV_logPath = r"C:DANO/_WORK/DATA/PYTHON/CELULAR_AUTOMAT-2D/LOG/"
+        self.saveCAimagesPath = r"C:/DANO/_WORK/DATA/PYTHON/CELULAR_AUTOMAT-2D/RNDCA2D9-sequence/interesting/"
         #self.logReadPath = self.CSV_logPath + "CA2D9_" + self.HEX_RULE + "_" + str(self.caResX) + "x" + str(self.caResY) + ".csv"
         self.logReadPath = self.getLOGpath(CaAPP.HEX_RULE)
 
@@ -831,7 +831,7 @@ class CaAPP(tk.Frame):
         
         self.currentRow += 1
 
-        self.buttonImage = PhotoImage(file = r"H:\_WORK\PYTHON\projects\CA_APP\cross-on.gif")
+        self.buttonImage = PhotoImage(file = r"C:\DANO\_WORK\PYTHON\projects\CA_APP\cross-on.gif")
         
         self.matrixButtons = []
         """

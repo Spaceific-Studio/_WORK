@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageDraw, ImageTk
 import time
-import kiwi
+#import kiwi
 #import xmltodict
 
 cwd = os.getcwd()
