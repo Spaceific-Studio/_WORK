@@ -4,8 +4,9 @@ print("file {0}".format(__file__))
 
 myCwd = os.getcwd()
 print("my cwd {0}".format(myCwd))
-path = r"b:\\12-0168-0100_Modernizace_UVZ-3_stavba\\_Revit\\Koordinace\SNIM\\EXPORT_Z_EXCELU_DO_TXT\\"
-savePath = r"b:\\12-0168-0100_Modernizace_UVZ-3_stavba\\_Revit\\Koordinace\SNIM\\SNIM-ASSEMBLY_CODE_PLNA_VERZE\\"
+#path = r"b:\\12-0168-0100_Modernizace_UVZ-3_stavba\\_Revit\\Koordinace\SNIM\\EXPORT_Z_EXCELU_DO_TXT\\"
+path = r"C:\\Users\\gercakd\\OneDrive - pvs.cz\\H\\_BIM_MANAGMENT_STUFF\\FAMILIES\\141\\_STAVEBNI\\_SNIM\SNIM_EXPORT_CSV\\"
+savePath = r"C:\\Users\\gercakd\\OneDrive - pvs.cz\\H\\_BIM_MANAGMENT_STUFF\\FAMILIES\\141\\_STAVEBNI\\_SNIM\SNIM_EXPORT_CSV\\SNIM-ASSEMBLY_CODE_PLNA_VERZE\\"
 
 def ensure_dir(file_path):
 	directory = os.path.dirname(file_path) 
@@ -30,7 +31,7 @@ class InputData():
 		""" if not InputData.FIRST_LINE:
 			InputData.FIRST_LINE = ["Region", "Confirmed", "Deads", "Recovered","D/C %", "C/Pop%", "c7D100k ", "d7D1m ", "incC8DStd%"] """
 		self.fileName = "SNIM-from_excel_txt_s_tabulatory.txt"
-		self.saveFileName = "2022_01_05-SNIM-Assembly_utf-16-FULL.txt"
+		self.saveFileName = "2022_03_09-SNIM-Assembly_utf-16-FULL.txt"
 		self.savePath = inSavePath
 
 		self.path = os.path.join(inPath, self.fileName)
