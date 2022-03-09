@@ -1,12 +1,19 @@
 import os
+import sys
 
 print("file {0}".format(__file__))
 
 myCwd = os.getcwd()
 print("my cwd {0}".format(myCwd))
 #path = r"b:\\12-0168-0100_Modernizace_UVZ-3_stavba\\_Revit\\Koordinace\SNIM\\EXPORT_Z_EXCELU_DO_TXT\\"
-path = r"C:\\Users\\gercakd\\OneDrive - pvs.cz\\H\\_BIM_MANAGMENT_STUFF\\FAMILIES\\141\\_STAVEBNI\\_SNIM\SNIM_EXPORT_CSV\\"
-savePath = r"C:\\Users\\gercakd\\OneDrive - pvs.cz\\H\\_BIM_MANAGMENT_STUFF\\FAMILIES\\141\\_STAVEBNI\\_SNIM\SNIM_EXPORT_CSV\\SNIM-ASSEMBLY_CODE_PLNA_VERZE\\"
+if "pydroid" in sys.prefix:
+	path = r"/storage/emulated/0/_WORK/projects/csv/_SNIM/SNIM_EXPORT_CSV/"
+else:
+    path = r"C:\\Users\\gercakd\\OneDrive - pvs.cz\\H\\_BIM_MANAGMENT_STUFF\\FAMILIES\\141\\_STAVEBNI\\_SNIM\SNIM_EXPORT_CSV\\"
+if "pydroid" in sys.prefix:
+    savePath = r"/storage/emulated/0/_WORK/projects/csv/_SNIM/SNIM-ASSEMBLY_CODE_PLNA_VERZE/"
+else:
+    savePath = r"C:\\Users\\gercakd\\OneDrive - pvs.cz\\H\\_BIM_MANAGMENT_STUFF\\FAMILIES\\141\\_STAVEBNI\\_SNIM\SNIM_EXPORT_CSV\\SNIM-ASSEMBLY_CODE_PLNA_VERZE\\"
 
 def ensure_dir(file_path):
 	directory = os.path.dirname(file_path) 
@@ -30,7 +37,7 @@ class InputData():
 	def __init__(self, inPath, inSavePath):
 		""" if not InputData.FIRST_LINE:
 			InputData.FIRST_LINE = ["Region", "Confirmed", "Deads", "Recovered","D/C %", "C/Pop%", "c7D100k ", "d7D1m ", "incC8DStd%"] """
-		self.fileName = "SNIM-from_excel_txt_s_tabulatory.txt"
+		self.fileName = "SNIM-from_excel_txt-unicode.txt"
 		self.saveFileName = "2022_03_09-SNIM-Assembly_utf-16-FULL.txt"
 		self.savePath = inSavePath
 
@@ -73,7 +80,7 @@ class InputData():
 
 
 	def readFile(self, inPath):
-		with open(inPath) as f:
+		with open(inPath, encoding='utf-16') as f:
 			self.dataDict = {}
 			self.markDict = {}
 			i=0
