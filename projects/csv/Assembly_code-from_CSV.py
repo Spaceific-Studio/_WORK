@@ -9,11 +9,11 @@ print("my cwd {0}".format(myCwd))
 if "pydroid" in sys.prefix:
 	path = r"/storage/emulated/0/_WORK/projects/csv/_SNIM/SNIM_EXPORT_CSV/"
 else:
-    path = r"C:\\Users\\gercakd\\OneDrive - pvs.cz\\H\\_BIM_MANAGMENT_STUFF\\FAMILIES\\141\\_STAVEBNI\\_SNIM\SNIM_EXPORT_CSV\\"
+    path = r"C:\DANO\_WORK\PYTHON\projects\csv\_SNIM\SNIM_EXPORT_CSV"
 if "pydroid" in sys.prefix:
     savePath = r"/storage/emulated/0/_WORK/projects/csv/_SNIM/SNIM-ASSEMBLY_CODE_PLNA_VERZE/"
 else:
-    savePath = r"C:\\Users\\gercakd\\OneDrive - pvs.cz\\H\\_BIM_MANAGMENT_STUFF\\FAMILIES\\141\\_STAVEBNI\\_SNIM\SNIM_EXPORT_CSV\\SNIM-ASSEMBLY_CODE_PLNA_VERZE\\"
+    savePath = r"C:\DANO\_WORK\PYTHON\projects\csv\_SNIM\SNIM-ASSEMBLY_CODE_FILTERED"
 
 def ensure_dir(file_path):
 	directory = os.path.dirname(file_path) 
@@ -42,18 +42,18 @@ class InputData():
 		self.savePath = inSavePath
 
 		self.path = os.path.join(inPath, self.fileName)
-		self.compileFull = True
+		self.compileFull = False
 
 		self.filterTypes = [ \
-						"ZP", "ZS", "ZO","PP", "MP", "NS", "VK", \
-						"SN", "SL", "SD", "IS", "TM", "ST", "PD", \
-						"PA", "ON", "DD", "MI", "ZA", "IT", "IH", \
+						"ZP", "ZS", "ZD", "ZO","PP", "MP", "NS", "VK", \
+						"SN", "SL", "HL", "SD", "IS", "TM", "ST", "PD", \
+						"PA", "ON", "DD", "MI", "ZA", "IT", "IH", "IA", \
 						"LP", "NL", "PL", "KV", "ZV", "TV", "OV", \
 						"PH", "OD", "VY", "MB", "SH", "SR", "SY", \
 						"SP", "SC", "PE", "RP", "VT", "TE", "OM", \
 						"NK", "VA", "PM", "SB", "CO", "CP", "FI", \
 						"ZT", "IZ", "TR", "VP", "PO", "PU", "VR", \
-						"AT", "FS", "SJ" \
+						"AT", "FS", "SJ", "DZ", "SK" \
 						]
 
 		self.rawData = self.readFile(self.path)
