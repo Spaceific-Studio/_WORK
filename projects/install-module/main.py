@@ -7,8 +7,10 @@ import setuptools
 from PIL import Image
 #import pyglet
 
-print(dir(pip))
-pip.__main__(['install', 'chardet'])
+#os.system(r"pip install tensorflow")
+os.system("C:\\Users\\GercakD\\AppData\\Local\\Programs\\Python\\Python310\\Scripts -m pip install matplotlib")
+#print(dir(pip))
+#pip.__main__(['install', 'cupy'])
 help(pip)
 #os.system(r"/data/user/0/org.qpython.qpy/files/bin/pip install gmpy2-2.1.0a1-cp27-cp27mu-manylinux1_x86_64.whl")
 #cfg_vars = distutils.sysconfig.get_config_vars()
@@ -18,13 +20,13 @@ help(pip)
 #print cfg_vars
 #dirs = os.get_exec_path()
 #print __name__
-def printEnvs():
+''' def printEnvs():
     envir = os.environ
     for key, value in envir.items():
         print (key)
         for x in value.split(":"):
             print (x)
-        print ("\n")
+        print ("\n") '''
 #print os.getenv('PATH').split(":")
 #printEnvs()
 #help (str)
