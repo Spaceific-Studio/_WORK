@@ -138,6 +138,7 @@ class MainForm(Form):
 		"""
 		self.selectedElement = inSelectedElement
 		self.commentLayers = self.getCommentLayers(self.selectedElement)
+		self.originalCommentLayers = self.getCommentLayers(self.selectedElement)
 		self.confirmed = False
 		
 		self.InitializeComponent()
@@ -215,6 +216,7 @@ class MainForm(Form):
 		self.dgv.Dock = DockStyle.Fill
 		self.dgv.AutoResizeColumns()
 		self.dgv.CellClick += self.cellClick
+		self.dgv.CellValueChanged += self.cellChanged
 		self.dgv.DataBindingComplete += self.DataBindingComplete
 		
 		#self.dgv.SelectionChanged += self.selectionChanged
@@ -253,7 +255,7 @@ class MainForm(Form):
 		self.confirmButton.Height = 30
 		self.confirmButton.AutoSize = True
 		self.confirmButton.Width = self.buttonPanel.Width/2	
-		self.confirmButton.Click += self.close
+		self.confirmButton.Click += self.confirmChanges
 
 		self.resetButton = Button()
 		self.resetButton.Text = "Reset Changes"
@@ -393,6 +395,9 @@ class MainForm(Form):
 
 	def DataBindingComplete(self, sender, event):
 		self.arangeColumns()
+		#for i, row in enumerate(self.dgv.Rows):
+		#	row.Cells[1].OnDataGridViewChanged += self.cellChanged
+		#self.dgv.Columns[1] += self.cellChanged
 		#self.dgvPanel.AutoScroll = True
 		#self.dgvPanel.Height = self.Height - self.buttonPanel.Height
 		#self.dgv.Refresh()
@@ -417,6 +422,16 @@ class MainForm(Form):
 		if e.RowIndex >=0:
 			pass
 			#print("{0} Row, {1} Column button clicked".format(e.RowIndex +1, e.ColumnIndex +1))
+
+	def cellChanged(self, sender, event):
+		print("changed RowIndex {0}".format(event.RowIndex))
+		print("dir(event {0} dir(sender) - {1} sender.Text {2})".format(dir(event), dir(sender), sender.Text))
+		cellValue = self.dgv.Rows[event.RowIndex].Cells[0].Value
+		self.commentLayers[event.RowIndex] = cellValue if cellValue else ""
+		tableDicList, tableObjectList = self.getDataSources(self.commentLayers)
+		#self.createDGVbyRows(tableDicList)
+		self.createDGVbyDataSource(tableObjectList)
+
 	def update(self, sender, event):		
 		self.dgv.Refresh()
 		self.deleteButton.Width = self.buttonPanel.Width/2
@@ -429,6 +444,13 @@ class MainForm(Form):
 		#self.buttonPanel.Height = 120
 		#self.dgvPanel.Height = self.Height - self.buttonPanel.Height
 
+	def confirmChanges(self, sender, event):
+		returnStrList = []
+		for i, line in enumerate(self.commentLayers):
+			newLine = "- {0: <140}".format(line)
+			print(newLine)
+			returnStrList.append(newLine)
+		
 	def insertDeleteRow(self, sender, e):
 		#print("sender.Name {0}, e {1}".format(sender.Text, e))
 		if sender.Text == "INSERT ROW":
