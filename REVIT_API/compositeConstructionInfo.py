@@ -9,6 +9,7 @@ from Autodesk.Revit.DB.Architecture import *
 from Autodesk.Revit.UI import *
 from Autodesk.Revit.UI.Selection import PickBoxStyle, ObjectType
 import Autodesk.Revit.UI.Selection as Selection
+import Autodesk.Revit.DB as DB
 
 
 
@@ -70,7 +71,7 @@ try:
 except:
 	runFromCsharp = False
 
-from RevitSelection import getValueByParameterName, setValueByParameterName, getBuiltInParameterInstance
+from RevitSelection import getValueByParameterName, getAllElements, setValueByParameterName, getBuiltInParameterInstance
 
 import clr
 clr.AddReference("System")
@@ -104,7 +105,7 @@ for i, oForm in enumerate(openedForms):
 
 	if rpsOutput:
 		pass
-		rpsOutput.Show()
+		rpsOutput.Hide()
 	else:
 		pass
 	
@@ -136,10 +137,13 @@ class MainForm(Form):
 		"""
 		self.priorityLookup = inPriorityLookup
 		"""
+		self.paramName = "ALL_MODEL_INSTANCE_COMMENTS"
 		self.selectedElement = inSelectedElement
 		self.commentLayers = self.getCommentLayers(self.selectedElement)
 		self.originalCommentLayers = self.getCommentLayers(self.selectedElement)
+		self.allInstances = self.getAllInstances(self.selectedElement)
 		self.confirmed = False
+
 		
 		self.InitializeComponent()
 
@@ -235,18 +239,29 @@ class MainForm(Form):
 		
 
 		self.infoLabel = Label()
-		self.infoLabel.Width = self.panelWidth/2
+		
 		self.infoLabel.Height = 30
 		self.infoLabel.TextAlign = ContentAlignment.MiddleLeft
-		self.infoLabel.Text = "wewe"
+		#self.infoLabel.Text = "wewe"
+		self.infoLabel.AutoSize = True
+		#elementType = doc.GetElement(self.selectedElement.GetTypeId())
+		elementType = self.selectedElement.GetType()
+		elTypeFamily = doc.GetElement(self.selectedElement.GetTypeId())
+		print("Element type {0} - name() {1}".format(elementType, elementType.Name))
+		self.infoLabel.Text = "{0} ({1}) - {2}.{3} - {4}".format(elementType.Name, elTypeFamily.FamilyName, self.elTypeMarkParamValue, self.elMarkParamValue, self.selectedElement.Name)
+		self.infoLabel.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right)
+		# self.selectedElement.Name, doc.GetElement(self.selectedElement.GetTypeId()).Name)
 		self.infoLabel.Location = (Point(0,0))
 		self.inputTextPanel.Controls.Add(self.infoLabel)
 
 		self.allInstancesChB = CheckBox()
-		self.allInstancesChB.Text = "Apply to all instances"
+		self.allInstancesChB.Text = "Apply to all instances ({0})".format(len(self.allInstances))
 		self.allInstancesChB.Height = 30
 		self.allInstancesChB.Width = 150
+		self.allInstancesChB.AutoSize = True
 		self.allInstancesChB.Location = (Point(10,30))
+		self.allInstancesChB.CheckedChanged += self.allInstancesChanged
+		self.allInstancesChB.Checked = True
 		self.inputTextPanel.Controls.Add(self.allInstancesChB)
 
 
@@ -300,18 +315,30 @@ class MainForm(Form):
 		self.deleteButton.Height = 30
 		self.insertButton.AutoSize = True
 		self.deleteButton.Click += self.insertDeleteRow		
+		
 		self.deleteButton.Location = Point(0,0)
-
-		self.deleteButton.Width = self.buttonPanel.Width/2
+		self.deleteButton.Width = self.buttonPanel.Width/2		
 		self.insertButton.Location = Point(self.buttonPanel.Width/2,0)
 		self.confirmButton.Location = Point(self.buttonPanel.Width/2,self.deleteButton.Height)
 		self.confirmButton.Width = self.buttonPanel.Width /2
 		self.resetButton.Location = Point(0,self.deleteButton.Height)
 		self.resetButton.Width = self.buttonPanel.Width /2
+		self.infoLabel.Width = self.inputTextPanel.Width
 		self.buttonPanel.Controls.Add(self.deleteButton)
 		
 
 		
+	def getAllInstances(self, inElement):
+		typeIntId = inElement.GetTypeId().IntegerValue
+		allElementsIds = getAllElements(doc, inActiveView = False, toId = True)
+		allInstances = []
+		for elId in allElementsIds:
+			el = doc.GetElement(elId)
+			elTypeIntId = el.GetTypeId().IntegerValue
+			#elIntId = elId.IntegerValue
+			if elTypeIntId == typeIntId:
+				allInstances.append(el)
+		return allInstances
 
 	def createDGVbyDataSource(self, inObjList):
 		"""
@@ -325,7 +352,7 @@ class MainForm(Form):
 			col.SortMode = DataGridViewColumnSortMode.Automatic
 		#self.dgv.DataSource = bindingList
 
-	def createDGVbyRows(self, inDicList):
+	''' def createDGVbyRows(self, inDicList):
 		"""
 		inDicList type: list of dictionaries [{"ab": "AB"}, {"cd":"CD"}, {"ef":"EF"}]
 		"""
@@ -343,28 +370,34 @@ class MainForm(Form):
 			else:
 				raise IndexError("inDicList is empty list")
 		else:
-			raise TypeError("input argument inDicList not of type list")
+			raise TypeError("input argument inDicList not of type list") '''
 
 	def getCommentLayers(self, inSelectedElement):
-		paramName = "ALL_MODEL_INSTANCE_COMMENTS"
-		elParamValue = getValueByParameterName(inSelectedElement, paramName, doc)
-		#print("{0} - {1}".format(paramName, elParamValue))
+		returnStrList = []
+		#self.paramName = "ALL_MODEL_INSTANCE_COMMENTS"
+		markParamName = "ALL_MODEL_MARK"
+		typeMarkParamName = "ALL_MODEL_TYPE_MARK"
+		elParamValue = getValueByParameterName(inSelectedElement, self.paramName, doc)
+		self.elMarkParamValue = getValueByParameterName(inSelectedElement, markParamName, doc, bip=DB.BuiltInParameter.ALL_MODEL_MARK)
+		self.elTypeMarkParamValue = getValueByParameterName(inSelectedElement, typeMarkParamName, doc, bip=DB.BuiltInParameter.ALL_MODEL_TYPE_MARK)
+		#print("elParamValue {0} - {1}".format(self.paramName, elParamValue))
 		#print('Remove all spaces using RegEx:\n{0}'.format(re.sub("\s{2,50}", "", elParamValue)))
 		separatedString = re.sub("\s{2,15}", "", elParamValue)
+		#print("separatedString {0}".format(separatedString))
 		strList = separatedString.split("- ")
+		#print("strList {0}".format(strList))
 		for i, line in enumerate(strList[1:]):
 			strippedLine = line.strip()
-			strList[i] = strippedLine
-		return strList
+			returnStrList.append(strippedLine)
+		return returnStrList
 			
 
 	def getDataSources(self, inTableData):
 		tableObjectList = []
 		tableDicList = []
 		''' #priorityCategoriesNames = getPriorityCategoriesNames(inTableData)
-		paramName = "ALL_MODEL_INSTANCE_COMMENTS"
-		elParamValue = getValueByParameterName(inTableData, paramName, doc)
-		#print("{0} - {1}".format(paramName, elParamValue))
+		elParamValue = getValueByParameterName(inTableData, self.paramName, doc)
+		#print("{0} - {1}".format(self.paramName, elParamValue))
 		#print('Remove all spaces using RegEx:\n{0}'.format(re.sub("\s{2,50}", "", elParamValue)))
 		separatedString = re.sub("\s{2,15}", "", elParamValue)
 		strList = separatedString.split("- ") '''
@@ -425,12 +458,15 @@ class MainForm(Form):
 
 	def cellChanged(self, sender, event):
 		print("changed RowIndex {0}".format(event.RowIndex))
-		print("dir(event {0} dir(sender) - {1} sender.Text {2})".format(dir(event), dir(sender), sender.Text))
+		#print("dir(event {0} dir(sender) - {1} sender.Text {2})".format(dir(event), dir(sender), sender.Text))
 		cellValue = self.dgv.Rows[event.RowIndex].Cells[0].Value
 		self.commentLayers[event.RowIndex] = cellValue if cellValue else ""
-		tableDicList, tableObjectList = self.getDataSources(self.commentLayers)
-		#self.createDGVbyRows(tableDicList)
-		self.createDGVbyDataSource(tableObjectList)
+		#tableDicList, tableObjectList = self.getDataSources(self.commentLayers)
+		##self.createDGVbyRows(tableDicList)
+		#self.createDGVbyDataSource(tableObjectList)
+
+	def allInstancesChanged(self, sender, event):
+		print("{0}".format(self.allInstancesChB.Checked))
 
 	def update(self, sender, event):		
 		self.dgv.Refresh()
@@ -441,6 +477,7 @@ class MainForm(Form):
 		self.insertButton.Location = Point(self.buttonPanel.Width/2,0)
 		self.resetButton.Location = Point(0,self.deleteButton.Height)
 		self.resetButton.Width = self.buttonPanel.Width /2
+		self.infoLabel.Width = self.inputTextPanel.Width
 		#self.buttonPanel.Height = 120
 		#self.dgvPanel.Height = self.Height - self.buttonPanel.Height
 
@@ -451,6 +488,29 @@ class MainForm(Form):
 			print(newLine)
 			returnStrList.append(newLine)
 		
+		returnStr = "".join(returnStrList)
+		t = Transaction(doc, "Set the parameter {0} value to element {1}".format(self.paramName, self.selectedElement.Id))
+		
+		if self.allInstancesChB.Checked:			
+			#allInstances = DB.FilteredElementCollector(doc).WherePasses(ElementParameterFilter(FilterElementIdRule())).ToElements()
+			#transaction Start
+			t.Start()
+			for el in self.allInstances:
+				setValueByParameterName(el, returnStr, self.paramName, doc)
+				print("Parameter comments has been updated for element {1} {0} ".format(el.Name, el.Id.IntegerValue))
+				#time.sleep(3)
+			#transaction Commit
+			t.Commit()
+		#transaction Start
+		t.Start()
+		setValueByParameterName(self.selectedElement, returnStr, self.paramName, doc)
+		#transaction Commit
+		t.Commit()
+		#time.sleep(3)
+		print("Parameter comments has been updated for element {1} {0} ".format(self.selectedElement.Name, self.selectedElement.Id.IntegerValue))
+		self.Close()
+
+
 	def insertDeleteRow(self, sender, e):
 		#print("sender.Name {0}, e {1}".format(sender.Text, e))
 		if sender.Text == "INSERT ROW":
@@ -781,16 +841,16 @@ openedForms = list(Application.OpenForms)
 rpsOpenedForms = []
 for i, oForm in enumerate(openedForms):
 	if "RevitPythonShell" in str(oForm):
-		oForm.Show()
+		oForm.Hide()
 		rpsOpenedForms.append(oForm)
 
 if len(rpsOpenedForms) > 0:
 	lastForm = rpsOpenedForms[-1]
-	lastForm.Show()
+	lastForm.Hide()
 	if len(rpsOpenedForms) > 1:
 		rpsOFormsToClose = rpsOpenedForms[:-1]
 		print("Script was cancelled")
-		time.sleep(5)
+		#time.sleep(5)
 		for oFormToClose in rpsOFormsToClose:
 			oFormToClose.Close()
 
