@@ -678,7 +678,7 @@ class InfoDialog(Form):
 	def InitializeComponent(self):
 		self.Text = self.infoText
 		self.Width = 500
-		self.Height = 190
+		self.Height = 100
 		self.StartPosition = FormStartPosition.CenterScreen
 		self.TopMost = True
 		self.Resize += self.configureButtons
@@ -733,7 +733,7 @@ class InfoDialog(Form):
 		self.scheduleViewCB.DropDownStyle = ComboBoxStyle.DropDown '''
 
 		self.parameterCBLabel = Label()
-		self.parameterCBLabel.Text = "Please select at least one element:"
+		self.parameterCBLabel.Text = "Please select one element:"
 		#lFont = self.parameterCBLabel.Font.Clone()
 		#lFont.Size = 14
 		#fStyle = lFont.Style
@@ -806,8 +806,20 @@ if len(mySelection) == 0:
 	print("len(mySelection) {0} - {1}".format(len(mySelection), mySelection))
 	myDialogWindow = InfoDialog(infoText = "Selection error", showSelectionButton = True)
 	Application.Run(myDialogWindow)
-	Application.Exit()
 	mySelection = myDialogWindow.selectedElements
+	if len(mySelection) > 0:
+		myDialog = TaskDialog("Selection OK");
+		elType = mySelection[0].GetType()
+		myDialog.MainInstruction = "Element {0} Selected".format(elType.Name)
+		myDialog.Show();
+		mainWindow = MainForm(mySelection[0])
+		Application.Run(mainWindow)
+	else:
+		myDialog = TaskDialog("Selection error");
+		myDialog.MainInstruction = "No element Selected"
+		myDialog.Show();
+	''' Application.Exit()
+	
 	print("oneElement dialog len(mySelection) {0} - {1}".format(len(mySelection), mySelection))
 	paramName = "ALL_MODEL_INSTANCE_COMMENTS"
 	elParamValue = getValueByParameterName(mySelection[0], paramName, doc)
@@ -819,7 +831,7 @@ if len(mySelection) == 0:
 	for i, oForm in enumerate(openedForms):
 		if "RevitPythonShell" in str(oForm):
 			oForm.Show()
-	#mySelection = myDialogWindow.selectedElements
+	#mySelection = myDialogWindow.selectedElements '''
 	print("after selection one element dialog len(mySelection) {0} - {1}".format(len(mySelection), mySelection))
 
 elif len(mySelection) == 1:
