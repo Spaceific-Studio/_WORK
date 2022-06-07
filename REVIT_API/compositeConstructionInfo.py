@@ -3,6 +3,7 @@
 #Script for parameters update of family "Prostup (SWECO)"
 #resource_path: H:\_WORK\PYTHON\REVIT_API\vyska_prostupu.py
 #from typing import Type
+#from numpy import iterable
 from Autodesk.Revit.DB import *
 from Autodesk.Revit.DB.Architecture import *
 #from Autodesk.Revit.DB.Analysis import *
@@ -71,7 +72,7 @@ try:
 except:
 	runFromCsharp = False
 
-from RevitSelection import getValueByParameterName, getAllElements, setValueByParameterName, getBuiltInParameterInstance
+from RevitSelection import getValueByParameterName, getAllElements, setValueByParameterName, setValuesByParameterName, getBuiltInParameterInstance
 
 import clr
 clr.AddReference("System")
@@ -137,8 +138,14 @@ class MainForm(Form):
 		"""
 		self.priorityLookup = inPriorityLookup
 		"""
-		self.paramName = "ALL_MODEL_INSTANCE_COMMENTS"
+
+		self.bipParamName = "ALL_MODEL_TYPE_COMMENTS"
+		self.paramNameBip = DB.BuiltInParameter.ALL_MODEL_TYPE_COMMENTS
 		self.selectedElement = inSelectedElement
+		self.uniqueParamsBipNames = self.parameterSetUp(self.selectedElement)
+		self.paramName = self.uniqueParamsBipNames[self.bipParamName]
+		self.param = self.selectedElement.LookupParameter(self.paramName)
+		#print("self.param {0}".format(self.param.AsValueString()))
 		self.commentLayers = self.getCommentLayers(self.selectedElement)
 		self.originalCommentLayers = self.getCommentLayers(self.selectedElement)
 		self.allInstances = self.getAllInstances(self.selectedElement)
@@ -146,6 +153,47 @@ class MainForm(Form):
 
 		
 		self.InitializeComponent()
+
+	def getMembers(self, inElements):
+		uniqueParams = {}
+		uniqueTypeIds = []
+		uniqueFamilies = {}
+		nameToParamDic = {}
+		if not hasattr(inElements, "__iter__"):
+			inElements = [inElements]
+		for el in inElements:
+			if el.GetTypeId().IntegerValue > -1:
+				if el.GetTypeId() not in uniqueTypeIds:
+					uniqueTypeIds.append(el.GetTypeId())
+				familyName = doc.GetElement(el.GetTypeId()).FamilyName
+				if familyName not in uniqueFamilies:
+					uniqueFamilies[familyName] = el.GetTypeId()
+			elParams = el.GetOrderedParameters()
+			for elParam in elParams:
+				if elParam.Definition.Name not in uniqueParams:
+					uniqueParams[elParam.Definition.Name] = elParam
+					nameToParamDic[elParam.Definition.Name] = elParam
+
+		for k, elId in uniqueFamilies.items():
+			el = doc.GetElement(elId)
+			elParams = el.GetOrderedParameters()
+			for elParam in elParams:
+				if elParam.Definition.Name not in uniqueParams:
+					uniqueParams[elParam.Definition.Name] = elParam
+					nameToParamDic[elParam.Definition.Name] = elParam
+	
+		return uniqueParams
+
+	def parameterSetUp(self, inElements):
+		uniqueParams = self.getMembers(inElements)
+		uniqueParamsBip = {}
+		for k, param in uniqueParams.items():
+			if param.Definition.BuiltInParameter != DB.BuiltInParameter.INVALID:
+				uniqueParamsBip[param.Definition.BuiltInParameter.ToString()] = param.Definition.Name
+
+		for k,v in uniqueParamsBip.items():
+			print("{0}:{1}".format(k,v))
+		return uniqueParamsBip
 
 	def InitializeComponent(self):
 		self.Text = "Compound construction editor by Spaceific-Studio"
@@ -248,7 +296,13 @@ class MainForm(Form):
 		elementType = self.selectedElement.GetType()
 		elTypeFamily = doc.GetElement(self.selectedElement.GetTypeId())
 		print("Element type {0} - name() {1}".format(elementType, elementType.Name))
-		self.infoLabel.Text = "{0} ({1}) - {2}.{3} - {4}".format(elementType.Name, elTypeFamily.FamilyName, self.elTypeMarkParamValue, self.elMarkParamValue, self.selectedElement.Name)
+		self.infoLabel.Text = "{0} ({1}) - {2}.{3} - {4} - {5}.{6}".format(elementType.Name, \
+																	elTypeFamily.FamilyName, \
+																	self.elTypeMarkParamValue, \
+																	self.elMarkParamValue, \
+																	self.selectedElement.Name, \
+																	self.elAssemblyCodeParamValue, \
+																	self.elAssemblyDescriptionParamValue)
 		self.infoLabel.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right)
 		# self.selectedElement.Name, doc.GetElement(self.selectedElement.GetTypeId()).Name)
 		self.infoLabel.Location = (Point(0,0))
@@ -374,13 +428,17 @@ class MainForm(Form):
 
 	def getCommentLayers(self, inSelectedElement):
 		returnStrList = []
-		#self.paramName = "ALL_MODEL_INSTANCE_COMMENTS"
+		#self.bipParamName = "ALL_MODEL_INSTANCE_COMMENTS"
 		markParamName = "ALL_MODEL_MARK"
 		typeMarkParamName = "ALL_MODEL_TYPE_MARK"
-		elParamValue = getValueByParameterName(inSelectedElement, self.paramName, doc)
+		assemblyCodeParamName = "UNIFORMAT_CODE"
+		assemblyDescriptionParamName = "UNIFORMAT_DESCRIPTION"
+		elParamValue = getValueByParameterName(inSelectedElement, self.bipParamName, doc, bip=self.paramNameBip)
 		self.elMarkParamValue = getValueByParameterName(inSelectedElement, markParamName, doc, bip=DB.BuiltInParameter.ALL_MODEL_MARK)
 		self.elTypeMarkParamValue = getValueByParameterName(inSelectedElement, typeMarkParamName, doc, bip=DB.BuiltInParameter.ALL_MODEL_TYPE_MARK)
-		#print("elParamValue {0} - {1}".format(self.paramName, elParamValue))
+		self.elAssemblyCodeParamValue = getValueByParameterName(inSelectedElement, assemblyCodeParamName, doc, bip=DB.BuiltInParameter.UNIFORMAT_CODE)
+		self.elAssemblyDescriptionParamValue = getValueByParameterName(inSelectedElement, assemblyDescriptionParamName, doc, bip=DB.BuiltInParameter.UNIFORMAT_DESCRIPTION)
+		#print("elParamValue {0} - {1}".format(self.bipParamName, elParamValue))
 		#print('Remove all spaces using RegEx:\n{0}'.format(re.sub("\s{2,50}", "", elParamValue)))
 		separatedString = re.sub("\s{2,15}", "", elParamValue)
 		#print("separatedString {0}".format(separatedString))
@@ -396,8 +454,8 @@ class MainForm(Form):
 		tableObjectList = []
 		tableDicList = []
 		''' #priorityCategoriesNames = getPriorityCategoriesNames(inTableData)
-		elParamValue = getValueByParameterName(inTableData, self.paramName, doc)
-		#print("{0} - {1}".format(self.paramName, elParamValue))
+		elParamValue = getValueByParameterName(inTableData, self.bipParamName, doc)
+		#print("{0} - {1}".format(self.bipParamName, elParamValue))
 		#print('Remove all spaces using RegEx:\n{0}'.format(re.sub("\s{2,50}", "", elParamValue)))
 		separatedString = re.sub("\s{2,15}", "", elParamValue)
 		strList = separatedString.split("- ") '''
@@ -489,25 +547,29 @@ class MainForm(Form):
 			returnStrList.append(newLine)
 		
 		returnStr = "".join(returnStrList)
-		t = Transaction(doc, "Set the parameter {0} value to element {1}".format(self.paramName, self.selectedElement.Id))
+		t = Transaction(doc, "Set the parameter {0} value to element {1}".format(self.bipParamName, self.selectedElement.Id))
 		
-		if self.allInstancesChB.Checked:			
+		''' if self.allInstancesChB.Checked:			
 			#allInstances = DB.FilteredElementCollector(doc).WherePasses(ElementParameterFilter(FilterElementIdRule())).ToElements()
 			#transaction Start
 			t.Start()
 			for el in self.allInstances:
-				setValueByParameterName(el, returnStr, self.paramName, doc)
-				print("Parameter comments has been updated for element {1} {0} ".format(el.Name, el.Id.IntegerValue))
+				setValuesByParameterName([self.selectedElement], [returnStr], self.bipParamName)
+				#setValueByParameterName(el, returnStr, self.bipParamName, doc, bip=self.paramNameBip)
+				print("Parameter comments has been updated for element {1} {0} {2} {3}".format(el.Name, el.Id.IntegerValue, self.paramNameBip, returnStr))
 				#time.sleep(3)
 			#transaction Commit
 			t.Commit()
 		#transaction Start
+		else: '''
 		t.Start()
-		setValueByParameterName(self.selectedElement, returnStr, self.paramName, doc)
+		setValuesByParameterName([self.selectedElement], [returnStr], self.paramName)
+		#setValueByParameterName(self.selectedElement, returnStr, self.bipParamName, doc, bip=self.paramNameBip)
 		#transaction Commit
 		t.Commit()
 		#time.sleep(3)
 		print("Parameter comments has been updated for element {1} {0} ".format(self.selectedElement.Name, self.selectedElement.Id.IntegerValue))
+		#time.sleep(10)
 		self.Close()
 
 
@@ -802,6 +864,8 @@ class InfoDialog(Form):
 
 	#i += 1
 
+
+
 if len(mySelection) == 0:	
 	print("len(mySelection) {0} - {1}".format(len(mySelection), mySelection))
 	myDialogWindow = InfoDialog(infoText = "Selection error", showSelectionButton = True)
@@ -812,6 +876,7 @@ if len(mySelection) == 0:
 		elType = mySelection[0].GetType()
 		myDialog.MainInstruction = "Element {0} Selected".format(elType.Name)
 		myDialog.Show();
+		uniqueParams = getMembers(mySelection)
 		mainWindow = MainForm(mySelection[0])
 		Application.Run(mainWindow)
 	else:
@@ -836,6 +901,7 @@ if len(mySelection) == 0:
 
 elif len(mySelection) == 1:
 	print("oneElement dialog len(mySelection) {0} - {1}".format(len(mySelection), mySelection))
+	
 	mainWindow = MainForm(mySelection[0])
 	Application.Run(mainWindow)
 	''' paramName = "ALL_MODEL_INSTANCE_COMMENTS"
@@ -848,6 +914,7 @@ elif len(mySelection) == 1:
 		print("{0} - {1}".format(i,line.strip())) '''
 else:
 	print("use multiElement dialog len(mySelection) {0} - {1}".format(len(mySelection), mySelection))
+
 
 openedForms = list(Application.OpenForms)
 rpsOpenedForms = []
@@ -865,6 +932,8 @@ if len(rpsOpenedForms) > 0:
 		#time.sleep(5)
 		for oFormToClose in rpsOFormsToClose:
 			oFormToClose.Close()
+
+
 
 #if runFromCsharp == False or "rpsOutput" in dir():
 #	if rpsOutput:

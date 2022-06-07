@@ -200,6 +200,7 @@ def getValueByParameterName(el, inName, doc, *args, **kwargs):
 			returnValue = parameterVP.GetIntegerValue(el)
 		elif parameterVP.IsStringValueSupported(el):
 			returnValue = parameterVP.GetStringValue(el) if parameterVP.GetStringValue(el) != None else ""
+			print("getValueByParameterName bip inName {0}".format(inName))
 		elif parameterVP.IsElementIdValueSupported(el):
 			returnValue = parameterVP.GetElementIdValue(el).IntegerValue
 		else:
@@ -236,6 +237,7 @@ def getValueByParameterName(el, inName, doc, *args, **kwargs):
 				if parameter.StorageType == DB.StorageType.String:
 					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsString(), el.Id)
 					returnValue = parameter.AsString() if parameter.AsString() != None else ""
+					print("getValueByParameterName inName {0}".format(inName))
 				if parameter.StorageType == DB.StorageType.ElementId:
 					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id)
 					returnValue = parameter.AsElementId()
@@ -275,43 +277,72 @@ def setValueByParameterName(el, inValue, inName, doc, *args, **kwargs):
 	returnValue = None
 	#firstTime = True
 	try:
+		typeElement = doc.GetElement(el.GetTypeId())
+	except Exception as ex:
+		typeElement = None
+
+	try:
 		#TransactionManager.Instance.EnsureInTransaction(doc)
 		#trans = SubTransaction(doc)
 		#trans.Start()
 		parameterFound = False
 		if bip:
-			parameterFound = True
-			param_ID = DB.ElementId(bip)
-			parameterVP = DB.ParameterValueProvider(param_ID)
-			if parameterVP.IsDoubleValueSupported(el):
-				if type(inValue) == float:
-					returnValue = "parameter {0} as DoubleValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
-					myParam = el.Parameter[bip].Set(inValue)
-				else: 
-					raise TypeError("Wrong format of input value {0} of type {1}. It must be of type int or float".format(inValue, type(inValue)))
-			if parameterVP.IsIntegerValueSupported(el):
-				if type(inValue) == int:
-					myParam = el.Parameter[bip].Set(inValue)
-					turnValue = "parameter {0} as IntegerValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
-				else: 
-					raise TypeError("Wrong format of input value {0} of type {1}. It must be of type int".format(inValue, type(inValue)))
-			if parameterVP.IsStringValueSupported(el):
-				if type(inValue) == str:
-					#paramElementId = parameterVP.Parameter
-					#paramElement = doc.GetElement(paramElementId)
-					if el.Parameter[bip] != None:
+			if not typeElement:
+				#print("setValueByParameterName bip FOUND {0} {1}".format(inName, bip))
+				parameterFound = True
+				param_ID = DB.ElementId(bip)
+				#param2 = el.get_Parameter(bip)
+				#param3 = el.Parameter[bip]
+				#paramEl = doc.GetElement(param_ID)
+				#print("setValueByParameterName dir(paramEl) {0}".format(dir(paramEl)))
+				#print("setValueByParameterName dir(param2) {0}".format(param2))
+				parameterVP = DB.ParameterValueProvider(param_ID)
+				#fFId = DB.ForgeTypeId()
+				#print("setValueByParameterName param_ID.ToString {0}".format(param_ID.ToString()))
+				
+				#fFId.TypeId = param_ID.ToString()
+				#print("setValueByParameterName el.GetParameter() {0}".format(fFId.TypeId))
+				
+				if parameterVP.IsDoubleValueSupported(el):
+					if type(inValue) == float:
+						returnValue = "parameter {0} as DoubleValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
 						myParam = el.Parameter[bip].Set(inValue)
-						returnValue = "parameter {0} as StringValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
-					else:
-						returnValue = "el is None!!"
-				else: 
-					raise TypeError("Wrong format of input value {0} of type {1}. It must be of type str".format(inValue, type(inValue)))
-			if parameterVP.IsElementIdValueSupported(el):
-				if type(inValue) == DB.ElementId:
-					myParam = el.Parameter[bip].Set(inValue)
-					returnValue = "parameter {0} as ElementIdValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
-				else: 
-					raise TypeError("Wrong format of input value {0} of type {1}. It must be of type ElementId".format(inValue, type(inValue)))
+					else: 
+						raise TypeError("Wrong format of input value {0} of type {1}. It must be of type int or float".format(inValue, type(inValue)))
+				if parameterVP.IsIntegerValueSupported(el):
+					if type(inValue) == int:
+						myParam = el.Parameter[bip].Set(inValue)
+						turnValue = "parameter {0} as IntegerValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
+					else: 
+						raise TypeError("Wrong format of input value {0} of type {1}. It must be of type int".format(inValue, type(inValue)))
+				if parameterVP.IsStringValueSupported(el):
+					print("setValueByParameterName type(inValue) {0}".format(type(inValue)))
+					if type(inValue) == str:
+						#paramElementId = parameterVP.Parameter
+						#paramElement = doc.GetElement(paramElementId)
+						if el.Parameter[bip] != None:
+							#print("setValueByParameterName el.Parameter[bip] {0}".format(el.Parameter[bip]))
+							#myParam = parameterVP.Parameter.Set(inValue)
+							returnValue = "parameter {0} as StringValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
+							print("setValueByParameterName bip inName {0}".format(inName))
+						else:
+							#myParam = parameterVP.Parameter.Set(inValue)
+							paramEl = doc.GetElement(parameterVP.Parameter)
+							print("setValueByParameterName dir(parameterVP) {0}".format(dir(parameterVP)))
+							#print("setValueByParameterName GetParameter {0}".format(el.GetParameter(DB.ForgeTypeId(DB.BuiltInParameter.ALL_MODEL_DESCRIPTION.ToString()))))
+							returnValue = "el is None!!"
+					else: 
+						raise TypeError("Wrong format of input value {0} of type {1}. It must be of type str".format(inValue, type(inValue)))
+				if parameterVP.IsElementIdValueSupported(el):
+					if type(inValue) == DB.ElementId:
+						myParam = el.Parameter[bip].Set(inValue)
+						returnValue = "parameter {0} as ElementIdValue of element {1} has been set to {2}".format(inName, el.Id.IntegerValue, inValue)
+					else: 
+						raise TypeError("Wrong format of input value {0} of type {1}. It must be of type ElementId".format(inValue, type(inValue)))
+			else:
+				parameter = typeElement.Parameter[bip]
+				parameter.Set(inValue)
+				print("parameter {0} was set to {1}".format(parameter.Definition.Name, inValue))
 		
 		else:
 			if el.GetTypeId().IntegerValue > -1:
@@ -324,6 +355,7 @@ def setValueByParameterName(el, inValue, inName, doc, *args, **kwargs):
 						returnValue = setParameterAsInteger(el, parameter, inValue)
 					if parameter.StorageType == DB.StorageType.String:
 						returnValue = setParameterAsString(el, parameter, inValue)
+						#print("setValueByParameterName notBip TypeElement inName {0}".format(inName))
 					if parameter.StorageType == DB.StorageType.ElementId:
 						returnValue = setParamAsElementId(el, parameter, inValue)
 					parameterFound = True
@@ -340,6 +372,7 @@ def setValueByParameterName(el, inValue, inName, doc, *args, **kwargs):
 							returnValue = setParameterAsInteger(el, elparameter, inValue)
 						if elparameter.StorageType == DB.StorageType.String:
 							returnValue = setParameterAsString(el, elparameter, inValue)
+							#print("setValueByParameterName notBip inName {0}".format(inName))
 						if elparameter.StorageType == DB.StorageType.ElementId:
 							returnValue= setParamAsElementId(el, elparameter, inValue)
 						parameterFound = True
