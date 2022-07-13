@@ -5,15 +5,23 @@ import sys
 ncAdress = 'https://cloud.quorum.sk'
 nc = nextcloud_client.Client(ncAdress)
 nc.login('dano', 'Danger43849')
+#fromDirName = "/storage/emulated/0/Download"
+
+#source directory
+fromDirName = r'H:/'
+#source file name
+fromFileName = r'test.txt'
+#destination directory
 toDirName = 'testdir'
+#destination file name
+toFileName = fromFileName
+
 
 try:
     nc.mkdir(toDirName)
 except Exception as ex:
     print("Unable to create directory {0}, wrong path or directory allready created  - {1}".format(toDirName, sys.exc_info()))
-fromDirName = "/storage/emulated/0/Download"
-fromFileName = "Zelená karta.pdf"
-toFileName = fromFileName
+
 
 print("cwd {0}".format(os.getcwd()))
 try:
