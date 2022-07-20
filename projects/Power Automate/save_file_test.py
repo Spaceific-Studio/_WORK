@@ -4,9 +4,6 @@ import random
 import nextcloud_client
 import os
 import sys
-import py_compile
-
-py_compile("save_file_test.py")
 
 ncAdress = 'https://cloud.quorum.sk'
 nc = nextcloud_client.Client(ncAdress)
