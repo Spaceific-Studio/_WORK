@@ -4,7 +4,7 @@ import os
 from os import walk
 #import numpy
 import setuptools
-from PIL import Image
+#from PIL import Image
 #import pyglet
 
 #os.system(r"pip install tensorflow")
