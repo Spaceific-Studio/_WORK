@@ -152,13 +152,24 @@ TransactionManager.Instance.TransactionTaskDone() '''
 viewSchedule = IN[0]
 unwraped = UnwrapElement(viewSchedule)
 viewScheduleData = unwraped.GetTableData()
-elements = DB.FilteredElementCollector(doc,unwraped.Id).WhereElementIsNotElementType().ToElements()
+viewSheduleElement = doc.GetElement(unwraped.Id)
+elements = DB.FilteredElementCollector(doc,unwraped.Id).WhereElementIsNotElementType().WherePasses(DB.VisibleInViewFilter(doc, viewSheduleElement.Id)).ToElements()
+
+
+#.WherePasses(DB.VisibleInViewFilter(doc, viewSheduleElement.Id))
 
 tsData = viewScheduleData.GetSectionData(DB.SectionType.Body)
+rowsCount = tsData.NumberOfRows;
+colsCount = tsData.NumberOfColumns;
+tableText = [[None]*colsCount]*rowsCount
+for r in range(rowsCount):
+    for c in range(colsCount):
+        tableText[r][c] = (unwraped.GetCellText(DB.SectionType.Body, r, c), unwraped.GetCellCategoryId(c))
+        
 
 myOutput = (tsData.NumberOfRows, elements)
-#myOutput = "{0}".format(dir(viewSchedule))
-#myOutput = "{0}".format(type(viewSchedule))
+#myOutput = (tsData.NumberOfRows, tableText, unwraped.KeyScheduleParameterName)
+
 
 if Errors.hasError():
  	OUT = Errors.report
