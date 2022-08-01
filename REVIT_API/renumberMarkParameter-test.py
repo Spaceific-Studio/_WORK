@@ -12,11 +12,11 @@ from Autodesk.Revit.UI.Selection import *
 
 
 import sys
-from operator import attrgetter
-from itertools import groupby
+#from operator import attrgetter
+#from itertools import groupby
 #import time
-pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
-sys.path.append(pyt_path)
+#pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+#sys.path.append(pyt_path)
 pyt_path = r'C:\Program Files\IronPython 2.7\Lib'
 sys.path.append(pyt_path)
 
@@ -144,7 +144,7 @@ if runFromCsharp == False:
 		pass
 		rpsOutput.Show()
 		#time.delay(5)
-		time.sleep(5)
+		#time.sleep(5)
 		#rpsOutput.Hide()
 	else:
 		pass
@@ -156,6 +156,10 @@ activeViewType = doc.ActiveView.ViewType
 
 
 if activeViewType == ViewType.Schedule:
+	viewPhaseParamId = ElementId(BuiltInParameter.VIEW_PHASE)
+	param_provider = ParameterValueProvider(viewPhaseParamId)
+	activeViewPhaseId = param_provider.GetElementIdValue(doc.ActiveView)
+	myElementPhaseStatusNew_Filter = ElementPhaseStatusFilter(activeViewPhaseId, ElementOnPhaseStatus.New,False)
 	#markBipName = "ALL_MODEL_MARK"
 	markBipName = "DOOR_NUMBER"
 	markTypeBipName = "ALL_MODEL_TYPE_MARK"
@@ -169,8 +173,16 @@ if activeViewType == ViewType.Schedule:
 			markParamId = allElements[0].Parameter[BuiltInParameter.DOOR_NUMBER].Id
 			markParamValueProvider = ParameterValueProvider(markParamId)
 			#markTypeParamName = allElements[0].Parameter[BuiltInParameter.ALL_MODEL_TYPE_MARK].Definition.Name
+			#typeElement = doc.GetElement(allElements[0].GetTypeId())
+			markTypeParamId = ElementId(BuiltInParameter.ALL_MODEL_TYPE_MARK)
+			print("markTypeParamId {0}".format(markTypeParamId))
+			markTypeParamValueProvider = ParameterValueProvider(markTypeParamId)
+			print("markTypeParamValueProvider {0}".format(markTypeParamValueProvider))
+			#typeElementId = markTypeParamValueProvider.GetElementIdValue(allElements[0])
+			#print("typeElement {0}".format(doc.GetElement(typeElementId)))
+
 			"""
-			markTypeParamId = allElements[0].Parameter[BuiltInParameter.ALL_MODEL_TYPE_MARK].Id
+			markTypeParamId = allElements[0].Parameter[BuiltInParameter.ALL_MODEL_TYPE_MARK].Id			
 			markTypeParamValueProvider = ParameterValueProvider(markTypeParamId)
 			print("markParamName = {0}, markParamID = {1}, markBipName = {2}".format(markParamName, markParamId, markBipName))
 			print("markTypeParamName = {0}, markParamID = {1}, markTypeBipName = {2}".format(markTypeParamName, markTypeParamId, markTypeBipName))
@@ -182,17 +194,40 @@ if activeViewType == ViewType.Schedule:
 			markTypeParamValueProvider = None
 	
 	if markParamValueProvider != None:
-		filteredScheduleElements_mark = list(FilteredElementCollector(doc,doc.ActiveView.Id).WherePasses(ElementParameterFilter(FilterStringRule(markParamValueProvider, FilterStringBeginsWith(), "001"))).ToElements())
+		filteredScheduleElements_mark = list(FilteredElementCollector(doc,doc.ActiveView.Id). \
+	  											WherePasses(myElementPhaseStatusNew_Filter). \
+					 							WherePasses(ElementParameterFilter(FilterStringRule(markParamValueProvider, FilterStringBeginsWith(), "001"))). \
+												WhereElementIsNotElementType(). \
+												ToElements())
 		print("filteredScheduleElements_mark len() = {}".format(len(filteredScheduleElements_mark)))
-		for el in allElements:
-			print("markParamValue = {0} - {1}".format(markParamValueProvider.GetStringValue(el), el.Id))
+		for el in filteredScheduleElements_mark:
+			print("markParamValue = {0} - {1} - {2} - {3}".format(markParamValueProvider.GetStringValue(el), el.Id, el.Name, el.Category.Name))
 	else:
 		filteredScheduleElements_mark = None
 	
 	if markTypeParamValueProvider != None:
-		filteredScheduleElements_markType = list(FilteredElementCollector(doc,doc.ActiveView.Id).WherePasses(ElementParameterFilter(FilterStringRule(markTypeParamValueProvider, FilterStringBeginsWith(), "1K"))).WhereElementIsNotElementType().ToElements())
-		for el in allElements:
-			print("markParamValue = {0} - {1}".format(markTypeParamValueProvider.GetStringValue(el), el.Id))
+		dictOfMarks = {}
+		scheduleElementsCol = FilteredElementCollector(doc,doc.ActiveView.Id). \
+	  											WherePasses(myElementPhaseStatusNew_Filter). \
+      											WhereElementIsNotElementType().ToElements()
+		for el in list(scheduleElementsCol):
+			markTypeParamValue = markTypeParamValueProvider.GetStringValue(el)
+			twoChars = markTypeParamValue[:2]
+			dictOfMarks[twoChars] = dictOfMarks[twoChars] + 1 if twoChars in dictOfMarks else 0
+			print("schedule markTypeParamValue {0}".format(markTypeParamValue))
+		filteredScheduleElements_markType = list(FilteredElementCollector(doc,doc.ActiveView.Id). \
+												WherePasses(myElementPhaseStatusNew_Filter). \
+      											WherePasses(ElementParameterFilter(FilterStringRule(markTypeParamValueProvider, FilterStringBeginsWith(), "1K"))). \
+                     							WhereElementIsNotElementType(). \
+                                				ToElements())
+		print(dictOfMarks)
+		majorMark = sorted(dictOfMarks.items(), key=lambda kv:(kv[1], kv[0]), reverse=True)[0][0]
+		print("majorMark: {0}".format(majorMark))
+		print(sorted(dictOfMarks.items(), key=lambda kv:
+                 (kv[1], kv[0]), reverse=True))
+  
+		for el in filteredScheduleElements_markType:
+			print("markTypeParamValue = {0} - {1} - {2} - {3}".format(markTypeParamValueProvider.GetStringValue(el), el.Id, el.Name, el.Category.Name))
 	else:
 		filteredScheduleElements_markType = None
 

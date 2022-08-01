@@ -200,7 +200,7 @@ def getValueByParameterName(el, inName, doc, *args, **kwargs):
 			returnValue = parameterVP.GetIntegerValue(el)
 		elif parameterVP.IsStringValueSupported(el):
 			returnValue = parameterVP.GetStringValue(el) if parameterVP.GetStringValue(el) != None else ""
-			print("getValueByParameterName bip inName {0}".format(inName))
+			#print("getValueByParameterName bip inName {0}".format(inName))
 		elif parameterVP.IsElementIdValueSupported(el):
 			returnValue = parameterVP.GetElementIdValue(el).IntegerValue
 		else:
@@ -237,7 +237,7 @@ def getValueByParameterName(el, inName, doc, *args, **kwargs):
 				if parameter.StorageType == DB.StorageType.String:
 					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsString(), el.Id)
 					returnValue = parameter.AsString() if parameter.AsString() != None else ""
-					print("getValueByParameterName inName {0}".format(inName))
+					#print("getValueByParameterName inName {0}".format(inName))
 				if parameter.StorageType == DB.StorageType.ElementId:
 					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id)
 					returnValue = parameter.AsElementId()
