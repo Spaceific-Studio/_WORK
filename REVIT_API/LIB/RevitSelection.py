@@ -9,8 +9,6 @@ lib_path = r'H:\_WORK\PYTHON\REVIT_API\LIB'
 sys.path.append(lib_path)
 sys.path.append(pyt_path)
 
-
-
 import ListUtils as ListUtils
 from Errors import *
 
@@ -162,6 +160,7 @@ def getValueByParameterName(el, inName, doc, *args, **kwargs):
 	info = kwargs['info'] if 'info' in kwargs else False
 	allParametersInfo = kwargs['allParametersInfo'] if 'allParametersInfo' in kwargs else False
 	inBip = kwargs["bip"] if 'bip' in kwargs else None
+	units = doc.GetUnits().GetFormatOptions(DB.SpecTypeId.Length).GetUnitTypeId()
 	#print("this is BIP param {0}".format(inName))
 	try:
 		bip = getBuiltInParameterInstance(inName)
@@ -195,7 +194,7 @@ def getValueByParameterName(el, inName, doc, *args, **kwargs):
 		param_ID = DB.ElementId(bip)
 		parameterVP = DB.ParameterValueProvider(param_ID)
 		if parameterVP.IsDoubleValueSupported(el):
-			returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameterVP.GetDoubleValue(el), DB.DisplayUnitType.DUT_MILLIMETERS)
+			returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameterVP.GetDoubleValue(el), units)
 		elif parameterVP.IsIntegerValueSupported(el):
 			returnValue = parameterVP.GetIntegerValue(el)
 		elif parameterVP.IsStringValueSupported(el):
@@ -211,8 +210,8 @@ def getValueByParameterName(el, inName, doc, *args, **kwargs):
 			parameter = el.LookupParameter(inName)
 			if parameter:					
 				if parameter.StorageType == DB.StorageType.Double:
-					returnValueAsString = "{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id)
-					returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS)
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units), el.Id)
+					returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units)
 				if parameter.StorageType == DB.StorageType.Integer:
 					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id)
 					returnValue = parameter.AsInteger()
@@ -229,8 +228,8 @@ def getValueByParameterName(el, inName, doc, *args, **kwargs):
 			parameter = typeElement.LookupParameter(inName)
 			if parameter:					
 				if parameter.StorageType == DB.StorageType.Double:
-					returnValueAsString = "{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id)
-					returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS)
+					returnValueAsString = "{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units), el.Id)
+					returnValue = DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units)
 				if parameter.StorageType == DB.StorageType.Integer:
 					returnValueAsString = "{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id)
 					returnValue = parameter.AsInteger()
@@ -1055,6 +1054,7 @@ def getFamilyInstancesByName(doc, inName):
 	allElements.WherePasses(DB.LogicalOrFilter(DB.ElementIsElementTypeFilter(False), DB.ElementIsElementTypeFilter(True)))
 	allElements.WherePasses(familyClassFilter)
 	allElements.WhereElementIsNotElementType()
+	allElements.ToElements()
 	elementIds = None
 	for i, el in enumerate(list(allElements)):
 		if el.Name == inName:
@@ -1083,6 +1083,7 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 	allParametersInfo = kwargs['allParametersInfo'] if 'allParametersInfo' in kwargs else False
 	inBip = kwargs["bip"] if 'bip' in kwargs else None
 	#print("this is BIP param {0}".format(inName))
+	units = doc.GetUnits().GetFormatOptions(DB.SpecTypeId.Length).GetUnitTypeId()
 	bip = getBuiltInParameterInstance(inName)
 	if bip:
 		pass
@@ -1112,7 +1113,7 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 			param_ID = DB.ElementId(bip)
 			parameterVP = DB.ParameterValueProvider(param_ID)
 			if parameterVP.IsDoubleValueSupported(el):
-				returnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameterVP.GetDoubleValue(el), DB.DisplayUnitType.DUT_MILLIMETERS))
+				returnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameterVP.GetDoubleValue(el), units))
 			elif parameterVP.IsIntegerValueSupported(el):
 				returnValues.append(parameterVP.GetIntegerValue(el))
 			elif parameterVP.IsStringValueSupported(el):
@@ -1127,8 +1128,8 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 				parameter = el.LookupParameter(inName)
 				if parameter:					
 					if parameter.StorageType == DB.StorageType.Double:
-						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id))
-						returnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS))
+						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units), el.Id))
+						returnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units))
 					if parameter.StorageType == DB.StorageType.Integer:
 						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id))
 						returnValues.append(parameter.AsInteger())
@@ -1146,8 +1147,8 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 				parameter = typeElement.LookupParameter(inName)
 				if parameter:					
 					if parameter.StorageType == DB.StorageType.Double:
-						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id))
-						returnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS))
+						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units), el.Id))
+						returnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units))
 					if parameter.StorageType == DB.StorageType.Integer:
 						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id))
 						returnValues.append(parameter.AsInteger())
@@ -1168,8 +1169,8 @@ def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):
 				if parameter.Definition.Name == inName:
 
 					if parameter.StorageType == DB.StorageType.Double:
-						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id))
-						returnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS))
+						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3:.4f}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units), el.Id))
+						returnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), units))
 					if parameter.StorageType == DB.StorageType.Integer:
 						returnValuesAsString.append("{0}, {4}, {1}, {2}, {3}".format(el.Name if hasattr(el, "Name") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id))
 						returnValues.append(parameter.AsInteger())
@@ -1295,17 +1296,18 @@ def setValuesByParameterName(inElements, inValues, inName, *args, **kwargs):
 		# TransactionManager.Instance.TransactionTaskDone()
 
 def setParameterAsDouble(inElement, inParameter, inValue):
+	units = doc.GetUnits().GetFormatOptions(DB.SpecTypeId.Length).GetUnitTypeId()
 	if inParameter.StorageType == DB.StorageType.Double:
 		try:
 			strToFloat = float(inValue)
 		except:
 			strToFloat = False
 		if type(inValue) == float:
-			convertedValue = DB.UnitUtils.ConvertToInternalUnits(inValue, DB.DisplayUnitType.DUT_MILLIMETERS)
+			convertedValue = DB.UnitUtils.ConvertToInternalUnits(inValue, units)
 			inParameter.Set(convertedValue)
 			return "parameter {0} as DoubleValue of element {1} has been set to {2}".format(inParameter.Definition.Name, inElement.Id.IntegerValue, convertedValue)
 		elif strToFloat != False:
-			convertedValue = DB.UnitUtils.ConvertToInternalUnits(strToFloat, DB.DisplayUnitType.DUT_MILLIMETERS)
+			convertedValue = DB.UnitUtils.ConvertToInternalUnits(strToFloat, units)
 			inParameter.Set(convertedValue)
 			return "parameter {0} as strToFloat DoubleValue of element {1} has been set to {2}".format(inParameter.Definition.Name, inElement.Id.IntegerValue, convertedValue)
 		else: 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright(c) 2020, Daniel Gercak
+# Copyright(c) 2022, Daniel Gercak
 #Script for parameters update of family "Prostup (SWECO)"
-#resource_path: H:\_WORK\PYTHON\REVIT_API\vyska_prostupu.py
+#resource_path: H:\_WORK\PYTHON\REVIT_API\renumberMarkParameter.py
 #from typing import Type
 from Autodesk.Revit.DB import *
 from Autodesk.Revit.DB.Architecture import *
