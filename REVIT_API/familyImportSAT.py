@@ -85,7 +85,11 @@ if len(rpsOpenedForms) > 0:
 	lastForm.Show()
 
 dirName = r"H:\2022_03_28-AK_KOPANINA\RVT\import"
-fileName = r"ROSTLY_TEREN.sat"
+#fileName = r"ROSTLY_TEREN_TEST.sat"
+#isVoid1 = False
+#fileName = r"VYKOPY_TEST.sat"
+fileName = r"H:\2022_03_28-AK_KOPANINA\RVT\import\STAVAJICI_OBJEKTY_TEST.sat"
+isVoid1 = True
 filePath = os.path.join(dirName, fileName)
 
 satOptions = SATImportOptions()
@@ -125,7 +129,7 @@ enum2.MoveNext()
 s1 = enum2.Current
 print("s1 {0}".format(s1))
 
-#doc.Delete(satId)
+doc.Delete(satId)
 #System.IO.File.Delete(sat_path)
 
 #save_path = '%s%s.rfa' % (temp_path, name1)
@@ -139,10 +143,11 @@ try:
 	print("s2 {0}".format(s2))
 except Exception as ex:
 	print("Exception in FreeFormElement.Create(doc,s1) {0}".format(sys.exc_info()))
-#if isVoid1:
-#	void_par = s2.get_Parameter(BuiltInParameter.ELEMENT_IS_CUTTING).Set(1)
-#	void_par2 = doc.OwnerFamily.get_Parameter(BuiltInParameter.FAMILY_ALLOW_CUT_WITH_VOIDS).Set(1)
-#else: #voids do not have a material values or a sub-cateogry
+if isVoid1:
+	void_par = s2.get_Parameter(BuiltInParameter.ELEMENT_IS_CUTTING).Set(1)
+	void_par2 = doc.OwnerFamily.get_Parameter(BuiltInParameter.FAMILY_ALLOW_CUT_WITH_VOIDS).Set(1)
+else: #voids do not have a material values or a sub-cateogry
+	pass
 """
 if enableMat:
 	try:
