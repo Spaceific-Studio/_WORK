@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright(c) 2020, Daniel Gercak
+# Copyright(c) 2022, Daniel Gercak
 #Script for parameters update of family "Prostup (SWECO)"
-#resource_path: H:\_WORK\PYTHON\REVIT_API\vyska_prostupu.py
+#resource_path: H:\_WORK\PYTHON\REVIT_API\renumberMarkParameter.py
 #from typing import Type
 from Autodesk.Revit.DB import *
 from Autodesk.Revit.DB.Architecture import *
@@ -14,7 +14,7 @@ from Autodesk.Revit.UI.Selection import *
 import sys
 from operator import attrgetter
 from itertools import groupby
-pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+pyt_path = r'C:\Program Files\IronPython 2.7\Lib'
 sys.path.append(pyt_path)
 
 import os
@@ -79,6 +79,7 @@ clr.AddReferenceByPartialName('System.Drawing')
 from System.Drawing import *
 from System.Windows.Forms import *
 from System import Enum
+from System.Environment import NewLine
 #from System.ComponentModel import BindingList
 
 
@@ -130,22 +131,57 @@ class MainForm(Form):
 		
 		#composite for grouping tuple(markParamVals, assemblyCodeParamVals, elementsCol)		
 		if self.activeViewType == ViewType.Schedule:
+			viewPhaseParamId = ElementId(BuiltInParameter.VIEW_PHASE)
+			param_provider = ParameterValueProvider(viewPhaseParamId)
+			self.activeViewPhaseId = param_provider.GetElementIdValue(doc.ActiveView)
+			self.myElementPhaseStatusNew_Filter = ElementPhaseStatusFilter(self.activeViewPhaseId, ElementOnPhaseStatus.New,False)
+
 			elements = FilteredElementCollector(doc,doc.ActiveView.Id).WhereElementIsNotElementType().ToElements()
 			#self.tableViewLabel.Text = "ActiveViewType {0}".format(type(doc.ActiveView))
 			tableData = doc.ActiveView.GetTableData()
 			tableSectionData = tableData.GetSectionData(SectionType.Body)
 			if len(elements) > 0:
 				try:
-					self.markName = elements[0].Parameter[BuiltInParameter.ALL_MODEL_MARK].Definition.Name
+					self.markParamName = elements[0].Parameter[BuiltInParameter.DOOR_NUMBER].Definition.Name
+					markParamId = elements[0].Parameter[BuiltInParameter.DOOR_NUMBER].Id
+					self.markParamValueProvider = ParameterValueProvider(markParamId)
 				except:
-					self.markName = None
+					self.markParamName = None
+					self.markParamValueProvider = None
+				
+				try:
+					markTypeParamId = ElementId(BuiltInParameter.ALL_MODEL_TYPE_MARK)
+					print("markTypeParamId {0}".format(markTypeParamId))
+					self.markTypeParamValueProvider = ParameterValueProvider(markTypeParamId)
+					print("markTypeParamValueProvider {0}".format(self.markTypeParamValueProvider))
+				except:
+					self.markTypeParamValueProvider = None
+
+				try:
+					assemblyCodeParamId = ElementId(BuiltInParameter.UNIFORMAT_CODE)
+					print("assemblyCodeParamId {0}".format(assemblyCodeParamId))
+					self.assemblyCodeValueProvider = ParameterValueProvider(assemblyCodeParamId)
+					print("assemblyCodeParamValueProvider {0}".format(self.assemblyCodeValueProvider))
+				except:
+					self.assemblyCodeValueProvider = None
+				"""
+				self.markName = None
+				self.markName = elements[0].Parameter[BuiltInParameter.DOOR_NUMBER].Definition.Name
+				"""
+				markParamName = None
 			print("tableSectionData {0}".format(tableSectionData.NumberOfRows))
 			print("elements len: {0}".format(len(elements)))
 			#for el in elements:
 				#print("el.Id: {0}, category: {1}".format(el.Id, el.Category.Name))
-		self.filteredElements = self.filterElementsByParameterName(elements, self.markName)
+		self.typeMarkFilteredElements = self.filterElementsByMarkType()
+		print("len(self.typeMarkfilteredElements) {0}".format(len(self.typeMarkFilteredElements)))
+		for el in self.typeMarkFilteredElements:
+			print("markTypeParamValue = {0} - {1} - {2} - {3}".format(self.markTypeParamValueProvider.GetStringValue(el), el.Id, el.Name, el.Category.Name))
+   
+		self.filteredElements = self.filterElementsByParameterName(elements, self.markParamName)
 		self.filteredElements = self.filterElementsByParameterName(self.filteredElements, self.assemblyCodeBipName)
 		print("self.filteredElements len: {0}, elements len: {1} ".format(len(self.filteredElements), len(elements)))
+  
 		
 		markParamVals = processList(getValueByParameterName, self.filteredElements, self.markBipName, doc, bip = self.markBip)
 		
@@ -165,7 +201,7 @@ class MainForm(Form):
 	def InitializeComponent(self):
 		self.Text = "Renumbering of parameter in active schedule"
 		self.Width = 500
-		self.Height = 250
+		self.Height = 300
 		self.StartPosition = FormStartPosition.CenterScreen
 		self.TopMost = True
 		self.Resize += self.configureButtons
@@ -174,7 +210,7 @@ class MainForm(Form):
 		self.buttonFrame.Parent = self
 		self.buttonFrame.Anchor = AnchorStyles.Top
 		self.buttonFrame.Dock = DockStyle.Bottom
-		self.buttonFrame.Height = 30
+		self.buttonFrame.Height = 50
 
 		# self.paramaterValueTB = TextBox()
 		# self.paramaterValueTB.Text = "Enter value"
@@ -189,31 +225,27 @@ class MainForm(Form):
 		self.textFrame.Anchor = AnchorStyles.Top
 		self.textFrame.Dock = DockStyle.Top
 		self.textFrame.AutoSize = True
-		self.parameterCB = ComboBox()
-		self.parameterCB.Width = 150
-		self.parameterCB.Parent = self.textFrame
-		self.parameterCB.Anchor = AnchorStyles.Top
-		self.parameterCB.Dock = DockStyle.Top
-		self.parameterCB.Items.AddRange(tuple([k for k in sorted(uniqueParams.keys())]))
-		self.parameterCB.SelectionChangeCommitted += self.OnChanged
-		if self.markName:
-			self.parameterCB.Text = self.markName
-		else:
-			self.parameterCB.Text = "--SELECT--"
-		self.parameterCB.DrawMode = DrawMode.OwnerDrawVariable
-		self.parameterCB.DropDownStyle = ComboBoxStyle.DropDown
-		self.parameterCB.DrawItem += self.comboBoxDrawItem
+  
+		self.markTypeTextBox = TextBox()
+		self.markTypeTextBox.Height = 100
+		self.markTypeTextBox.Text = self.majorMark
+		self.markTypeTextBox.Name = "Major type mark"
+		#self.setParameterTextBox.ScrollBars = ScrollBars.Vertical
+		#self.setParameterTextBox.Location = Point(0,0)
+		self.markTypeTextBox.Multiline = False
+		self.markTypeTextBox.TextChanged += self.setParameterSubmit
+		self.markTypeTextBox.Parent = self.textFrame
+		self.markTypeTextBox.Dock = DockStyle.Top
 
-		# for item in self.parameterCB.Controls:
-		# 	print("self.parameterCB.item {}".format(item.Text.BackColor))
-		
-		self.parameterCBLabel = Label()
-		self.parameterCBLabel.Text = "Select parameter"
-		self.parameterCBLabel.Font = Font(self.parameterCBLabel.Font.FontFamily, self.parameterCBLabel.Font.Size, FontStyle.Bold)
-		self.parameterCBLabel.Width = 250
-		self.parameterCBLabel.Parent = self.textFrame
-		self.parameterCBLabel.Anchor = AnchorStyles.Top
-		self.parameterCBLabel.Dock = DockStyle.Top
+		self.markTypeTextBoxLabel = Label()
+		self.markTypeTextBoxLabel.Text = "Filter elements by pattern of first two chars mark type parameter (1U...):"
+		self.markTypeTextBoxLabel.Font = Font(self.markTypeTextBoxLabel.Font.FontFamily, self.markTypeTextBoxLabel.Font.Size, FontStyle.Bold)
+		self.markTypeTextBoxLabel.Width = 250
+		self.markTypeTextBoxLabel.Parent = self.textFrame
+		self.markTypeTextBoxLabel.Anchor = AnchorStyles.Top
+		self.markTypeTextBoxLabel.Dock = DockStyle.Top
+  
+
 
 		self.setParameterTextBox = TextBox()
 		#self.setParameterTextBox.FontHeight = 20
@@ -227,34 +259,65 @@ class MainForm(Form):
 		self.setParameterTextBox.Parent = self.textFrame
 		self.setParameterTextBox.Dock = DockStyle.Top
 
+ 
 		self.startFromLabel = Label()
 		self.startFromLabel.Text = "Start sequence from:"
 		self.startFromLabel.Width = 250
-		self.startFromLabel.Font = Font(self.parameterCBLabel.Font.FontFamily, self.parameterCBLabel.Font.Size, FontStyle.Bold)
+		self.startFromLabel.Font = Font(self.startFromLabel.Font.FontFamily, self.startFromLabel.Font.Size, FontStyle.Bold)
 		self.startFromLabel.Parent = self.textFrame
 		self.startFromLabel.Anchor = AnchorStyles.Top
 		self.startFromLabel.Dock = DockStyle.Top
 		
+  		self.parameterCB = ComboBox()
+		self.parameterCB.Width = 150
+		self.parameterCB.Parent = self.textFrame
+		self.parameterCB.Anchor = AnchorStyles.Top
+		self.parameterCB.Dock = DockStyle.Top
+		self.parameterCB.Items.AddRange(tuple([k for k in sorted(uniqueParams.keys())]))
+		self.parameterCB.SelectionChangeCommitted += self.OnChanged
+		if self.markParamName:
+			self.parameterCB.Text = self.markParamName
+		else:
+			self.parameterCB.Text = "--SELECT--"
+		self.parameterCB.DrawMode = DrawMode.OwnerDrawVariable
+		self.parameterCB.DropDownStyle = ComboBoxStyle.DropDown
+		self.parameterCB.DrawItem += self.comboBoxDrawItem
+
+		self.parameterCBLabel = Label()
+		self.parameterCBLabel.Text = "Select parameter"
+		self.parameterCBLabel.Font = Font(self.parameterCBLabel.Font.FontFamily, self.parameterCBLabel.Font.Size, FontStyle.Bold)
+		self.parameterCBLabel.Width = 250
+		self.parameterCBLabel.Parent = self.textFrame
+		self.parameterCBLabel.Anchor = AnchorStyles.Top
+		self.parameterCBLabel.Dock = DockStyle.Top
+  
+		# for item in self.parameterCB.Controls:
+		# 	print("self.parameterCB.item {}".format(item.Text.BackColor))
+		
+
+
 		self.label = Label()
-		self.label.Text = "Select parameter from list to create table of all elements with this parameter"
+		self.label.Text = "Select parameter from list where to write sequence - parameter must be of type string"
 		self.label.Width = 250
 		self.label.Parent = self.textFrame
 		self.label.Anchor = AnchorStyles.Top
 		self.label.Dock = DockStyle.Top
-
+		''' 
 		self.viewLabel = Label()
 		self.viewLabel.Text = "Select parameter from list to create table of all elements with this parameter"
 		self.viewLabel.Width = 250
 		self.viewLabel.Parent = self.textFrame
 		self.viewLabel.Anchor = AnchorStyles.Top
-		self.viewLabel.Dock = DockStyle.Top
+		self.viewLabel.Dock = DockStyle.Top 
+  		'''
 
-		self.tableViewLabel = Label()
+		''' self.tableViewLabel = Label()
 		self.tableViewLabel.Text = "table view"
 		self.tableViewLabel.Width = 250
 		self.tableViewLabel.Parent = self.textFrame
 		self.tableViewLabel.Anchor = AnchorStyles.Top
 		self.tableViewLabel.Dock = DockStyle.Top
+		'''
 
 		
 
@@ -263,7 +326,7 @@ class MainForm(Form):
 		# #self.paramaterNameTB.Location = Point(5, 30)
 		# self.paramaterNameTB.Width = 150
 		# self.paramaterNameTB.Dock = DockStyle.Top
-
+  
 		self.submitButton = Button()
 		self.submitButton.Text = 'OK'
 		self.submitButton.Location = Point(25, 125)
@@ -283,6 +346,18 @@ class MainForm(Form):
 
 		self.AcceptButton = self.submitButton
 		self.CancelButton = self.closeButton
+
+		self.writeChB = CheckBox()
+		self.writeChB.Text = "Write values"
+		self.writeChB.Height = 30
+		self.writeChB.Width = 150
+		self.writeChB.AutoSize = True
+		self.writeChB.Parent = self.buttonFrame
+		#self.allInstancesChB.Location = (Point(10,30))
+		#self.writeChB.CheckedChanged += self.allInstancesChanged
+		self.writeChB.Checked = False
+		self.writeChB.Anchor = AnchorStyles.Top
+		self.writeChB.Dock = DockStyle.Top
 
 		# self.Controls.Add(self.label)
 		# self.Controls.Add(self.parameterCBLabel)
@@ -319,36 +394,103 @@ class MainForm(Form):
 	def update(self, sender, event):
 		#self.label.Text = self.paramaterValueTB.Text
 		#selectedScheduleViewName = self.scheduleViewCB.SelectedItem
+		
 		writeParamName = self.parameterCB.SelectedItem
 		try:
 			startPosition = int(self.setParameterTextBox.Text)
 		except Exception as ex:
 			raise ValueError("Cannot convert input text to int", ex)
 		self.filteredElements = self.filterElementsByParameterName(self.filteredElements, writeParamName)
+
+		myPattern = self.markTypeTextBox.Text
+		self.typeMarkFilteredElements = self.filterElementsByMarkType(pattern = myPattern)
+		
 		#myParameterValue = self.paramaterValueTB.Text
 
 		print("\nYou selected: {0}".format(writeParamName))
-		print("Number of Elements: {0}\n".format(len(self.elements)))
+		print("Number of Elements: {0}\n".format(len(self.typeMarkFilteredElements)))
 
-				# for el in self.filteredElements:
+		#for el in self.typeMarkFilteredElements:
+		#	print("udate markTypeParamValue = {0} - {1} - {2} - {3} - {4}".format(self.markTypeParamValueProvider.GetStringValue(el), self.markParamValueProvider.GetStringValue(el), el.Id, el.Name, el.Category.Name))
 		# 	print("{0} - \n".format(el.Id.ToString()))
 		
 		#self.values = getValuesByParameterName(self.filteredElements, writeParamName, doc)
 		#for i, val in enumerate(self.values):
 		#	print("val {0}, el.Id {1}, name: {2}, paramName{3}".format(val, self.filteredElements[i].Id, self.filteredElements[i].Name, self.filteredElements[i].Parameter[BuiltInParameter.ALL_MODEL_MARK].Definition.Name))
+		#markParamVals = [self.markParamValueProvider.GetStringValue(x) for x in self.typeMarkFilteredElements]
 		
-		t = Transaction(doc, "Renumber parametr")
-		t.Start()
-		results = []
-		for k,group in self.groups.items():
-			for i, item in enumerate(group):
-				if startPosition:
-					writeStr = "{0:0>3}".format(startPosition + i)
-				else:
-					writeStr = "{0:0>3}".format(i+1)
-				results.append(setValueByParameterName(item[2], writeStr, writeParamName, doc))
+		#assemblyCodeParamVals = [self.assemblyCodeValueProvider.Get.GetStringValue(x) for x in self.typeMarkFilteredElements]
+		markParamVals = []
+		assemblyCodeParamVals = []
+		for el in self.typeMarkFilteredElements:
+			#print("markTypeParamValue = {0} - {1} - {2} - {3}".format(self.markTypeParamValueProvider.GetStringValue(el), el.Id, el.Name, el.Category.Name))
+			markParamVals.append(self.markTypeParamValueProvider.GetStringValue(el))
+		for el in self.typeMarkFilteredElements:
+			#print("assemblyCodeParamVals = {0} - {1} - {2} - {3}".format(self.assemblyCodeValueProvider.GetStringValue(el), el.Id, el.Name, el.Category.Name))
+			assemblyCodeParamVals.append(self.assemblyCodeValueProvider.GetStringValue(el))
 
-		t.Commit()
+		grComp = zip(assemblyCodeParamVals, markParamVals, self.filteredElements)
+		grComp = sorted(grComp, key = lambda x: x[0])
+		key_func = lambda x: x[0]
+		self.groups = {}
+		
+		for key, group in groupby(grComp, key_func):
+			self.groups[key] = list(group)
+
+		if self.writeChB.Checked:
+			t = Transaction(doc, "Renumber parametr")
+			t.Start()
+			results = []
+			try:
+				indx = 0
+				for k,group in self.groups.items():
+					for i, item in enumerate(group):
+						if startPosition:
+							writeStr = "{0:0>3}".format(startPosition + i)
+						else:
+							writeStr = "{0:0>3}".format(i+1)
+						result = setValueByParameterName(item[2], writeStr, writeParamName, doc)
+						results.append(result)
+						print(results[-1])
+		
+						#print("{0} - Group {1}, item {2}, typeMark {3}, mark {4}, ID {5}, name{6}".format(indx, k, i, self.markTypeParamValueProvider.GetStringValue(item[2]), writeStr, item[2].Id, item[2].Name))
+						indx +=1
+		
+			except Exception as ex:
+				print("Exception in MainForm.update(): {0}".format(sys.exc_info()))
+				
+			t.Commit()
+			print("parameter changed")
+		else:
+			self.Width = 800
+			self.Height = 500
+			strOut = ""
+			indx = 0
+			self.checkListTB = TextBox()
+			#self.setParameterTextBox.FontHeight = 20
+			self.checkListTB.Height = 200
+			self.checkListTB.Text = strOut
+			self.checkListTB.Name = "Check list"
+			self.checkListTB.ScrollBars = ScrollBars.Vertical
+			#self.setParameterTextBox.Location = Point(0,0)
+			self.checkListTB.Multiline = True
+			#self.setParameterTextBox.TextChanged += self.setParameterSubmit
+			self.checkListTB.Parent = self.textFrame
+			self.checkListTB.Dock = DockStyle.Bottom
+			for k,group in self.groups.items():
+				for i, item in enumerate(group):
+					if startPosition:
+						writeStr = "{0:0>3}".format(startPosition + i)
+					else:
+						writeStr = "{0:0>3}".format(i+1)
+					#result = setValueByParameterName(item[2], writeStr, writeParamName, doc)
+					#results.append(result)
+					#print(results[-1])
+					self.checkListTB.Text += "{0} - Group {1}, item {2}, typeMark {3}, mark {4}, ID {5}, name{6}\n".format(indx, k, i, self.markTypeParamValueProvider.GetStringValue(item[2]), writeStr, item[2].Id, item[2].Name)
+					self.checkListTB.Text = self.checkListTB.Text + NewLine
+					indx +=1
+			
+			print(strOut)
 		
 		#self.elementTab = TabForm(self.tableData, self.filteredElements, writeParamName, self.viewSelectionIdStrings)
 		#self.elementTab.ShowDialog()
@@ -363,6 +505,7 @@ class MainForm(Form):
 		# t.Commit()
 		#close the form window
 		#self.Close()
+
 
 	def configureButtons(self, sender, event):
 		self.parameterCB.Focus()
@@ -388,6 +531,32 @@ class MainForm(Form):
 						filteredElements.append(el)
 
 		return filteredElements
+
+	def filterElementsByMarkType(self, **kwargs):
+		stringPattern = kwargs['pattern'] if 'pattern' in kwargs else None
+		if self.markTypeParamValueProvider != None:
+			self.dictOfMarks = {}
+			self.scheduleElementsCol = FilteredElementCollector(doc,doc.ActiveView.Id). \
+													WherePasses(self.myElementPhaseStatusNew_Filter). \
+													WhereElementIsNotElementType().ToElements()
+			for el in list(self.scheduleElementsCol):
+				markTypeParamValue = self.markTypeParamValueProvider.GetStringValue(el)
+				twoChars = markTypeParamValue[:2]
+				self.dictOfMarks[twoChars] = self.dictOfMarks[twoChars] + 1 if twoChars in self.dictOfMarks else 0
+				#print("schedule markTypeParamValue {0}".format(markTypeParamValue))
+	
+			print(self.dictOfMarks)
+			self.majorMark = sorted(self.dictOfMarks.items(), key=lambda kv:(kv[1], kv[0]), reverse=True)[0][0] if not stringPattern else stringPattern 
+			print("self.majorMark {0}".format(self.majorMark))
+			filteredScheduleElements_markType = list(FilteredElementCollector(doc,doc.ActiveView.Id). \
+													WherePasses(self.myElementPhaseStatusNew_Filter). \
+													WherePasses(ElementParameterFilter(FilterStringRule(self.markTypeParamValueProvider, FilterStringBeginsWith(), self.majorMark))). \
+													WhereElementIsNotElementType(). \
+													ToElements())
+			return filteredScheduleElements_markType
+		else:
+			return None
+			
 
 	def close(self, sender, event):
 		self.Close()
@@ -594,6 +763,7 @@ if activeViewType == ViewType.Schedule:
 
 	myDialogWindow = MainForm(uniqueParams, allElements, viewSelectionIdStrings)
 	Application.Run(myDialogWindow)
+	myDialogWindow.Close()
 
 
 

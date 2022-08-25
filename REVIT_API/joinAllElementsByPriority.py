@@ -925,7 +925,7 @@ for i, el in enumerate(firstSelection):
 if runFromCsharp == False:
 	openedForms = list(Application.OpenForms)
 	for i, oForm in enumerate(openedForms):
-		#print(str(i))
+		print(str(i))
 		#print(oForm)
 		if "RevitPythonShell" in str(oForm):
 			#print("Totot je oForm {0}".format(oForm))
