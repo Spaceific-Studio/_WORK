@@ -18,7 +18,7 @@ haveFileName = False
 
 fioApiLibPath = r"/storage/emulated/0/SdCardBackUp/PowerBI/FIO_API_BANKING/fio_api_module"
 sys.path.append(fioApiLibPath)
-from api import download_data, getUrlCommonTimeRange, getUrlSpareTimeRange, ensure_dir
+from api import download_data, getUrlCommonTimeRange, getUrlSpareTimeRange, getUrlSpare2TimeRange, ensure_dir
 
 """
 if runFileDialog:
@@ -56,10 +56,16 @@ class FioXml():
         self.testName = "2012-07-01_2022-06-30 transactions_common-test"
         self.mainFileName = "2012_07_01-MAIN"
         self.mainSpareFileName = "2012_07_01-MAIN_SPARE"
+        self.mainSpare2FileName = "2012_07_01-MAIN_SPARE2"
         self.fFormat = "xml"
         self.saveDataDirName = "data"
         #fName = "{0}{1}.{2}".format("data/", testName, fFormat)
-        self.mainFileName = "{0}.{1}".format(self.mainFileName if self.account == 'common' else self.mainSpareFileName, self.fFormat) 
+        if self.account == 'spare':
+            self.mainFileName = "{0}.{1}".format(self.mainSpareFileName, self.fFormat)
+        elif self.account == 'spare2':
+            self.mainFileName = "{0}.{1}".format(self.mainSpare2FileName, self.fFormat)
+        else:
+            self.mainFileName = "{0}.{1}".format(self.mainFileName, self.fFormat) 
         self.dir = "/storage/emulated/0/SdCardBackUp/PowerBI/FIO_API_BANKING"
         self.testFilePath = os.path.join(self.dir, self.saveDataDirName, self.testName)
         self.mainFilePath = os.path.join(self.dir, self.mainFileName)
@@ -100,7 +106,9 @@ class FioXml():
                 mainUrl = getUrlCommonTimeRange(startDate, self.nowDate)
             elif self.account == 'spare':
                 mainUrl = getUrlSpareTimeRange(startDate, self.nowDate)
-            #newMainFile = download_data(mainUrl, self.dir, self.mainFileName)
+            elif self.account == 'spare2':
+                mainUrl = getUrlSpare2TimeRange(startDate, self.nowDate)
+            newMainFile = download_data(mainUrl, self.dir, self.mainFileName)
             print("mainFile has been downloaded to: {0}".format(os.path.join(self.dir, self.mainFileName)))
             
         try:
@@ -186,8 +194,10 @@ class FioXml():
         print("self.nowDate {0}".format(self.nowDate))
         if self.account == 'common':
             self.appendUrl = getUrlCommonTimeRange(self.mainEDate, self.nowDate)
-        else:
+        elif self.account == 'spare':
             self.appendUrl = getUrlSpareTimeRange(self.mainEDate, self.nowDate)
+        elif self.account == 'spare2':
+            self.appendUrl = getUrlSpare2TimeRange(self.mainEDate, self.nowDate)
         print(self.dLine)
         print("self.appendUrl {0}".format(self.appendUrl))
         
@@ -314,14 +324,20 @@ class FioXml():
             objem += data[2]
         print("Travel - objem {0}".format(-objem))
         
-fioCommon = FioXml( \
-                account='common', \
-                doDownload=True, \
-                testMode=False, \
-                doBackup=True)
+#fioCommon = FioXml( \
+#                account='common', \
+#                doDownload=True, \
+#                testMode=False, \
+#                doBackup=True)
 
-fioSpare = FioXml( \
-                account='spare', \
+#fioSpare = FioXml( \
+#                account='spare', \
+#                doDownload=True, \
+#                testMode=False, \
+#                doBackup=True)
+                
+fioSpare2 = FioXml( \
+                account='spare2', \
                 doDownload=True, \
                 testMode=False, \
                 doBackup=True)

@@ -4,6 +4,7 @@ print("epoch time 0 {0}".format(time.gmtime(0)))
 print("gmtime time now {0}".format(time.gmtime()))
 print("gmtime time tm_mday now {0}".format(time.gmtime()[3]))
 print("strftime() now %y {0}".format(time.strftime("%y")))
+print("strftime() now %Y {0}".format(time.strftime("%Y")))
 print("strftime() now %a {0}".format(time.strftime("%a")))
 print("strftime() now %X {0}".format(time.strftime("%X")))
 print("strftime() now %x {0}".format(time.strftime("%x")))
@@ -22,7 +23,6 @@ else:
     print("myDT < now")
 
 dTime = 10
-timeDelta = timedelta(10)
 addDT = nowDT + timeDelta
 #print("addDT {0} day {1}".format(addDT, addDT.strftime(datetime.strftime("%A"))))
 print("time zone nowDT {0}".format(nowDT.strftime("%Z")))
