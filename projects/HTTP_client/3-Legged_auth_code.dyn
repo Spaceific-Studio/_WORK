@@ -1,0 +1,579 @@
+{
+  "Uuid": "cf3aefb7-116f-485e-9cef-ff43e4055d55",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "3-Legged_auth_code",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport sys\r\nimport webbrowser\r\n\r\n\r\n# Import knihoven pro práci s okny\r\nclr.AddReference(\"System.Windows.Forms\")\r\nclr.AddReference(\"System.Drawing\")\r\nclr.AddReference('System.Net.Http')\r\nimport System.Net.Http as Http\r\n#import System.Windows.Forms\r\nimport System.Windows.Forms as Forms\r\nfrom System.Windows.Forms import Form, Label, TextBox, Button, WebBrowser\r\nclient_id = IN[0]\r\n\r\n# Definujte funkci pro otevření okna s přihlašovacími údaji\r\n#OUT = dir(Http)\r\n\r\ndef get_authorization_code():\r\n\t# Spusťte HTTP server na lokálním portu pro přesměrování URI\r\n\t\r\n\t#redirect_uri = 'http%3A%2F%2Flocalhost%3A8080%2Foauth%2Fcallback%2F'\r\n\t#redirect_uri = f'http://localhost:8080'\r\n\tredirect_uri = 'http%3A%2F%2Flocalhost%3A8080'\r\n\t#listener = Http.HttpListener()\r\n\t#listener.Prefixes.Add(redirect_uri)\r\n\t#listener.Start()\r\n\t\r\n\t\r\n\r\n\t# Otevře prohlížeč s přihlašovacím URL\r\n\t#Forms.WebBrowser().Navigate(f\"https://developer.api.autodesk.com/authentication/v1/authorize?response_type=code&client_id=\" + client_id +\"&redirect_uri=\" + redirect_uri + \"&scope=data:read\")\r\n\t#Forms.WebBrowser().Navigate(f\"http://www.idnes.cz\")\r\n\t#webbrowser.open_new(\"https://developer.api.autodesk.com/authentication/v1/authorize?response_type=code&client_id=\" + client_id +\"&redirect_uri=\" + redirect_uri + \"&scope=data:read\")\r\n\t#return webbrowser.get().func_code()\r\n\tmyWeb = webbrowser.open_new(\"https://developer.api.autodesk.com/authentication/v2/authorize?response_type=code&client_id=Y5XrdAWZhwscrASWKXnARt2YCV0t3CHP&redirect_uri=http://localhost:8080/&scope=data:read\")\r\n\treturn myWeb\r\n\r\n\t# Čekáme na přesměrování na naši URI a získáme autorizační kód\r\n\t#context = listener.GetContext()\r\n\t#query = context.Request.Url.Query\r\n\t#authorization_code = Http.HttpUtility.ParseQueryString(query).Get(\"code\")\r\n\t\r\n\t# Ukončíme HTTP listener\r\n\t#listener.Close()\r\n\r\n\t# Zobrazíme autorizační kód\r\n\t#return authorization_code\r\n\treturn client_id\r\n\t\r\n#OUT = get_authorization_code()\r\n#OUT = sys.exc_info()\r\nOUT = get_authorization_code()\r\n\r\n\"\"\"\r\ndef open_login_window():\r\n    # Vytvořte nové okno\r\n    login_window = Form()\r\n    login_window.Text = \"Přihlašovací údaje\"\r\n\r\n    # Vytvořte label pro zobrazování textu\r\n    label = Label()\r\n    label.Text = \"Zadejte přihlašovací údaje a získejte token.\"\r\n    label.Location = System.Drawing.Point(10, 10)\r\n    login_window.Controls.Add(label)\r\n\r\n    # Vytvořte pole pro zadání údajů\r\n    username_label = Label()\r\n    username_label.Text = \"Uživatelské jméno:\"\r\n    username_label.Location = System.Drawing.Point(10, 40)\r\n    login_window.Controls.Add(username_label)\r\n\r\n    username_textbox = TextBox()\r\n    username_textbox.Location = System.Drawing.Point(120, 40)\r\n    login_window.Controls.Add(username_textbox)\r\n\r\n    password_label = Label()\r\n    password_label.Text = \"Heslo:\"\r\n    password_label.Location = System.Drawing.Point(10, 70)\r\n    login_window.Controls.Add(password_label)\r\n\r\n    password_textbox = TextBox()\r\n    password_textbox.Location = System.Drawing.Point(120, 70)\r\n    password_textbox.PasswordChar = \"*\"\r\n    login_window.Controls.Add(password_textbox)\r\n\r\n    # Vytvořte Button pro získání tokenu\r\n    login_button = Button()\r\n    login_button.Text = \"Získej token\"\r\n    login_button.Location = System.Drawing.Point(10, 100)\r\n    # Definujte funkci pro získání tokenu po kliknutí na Button\r\n    def get_token():\r\n        # Zde můžete implementovat kód pro získání tokenu podle dokumentace 3-Legged Token\r\n        # Použijte uživatelské jméno a heslo z textboxů\r\n\r\n        # Po získání autorizačního kódu\r\n        authorization_code = \"ZDE_VLOŽTE_ZÍSKANÝ_AUTORIZAČNÍ_KÓD\"\r\n\r\n        # Vytvoření URI s autorizačním kódem\r\n        #authorization_uri = f\"https://yourauthorizationserver.com/#authorize?code={authorization_code}\"\r\n\r\n        # Zobrazíme URI s autorizačním kódem\r\n        label.Text = f\"URI s autorizačním kódem:\\n{authorization_uri}\"\r\n        #login_window.Controls.Add(label)\r\n\r\n    login_button.Click += get_token\r\n    login_window.Controls.Add(login_button)\r\n\r\n    # Zobrazit okno\r\n    login_window.ShowDialog()\r\n\"\"\"\r\n# Vytvořte Button pro otevření okna s přihlašovacími údaji\r\n#open_login_button = Button()\r\n#open_login_button.Text = \"Otevřít přihlašovací okno\"\r\n#open_login_button.Click += open_login_window\r\n    ",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "8d59e4ef24cd47d7b2a5a85c6ba81d98",
+      "Inputs": [
+        {
+          "Id": "35e3d16def354a9d905052145bf6514d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "457984429d544cb58c37fb6e14ee51cb",
+          "Name": "OUT",
+          "Description": "Výsledek skriptu jazyka Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spustí vložený skript jazyka Python."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "",
+      "Id": "30eb755bb5cc47d79d5c582b460e2b31",
+      "Inputs": [],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import http.client\r\nimport json\r\nimport secrets\r\nimport hashlib\r\nimport base64\r\n\r\n# Konfigurace\r\nauthorization_code = IN[0]\r\nclient_id = IN[1]\r\nclient_secret = IN[2]\r\n\r\ncode_verifier = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode('utf-8')\r\ncode_challenge = base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode('utf-8')).digest()).rstrip(b'=').decode('utf-8')\r\n\r\n\r\n#client_secret = \"YOUR_CLIENT_SECRET\"\r\nredirect_uri = 'http%3A%2F%2Flocalhost%3A8080'\r\nauthorization_url = \"developer.api.autodesk.com\"\r\ntoken_url = \"developer.api.autodesk.com\"\r\n\r\n# Vytvoření připojení k serveru pro výměnu autorizačního kódu za token\r\ntoken_conn = http.client.HTTPSConnection(token_url)\r\n\r\n# Vytvoření POST požadku pro výměnu autorizačního kódu za token\r\ntoken_request_data = f\"client_id={client_id}&client_secret={client_secret}&grant_type=authorization_code&code={authorization_code}&redirect_uri={redirect_uri}&code_verifier={code_verifier}\"\r\n\r\nheaders = {\"Content-Type\": \"application/x-www-form-urlencoded\"}\r\n\r\ntoken_conn.request(\"POST\", \"/authentication/v2/token\", body=token_request_data, headers=headers)\r\n\r\n# Získání odpovědi\r\ntoken_response = token_conn.getresponse()\r\ntoken_data = token_response.read()\r\n\r\n# Výstup tokenu\r\nprint(\"3-Legged Token:\")\r\nOUT = (token_data.decode('utf-8'))",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "eb2ddeb18c05458e9a467c118d278532",
+      "Inputs": [
+        {
+          "Id": "ec62afa6ed9c4a1a8099b4950fbab583",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3b7a344048584dd99f79a9e980c7dd78",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0ed7c5fd504c4bcc93835319b53b8e46",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6cb251384b0540cdaef229189e9b706d",
+          "Name": "OUT",
+          "Description": "Výsledek skriptu jazyka Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spustí vložený skript jazyka Python."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "t6SUTj41bbrq9H6fUFhVg9L_a8i1jKygGYZKSNE2",
+      "Id": "18d992d028c64721bd9dda624af5a5d0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a5a41b9fa3e248428d7e401bd07e91a5",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří řetězec."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.String.Length@string",
+      "Id": "1886de285b41468ca9628e5666aaf2b7",
+      "Inputs": [
+        {
+          "Id": "a1d4150a09794ec487d3bff9ee287cf6",
+          "Name": "string",
+          "Description": "Řetězec k nalezení délky\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b996d575b7064b1dac217213fb55a1dc",
+          "Name": "int",
+          "Description": "Počet znaků v řetězci",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrací počet znaků obsažených v daném řetězci.\n\nString.Length (string: string): int"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "",
+      "Id": "41a005d29e6343579df3b53ae2476a04",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1fa0334535f44b679cb38e8ef930dd7e",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří řetězec."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "OUT = 'Y5XrdAWZhwscrASWKXnARt2YCV0t3CHP'",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "ec7c1863255144dd848d58b8b435b84c",
+      "Inputs": [
+        {
+          "Id": "a19740febc1a4d08ba9601d9763ae6a4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "75b13eb3b9b14033b5bd0a8dc999dd04",
+          "Name": "OUT",
+          "Description": "Výsledek skriptu jazyka Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spustí vložený skript jazyka Python."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Logic.RefactoredIf, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "5f3552ea0a5f4b3e959db33d018a5ad1",
+      "Inputs": [
+        {
+          "Id": "cdc485c78bed4ddcaa5b9c20f0ace409",
+          "Name": "test",
+          "Description": "Test booleovské hodnoty",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ac1f6f519dcc4a6baf91c1a7b932440d",
+          "Name": "true",
+          "Description": "Vráceno, pokud je test pravdivý.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6664f9a192b34d8cb09f476b63d31a15",
+          "Name": "false",
+          "Description": "Vráceno, pokud je test nepravdivý",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4adc7433d4b8435f9e750e07533e8715",
+          "Name": "result",
+          "Description": "Vytvořený blok výsledku",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrátí výsledek pravdivého nebo nepravdivého vstupu, podle toho, na co je booleovská hodnota při vstupu testu přepnuta."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": ">@var[]..[],var[]..[]",
+      "Id": "fe822a85659b485a9a34a6fc1d620fea",
+      "Inputs": [
+        {
+          "Id": "1a8e4111ba394f4ea5a28103228d8224",
+          "Name": "x",
+          "Description": "Celočíselná nebo hodnota double\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7678b6af15e74c349e4f267dbce57996",
+          "Name": "y",
+          "Description": "Celočíselná nebo hodnota double\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c130034c81804d858f276e1fd3095201",
+          "Name": "bool",
+          "Description": "Hodnota True, pokud X je větší než Y, hodnota False, pokud není",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Porovná, zda je hodnota X větší než hodnota Y\n\n> (x: var[]..[], y: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "0;",
+      "Id": "0038217ff8b04ac49825a1160652952e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b223b6563e1c473a93166affaccc8425",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "OUT = 'PKple38AUYm7FQJc'",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "d5b01e7a1ad54b8c86c347782dc0127f",
+      "Inputs": [
+        {
+          "Id": "19f0ce75739d407ea38d8350661709f9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "89a448169b1c42f082cf7d28c1f61a5c",
+          "Name": "OUT",
+          "Description": "Výsledek skriptu jazyka Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spustí vložený skript jazyka Python."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "457984429d544cb58c37fb6e14ee51cb",
+      "End": "6664f9a192b34d8cb09f476b63d31a15",
+      "Id": "74b2215f332a49fabb7b6605cfdc5659"
+    },
+    {
+      "Start": "a5a41b9fa3e248428d7e401bd07e91a5",
+      "End": "a1d4150a09794ec487d3bff9ee287cf6",
+      "Id": "2d9a38a1046a4f0a83a347d2713e737f"
+    },
+    {
+      "Start": "a5a41b9fa3e248428d7e401bd07e91a5",
+      "End": "ac1f6f519dcc4a6baf91c1a7b932440d",
+      "Id": "f82ad1cbd05e4558933825b1437e4b47"
+    },
+    {
+      "Start": "b996d575b7064b1dac217213fb55a1dc",
+      "End": "1a8e4111ba394f4ea5a28103228d8224",
+      "Id": "884e1a0222b149f38d3bff2c64b9334d"
+    },
+    {
+      "Start": "75b13eb3b9b14033b5bd0a8dc999dd04",
+      "End": "35e3d16def354a9d905052145bf6514d",
+      "Id": "fc04a955bd53469c81f02bd29b4ca672"
+    },
+    {
+      "Start": "75b13eb3b9b14033b5bd0a8dc999dd04",
+      "End": "3b7a344048584dd99f79a9e980c7dd78",
+      "Id": "7061b6b787e84c25918e0062d2f04dc8"
+    },
+    {
+      "Start": "4adc7433d4b8435f9e750e07533e8715",
+      "End": "ec62afa6ed9c4a1a8099b4950fbab583",
+      "Id": "cdb4c36f538845cfa0eb782cd058279d"
+    },
+    {
+      "Start": "c130034c81804d858f276e1fd3095201",
+      "End": "cdc485c78bed4ddcaa5b9c20f0ace409",
+      "Id": "0343c8a213d24b3596423a1fb817c64c"
+    },
+    {
+      "Start": "b223b6563e1c473a93166affaccc8425",
+      "End": "7678b6af15e74c349e4f267dbce57996",
+      "Id": "76a3a75447e843cdb20d85b9af991c1b"
+    },
+    {
+      "Start": "89a448169b1c42f082cf7d28c1f61a5c",
+      "End": "0ed7c5fd504c4bcc93835319b53b8e46",
+      "Id": "c6062c160cd6496cad744309fc68f663"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.12",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "1.10",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Žádný",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.0.5650",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Náhled pozadí",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "GET AUTHORIZATION CODE",
+        "Id": "8d59e4ef24cd47d7b2a5a85c6ba81d98",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 208.32559069164449,
+        "Y": 243.79229744566555
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "30eb755bb5cc47d79d5c582b460e2b31",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1615.0996728242817,
+        "Y": 288.13005444123269
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "GET AUTHORIZATION CODE",
+        "Id": "eb2ddeb18c05458e9a467c118d278532",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1025.5009575306697,
+        "Y": 544.63748819998375
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "VLOŽ AUTORIZAČNÍ KÓD",
+        "Id": "18d992d028c64721bd9dda624af5a5d0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -1.3349928492448839,
+        "Y": 631.31572096363334
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String.Length",
+        "Id": "1886de285b41468ca9628e5666aaf2b7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 346.27737041230688,
+        "Y": 409.959554930753
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "VLOŽ AUTORIZAČNÍ KÓD",
+        "Id": "41a005d29e6343579df3b53ae2476a04",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -241.39505142227205,
+        "Y": 160.67821470078627
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "CLIENT_ID",
+        "Id": "ec7c1863255144dd848d58b8b435b84c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -85.482421918794927,
+        "Y": 245.35237070787758
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "If",
+        "Id": "5f3552ea0a5f4b3e959db33d018a5ad1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 753.20106790137368,
+        "Y": 542.45143972291237
+      },
+      {
+        "ShowGeometry": true,
+        "Name": ">",
+        "Id": "fe822a85659b485a9a34a6fc1d620fea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 551.2134980607143,
+        "Y": 415.29600646975172
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "0038217ff8b04ac49825a1160652952e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 365.61083537270076,
+        "Y": 512.40164592411838
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "CLIENT_SECRET",
+        "Id": "d5b01e7a1ad54b8c86c347782dc0127f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -93.115044135637078,
+        "Y": 368.03246601182144
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "f5d66abd251141b3bece43f0a7af4f06",
+        "Title": "Získání autorizačního kódu z přihlašení: Po spuštění skriptu se otevře internetový prohlížeč, kde je potřeba vyplnit přihlašovací údaje , nebo je nutné kliknout na povolit. Po kliknutí povolit se vykreslí nová stránka z které zkopiruj kód z ulr adresy a vlož ho do nodu Autorizační kód: \r\n\r\ncelé url: http://localhost:8080/?code=noGqvWNwanIadAIaBmVXKdYOpk9P8dAchv1kZnYE\r\nzkopíruj jenom kód za textem code=\r\npříklad: noGqvWNwanIadAIaBmVXKdYOpk9P8dAchv1kZnYE",
+        "Nodes": [
+          "8d59e4ef24cd47d7b2a5a85c6ba81d98",
+          "30eb755bb5cc47d79d5c582b460e2b31"
+        ],
+        "Left": 198.32559069164449,
+        "Top": -68.207702554334446,
+        "Width": 1607.7740821326372,
+        "Height": 449.33775699556713,
+        "FontSize": 36.0,
+        "InitialTop": 243.79229744566555,
+        "InitialHeight": 134.0,
+        "TextblockHeight": 302.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 112.53640647191649,
+    "Y": 193.75750477441224,
+    "Zoom": 0.1098172442908468
+  }
+}
