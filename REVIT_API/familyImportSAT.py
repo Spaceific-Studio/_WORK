@@ -84,8 +84,8 @@ if len(rpsOpenedForms) > 0:
 	lastForm = rpsOpenedForms[-1]
 	lastForm.Show()
 
-dirName = r"H:\2022_03_28-AK_KOPANINA\RVT\import"
-fileName = r"ROSTLY_TEREN.sat"
+dirName = r"H:\2022_08_16-PCOV_KOLOVRATY-INTENZIFIKACE\RVT\import"
+fileName = r"TEST_VOLUME.sat"
 filePath = os.path.join(dirName, fileName)
 
 satOptions = SATImportOptions()
