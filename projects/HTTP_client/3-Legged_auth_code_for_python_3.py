@@ -212,9 +212,31 @@ else:
 # Uzavřete spojení
 conn.close()
 
+# funkce pro získání seznamu složek
+
+def ziskat_id_slozky(token, project_id, folder_name, base_url):
+    url = f"{base_url}/data/v1/projects/{project_id}/folders"
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    conn.request("GET", project_list_url, headers=headers)
+    response = conn.getresponse()
+    response_data = response.read()
+    data = json.loads(response_data)
+
+    for folder in data["data"]:
+        if folder["attributes"]["displayName"] == folder_name:
+            folder_id = folder["id"]
+            print(f"ID složky '{folder_name}': {folder_id}")
+            return folder_id
+
+    print(f"Složka '{folder_name}' nebyla nalezena.")
+    return None
+
+ziskat_id_slozky(MyCode.getThreeLeggedAuthCode(), 'b.aeeffa13-fa76-4740-8c75-ccced3afc914', "MODELY", f"https://developer.api.autodesk.com")
+"""
 # URL pro získání seznamu všech parameter collections anebo groups v určitém hubu (nastavte na konkrétní hub ID)
 
-group_list_url = f"parameters/v1/accounts/MyCode.getThreLeggedAuthCode()}/groups"
+group_list_url = f"parameters/v1/accounts/{MyCode.getThreeLeggedAuthCode()}/groups"
 
 # Vytvoření připojení k serveru
 conn = http.client.HTTPSConnection("developer.api.autodesk.com")
@@ -226,7 +248,7 @@ headers = {
 }
 
 # Nastavení cesty pro GET požadavek
-conn.request("GET", project_list_url, headers=headers)
+conn.request("GET", group_list_url, headers=headers)
 
 # Získání odpovědi
 response = conn.getresponse()
@@ -235,12 +257,13 @@ response_data = response.read()
 # Zkontrolujte, zda požadavek byl úspěšný
 if response.status == 200:
     project_list = json.loads(response_data)
-    for group in group_list['data']:
+    for group in project_list['data']:
         group_id = group['id']
         group_title = group['title']
         print(f"Project ID: {group_id}, Název: {group_title}")
 else:
-    print(f"Chyba při získávání seznamu projektů ({response.status}): {response_data}")
+    print(f"Chyba při získávání seznamu collections ({response.status}): {response_data}")
 
 # Uzavřete spojení
 conn.close()
+"""
