@@ -51,9 +51,9 @@ testName = "2012-07-01_2022-06-30 transactions_common-test"
 
 #change mainFileName to download data for specific account
 
-#mainFileName = "2012_07_01-MAIN"
+mainFileName = "2012_07_01-MAIN"
 #mainFileName = "2012_07_01-MAIN_SPARE"
-mainFileName = "2012_07_01-MAIN_SPARE2"
+#mainFileName = "2012_07_01-MAIN_SPARE2"
 
 fFormat = "xml"
 fName = "{0}{1}.{2}".format("data/", testName, fFormat)
