@@ -90,7 +90,7 @@ def getThreeLeggedAuthCode(inClientId):
     with socketserver.TCPServer(("", 8080), MyHandler) as httpd:
         try:
             # Otevře prohlížeč s přihlašovacím URL
-            myWeb = webbrowser.open(f"https://developer.api.autodesk.com/authentication/v1/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope=data:read")
+            myWeb = webbrowser.open(f"https://developer.api.autodesk.com/authentication/v1/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={SCOPES}")
 
             # Čekáme na přesměrování na naši URI a získáme autorizační kód
             #httpd.handle_request()  # Blocking call
