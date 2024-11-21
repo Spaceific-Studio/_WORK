@@ -104,7 +104,7 @@ class AECDataModelClient:
             response.raise_for_status()
             
             # Return parsed JSON response
-            print(f'JSON response {response.json()}')
+            #print(f'JSON response {response.json()}')
             return response.json()
         
         except requests.exceptions.RequestException as e:
@@ -154,7 +154,51 @@ class AECDataModelClient:
             return result.get('data', {}).get('hubs', {}).get('results', [])
         else:
             return result
+
+    def get_walls(self, elementGroupId):
+        """
+        Retrieve list of wall instances in model
         
+        :return: List of wall instances properties
+        """
+
+        # GraphQL query to fetch hubs
+        query = '''
+        query GetWalls($elementGroupId: ID!, $propertyFilter: String!, $pagination: PaginationInput) {
+            elementsByElementGroup(
+                elementGroupId: $elementGroupId, filter: {query:$propertyFilter}, pagination: $pagination) {
+                    pagination {
+                        cursor
+                    }
+                    results {
+                        id
+                        name   	
+                         properties {
+                            results {
+                                name
+                                value
+                            }
+                        }
+                    }    
+                }
+            }
+        '''
+        variables = {
+            "elementGroupId": elementGroupId,
+            "propertyFilter": "'property.name.category'=contains= Wall and 'property.name.Element Context' ==Instance and 'property.name.Element Name'=contains= 500"
+        }
+        
+        # Execute query
+        result = self.execute_graphql_query(query, variables=variables)
+        #print(f"result in get_walls: {result['data']}")
+        # Extract walls
+        
+        if result and 'data' in result:
+            #return result.get('data', {}).get('results', [])
+            return result
+        else:
+            return result
+            
     def get_models_in_directory(self, hub_id, project_id, directory_path):
         """
         Retrieve list of models in a specific directory for a project
@@ -441,7 +485,9 @@ def main():
     #hubs = client.get_hub_details()
     #for i, hub in enumerate(hubs):
     #    print(f"hub_{i}: " + hub['name'] + " id: " + hub['id'])
-    
+    wallsData = client.get_walls("YWVjZH4yeERkcUxEME5MMnR2QVE4dlh4WGE2X0wyQ35oSjZhWWlPOFN6ZVlTN1hySXQxTTdB")
+    for i, element in enumerate(wallsData['data']['elementsByElementGroup']['results']):
+        print(f"{i} - {element.get('name', [])} - {element.get('properties', [])}")
 
     # Get the top folder structure of the selected project
     project_id = selected_project['id']
