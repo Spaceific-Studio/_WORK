@@ -23,7 +23,7 @@ HUBS_URL = "https://developer.api.autodesk.com/project/v1/hubs"
 PROJECTS_URL = "https://developer.api.autodesk.com/project/v1/hubs/{hub_id}/projects"
 FOLDER_CONTENTS_URL = "https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{folder_id}/contents"
 CUSTOM_ATTRIBUTES_URL = "https://developer.api.autodesk.com/bim360/docs/v1/projects/{project_id}/folders/{folder_id}/custom-attribute-definitions"
-AEC_MODEL_GRAPHQL_URL = "https://developer.api.autodesk.com/aec"
+AEC_MODEL_GRAPHQL_URL = "https://developer.api.autodesk.com/aec/graphql"
 
 # Global variables
 authorization_code = None
@@ -55,66 +55,105 @@ class AECDataModelClient:
         :param api_key: Authentication API key
         """
         self.base_url = base_url
+        self.access_token = api_key
+        self.graphql_url = "https://developer.api.autodesk.com/aec/graphql"
         self.headers = {
-            #'Content-Type': 'application/json',
-            'Content-Type': 'application/graphql',
-            'Authorization': f'Bearer {api_key}',
-            'Region': 'EMEA'
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json',
+            "region":"EMEA"
         }
-        
-
-    def get_hub_details(self):
-        """
-        Retrieve list of EMEA hubs accessible to the user
-        
-        :return: List of hub details
-        """
-        # GraphQL query optimized for EMEA server
-        query = """
-        query GetEMEAHubs {
-            hubs(region: EMEA) {
-                items {
-                    id
-                    name
-                    type
-                    country
-                    region
-                    status
-                    createdDate
-                }
-            }
-        }
-        """
-        
-        # Prepare payload
-        payload = {
-            "query": query,
-            "variables": {}
-        }
-        
         try:
-            # Send POST request to the EMEA GraphQL endpoint
+            hubs = self.get_hubs()
+
+            self.hubName = hubs[0]['name']
+            self.hubId = hubs[0]['id']
+            print(f"Successfuly joined to hub: {self.hubName} - {self.hubId}")
+        except Exception as ex:
+            print("unable to join to hub: {0}".format(ex))
+
+    
+    def execute_graphql_query(self, query, variables=None):
+        """
+        Execute a GraphQL query using JSON payload
+        
+        :param query: GraphQL query string
+        :param variables: Optional variables dictionary
+        :return: Query results
+        """
+        try:
+            # Prepare payload
+            payload = {
+                'query': query
+            }
+            
+            # Add variables if provided
+            if variables:
+                payload['variables'] = variables
+            
+            # Headers for GraphQL request
+            headers = self.headers
+            
+            # Send POST request to GraphQL endpoint
             response = requests.post(
-                f"{self.base_url}/graphql/v2", 
-                headers=self.headers, 
-                data=json.dumps(payload)
-                #data=payload
+                self.base_url, 
+                headers=headers, 
+                json=payload
             )
             
             # Check for successful response
             response.raise_for_status()
             
-            # Parse the response
-            result = response.json()
-            
-            # Extract hubs from the response
-            hubs = result.get('data', {}).get('hubs', {}).get('items', [])
-            
-            return hubs
+            # Return parsed JSON response
+            print(f'JSON response {response.json()}')
+            return response.json()
         
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching EMEA hubs: {e}")
-            return []
+            print(f"GraphQL query error: {e}")
+            print(f"Response content: {e.response.text if hasattr(e, 'response') else 'No response'}")
+            return None
+
+    def get_hubs(self):
+        """
+        Retrieve list of hubs
+        
+        :return: List of hub names
+        """
+
+        # GraphQL query to fetch hubs
+        query = '''
+        query GetHubs {
+            hubs {
+                pagination {
+                    cursor
+                }
+                results {
+                    name
+                    id
+                }
+            }
+        }
+        '''
+        """
+        # GraphQL query to fetch hub names
+        query = '''{
+            hubs {
+                results {
+                    name
+                    id
+                }
+            }
+        }'''
+        """
+        
+        # Execute query
+        result = self.execute_graphql_query(query)
+        print(f"result in get_hubs: {result['data']}")
+        # Extract hub names
+        
+        if result and 'data' in result:
+            return result.get('data', {}).get('hubs', {}).get('results', [])
+        else:
+            return result
         
     def get_models_in_directory(self, hub_id, project_id, directory_path):
         """
@@ -394,11 +433,15 @@ def main():
         print("No project selected.")
         return
     
+    #working with GraphQL queries
     # Create API client
     client = AECDataModelClient(AEC_MODEL_GRAPHQL_URL, access_token)
     #client.get_models_in_directory(selected_hub, project_id, directory_path)
-    hubs = client.get_hub_details()
-    print(hubs)
+    #hubs = client.get_hubs()
+    #hubs = client.get_hub_details()
+    #for i, hub in enumerate(hubs):
+    #    print(f"hub_{i}: " + hub['name'] + " id: " + hub['id'])
+    
 
     # Get the top folder structure of the selected project
     project_id = selected_project['id']
