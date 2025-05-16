@@ -1,0 +1,4529 @@
+{
+  "Uuid": "a40b00e8-4dbe-4e77-be29-b4b1fcf13071",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Area_Of_Selected_Faces",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8588:6:SURFACE"
+      ],
+      "Id": "5d35353babc442229b318d8041f1620d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "cf2e69bfed9a4d06a4fddc7f483022b1",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858c:6:SURFACE"
+      ],
+      "Id": "bf66091ed9c2490280d6a70c0eeade69",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "270c5ea8208249bba31eb80598f68b1e",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858c:14:SURFACE"
+      ],
+      "Id": "898dbeb227a248d9aca89fedf2939c85",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a03a11a579504489b7c4c31da679182f",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858c:5:SURFACE"
+      ],
+      "Id": "75078e17957546b581cc56c2d26e5c57",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1627e3365b77498b8fc841600c491309",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858b:6:SURFACE"
+      ],
+      "Id": "836c86ba7f8a45f2a1a2495bad043c30",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "044712646e684acd8cdb5603ad361b81",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858b:14:SURFACE"
+      ],
+      "Id": "dacbddf0b4c940059f835b3842806ae9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "73d50a56f4f14777b51b4160fd8f0f64",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858d:5:SURFACE"
+      ],
+      "Id": "1f844249080c41b0a30494b909dc29c5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8445df0941654654aaeb220be3c2803b",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858d:14:SURFACE"
+      ],
+      "Id": "f6a9d9077a7549318b941a8804666c28",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2a688e191b1b4faa81b4bba1595536e8",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858d:6:SURFACE"
+      ],
+      "Id": "d4c047c3a5924aa2a5eca3276ddc1393",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "83a4707000fe4d5f96403effaeda2ced",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858a:5:SURFACE"
+      ],
+      "Id": "a9673ce65a56424d815c8f707646e1ef",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "713f41f447e1451da091d7bca17fe110",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8589:5:SURFACE"
+      ],
+      "Id": "c92fadb64d024d57baa4c06bd49658d7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "22552b88462241d7ae73778d4e08822d",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858e:14:SURFACE"
+      ],
+      "Id": "009faa19d3844e2abb273dbaacb3f77e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c0bae46d5f10424db61e7de9873cfa50",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858e:5:SURFACE"
+      ],
+      "Id": "553a534b12ec44dba24363adb25f7e03",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ecd1dec66ebc45a4b7825468f89d8367",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "23c1acba277742a7a77521b3775c4c53",
+      "Inputs": [
+        {
+          "Id": "f6a97bd9952b454791af88563117e8b3",
+          "Name": "item0",
+          "Description": "Index položky č. 0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f101152f3b2544fb9ddbccfc6d996645",
+          "Name": "item1",
+          "Description": "Index položky č. 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9bbb76783e39400ea847ec65e5f9ec5b",
+          "Name": "item2",
+          "Description": "Index položky č. 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1d42f78c3dcc44df9548d3961ecf5738",
+          "Name": "item3",
+          "Description": "Index položky č. 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "39207a5541cd4e6a8384a8cbdccfcb0a",
+          "Name": "item4",
+          "Description": "Index položky č. 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9a03639cafed4b7c864d4e9082c23320",
+          "Name": "item5",
+          "Description": "Index položky č. 5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e6befa700f0d4aa08e6a23e323f65910",
+          "Name": "item6",
+          "Description": "Index položky č. 6",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6eedc567797b4be097995ecee1537327",
+          "Name": "item7",
+          "Description": "Index položky č. 7",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "36d7366be70f4c95b27ad50dac8cee8f",
+          "Name": "item8",
+          "Description": "Index položky č. 8",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0c6a69ade80f491bb4e00262ec386d4f",
+          "Name": "item9",
+          "Description": "Index položky č. 9",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e79651f9856b48a3a4526302a816f480",
+          "Name": "item10",
+          "Description": "Index položky č. 10",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2a6af173e9fe40bba41fb83883b40906",
+          "Name": "item11",
+          "Description": "Index položky č. 11",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "97a8ab65c77743e3ba8593d2f9eb32ee",
+          "Name": "item12",
+          "Description": "Index položky č. 12",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8e4761cff58e49fb92eafcc1284a9931",
+          "Name": "list",
+          "Description": "Seznam",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří nový seznam z daných vstupů"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Surface.Area",
+      "Id": "31c1bd1f0b784c3fb995648ca621583f",
+      "Inputs": [
+        {
+          "Id": "438eb39478144078b31a98db589bd7a1",
+          "Name": "surface",
+          "Description": "Autodesk.DesignScript.Geometry.Surface",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c1427729d49b459bb6fd2560087d8463",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrací celkovou plochu povrchu.\n\nSurface.Area: double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "b9d1b37f3fd944b38298b7af07d04b5b",
+      "Inputs": [
+        {
+          "Id": "a7910f8760a24d9796dfb115812522e5",
+          "Name": "list",
+          "Description": "Seznam k vyrovnání\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1b1c263d3db842e19182056bc7192b1d",
+          "Name": "amt",
+          "Description": "Hladiny vnoření, které chcete odstranit\n\nint\nVýchozí hodnota : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b967b912c6434930a105fa8c01689750",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vyrovná vnořený seznam seznamů o určitou hodnotu.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Math.Sum@double[]",
+      "Id": "dff3f4b0d93b47538c9f1aea0cad64bf",
+      "Inputs": [
+        {
+          "Id": "63a6860317d047f98e76b35c18642fa7",
+          "Name": "values",
+          "Description": "Čísla k provedení součtu\n\ndouble[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "62b0e14ba6b048efad64f6573587c9a8",
+          "Name": "sum",
+          "Description": "Součet hodnot",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Najde součet posloupnosti čísel.\n\nMath.Sum (values: double[]): double"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.DynamoConvert, CoreNodeModels",
+      "NodeType": "ConvertBetweenUnitsNode",
+      "MeasurementType": "Area",
+      "FromConversion": "SquareMillimeter",
+      "ToConversion": "SquareMeter",
+      "Id": "3f06493fb1eb4b53a2e3ca4ff30ec951",
+      "Inputs": [
+        {
+          "Id": "ba246386b85642bf992c281230a77c1a",
+          "Name": "",
+          "Description": "Číselná hodnota k převodu",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cd16535d8f11443493394422a5d89ccb",
+          "Name": "",
+          "Description": "Převedená číselná hodnota",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Převod mezi měrnými jednotkami"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a86a7:1:SURFACE"
+      ],
+      "Id": "95c92433fe52460382cebfec686bfa94",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "95cb8c8f21b043c4967829ec110cb3c7",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "16859fa5ad314cde8519b503bf78de41",
+      "Inputs": [
+        {
+          "Id": "3268477b07324abdb3b58e922d06d2c8",
+          "Name": "item0",
+          "Description": "Index položky č. 0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b587e6a076484abba33203101aa5d1a4",
+          "Name": "item1",
+          "Description": "Index položky č. 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4314d2a972654f65ada4b96d6cb3de4c",
+          "Name": "item2",
+          "Description": "Index položky č. 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1583ba7006764c11805a5cd1646a0c2c",
+          "Name": "item3",
+          "Description": "Index položky č. 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "938b0c0ba8844ac988a56d636ec93117",
+          "Name": "item4",
+          "Description": "Index položky č. 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4f623080dc63476aa9b2e1a46111370f",
+          "Name": "item5",
+          "Description": "Index položky č. 5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7805f9e8b60247b1a3dfdb01342af6a4",
+          "Name": "item6",
+          "Description": "Index položky č. 6",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c345150fd793465e9abe0dbcd7e2afe1",
+          "Name": "item7",
+          "Description": "Index položky č. 7",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a4011d85811c42ce8b3829cae59c7b14",
+          "Name": "item8",
+          "Description": "Index položky č. 8",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fdc9bf7c57174715b1422c4c7d7166b1",
+          "Name": "item9",
+          "Description": "Index položky č. 9",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "df14b241260c4308b0552281576ea60a",
+          "Name": "item10",
+          "Description": "Index položky č. 10",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b87ae402169d420a9f0e40b23652edb4",
+          "Name": "item11",
+          "Description": "Index položky č. 11",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9804a8013777488da7bdcbe4c1d40e73",
+          "Name": "item12",
+          "Description": "Index položky č. 12",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "130e4b04ada148bd868d7674b2708725",
+          "Name": "item13",
+          "Description": "Index položky č. 13",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "32e789ef4e8b42618b79dbce7cf1f962",
+          "Name": "item14",
+          "Description": "Index položky č. 14",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "067ee0216d2947179c8303663d133e2f",
+          "Name": "item15",
+          "Description": "Index položky č. 15",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "40385197dc274de19ec7e35c8b333a12",
+          "Name": "item16",
+          "Description": "Index položky č. 16",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0785c11bd22d48ab96f066b52610f39c",
+          "Name": "list",
+          "Description": "Seznam",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří nový seznam z daných vstupů"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8b31:5:SURFACE"
+      ],
+      "Id": "189faa20c59a4a4ca6e1d765fe6b234b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8e1e1181645f4db7955b9e66f4350970",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8b31:14:SURFACE"
+      ],
+      "Id": "c88b1f85f12b4945a0a1ed1682a9fc4a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "208c5468d08a4c1993a273941ed83751",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8b31:6:SURFACE"
+      ],
+      "Id": "8c170d7eeb0f426ca40cf111f4001c0c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ac30638c10b34b718d739a4dd9a66f23",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8606:6:SURFACE"
+      ],
+      "Id": "266c8866469048e38eb3d3aea92e9afa",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "93aca37b9a71414fbfefd74209929169",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8604:5:SURFACE"
+      ],
+      "Id": "c7e0cf629805476c93c4bcf4aecefd23",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "54287a2337ef4489b6d57f759b2912ab",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8afe:5:SURFACE"
+      ],
+      "Id": "e2ea9b4a1cd44a8cb82a243d897e60d1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f7f09c9f2c2f46dda473e2ed037bb2d0",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8afe:14:SURFACE"
+      ],
+      "Id": "112b0dee3f4143d49c46a05718100e46",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f1f427ec81404746836758d68b8be757",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8afe:6:SURFACE"
+      ],
+      "Id": "820480bb4dc14cb0849905eb5f402acf",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "10c707b35796484caf20ff317414c4a7",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a86c4:1:SURFACE"
+      ],
+      "Id": "e7b7dbfe0a824e5a9b0c00eba39e9cf0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "682ec40ad0784d0ead698f793ba346ea",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8ace:5:SURFACE"
+      ],
+      "Id": "15f3e7d71dfc47dca084836c8555b6df",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8ccb0c303c0f4e469dd2525396ef33e9",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8ace:14:SURFACE"
+      ],
+      "Id": "bab9bf43c1bf49c38dc6e30062a80c7b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b09455f5f0914f85bdc73d4d247cb2aa",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8ace:6:SURFACE"
+      ],
+      "Id": "7925c44e17a842c09fb1890a0021e01c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2bc477d3be604b60b40f90ea53d85d53",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a85df:6:SURFACE"
+      ],
+      "Id": "3de8fcde4e47422bb811a8e39d1f08ca",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1df6ef10cdcd47a5a7f1bfdb478e89d3",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a85dd:5:SURFACE"
+      ],
+      "Id": "f9a9c2fbb79e4adb992fd305bce8c038",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "50f52224f734404c9b75713c27657604",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8aa1:5:SURFACE"
+      ],
+      "Id": "4a798cf289e8441f960856c68e74e903",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4df0855cacf547909a9d21e8ac648060",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8aa1:14:SURFACE"
+      ],
+      "Id": "f4a0c0ba12044f7c822a144542b4e18a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "59dc3cb2d5d342ed94c54aa3cba8fc4e",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.DynamoConvert, CoreNodeModels",
+      "NodeType": "ConvertBetweenUnitsNode",
+      "MeasurementType": "Area",
+      "FromConversion": "SquareMillimeter",
+      "ToConversion": "SquareMeter",
+      "Id": "ccffc776ad9e4c1e917582ffb95741ce",
+      "Inputs": [
+        {
+          "Id": "ee00527f59a14380ae0ddbb11a753030",
+          "Name": "",
+          "Description": "Číselná hodnota k převodu",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7d1437e10cb54d92a7f9806183bc7a76",
+          "Name": "",
+          "Description": "Převedená číselná hodnota",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Převod mezi měrnými jednotkami"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Math.Sum@double[]",
+      "Id": "1bbfa1d88f12478b872ee728459f9353",
+      "Inputs": [
+        {
+          "Id": "87f845d1c45c4b498a13e1a5f5cca99c",
+          "Name": "values",
+          "Description": "Čísla k provedení součtu\n\ndouble[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3bf17a16a7c4439aad7fbb118d8f1caf",
+          "Name": "sum",
+          "Description": "Součet hodnot",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Najde součet posloupnosti čísel.\n\nMath.Sum (values: double[]): double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "080c9611fdc94edfb3069e1c47d060be",
+      "Inputs": [
+        {
+          "Id": "33be56a3249240c2af4311fc437bed42",
+          "Name": "list",
+          "Description": "Seznam k vyrovnání\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "02ed64110569442aac4b87248eca360f",
+          "Name": "amt",
+          "Description": "Hladiny vnoření, které chcete odstranit\n\nint\nVýchozí hodnota : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6ee769822a4f4534a78be6a8b8792b12",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vyrovná vnořený seznam seznamů o určitou hodnotu.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Surface.Area",
+      "Id": "e22136b98d8d47a0a1ce8369dd51e432",
+      "Inputs": [
+        {
+          "Id": "841c442d5c014172bc9a518261a1d684",
+          "Name": "surface",
+          "Description": "Autodesk.DesignScript.Geometry.Surface",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "42d1a7df4d6a446a86702ae2a5344179",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrací celkovou plochu povrchu.\n\nSurface.Area: double"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "1ea3a4856a6a410286364afac453e600",
+      "Inputs": [
+        {
+          "Id": "3fd9581f12fc42a39ad20ee4223121a9",
+          "Name": "item0",
+          "Description": "Index položky č. 0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5869f2178d7a451f82c64a58ee331ceb",
+          "Name": "item1",
+          "Description": "Index položky č. 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "156563aa2e5f4cab96e15f154a629c2e",
+          "Name": "item2",
+          "Description": "Index položky č. 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cca7e6827a2140b9992c31788ee5083e",
+          "Name": "item3",
+          "Description": "Index položky č. 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2eabe7cb710249a1935a6cfcf4b850b4",
+          "Name": "item4",
+          "Description": "Index položky č. 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d8e7a3444a7e4658a2316e3209556db5",
+          "Name": "list",
+          "Description": "Seznam",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří nový seznam z daných vstupů"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.DynamoConvert, CoreNodeModels",
+      "NodeType": "ConvertBetweenUnitsNode",
+      "MeasurementType": "Area",
+      "FromConversion": "SquareMillimeter",
+      "ToConversion": "SquareMeter",
+      "Id": "be4d34edf2124ab5980f141e07053f8d",
+      "Inputs": [
+        {
+          "Id": "7481205216cd4ed19b0b4f1a8ade7004",
+          "Name": "",
+          "Description": "Číselná hodnota k převodu",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "747a0b88067a425081a663ab8c6b957f",
+          "Name": "",
+          "Description": "Převedená číselná hodnota",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Převod mezi měrnými jednotkami"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Math.Sum@double[]",
+      "Id": "074c8668c46c4a70863ebf17930cf8a3",
+      "Inputs": [
+        {
+          "Id": "ac6a283199a341ce8aa75c9836040233",
+          "Name": "values",
+          "Description": "Čísla k provedení součtu\n\ndouble[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "790848b4d26d4fd488366e8fa39a3e57",
+          "Name": "sum",
+          "Description": "Součet hodnot",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Najde součet posloupnosti čísel.\n\nMath.Sum (values: double[]): double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "754a1ba46d794bc1b146ab640396a006",
+      "Inputs": [
+        {
+          "Id": "73b075fb1d374b32b8b2fd16fa4c1b59",
+          "Name": "list",
+          "Description": "Seznam k vyrovnání\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9ae18e2c75d84baaa0aaf17bdc7a122d",
+          "Name": "amt",
+          "Description": "Hladiny vnoření, které chcete odstranit\n\nint\nVýchozí hodnota : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "705fa3748ce94b3d84da8b3db684bb6f",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vyrovná vnořený seznam seznamů o určitou hodnotu.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Surface.Area",
+      "Id": "f47b4811e46649e38a68028af7338eae",
+      "Inputs": [
+        {
+          "Id": "93b47b01c8cc49098844f4ca2e0573f3",
+          "Name": "surface",
+          "Description": "Autodesk.DesignScript.Geometry.Surface",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e4a1b7710dee4469aed4964308cf163e",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrací celkovou plochu povrchu.\n\nSurface.Area: double"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8588:5:SURFACE"
+      ],
+      "Id": "1eec0d58084e46a0a6edac58de9a3e5f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1516b8863bae45bc8a04ca7bed6249d9",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8589:6:SURFACE"
+      ],
+      "Id": "3d9634a845f24e20b18a1c2b27b1d65d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2e95a8c8bfc54eb7b3670435ca8eb40c",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a858a:6:SURFACE"
+      ],
+      "Id": "851db5a3b92f42d18baaf8de391d664f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d6385bd2312143a198a64e52583434cd",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8589:155:SURFACE"
+      ],
+      "Id": "e573e00b25704dbc99e4c42dca3cd688",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6e3ebd8ad1c346d8a53c3053ab23b0c4",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9b9c292b-6cd8-40eb-8169-dae243b88372-000a8588:243:SURFACE"
+      ],
+      "Id": "2468344262524a449c8228ba81ddaa88",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e88279986655494f86b26f7071a25821",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.DynamoConvert, CoreNodeModels",
+      "NodeType": "ConvertBetweenUnitsNode",
+      "MeasurementType": "Area",
+      "FromConversion": "SquareMillimeter",
+      "ToConversion": "SquareMeter",
+      "Id": "a19f894d1e40493c8289b8362db4517e",
+      "Inputs": [
+        {
+          "Id": "305a5f0708ed488582bb0a2e51dafb44",
+          "Name": "",
+          "Description": "Číselná hodnota k převodu",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7eb04b0536374c70970d49727bf992ae",
+          "Name": "",
+          "Description": "Převedená číselná hodnota",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Převod mezi měrnými jednotkami"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Math.Sum@double[]",
+      "Id": "dbc0f8e1c7e84d19bc5d7dd6d39c9b67",
+      "Inputs": [
+        {
+          "Id": "43c7a780eff846b59b4673d7da040e8d",
+          "Name": "values",
+          "Description": "Čísla k provedení součtu\n\ndouble[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a50e607cfd8f4939aa97df5fdaedde0e",
+          "Name": "sum",
+          "Description": "Součet hodnot",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Najde součet posloupnosti čísel.\n\nMath.Sum (values: double[]): double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "a89409c0a01b4f10ae1b8dcfc6dc4ad4",
+      "Inputs": [
+        {
+          "Id": "ef7c3d54af90422087ec3d557dcdcb0a",
+          "Name": "list",
+          "Description": "Seznam k vyrovnání\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "12e46fc4812a4c2595ab62ab76cf5679",
+          "Name": "amt",
+          "Description": "Hladiny vnoření, které chcete odstranit\n\nint\nVýchozí hodnota : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "10f123bd0ddc4022a28c64c187a96c92",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vyrovná vnořený seznam seznamů o určitou hodnotu.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Surface.Area",
+      "Id": "44d49f234240471ab27acb118cd4e03e",
+      "Inputs": [
+        {
+          "Id": "af147edb4fcf44259770d8236a3d2f66",
+          "Name": "surface",
+          "Description": "Autodesk.DesignScript.Geometry.Surface",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fc0c823f72764fabbd59b69fea90a2d8",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrací celkovou plochu povrchu.\n\nSurface.Area: double"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "bbd5843de02e4bb09b9b6225a098ad2c",
+      "Inputs": [
+        {
+          "Id": "c11c870ba2a241918518224fea0c50b9",
+          "Name": "item0",
+          "Description": "Index položky č. 0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6ff67cd6ef734d1d80cf01b521ad8389",
+          "Name": "item1",
+          "Description": "Index položky č. 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "375dd34a9faa4b9c955da10c72e5730d",
+          "Name": "item2",
+          "Description": "Index položky č. 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8b489ebef32f4531a2f00b210f212b0b",
+          "Name": "item3",
+          "Description": "Index položky č. 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b4c4ba7d1df24827b577e0408627443f",
+          "Name": "item4",
+          "Description": "Index položky č. 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "11e3695dffdd4e9aabac97c2ea37eeb0",
+          "Name": "item5",
+          "Description": "Index položky č. 5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "098e7bcefbca476ab2f7176c4e6a4d3d",
+          "Name": "item6",
+          "Description": "Index položky č. 6",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "eeebee64d95d435f9147a4e0f7c64d1b",
+          "Name": "item7",
+          "Description": "Index položky č. 7",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8983f838a8104073bfbbb6eb0a5d9fd8",
+          "Name": "item8",
+          "Description": "Index položky č. 8",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "eb87db56a8b6477aacfee8e2358bb7cf",
+          "Name": "item9",
+          "Description": "Index položky č. 9",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "95c31f35223144e2a3358a360609b3bf",
+          "Name": "item10",
+          "Description": "Index položky č. 10",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "051dc1c6ed664c559da7807a6ed9a535",
+          "Name": "item11",
+          "Description": "Index položky č. 11",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "66e17c6e713c458ab33c73a5b3d9846e",
+          "Name": "item12",
+          "Description": "Index položky č. 12",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "75d347f2ef8a466098b0dbf7326a3c43",
+          "Name": "item13",
+          "Description": "Index položky č. 13",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "43f27170fd2e47a593d90b5d054b20f1",
+          "Name": "item14",
+          "Description": "Index položky č. 14",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1f660bf049944bd8b257141d7de05f69",
+          "Name": "item15",
+          "Description": "Index položky č. 15",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2ce783da2ad34e9c83cdb96ead03b988",
+          "Name": "item16",
+          "Description": "Index položky č. 16",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d102b9520293441ea374c8acf4c136f2",
+          "Name": "item17",
+          "Description": "Index položky č. 17",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "48a4ff45cd4c4085a45a50281c347927",
+          "Name": "item18",
+          "Description": "Index položky č. 18",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "318d85bb48e641448c879b56bf058853",
+          "Name": "item19",
+          "Description": "Index položky č. 19",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ab6c03a7a74148a0963c141f738ee84e",
+          "Name": "item20",
+          "Description": "Index položky č. 20",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4e1c3d7182664314ae27b5801059710c",
+          "Name": "item21",
+          "Description": "Index položky č. 21",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "788d433d7e504eae95c2d1d47e275562",
+          "Name": "item22",
+          "Description": "Index položky č. 22",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "efb95cfec515402097fa7fd69a49521d",
+          "Name": "item23",
+          "Description": "Index položky č. 23",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d6bd1f45315f4b15abbac19e57a7bd73",
+          "Name": "item24",
+          "Description": "Index položky č. 24",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "65dd447a36b44a7387a6902718eae156",
+          "Name": "item25",
+          "Description": "Index položky č. 25",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d5fe6474165d4b0496f7cd3312b9a9c8",
+          "Name": "item26",
+          "Description": "Index položky č. 26",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d842b70d639b4adbbceb9f986a7c96b1",
+          "Name": "item27",
+          "Description": "Index položky č. 27",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "828e7e184795411789e7e8a6d1b55505",
+          "Name": "item28",
+          "Description": "Index položky č. 28",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4e762de2e3064a2bb435ac369f40ca0f",
+          "Name": "item29",
+          "Description": "Index položky č. 29",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e531a8c302ef43929ac7a4f13f94fc77",
+          "Name": "item30",
+          "Description": "Index položky č. 30",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "675d86c429114638b35f272993299b80",
+          "Name": "list",
+          "Description": "Seznam",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří nový seznam z daných vstupů"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "48976de1-2572-4e64-af50-b3b95532f09b-00086741:6:SURFACE"
+      ],
+      "Id": "f5028c9de5ee4c2ea463404b71d1c3dd",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b602cd07cece430b81d20c9922659dc4",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9c6878cd-1e68-4f4f-8093-125883ca9dac-0008839a:0:SURFACE"
+      ],
+      "Id": "19e1092c7077443dadacadde718393ff",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "11dc29a60ccd4892bcf330a229952c41",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "1d64124d-67e4-4f6c-bf68-0befdb530c4d-00082bb3:6:SURFACE"
+      ],
+      "Id": "04b40addeefd4b90b7f74f5bcaa0ee59",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1cd12496211c4d17a0b298b7182d2095",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "1d64124d-67e4-4f6c-bf68-0befdb530c4d-00082ed7:5:SURFACE"
+      ],
+      "Id": "17f4209bb04f4219bc2db9e28c70304b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e96324cea0ec405ba1527454d2d3db60",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9c6878cd-1e68-4f4f-8093-125883ca9dac-000881fb:5:SURFACE"
+      ],
+      "Id": "79eb33af5cb84c29b819091049f74586",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d8d13237c71d47148ad0de305f3eb848",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "3f598b69-1852-4c47-a1b8-00d29201da2f-000838a4:6:SURFACE"
+      ],
+      "Id": "9f78ce26ce0d4446b186150d34918686",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c28214f6ea0142038fb7edf6a01a773e",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "1d64124d-67e4-4f6c-bf68-0befdb530c4d-000823fa:5:SURFACE"
+      ],
+      "Id": "e795374b112047398a84979af797b921",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "33ba9fdb183c499b9085e24a0a09b1cf",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9c6878cd-1e68-4f4f-8093-125883ca9dac-00088877:0:SURFACE"
+      ],
+      "Id": "8befce72ba0f4fce9e65d80f4296d202",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c19462461abf4a70b41013d260d838ff",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "1d64124d-67e4-4f6c-bf68-0befdb530c4d-000823fa:5:SURFACE"
+      ],
+      "Id": "76818dcb12a54274a44649128fe2cb60",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "031eb0cb643a42a59363d11160cf66e9",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "48976de1-2572-4e64-af50-b3b95532f09b-000866e5:5:SURFACE"
+      ],
+      "Id": "00f2ff240a94427d98b9d9880f36bb4d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "78dfb51de04b42b3922b1b1b63bdfb0a",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9c6878cd-1e68-4f4f-8093-125883ca9dac-000881fa:6:SURFACE"
+      ],
+      "Id": "94df374d9ffe40bba6213a2848909911",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fc6646c4c89842b183aa1450415c6c5a",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "dda5d7a2-f628-4dda-8c7f-1c781c85d3f1-00084ca4:9:SURFACE"
+      ],
+      "Id": "7878c490a859429eb4b00391787c4103",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "471bef3f69744b71a50d3b127c89fe0b",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6977:375:SURFACE"
+      ],
+      "Id": "d2601a297c5b4788a547b01c026cff64",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "137dc49dde3c4f05b619f75a8ca20ef2",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a697c:5:SURFACE"
+      ],
+      "Id": "e1c6f01c2c9840ce8f71d0ecf114a851",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8e9c0c0d8aaa47c690a888a43fd286a2",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a697d:5:SURFACE"
+      ],
+      "Id": "d2fcd0df1edb4005995899bc8c0b0bf8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "008cf707c6ea4313900d6656a6bbc8fe",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "3b23f070-cb9d-4d74-8c24-9bae847529cc-0008d15a:10000000:157:SURFACE"
+      ],
+      "Id": "7524676be39449a5863fa78935440562",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3b49a2f0ff1c43bea3f6671c2086af38",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a6a3d:127:SURFACE"
+      ],
+      "Id": "5c8ccac8afe74a4592b70ff790688a71",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "15f6640218d244b69fca329396fcb5ec",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "1d64124d-67e4-4f6c-bf68-0befdb530c4d-000830dc:6:SURFACE"
+      ],
+      "Id": "83cda4988278414a872e15d620685648",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7461cb6c290d43a58404fec4d33d176c",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "70c1cd2a-0910-480d-90eb-af6591e152c2-000a6080:5:SURFACE"
+      ],
+      "Id": "82d72a71fed54ecb8f2da3379e28f864",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "dbc4a02e75ea45feb9e18d5f538aaafb",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "70c1cd2a-0910-480d-90eb-af6591e152c2-000a6080:0:SURFACE"
+      ],
+      "Id": "3298098ccddc4fb7b910734de7fc9e29",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4fb107c25a5e42e8b05c498d22b82b56",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "70c1cd2a-0910-480d-90eb-af6591e152c2-000a60d0:5:SURFACE"
+      ],
+      "Id": "0f7daa222b464061b9151670709e7d4f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3bfac3e8da63430891df138e110db032",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "70c1cd2a-0910-480d-90eb-af6591e152c2-000a60d0:0:SURFACE"
+      ],
+      "Id": "8cd2016313b2439099d3f639313d560c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6d3a686c22f54a48a6ee6359577121bd",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "70c1cd2a-0910-480d-90eb-af6591e152c2-000a6080:13:SURFACE"
+      ],
+      "Id": "06d2d2deeb3f4f4194a4c5ec90763e0e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "67b9d760d44a488ea206f3d2eecfdd00",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "1d64124d-67e4-4f6c-bf68-0befdb530c4d-000830dc:5:SURFACE"
+      ],
+      "Id": "ee1364249bd34766bec606cc0e597fca",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "20212644cfa74919ae0b6d9a7a074ed7",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "3b23f070-cb9d-4d74-8c24-9bae847529cc-0008d8be:10000001:305:SURFACE"
+      ],
+      "Id": "c8e1b17c10764861857725684f6eabb3",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "25de6c7054ae43548e627a503ede8cd9",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "3f598b69-1852-4c47-a1b8-00d29201da2f-00083a01:5:SURFACE"
+      ],
+      "Id": "187ede35b4cc42f695c2a4eb70fc7252",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "dd71c6cb187e47cb83d95b4199154ca1",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "70c1cd2a-0910-480d-90eb-af6591e152c2-000a5fb5:0:SURFACE"
+      ],
+      "Id": "44378c20656d447297baad587808acfa",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c9896fd0710c4658b90674048c175f6a",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "524c3ee1-c8f2-4029-8f1b-c8072e8440b5-000a697e:5:SURFACE"
+      ],
+      "Id": "2f5d19efc59e4ffc83adadae9f981900",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ad69850e48474ca48c452b57d710270e",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "48976de1-2572-4e64-af50-b3b95532f09b-000867a8:6:SURFACE"
+      ],
+      "Id": "9082fba0db9c4da0a52d682c6a16c227",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b08442b123d746749780a878fa61eacb",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "1d64124d-67e4-4f6c-bf68-0befdb530c4d-00082ffc:5:SURFACE"
+      ],
+      "Id": "7281e4d20f834f87b1a3b172666659cc",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fe81a28cf78849c0b22ff20b38982a82",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "9c6878cd-1e68-4f4f-8093-125883ca9dac-000881fc:5:SURFACE"
+      ],
+      "Id": "1eae94f133c3444690c595903dabd37a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "efdc2d67b0884d699572dfbecbcf1266",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.DynamoConvert, CoreNodeModels",
+      "NodeType": "ConvertBetweenUnitsNode",
+      "MeasurementType": "Area",
+      "FromConversion": "SquareMillimeter",
+      "ToConversion": "SquareMeter",
+      "Id": "d9ad96d838014b5dbe41cf6ceaa2736f",
+      "Inputs": [
+        {
+          "Id": "af16632b10384d78b079fabfab209662",
+          "Name": "",
+          "Description": "Číselná hodnota k převodu",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8951d6fc84014c91a8f3791e75f7768d",
+          "Name": "",
+          "Description": "Převedená číselná hodnota",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Převod mezi měrnými jednotkami"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Math.Sum@double[]",
+      "Id": "ab23cd3a38994bc28ad5f9f2c5ee9a86",
+      "Inputs": [
+        {
+          "Id": "d265847147cd4888b400d6419d4b9a1a",
+          "Name": "values",
+          "Description": "Čísla k provedení součtu\n\ndouble[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e968f7c2d4634b44b804041c9f27e952",
+          "Name": "sum",
+          "Description": "Součet hodnot",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Najde součet posloupnosti čísel.\n\nMath.Sum (values: double[]): double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "1342b472581f46e0b8a641f8ac54d319",
+      "Inputs": [
+        {
+          "Id": "0fde0e4429244bc4874b07e11ddcba1f",
+          "Name": "list",
+          "Description": "Seznam k vyrovnání\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d37e9e83ef7e4097888ce44252a1507b",
+          "Name": "amt",
+          "Description": "Hladiny vnoření, které chcete odstranit\n\nint\nVýchozí hodnota : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "def71a0a7a5e4ef5ac1fc93f22d3f294",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vyrovná vnořený seznam seznamů o určitou hodnotu.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Surface.Area",
+      "Id": "15af369dc01b4fc1b73177c4e0d96ab1",
+      "Inputs": [
+        {
+          "Id": "7895c32e23df40fba61e430a4293a8e8",
+          "Name": "surface",
+          "Description": "Autodesk.DesignScript.Geometry.Surface",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "53ef50d602ad414ba5b8d9a55a524630",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrací celkovou plochu povrchu.\n\nSurface.Area: double"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "af5801f168d34683bb8f03a12507b711",
+      "Inputs": [
+        {
+          "Id": "136503fa9fef43108c194c2c16b933f8",
+          "Name": "item0",
+          "Description": "Index položky č. 0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f5b7792978e94732a2562d3abc237569",
+          "Name": "item1",
+          "Description": "Index položky č. 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "986b5d2f256e4c499b736146e2881e76",
+          "Name": "item2",
+          "Description": "Index položky č. 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ccc6f1718608416ba69fa92153c7c19c",
+          "Name": "item3",
+          "Description": "Index položky č. 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "da56b51859ce4f4a91dd353348800275",
+          "Name": "item4",
+          "Description": "Index položky č. 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5225e22d98e045328b05694a66cdbbc3",
+          "Name": "item5",
+          "Description": "Index položky č. 5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6a4697f0639f485794187299a859ea1e",
+          "Name": "item6",
+          "Description": "Index položky č. 6",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d1e7722dadc9483abc902d9e235c0ad9",
+          "Name": "item7",
+          "Description": "Index položky č. 7",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ec4fb42426664c32afe4402fc667212b",
+          "Name": "list",
+          "Description": "Seznam",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří nový seznam z daných vstupů"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "573ffc23-c450-4462-a4ed-0145e73ed4b2-00091212:5:SURFACE"
+      ],
+      "Id": "48978cef3a7f4735ab2536bc4a8b147f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ee2c3db2b86342ea8b29249cd542a5e4",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "b38eeb8c-083e-47f8-9378-4fa153eb4d02-00094f6c:5:SURFACE"
+      ],
+      "Id": "10e8d6a9172649698ae5b0088c3611b7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bd7b51956e0040e3a7e6cbb8d06e68b3",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "29b3d1a1-4bd9-4603-9184-c4546549aff7-0009c20f:6:SURFACE"
+      ],
+      "Id": "e4acb3e658a74a2199aee2e5f029ce9e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f32ab2693d624983b473e915d88696e9",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "ae9765f6-16f3-407c-a767-251eb4998403-0009b5d6:6:SURFACE"
+      ],
+      "Id": "87c634a48c49420a9212583f76716163",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5aa4ca77c0424fba919395630ad07f72",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "ae9765f6-16f3-407c-a767-251eb4998403-0009b463:9:SURFACE"
+      ],
+      "Id": "aa6fe620745b4108a621cb9ecb710823",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bfb681d5b9bd457d85c0eed9f0c26dbd",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "b3fe85e4-30b6-44a0-876a-9eac0ccff365-0009d76a:6:SURFACE"
+      ],
+      "Id": "01a509db026b4af3b15b42232a94b96f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6379d70844ab4f49a83cbc5020e02305",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "b3fe85e4-30b6-44a0-876a-9eac0ccff365-0009d7fc:13:SURFACE"
+      ],
+      "Id": "58981a6d9f8541bf93b8bafa1f3437e1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "15e90ec43592488e95f83d84bbb0c08f",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSFaceSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "3b23f070-cb9d-4d74-8c24-9bae847529cc-0008de48:5:SURFACE"
+      ],
+      "Id": "333d530a8f7a44cea332b6899fbb926d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0e73b023c9fd44618de7462c225869dc",
+          "Name": "Povrch",
+          "Description": "Vybrané prvky.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "ed1ba95217a348a3b5c7d7ad50ba6469",
+      "Inputs": [
+        {
+          "Id": "f07249b569864c81b37bb2e73516d7b4",
+          "Name": "",
+          "Description": "Uzel k vyhodnocení",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "13b11e8eaad24de8ad33309a56244dc1",
+          "Name": "",
+          "Description": "Podívejte se na obsah.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Zobrazení výstupu uzlu"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "cf2e69bfed9a4d06a4fddc7f483022b1",
+      "End": "f6a97bd9952b454791af88563117e8b3",
+      "Id": "58124b18c52e4ac9bc803c6bb85a88f5"
+    },
+    {
+      "Start": "270c5ea8208249bba31eb80598f68b1e",
+      "End": "f101152f3b2544fb9ddbccfc6d996645",
+      "Id": "904c365fc0aa49408a215b7b46546fa8"
+    },
+    {
+      "Start": "a03a11a579504489b7c4c31da679182f",
+      "End": "9bbb76783e39400ea847ec65e5f9ec5b",
+      "Id": "51bf7d29b7004563b7cbc8181cc1a21f"
+    },
+    {
+      "Start": "1627e3365b77498b8fc841600c491309",
+      "End": "1d42f78c3dcc44df9548d3961ecf5738",
+      "Id": "c236be8487ef46269c965189ceb07df8"
+    },
+    {
+      "Start": "044712646e684acd8cdb5603ad361b81",
+      "End": "39207a5541cd4e6a8384a8cbdccfcb0a",
+      "Id": "1c0f3215f4ab4e2ba5281dcf1a63a3d1"
+    },
+    {
+      "Start": "73d50a56f4f14777b51b4160fd8f0f64",
+      "End": "9a03639cafed4b7c864d4e9082c23320",
+      "Id": "befa12c6cd3f4ad6b3a9ea6d775f2928"
+    },
+    {
+      "Start": "8445df0941654654aaeb220be3c2803b",
+      "End": "e6befa700f0d4aa08e6a23e323f65910",
+      "Id": "dbd0a7d37bc9413f80f0d100bb0baab0"
+    },
+    {
+      "Start": "2a688e191b1b4faa81b4bba1595536e8",
+      "End": "6eedc567797b4be097995ecee1537327",
+      "Id": "a0641d87e4624714b66030b97ae46f30"
+    },
+    {
+      "Start": "83a4707000fe4d5f96403effaeda2ced",
+      "End": "36d7366be70f4c95b27ad50dac8cee8f",
+      "Id": "91e8c87e584d4db3953eac0c18313f95"
+    },
+    {
+      "Start": "713f41f447e1451da091d7bca17fe110",
+      "End": "0c6a69ade80f491bb4e00262ec386d4f",
+      "Id": "225755aa77ff421a874c9eb1cd3e26fb"
+    },
+    {
+      "Start": "22552b88462241d7ae73778d4e08822d",
+      "End": "e79651f9856b48a3a4526302a816f480",
+      "Id": "251edfa3ced44334b0d5a4a2c7f0a50e"
+    },
+    {
+      "Start": "c0bae46d5f10424db61e7de9873cfa50",
+      "End": "2a6af173e9fe40bba41fb83883b40906",
+      "Id": "892b1940e6b6481fb474eef42924bdab"
+    },
+    {
+      "Start": "ecd1dec66ebc45a4b7825468f89d8367",
+      "End": "97a8ab65c77743e3ba8593d2f9eb32ee",
+      "Id": "d133c5d72a864a648eacbd226f552659"
+    },
+    {
+      "Start": "8e4761cff58e49fb92eafcc1284a9931",
+      "End": "438eb39478144078b31a98db589bd7a1",
+      "Id": "55337e53a78c49c28e5ec2ecf00e8295"
+    },
+    {
+      "Start": "c1427729d49b459bb6fd2560087d8463",
+      "End": "a7910f8760a24d9796dfb115812522e5",
+      "Id": "c4ad5a5cc6664ec9a5b1e974df924655"
+    },
+    {
+      "Start": "b967b912c6434930a105fa8c01689750",
+      "End": "63a6860317d047f98e76b35c18642fa7",
+      "Id": "a07d27986c2d492a97a41ad364890ae1"
+    },
+    {
+      "Start": "62b0e14ba6b048efad64f6573587c9a8",
+      "End": "ba246386b85642bf992c281230a77c1a",
+      "Id": "05c46ec1dd6e4c1f9db136b23754f35d"
+    },
+    {
+      "Start": "95cb8c8f21b043c4967829ec110cb3c7",
+      "End": "3268477b07324abdb3b58e922d06d2c8",
+      "Id": "c3f0eb44856e4c96a555783ead374705"
+    },
+    {
+      "Start": "0785c11bd22d48ab96f066b52610f39c",
+      "End": "841c442d5c014172bc9a518261a1d684",
+      "Id": "237b04c40c7244a0b67fb7f39b6ae8a2"
+    },
+    {
+      "Start": "8e1e1181645f4db7955b9e66f4350970",
+      "End": "b587e6a076484abba33203101aa5d1a4",
+      "Id": "71bf9619c291437fbb336270eb539324"
+    },
+    {
+      "Start": "208c5468d08a4c1993a273941ed83751",
+      "End": "4314d2a972654f65ada4b96d6cb3de4c",
+      "Id": "7c086290f7174e0c9a5d8dd0962d2408"
+    },
+    {
+      "Start": "ac30638c10b34b718d739a4dd9a66f23",
+      "End": "1583ba7006764c11805a5cd1646a0c2c",
+      "Id": "797a6b55b69f422db07ad15c388e40a0"
+    },
+    {
+      "Start": "93aca37b9a71414fbfefd74209929169",
+      "End": "938b0c0ba8844ac988a56d636ec93117",
+      "Id": "7dd26e8104e0494f9f4f876ed2b66f0e"
+    },
+    {
+      "Start": "54287a2337ef4489b6d57f759b2912ab",
+      "End": "4f623080dc63476aa9b2e1a46111370f",
+      "Id": "1106b8d2cca642a1a28d3b173e8d85d6"
+    },
+    {
+      "Start": "f7f09c9f2c2f46dda473e2ed037bb2d0",
+      "End": "7805f9e8b60247b1a3dfdb01342af6a4",
+      "Id": "de55c496a5694afd8df326e995afc0c8"
+    },
+    {
+      "Start": "f1f427ec81404746836758d68b8be757",
+      "End": "c345150fd793465e9abe0dbcd7e2afe1",
+      "Id": "30f9b1f1a046430bbbfd6ca0a0f90293"
+    },
+    {
+      "Start": "10c707b35796484caf20ff317414c4a7",
+      "End": "a4011d85811c42ce8b3829cae59c7b14",
+      "Id": "8d02c06f195f472d9f3a8a24231524e8"
+    },
+    {
+      "Start": "682ec40ad0784d0ead698f793ba346ea",
+      "End": "fdc9bf7c57174715b1422c4c7d7166b1",
+      "Id": "7f023aaa38f947828ce0f4bb21de7668"
+    },
+    {
+      "Start": "8ccb0c303c0f4e469dd2525396ef33e9",
+      "End": "df14b241260c4308b0552281576ea60a",
+      "Id": "70fc2f1c4d6f443f8f35bb69f738b7d2"
+    },
+    {
+      "Start": "b09455f5f0914f85bdc73d4d247cb2aa",
+      "End": "b87ae402169d420a9f0e40b23652edb4",
+      "Id": "303700b5758d4b249be1e7f21fe16119"
+    },
+    {
+      "Start": "2bc477d3be604b60b40f90ea53d85d53",
+      "End": "9804a8013777488da7bdcbe4c1d40e73",
+      "Id": "dc74740aee0c4e29a0bf8423ed112f75"
+    },
+    {
+      "Start": "1df6ef10cdcd47a5a7f1bfdb478e89d3",
+      "End": "130e4b04ada148bd868d7674b2708725",
+      "Id": "8d9e85522f5d4cef9e6ec49534d90335"
+    },
+    {
+      "Start": "50f52224f734404c9b75713c27657604",
+      "End": "32e789ef4e8b42618b79dbce7cf1f962",
+      "Id": "172d071385194155abd3675daf25561f"
+    },
+    {
+      "Start": "4df0855cacf547909a9d21e8ac648060",
+      "End": "067ee0216d2947179c8303663d133e2f",
+      "Id": "9d4f01146a4849a7891a8b3195ec8467"
+    },
+    {
+      "Start": "59dc3cb2d5d342ed94c54aa3cba8fc4e",
+      "End": "40385197dc274de19ec7e35c8b333a12",
+      "Id": "201043c563334d24beb4490f320d8ca9"
+    },
+    {
+      "Start": "3bf17a16a7c4439aad7fbb118d8f1caf",
+      "End": "ee00527f59a14380ae0ddbb11a753030",
+      "Id": "6453fe56fade480daac307802b488af6"
+    },
+    {
+      "Start": "6ee769822a4f4534a78be6a8b8792b12",
+      "End": "87f845d1c45c4b498a13e1a5f5cca99c",
+      "Id": "bc00056abb9d4195b10c42dfa055cad8"
+    },
+    {
+      "Start": "42d1a7df4d6a446a86702ae2a5344179",
+      "End": "33be56a3249240c2af4311fc437bed42",
+      "Id": "8c4e21611c954edd911a8c532b93ede1"
+    },
+    {
+      "Start": "d8e7a3444a7e4658a2316e3209556db5",
+      "End": "93b47b01c8cc49098844f4ca2e0573f3",
+      "Id": "4894a87b45254ec985ccbd8ea3efcd78"
+    },
+    {
+      "Start": "790848b4d26d4fd488366e8fa39a3e57",
+      "End": "7481205216cd4ed19b0b4f1a8ade7004",
+      "Id": "49b48638937f4a40b0c4d5a03f91e6be"
+    },
+    {
+      "Start": "705fa3748ce94b3d84da8b3db684bb6f",
+      "End": "ac6a283199a341ce8aa75c9836040233",
+      "Id": "5e8a09ef88914b2fb208bc2c75d2b134"
+    },
+    {
+      "Start": "e4a1b7710dee4469aed4964308cf163e",
+      "End": "73b075fb1d374b32b8b2fd16fa4c1b59",
+      "Id": "89f864487f734abb9efd43b1af494723"
+    },
+    {
+      "Start": "1516b8863bae45bc8a04ca7bed6249d9",
+      "End": "3fd9581f12fc42a39ad20ee4223121a9",
+      "Id": "2b82ff649bb84ac9b92d97fdf2c2f177"
+    },
+    {
+      "Start": "2e95a8c8bfc54eb7b3670435ca8eb40c",
+      "End": "5869f2178d7a451f82c64a58ee331ceb",
+      "Id": "a7fc5e46c77a415dbb6e9c6210b7bab7"
+    },
+    {
+      "Start": "d6385bd2312143a198a64e52583434cd",
+      "End": "156563aa2e5f4cab96e15f154a629c2e",
+      "Id": "08dbf411cebc4d5fbb580a099cc3cf71"
+    },
+    {
+      "Start": "6e3ebd8ad1c346d8a53c3053ab23b0c4",
+      "End": "cca7e6827a2140b9992c31788ee5083e",
+      "Id": "311090c2e63446d19cb66c7fd7d2a22e"
+    },
+    {
+      "Start": "e88279986655494f86b26f7071a25821",
+      "End": "2eabe7cb710249a1935a6cfcf4b850b4",
+      "Id": "ddc09554b68f4c34826e2c7358b11f25"
+    },
+    {
+      "Start": "a50e607cfd8f4939aa97df5fdaedde0e",
+      "End": "305a5f0708ed488582bb0a2e51dafb44",
+      "Id": "724aa940faa14be1b882c016b512b14d"
+    },
+    {
+      "Start": "10f123bd0ddc4022a28c64c187a96c92",
+      "End": "43c7a780eff846b59b4673d7da040e8d",
+      "Id": "7e8da7bcbc2d43c3818dadb16889f3fa"
+    },
+    {
+      "Start": "fc0c823f72764fabbd59b69fea90a2d8",
+      "End": "ef7c3d54af90422087ec3d557dcdcb0a",
+      "Id": "898ffc8f47f24a55ab08a34b74cdd2dc"
+    },
+    {
+      "Start": "675d86c429114638b35f272993299b80",
+      "End": "af147edb4fcf44259770d8236a3d2f66",
+      "Id": "5360f7f8871a4c08a350efd3ff4def9e"
+    },
+    {
+      "Start": "b602cd07cece430b81d20c9922659dc4",
+      "End": "c11c870ba2a241918518224fea0c50b9",
+      "Id": "592bacc002434e0899d77c445eb8418e"
+    },
+    {
+      "Start": "11dc29a60ccd4892bcf330a229952c41",
+      "End": "6ff67cd6ef734d1d80cf01b521ad8389",
+      "Id": "5c7304698d874d9bb8f1354c2609f8ea"
+    },
+    {
+      "Start": "1cd12496211c4d17a0b298b7182d2095",
+      "End": "375dd34a9faa4b9c955da10c72e5730d",
+      "Id": "6fca411c581a4ad5be0f1eb57aa8eb66"
+    },
+    {
+      "Start": "e96324cea0ec405ba1527454d2d3db60",
+      "End": "8b489ebef32f4531a2f00b210f212b0b",
+      "Id": "ba2288b621e24b56925d0e857fbc2185"
+    },
+    {
+      "Start": "d8d13237c71d47148ad0de305f3eb848",
+      "End": "b4c4ba7d1df24827b577e0408627443f",
+      "Id": "dc6f82606de9467287f597b80f269055"
+    },
+    {
+      "Start": "c28214f6ea0142038fb7edf6a01a773e",
+      "End": "11e3695dffdd4e9aabac97c2ea37eeb0",
+      "Id": "7f6df3731018425ea504b0846305d4c1"
+    },
+    {
+      "Start": "33ba9fdb183c499b9085e24a0a09b1cf",
+      "End": "098e7bcefbca476ab2f7176c4e6a4d3d",
+      "Id": "b9cf677b3e4f4fafba6ad1a9a7910898"
+    },
+    {
+      "Start": "c19462461abf4a70b41013d260d838ff",
+      "End": "eeebee64d95d435f9147a4e0f7c64d1b",
+      "Id": "32dbb1c80e94404692b0bb9f1a63efa0"
+    },
+    {
+      "Start": "031eb0cb643a42a59363d11160cf66e9",
+      "End": "8983f838a8104073bfbbb6eb0a5d9fd8",
+      "Id": "a2931f72bdf9414f8b60cda2164dd376"
+    },
+    {
+      "Start": "78dfb51de04b42b3922b1b1b63bdfb0a",
+      "End": "eb87db56a8b6477aacfee8e2358bb7cf",
+      "Id": "4d1f45a6b1e44721a88a867df8faa9a1"
+    },
+    {
+      "Start": "fc6646c4c89842b183aa1450415c6c5a",
+      "End": "95c31f35223144e2a3358a360609b3bf",
+      "Id": "6088fc68a5fb4ff29736dd5a64e0532b"
+    },
+    {
+      "Start": "471bef3f69744b71a50d3b127c89fe0b",
+      "End": "051dc1c6ed664c559da7807a6ed9a535",
+      "Id": "f6e283333bf04364bae1b93e2b7af2f0"
+    },
+    {
+      "Start": "137dc49dde3c4f05b619f75a8ca20ef2",
+      "End": "66e17c6e713c458ab33c73a5b3d9846e",
+      "Id": "5bf7fc0067164c8080ce28799ff4b131"
+    },
+    {
+      "Start": "8e9c0c0d8aaa47c690a888a43fd286a2",
+      "End": "75d347f2ef8a466098b0dbf7326a3c43",
+      "Id": "e3af2540027a4400977be698d75cb420"
+    },
+    {
+      "Start": "008cf707c6ea4313900d6656a6bbc8fe",
+      "End": "43f27170fd2e47a593d90b5d054b20f1",
+      "Id": "928572e1fd754532a1272cde4f9af086"
+    },
+    {
+      "Start": "3b49a2f0ff1c43bea3f6671c2086af38",
+      "End": "1f660bf049944bd8b257141d7de05f69",
+      "Id": "0f7aed7151b147adac5f6b5c1d8bfd6d"
+    },
+    {
+      "Start": "15f6640218d244b69fca329396fcb5ec",
+      "End": "2ce783da2ad34e9c83cdb96ead03b988",
+      "Id": "7b69cb23dc2643939f3a4ca63f21aed9"
+    },
+    {
+      "Start": "7461cb6c290d43a58404fec4d33d176c",
+      "End": "d102b9520293441ea374c8acf4c136f2",
+      "Id": "3bec90c0871b4833a42cf3c69a9095bf"
+    },
+    {
+      "Start": "dbc4a02e75ea45feb9e18d5f538aaafb",
+      "End": "48a4ff45cd4c4085a45a50281c347927",
+      "Id": "5f9de1a061674cd5bb6930b23b9ab3ed"
+    },
+    {
+      "Start": "4fb107c25a5e42e8b05c498d22b82b56",
+      "End": "318d85bb48e641448c879b56bf058853",
+      "Id": "9143c71a420241069572b7496acfec34"
+    },
+    {
+      "Start": "3bfac3e8da63430891df138e110db032",
+      "End": "ab6c03a7a74148a0963c141f738ee84e",
+      "Id": "bd8286b547b440a0a52b2285d556b942"
+    },
+    {
+      "Start": "6d3a686c22f54a48a6ee6359577121bd",
+      "End": "4e1c3d7182664314ae27b5801059710c",
+      "Id": "b813e1a6a0df403eaf1c13929b87ebd5"
+    },
+    {
+      "Start": "67b9d760d44a488ea206f3d2eecfdd00",
+      "End": "788d433d7e504eae95c2d1d47e275562",
+      "Id": "3c0075a8e5894ce0b71d1fb874aab4a1"
+    },
+    {
+      "Start": "20212644cfa74919ae0b6d9a7a074ed7",
+      "End": "efb95cfec515402097fa7fd69a49521d",
+      "Id": "3c3ee8eabc8f462d82782549fafaa30e"
+    },
+    {
+      "Start": "25de6c7054ae43548e627a503ede8cd9",
+      "End": "d5fe6474165d4b0496f7cd3312b9a9c8",
+      "Id": "896573bbbfe84f5282cf6566270af582"
+    },
+    {
+      "Start": "dd71c6cb187e47cb83d95b4199154ca1",
+      "End": "65dd447a36b44a7387a6902718eae156",
+      "Id": "4d133bddb46f4e72ad10fa0817041bcf"
+    },
+    {
+      "Start": "c9896fd0710c4658b90674048c175f6a",
+      "End": "d6bd1f45315f4b15abbac19e57a7bd73",
+      "Id": "a7a24456410146809409db5ab6721d1a"
+    },
+    {
+      "Start": "ad69850e48474ca48c452b57d710270e",
+      "End": "d842b70d639b4adbbceb9f986a7c96b1",
+      "Id": "aa9230b169be47a288cb42d42ee28c66"
+    },
+    {
+      "Start": "b08442b123d746749780a878fa61eacb",
+      "End": "4e762de2e3064a2bb435ac369f40ca0f",
+      "Id": "22e7207c0f1b45acb9299846648bbb41"
+    },
+    {
+      "Start": "fe81a28cf78849c0b22ff20b38982a82",
+      "End": "e531a8c302ef43929ac7a4f13f94fc77",
+      "Id": "ba61944060124b1aac11c66786f6722c"
+    },
+    {
+      "Start": "efdc2d67b0884d699572dfbecbcf1266",
+      "End": "828e7e184795411789e7e8a6d1b55505",
+      "Id": "292785d0314c4c3992ada03e208ab5ec"
+    },
+    {
+      "Start": "8951d6fc84014c91a8f3791e75f7768d",
+      "End": "f07249b569864c81b37bb2e73516d7b4",
+      "Id": "48d81f20e1974ee5a415c29983ba0bc5"
+    },
+    {
+      "Start": "e968f7c2d4634b44b804041c9f27e952",
+      "End": "af16632b10384d78b079fabfab209662",
+      "Id": "04c343e9fdde4da3aeb4307231228c9a"
+    },
+    {
+      "Start": "def71a0a7a5e4ef5ac1fc93f22d3f294",
+      "End": "d265847147cd4888b400d6419d4b9a1a",
+      "Id": "3039b7869fd046768d3689fe7e91fbb6"
+    },
+    {
+      "Start": "53ef50d602ad414ba5b8d9a55a524630",
+      "End": "0fde0e4429244bc4874b07e11ddcba1f",
+      "Id": "e9c2b22197b245a0bd2af465b316fadf"
+    },
+    {
+      "Start": "ec4fb42426664c32afe4402fc667212b",
+      "End": "7895c32e23df40fba61e430a4293a8e8",
+      "Id": "849b36fa8393489984fc09b79e6a9c9f"
+    },
+    {
+      "Start": "ee2c3db2b86342ea8b29249cd542a5e4",
+      "End": "136503fa9fef43108c194c2c16b933f8",
+      "Id": "ed60ecaef9c14e27b659cb165b03b8b4"
+    },
+    {
+      "Start": "bd7b51956e0040e3a7e6cbb8d06e68b3",
+      "End": "f5b7792978e94732a2562d3abc237569",
+      "Id": "9bb7e654e6ef4cdba614ac64186cb491"
+    },
+    {
+      "Start": "f32ab2693d624983b473e915d88696e9",
+      "End": "986b5d2f256e4c499b736146e2881e76",
+      "Id": "a8f7047fa39143e2b6af62a9ad064884"
+    },
+    {
+      "Start": "5aa4ca77c0424fba919395630ad07f72",
+      "End": "ccc6f1718608416ba69fa92153c7c19c",
+      "Id": "9e541984c9c14261b16f1521e555f38a"
+    },
+    {
+      "Start": "bfb681d5b9bd457d85c0eed9f0c26dbd",
+      "End": "da56b51859ce4f4a91dd353348800275",
+      "Id": "1221e9012e324f25846bffe4facba9b7"
+    },
+    {
+      "Start": "6379d70844ab4f49a83cbc5020e02305",
+      "End": "5225e22d98e045328b05694a66cdbbc3",
+      "Id": "b0c68e705068416fa9d248f943fd9779"
+    },
+    {
+      "Start": "15e90ec43592488e95f83d84bbb0c08f",
+      "End": "6a4697f0639f485794187299a859ea1e",
+      "Id": "4484900d50b04256a23374f10b47b174"
+    },
+    {
+      "Start": "0e73b023c9fd44618de7462c225869dc",
+      "End": "d1e7722dadc9483abc902d9e235c0ad9",
+      "Id": "9765905163c1436b8c7d2a1585f1b1f8"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.2.6826",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Náhled pozadí",
+      "EyeX": 44628.846873559029,
+      "EyeY": 15692.302569557691,
+      "EyeZ": 62978.399698692709,
+      "LookX": -140103.18389750016,
+      "LookY": -2417.9889186259352,
+      "LookZ": -71970.398165622348,
+      "UpX": 0.17733801077545619,
+      "UpY": 0.9799247046209647,
+      "UpZ": 0.091097767305177574
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "5d35353babc442229b318d8041f1620d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 848.43194445281028,
+        "Y": 533.18211159860743
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "bf66091ed9c2490280d6a70c0eeade69",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 847.78110250441478,
+        "Y": 652.42092471991543
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "898dbeb227a248d9aca89fedf2939c85",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 847.98984355800394,
+        "Y": 773.82509470006755
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "75078e17957546b581cc56c2d26e5c57",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 847.75239375671845,
+        "Y": 886.94843068418925
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "836c86ba7f8a45f2a1a2495bad043c30",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 846.98410565524694,
+        "Y": 1002.2966438518102
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "dacbddf0b4c940059f835b3842806ae9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 848.24652326504111,
+        "Y": 1127.6448570194311
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "1f844249080c41b0a30494b909dc29c5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 839.35541231850675,
+        "Y": 1250.8088359194578
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "f6a9d9077a7549318b941a8804666c28",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 842.05816022971919,
+        "Y": 1376.0035205307502
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "d4c047c3a5924aa2a5eca3276ddc1393",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 849.97933156769125,
+        "Y": 1496.8534754223208
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "a9673ce65a56424d815c8f707646e1ef",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 840.493510908411,
+        "Y": 1611.764841736423
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "c92fadb64d024d57baa4c06bd49658d7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 840.75847264610286,
+        "Y": 1730.3538515753023
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "009faa19d3844e2abb273dbaacb3f77e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 831.97093165077229,
+        "Y": 1864.8059650040184
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "553a534b12ec44dba24363adb25f7e03",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 824.62514803460147,
+        "Y": 1970.9105892283319
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "List Create",
+        "Id": "23c1acba277742a7a77521b3775c4c53",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1602.8543888150191,
+        "Y": 1349.9807166915625
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Surface.Area",
+        "Id": "31c1bd1f0b784c3fb995648ca621583f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1813.2568052635177,
+        "Y": 1535.9334280138874
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "b9d1b37f3fd944b38298b7af07d04b5b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2045.5003888123472,
+        "Y": 1638.4119203989117
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Math.Sum",
+        "Id": "dff3f4b0d93b47538c9f1aea0cad64bf",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2289.5999722928032,
+        "Y": 1613.6481945385758
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Convert Between Units",
+        "Id": "3f06493fb1eb4b53a2e3ca4ff30ec951",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2623.3206588868566,
+        "Y": 1551.1492673672512
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "95c92433fe52460382cebfec686bfa94",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 875.594717306628,
+        "Y": 2209.1255702560211
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "List Create",
+        "Id": "16859fa5ad314cde8519b503bf78de41",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1650.2441689636723,
+        "Y": 3050.7498753341024
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "189faa20c59a4a4ca6e1d765fe6b234b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 880.58393826523275,
+        "Y": 2318.5146801720703
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "c88b1f85f12b4945a0a1ed1682a9fc4a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 878.105773954411,
+        "Y": 2427.4233589264641
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "8c170d7eeb0f426ca40cf111f4001c0c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 881.52324250575384,
+        "Y": 2536.4052087865471
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "266c8866469048e38eb3d3aea92e9afa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 875.1443410850801,
+        "Y": 2654.2225662953347
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "c7e0cf629805476c93c4bcf4aecefd23",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 889.93534723417633,
+        "Y": 2769.4970555626155
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "e2ea9b4a1cd44a8cb82a243d897e60d1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 883.5619180049415,
+        "Y": 2882.9703298111144
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "112b0dee3f4143d49c46a05718100e46",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 877.01526618745311,
+        "Y": 2999.6614556674444
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "820480bb4dc14cb0849905eb5f402acf",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 883.859688566049,
+        "Y": 3116.1793589355207
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "e7b7dbfe0a824e5a9b0c00eba39e9cf0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 889.94350522690343,
+        "Y": 3234.1973726165779
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "15f3e7d71dfc47dca084836c8555b6df",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 895.35773870585535,
+        "Y": 3344.6260178455004
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "bab9bf43c1bf49c38dc6e30062a80c7b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 886.12518158437433,
+        "Y": 3465.5510236680707
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "7925c44e17a842c09fb1890a0021e01c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 885.4035426819471,
+        "Y": 3584.6760882433773
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "3de8fcde4e47422bb811a8e39d1f08ca",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 886.76939732198935,
+        "Y": 3699.740495440697
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "f9a9c2fbb79e4adb992fd305bce8c038",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 891.35310356986247,
+        "Y": 3808.9798897229552
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "4a798cf289e8441f960856c68e74e903",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 892.2814904975578,
+        "Y": 3918.9477600684181
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "f4a0c0ba12044f7c822a144542b4e18a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 894.71339712412941,
+        "Y": 4032.8160236591439
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Convert Between Units",
+        "Id": "ccffc776ad9e4c1e917582ffb95741ce",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2703.1623603189291,
+        "Y": 3145.8144998042289
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Math.Sum",
+        "Id": "1bbfa1d88f12478b872ee728459f9353",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2369.4416737248694,
+        "Y": 3208.3134269755587
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "080c9611fdc94edfb3069e1c47d060be",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2125.3420902444195,
+        "Y": 3233.0771528358891
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Surface.Area",
+        "Id": "e22136b98d8d47a0a1ce8369dd51e432",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1893.0985066955891,
+        "Y": 3130.5986604508689
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "List Create",
+        "Id": "1ea3a4856a6a410286364afac453e600",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1332.9317679960257,
+        "Y": 4309.9754116118547
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Convert Between Units",
+        "Id": "be4d34edf2124ab5980f141e07053f8d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2099.088878547343,
+        "Y": 4315.1808960929584
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Math.Sum",
+        "Id": "074c8668c46c4a70863ebf17930cf8a3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1908.6114538095633,
+        "Y": 4314.321122826067
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "754a1ba46d794bc1b146ab640396a006",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1709.8635205888822,
+        "Y": 4311.3699513054271
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Surface.Area",
+        "Id": "f47b4811e46649e38a68028af7338eae",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1485.1785454166802,
+        "Y": 4309.6729039421152
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "1eec0d58084e46a0a6edac58de9a3e5f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 922.18100450900965,
+        "Y": 4292.2177365507141
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "3d9634a845f24e20b18a1c2b27b1d65d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 910.66038161555934,
+        "Y": 4407.9965626433441
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "851db5a3b92f42d18baaf8de391d664f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 917.37658764522109,
+        "Y": 4523.89119402824
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "e573e00b25704dbc99e4c42dca3cd688",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 933.20062254498578,
+        "Y": 4648.9096337049723
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "2468344262524a449c8228ba81ddaa88",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 948.79115090936557,
+        "Y": 4775.7188840785184
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Convert Between Units",
+        "Id": "a19f894d1e40493c8289b8362db4517e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2927.6114111199358,
+        "Y": 6533.66353361346
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Math.Sum",
+        "Id": "dbc0f8e1c7e84d19bc5d7dd6d39c9b67",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2737.1339863821563,
+        "Y": 6532.8037603465691
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "a89409c0a01b4f10ae1b8dcfc6dc4ad4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2538.386053161476,
+        "Y": 6529.8525888259292
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Surface.Area",
+        "Id": "44d49f234240471ab27acb118cd4e03e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2313.7010779892762,
+        "Y": 6528.1555414626191
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "List Create",
+        "Id": "bbd5843de02e4bb09b9b6225a098ad2c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2161.454300568626,
+        "Y": 6528.4580491323495
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "f5028c9de5ee4c2ea463404b71d1c3dd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 917.39457166634406,
+        "Y": 5011.4392393551343
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "19e1092c7077443dadacadde718393ff",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 927.82079855684447,
+        "Y": 5131.5625814920868
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "04b40addeefd4b90b7f74f5bcaa0ee59",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 922.80024153401928,
+        "Y": 5254.216759163276
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "17f4209bb04f4219bc2db9e28c70304b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 906.07920230289278,
+        "Y": 5359.6310246381063
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "79eb33af5cb84c29b819091049f74586",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 919.30729864270484,
+        "Y": 5475.0452901129356
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "9f78ce26ce0d4446b186150d34918686",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 922.43366612439422,
+        "Y": 5584.7909679676286
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "e795374b112047398a84979af797b921",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 920.46022117543237,
+        "Y": 5696.5397012962476
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "8befce72ba0f4fce9e65d80f4296d202",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 906.98961497508833,
+        "Y": 5819.6253493524528
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "76818dcb12a54274a44649128fe2cb60",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 913.58232983567984,
+        "Y": 5934.8479514512728
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "00f2ff240a94427d98b9d9880f36bb4d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 931.70377282593086,
+        "Y": 6053.1538935457565
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "94df374d9ffe40bba6213a2848909911",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 937.32883909735938,
+        "Y": 6158.4318318060959
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "7878c490a859429eb4b00391787c4103",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 930.37062239691477,
+        "Y": 6271.5320628944273
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "d2601a297c5b4788a547b01c026cff64",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 933.89932130278225,
+        "Y": 6382.2192624929748
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "e1c6f01c2c9840ce8f71d0ecf114a851",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 930.06238624297066,
+        "Y": 6495.18840255122
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "d2fcd0df1edb4005995899bc8c0b0bf8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 922.69675227729135,
+        "Y": 6607.45269146022
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "7524676be39449a5863fa78935440562",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 919.56466836672485,
+        "Y": 6724.9857124378623
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "5c8ccac8afe74a4592b70ff790688a71",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 923.77612371149871,
+        "Y": 6843.038546002088
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "83cda4988278414a872e15d620685648",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 929.68580326527331,
+        "Y": 6964.1877781389876
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "82d72a71fed54ecb8f2da3379e28f864",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 922.64075009512283,
+        "Y": 7084.4637158277137
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "3298098ccddc4fb7b910734de7fc9e29",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 941.25588117162738,
+        "Y": 7201.6309994987669
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "0f7daa222b464061b9151670709e7d4f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 921.59094465695193,
+        "Y": 7316.5359168084169
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "8cd2016313b2439099d3f639313d560c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 915.88507489847666,
+        "Y": 7430.4362859798675
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "06d2d2deeb3f4f4194a4c5ec90763e0e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 925.04877842601491,
+        "Y": 7554.4840960058909
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "ee1364249bd34766bec606cc0e597fca",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 911.38428014641158,
+        "Y": 7673.1712887773247
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "c8e1b17c10764861857725684f6eabb3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 904.57238232751411,
+        "Y": 8034.1359791895957
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "187ede35b4cc42f695c2a4eb70fc7252",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 906.15332468161455,
+        "Y": 7912.4865170482535
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "44378c20656d447297baad587808acfa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 914.21248195355315,
+        "Y": 7792.4500542681453
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "2f5d19efc59e4ffc83adadae9f981900",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 910.26648580756842,
+        "Y": 8148.655953638965
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "9082fba0db9c4da0a52d682c6a16c227",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 933.16097809673715,
+        "Y": 8390.15988771813
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "7281e4d20f834f87b1a3b172666659cc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 917.04171245818111,
+        "Y": 8514.4036644341286
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "1eae94f133c3444690c595903dabd37a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 929.46176491257006,
+        "Y": 8267.8781042689079
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Convert Between Units",
+        "Id": "d9ad96d838014b5dbe41cf6ceaa2736f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2157.3875344810613,
+        "Y": 8801.3168709275087
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Math.Sum",
+        "Id": "ab23cd3a38994bc28ad5f9f2c5ee9a86",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1966.9101097432813,
+        "Y": 8800.4570976606174
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "1342b472581f46e0b8a641f8ac54d319",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1768.1621765226014,
+        "Y": 8797.5059261399765
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Surface.Area",
+        "Id": "15af369dc01b4fc1b73177c4e0d96ab1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1543.4772013504016,
+        "Y": 8795.8088787766683
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "List Create",
+        "Id": "af5801f168d34683bb8f03a12507b711",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1391.2304239297514,
+        "Y": 8796.1113864463987
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "48978cef3a7f4735ab2536bc4a8b147f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 980.47966044273153,
+        "Y": 8778.3537113852581
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "10e8d6a9172649698ae5b0088c3611b7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 968.31999779063972,
+        "Y": 8913.4477687524686
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "e4acb3e658a74a2199aee2e5f029ce9e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 965.67229917885834,
+        "Y": 9036.0122863973211
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "87c634a48c49420a9212583f76716163",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 963.02460056707719,
+        "Y": 9145.929105430394
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "aa6fe620745b4108a621cb9ecb710823",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 961.641671816474,
+        "Y": 9264.6993134917138
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "01a509db026b4af3b15b42232a94b96f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 965.43958215994689,
+        "Y": 9376.0026620353274
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "58981a6d9f8541bf93b8bafa1f3437e1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 957.1923879808146,
+        "Y": 9488.3272611413922
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Face",
+        "Id": "333d530a8f7a44cea332b6899fbb926d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 949.9700451240717,
+        "Y": 9603.18500072975
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "ed1ba95217a348a3b5c7d7ad50ba6469",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2612.3430948433534,
+        "Y": 8803.9843027861662
+      }
+    ],
+    "Annotations": [],
+    "X": 506.41923818552107,
+    "Y": -2027.5676927758163,
+    "Zoom": 0.27094738340455088
+  }
+}

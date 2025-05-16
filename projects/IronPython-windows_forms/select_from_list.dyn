@@ -1,0 +1,155 @@
+{
+  "Uuid": "6191735e-b989-43b9-a7b3-b5af4e671ee9",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "select_from_list",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr \r\n#import os \r\n\r\n# Verify these are needed. \r\nclr.AddReference('System') \r\nclr.AddReference('System.Drawing') \r\nclr.AddReference(\"System.Windows.Forms\") \r\n\r\n#  Windows Forms Elements \r\nfrom System.Drawing import Point, Icon, Color \r\nfrom System.Windows import Forms \r\nfrom System.Windows.Forms import Application, Form \r\nfrom System.Windows.Forms import DialogResult, GroupBox, FormBorderStyle, Label\r\nfrom System.Windows.Forms import ComboBox, Button, DialogResult, AnchorStyles, DockStyle, Screen, TextBox, ScrollBars, ToolStripContainer, ToolStrip, TreeView, TreeNode\r\n\r\nclass SelectFromList(Form): \r\n\t\"\"\" \r\n\t\tform = SelectFromList(floor_types.keys()) \r\n\t\tform.show() \r\n\t\t\tif form.DialogResult == DialogResult.OK: \r\n\t\t\tchosen_type_name = form.selected \r\n\t\"\"\"\r\n\r\n\tdef __init__(self, title, options, sort=True): \r\n\t\t\"\"\"\r\n\t\t\tArgs: \r\n\t\t\t\ttitle (str): Title of Prompt \r\n\t\t\t\toptions (dict): Name:Object \r\n\t\t\t\t**sort (bool): Sort Entries \r\n\t\t\"\"\" \r\n\t\tself.selected = None \r\n\t\tif sort: \r\n\t\t\toptions = sorted(options) \r\n\t\tself.num = 0\r\n\r\n\t\tscreenSize = Screen.GetWorkingArea(self)\r\n\t\tself.Height = screenSize.Height / 2\r\n\t\tself.Width = screenSize.Width / 3\r\n\r\n\t\t#  Window Settings \r\n\t\tself.Text = title or 'Select View Type' \r\n\t\tself.MinimizeBox = False \r\n\t\tself.MaximizeBox = False \r\n\t\tself.BackgroundColor = Color.White \r\n\t\tself.FormBorderStyle = FormBorderStyle.FixedSingle \r\n\t\tself.ShowIcon = False \r\n\t\t\r\n\t\tself.combobox = ComboBox() \r\n\t\tself.combobox.Width = 200 \r\n\t\tself.combobox.Height = 20\r\n\t\tself.combobox.DataSource = options \r\n\t\tself.combobox.Parent = self\r\n\t\tself.combobox.Anchor = AnchorStyles.Top\r\n\t\tself.combobox.Dock = DockStyle.Top\r\n\t\tself.combobox.RectangleToScreen\r\n\t\tself.combobox.Click += self.combo_change\r\n\t\t\r\n\t\tself.label = Label()\r\n\t\tself.label.Text = \"Nothing selected yet\"\r\n\t\tself.label.Width = 250\r\n\t\tself.label.Parent = self\r\n\t\tself.label.Anchor = AnchorStyles.Top\r\n\t\tself.label.Dock = DockStyle.Top\r\n\r\n\t\tself.textBox = TextBox()\r\n\t\tself.textBox.Text = \"{}\".format(dir(Form))\r\n\t\tself.textBox.Width = 250\r\n\t\tself.textBox.Multiline = True\r\n\t\tself.textBox.ScrollBars = ScrollBars.Vertical\r\n\t\tself.textBox.WordWrap = True\r\n\t\tself.textBox.ResumeLayout(False);\r\n\t\tself.textBox.PerformLayout();\r\n\t\tself.textBox.Height = 250\r\n\t\tself.textBox.Parent = self\r\n\t\tself.textBox.Anchor = AnchorStyles.Bottom\r\n\t\tself.textBox.Dock = DockStyle.Top\r\n\r\n\t\tself.toolStripContainer1 = ToolStripContainer()\r\n\t\tself.toolStrip1 = ToolStrip()\r\n\t\tself.toolStrip2 = ToolStrip()\r\n\t\t# Add items to the ToolStrip.\r\n\t\tself.toolStrip1.Items.Add(\"One\")\r\n\t\tself.toolStrip1.Items.Add(\"Two\")\r\n\t\tself.toolStrip1.Items.Add(\"Three\")\r\n\t\tself.toolStrip2.Items.Add(\"EEE\")\r\n\t\tself.toolStrip2.Items.Add(\"AAA\")\r\n\t\tself.toolStrip2.Items.Add(\"SSS\")\r\n\t\tself.toolStripContainer1.Anchor = AnchorStyles.Bottom\r\n\t\tself.toolStripContainer1.Dock = DockStyle.Top\r\n\t\t# Add the ToolStrip to the top panel of the ToolStripContainer.\r\n\t\tself.toolStripContainer1.TopToolStripPanel.Controls.Add(self.toolStrip1)\r\n\t\tself.toolStripContainer1.TopToolStripPanel.Controls.Add(self.toolStrip2)\r\n\t\t# Add the ToolStripContainer to the form.\r\n\t\tself.Controls.Add(self.toolStripContainer1)\r\n\r\n\t\tself.treeView = TreeView()\r\n\t\tself.treeNode1 = TreeNode(\"Brucho\")\r\n\t\tself.treeView.Nodes.Add(self.treeNode1)\r\n\t\tself.treeNode2 = TreeNode(\"Hlava\")\r\n\t\tself.treeView.Nodes.Add(self.treeNode2)\r\n\t\t#self.nodes1 = [self.treeNode1, self.treeNode2]\r\n\t\t#self.treeView.Nodes.Add(self.nodes1)\r\n\t\tself.treeNode3 = TreeNode(\"Noha\")\r\n\t\tself.treeNode4 = TreeNode(\"Ruka\")\r\n\t\tself.nodes2 = TreeNode(\"Koncatiny\")\r\n\t\tself.nodes2.Nodes.AddRange((self.treeNode3, self.treeNode4))\r\n\t\tself.treeView.Nodes.Add(self.nodes2)\r\n\t\tself.treeView.Anchor = AnchorStyles.Bottom\r\n\t\tself.treeView.Dock = DockStyle.Top\r\n\t\tself.Controls.Add(self.treeView)\r\n\r\n\r\n\t\tself.selectButton = Button() \r\n\t\tself.selectButton.Text = 'Select' \r\n\t\t#self.selectButton.Location = Point(0,50) \r\n\t\tself.selectButton.Parent = self\r\n\t\tself.selectButton.Anchor = AnchorStyles.Bottom\r\n\t\tself.selectButton.Dock = DockStyle.Bottom\r\n\t\tself.selectButton.Width = self.combobox.Width \r\n\t\tself.selectButton.Height = 20 \r\n\t\tself.selectButton.Click += self.selectButton_click \t\t\r\n\r\n\t\tself.closeButton = Button() \r\n\t\tself.closeButton.Text = 'Close' \r\n\t\t#self.closeButton.Location = Point(0,50) \r\n\t\tself.closeButton.Parent = self\r\n\t\tself.closeButton.Anchor = AnchorStyles.Bottom\r\n\t\tself.closeButton.Dock = DockStyle.Bottom\r\n\t\tself.closeButton.Width = self.combobox.Width \r\n\t\tself.closeButton.Height = 20 \r\n\t\tself.closeButton.Click += self.closeButton_click \t\r\n\t\t\r\n\t\tself.Controls.Add(self.combobox)\r\n\t\tself.Controls.Add(self.label) \r\n\t\tself.Controls.Add(self.textBox) \r\n\t\tself.Controls.Add(self.selectButton)\r\n\t\tself.Controls.Add(self.closeButton)  \r\n\t\r\n\tdef combo_change(self, sender, event):\r\n\t\tself.selected = self.combobox.SelectedValue \r\n\t\tmyEvent = \"{}\".format(event)\r\n\t\tself.label.Text = self.selected + myEvent\r\n\r\n\tdef selectButton_click(self, sender, event): \r\n\t\tself.selected = self.combobox.SelectedValue \r\n\t\tself.label.Text = self.selected()\r\n\t\tself.DialogResult = DialogResult.OK \r\n\r\n\tdef closeButton_click(self, sender, event): \r\n\t\tself.Close() \r\n\t\t\r\n\r\n\t\r\n\tdef show(self): \r\n\t\t\"\"\" Show Dialog \"\"\" \r\n\t\tself.ShowDialog() \r\n\r\noptions = {\"jano\" : \"285\", \"peto\" : \"5\", \"Lucka\" : \"25\",}\r\n\r\n\r\nApplication.EnableVisualStyles()\r\n\r\nappWindow = SelectFromList(\"Select something\", options, sort=True)\r\nApplication.Run(appWindow)",
+      "VariableInputPorts": true,
+      "Id": "d3714fddbc354de3b647526be83b3948",
+      "Inputs": [
+        {
+          "Id": "98fcef2f481f447f8dccd23e87052143",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "bafd26ae560c44ebb9a45c355274c3a6",
+          "Name": "OUT",
+          "Description": "Výsledek skriptu jazyka Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spustí vložený skript IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "",
+      "Id": "f4c1a6a7c6db41c39f1aab567ab0eb0d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f7fa25d9c4374c3fb374702316409ad6",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří řetězec."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.IntegerSlider, CoreNodeModels",
+      "NodeType": "NumberInputNode",
+      "NumberType": "Integer",
+      "InputValue": 45,
+      "MaximumValue": 100,
+      "MinimumValue": 0,
+      "StepValue": 1,
+      "Id": "11ce79ea0edc4f2497bcc30dc42c204e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "dbb885478e4c4bf5b84d07dcecf0724e",
+          "Name": "",
+          "Description": "Int32",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Posuvník, který vytváří celočíselné hodnoty."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "dbb885478e4c4bf5b84d07dcecf0724e",
+      "End": "98fcef2f481f447f8dccd23e87052143",
+      "Id": "bd680bf0d02f41a48ced0c324b8a6cd6"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Náhled pozadí",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "d3714fddbc354de3b647526be83b3948",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 779.5,
+        "Y": 437.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String",
+        "Id": "f4c1a6a7c6db41c39f1aab567ab0eb0d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 451.5,
+        "Y": 460.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Integer Slider",
+        "Id": "11ce79ea0edc4f2497bcc30dc42c204e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 454.5,
+        "Y": 552.5
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}

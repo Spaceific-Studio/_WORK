@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-16" standalone="no"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>RevitPythonShell</Name>
+    <Assembly>C:\Program Files (x86)\RevitPythonShell2017\RevitPythonShell.dll</Assembly>
+    <AddInId>3a7a1d24-51ed-462b-949f-1ddcca12008d</AddInId>
+    <FullClassName>RevitPythonShell.RevitPythonShellApplication</FullClassName>
+  <VendorId>RIPS</VendorId>
+  </AddIn>
+</RevitAddIns>

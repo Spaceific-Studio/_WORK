@@ -1,0 +1,1113 @@
+{
+  "Uuid": "8408504d-e4a6-47e9-9593-b483691e8d9a",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Renumber_By_Schedule",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "0ea91357da8246029f205587352708d6",
+      "Name": "Built In or Real Parameter Name",
+      "Type": "string",
+      "Value": "ALL_MODEL_MARK",
+      "Description": "Vytvoří řetězec."
+    }
+  ],
+  "Outputs": [
+    {
+      "Id": "d461bef01e7346b4948b0b1b7bf2326e",
+      "Name": "Watch",
+      "Type": "unknown",
+      "InitialValue": "",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "Id": "2e2714b0f7814bf9acb9878ed787b22b",
+      "Name": "Number Of Rows",
+      "Type": "integer",
+      "InitialValue": "177",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "Id": "0b7271cf28784777999de1de63f1805d",
+      "Name": "Number Of Extracted Elements",
+      "Type": "integer",
+      "InitialValue": "350",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "Id": "99ce5d482a3e4c528a6155fd907efc33",
+      "Name": "Watch",
+      "Type": "unknown",
+      "InitialValue": "",
+      "Description": "Zobrazení výstupu uzlu"
+    }
+  ],
+  "Nodes": [
+    {
+      "ConcreteType": "DSRevitNodesUI.Views, DSRevitNodesUI",
+      "SelectedIndex": 151,
+      "SelectedString": "BIM_TRÁMY_A_PRŮVLAKY",
+      "NodeType": "ExtensionNode",
+      "Id": "faef79e4d9b84d298793c8671bd1a907",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "dbde1b27a55947a3b902c92a9bad5902",
+          "Name": "Views",
+          "Description": "Vybrané Views",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Všechna zobrazení, která jsou k dispozici v aktuálním dokumentu."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\n# Copyright(c) 2022, Daniel Gercak\r\n#Script for extracting elements from ScheduleView for dynamo Renumber_By_Schedule.dyn\r\n#resource_path: H:\\_WORK\\PYTHON\\REVIT_API\\DYNAMO\\getElementsFromSchedule_D.py\r\n\r\nimport sys\r\nimport re\r\npyt_path = r'C:\\Program Files (x86)\\IronPython 2.7\\Lib'\r\nlib_path = r'H:\\_WORK\\PYTHON\\REVIT_API\\LIB'\r\nsys.path.append(pyt_path)\r\nsys.path.append(lib_path)\r\n\r\n\r\n# from itertools import chain, groupby\r\n# from RevitSelection import *\r\n# import RevitSelection as RevitSelection\r\n# from ListUtils import *\r\n# import ListUtils as ListUtils\r\n\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\n#import Autodesk\r\nimport Autodesk.Revit.DB as DB\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nclr.AddReference('ProtoGeometry')\r\nimport Autodesk.DesignScript.Geometry as DSGeometry\r\n\r\n# Import Element wrapper extension methods\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\n\r\nclr.AddReference(\"System\")\r\n\r\nfrom System.Collections.Generic import List as Clist\r\nfrom System import Enum \r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\"\"\" clr.AddReference(\"System.Windows.Forms\")\r\nclr.AddReference(\"System.Drawing\")\r\n\r\nimport System.Drawing\r\nimport System.Windows.Forms\r\nfrom System.Drawing import *\r\nfrom System.Windows.Forms import Application, Button, Form, ComboBox, Label, TextBox, DockStyle, AnchorStyles, FormBorderStyle \"\"\"\r\n\r\nclass Errors(object):\r\n\treport = []\r\n\tvariables = []\r\n\tvarNames = []\r\n\tdef __init__(self):\r\n\t\tpass\r\n\r\n\t@classmethod\r\n\tdef hasError(cls):\r\n\t\tif len(cls.report) > 0:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\t\r\n\t@classmethod\r\n\tdef hasContent(cls):\r\n\t\tif len(cls.variables) > 0:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\t\t\t\r\n\t@classmethod\r\n\tdef catch(cls, inEx, *args):\r\n\t\t\"\"\"\r\n\t\tcatches the error in Exception block as a class parameter report \r\n\r\n\t\targ: inEx: an Exception catched in Exception block\r\n\t\t*args[0]: inText: short description of the error. Where it ocured (function or block of commands) type: string\r\n\r\n\t\tReturns: None\r\n\t\t\"\"\"\r\n\t\tif len(args) > 0:\r\n\t\t\tinText = args[0]\r\n\t\telse:\r\n\t\t\tinText = \"\"\r\n\t\terror_type, error_instance, traceback = sys.exc_info()\r\n\t\tcls.report.append(\"{0} \\\r\n\t\t\t\t\t\t\tException: {1} error_type: {2}, error_instance {3}, traceback -{4}\" \\\r\n\t\t\t\t\t\t\t.format(inText \\\r\n\t\t\t\t\t\t\t\t\t,inEx \\\r\n\t\t\t\t\t\t\t\t\t,error_type \\\r\n\t\t\t\t\t\t\t\t\t,error_instance \\\r\n\t\t\t\t\t\t\t\t\t,traceback))\r\n\t\r\n\t@classmethod\r\n\tdef catchVar(cls, inVar, inName, *args, **kwargs):\r\n\t\t\"\"\"\r\n\t\tcatches the variable and stores it in variables for direct acces during tuning of code \r\n\r\n\t\tinput:\r\n\t\tinVar: content of variable to store\r\n\t\tinName: name of variable type: string \r\n\r\n\t\tReturns: None\r\n\t\t\"\"\"\r\n\t\tfront = kwargs['front'] if 'front' in kwargs else False\r\n\t\tif front:\r\n\t\t\tcls.variables.insert(0, inVar)\r\n\t\t\tcls.varNames.insert(0, inName)\r\n\t\telse:\r\n\t\t\tcls.variables.append(inVar)\r\n\t\t\tcls.varNames.append(inName)\r\n\r\n\t@classmethod\r\n\tdef getConntainerContent(cls, *args, **kwargs):\r\n\t\twithName = kwargs[\"withName\"] if \"withName\" in kwargs else True\r\n\t\tif withName == True:\t\t\t\r\n\t\t\treturn zip(cls.varNames, cls.variables)\r\n\t\telse:\r\n\t\t\treturn cls.variables\r\n\r\ndef processList(_func, _list, *args, **kwargs):\r\n\t\"\"\"Iterates trough input list and aplies a function to each item of the list\r\n\r\n\t\targs:\r\n\t\t\t_func: name of the func type: callable\r\n\t\t\t_list: input list - type: list \r\n\t\t\t*args: arguments for input function\r\n\r\n\t\treturn: list of the same structure as input list - type: list\r\n\t\"\"\"\r\n\treturn map( lambda x: processList(_func, x, *args, **kwargs) if type(x)==list else _func(x, *args, **kwargs), _list )\r\n\r\n\r\n''' TransactionManager.Instance.EnsureInTransaction(doc)\r\ntrans = DB.SubTransaction(doc)\r\ntrans.Start()\r\n\r\n#setParams = processList(setValueByParameterName, unWrapped, \"EEEEE\", copyToBipName, doc, bip = copyToBip)\r\ncopyResult = copyParameterValues(unWrapped, copyFromBipName, copyToBipName, doc)\r\n\r\ntrans.Commit()\r\nTransactionManager.Instance.TransactionTaskDone() '''\r\n\r\nviewSchedule = IN[0]\r\nunwraped = UnwrapElement(viewSchedule)\r\nviewScheduleData = unwraped.GetTableData()\r\nelements = DB.FilteredElementCollector(doc,unwraped.Id).WhereElementIsNotElementType().ToElements()\r\n\r\ntsData = viewScheduleData.GetSectionData(DB.SectionType.Body)\r\n\r\nmyOutput = (tsData.NumberOfRows, elements)\r\n#myOutput = \"{0}\".format(dir(viewSchedule))\r\n#myOutput = \"{0}\".format(type(viewSchedule))\r\n\r\nif Errors.hasError():\r\n \tOUT = Errors.report\r\nelif Errors.hasContent():\r\n\tOUT = Errors.getConntainerContent()\r\nelse:\r\n\tOUT = myOutput",
+      "VariableInputPorts": true,
+      "Id": "6ec0aa492fb7412db0dcc3fc54aa4c5d",
+      "Inputs": [
+        {
+          "Id": "0e2bf144e88749b8b360da6706af671e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7d703ccedb2b46909c4e7bc2a474bfc3",
+          "Name": "OUT",
+          "Description": "Výsledek skriptu jazyka Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spustí vložený skript IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "d461bef01e7346b4948b0b1b7bf2326e",
+      "Inputs": [
+        {
+          "Id": "03f2f169dd664181af024dee11361612",
+          "Name": "",
+          "Description": "Uzel k vyhodnocení",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "952e51f0faae409d9416938bb1c19ce0",
+          "Name": "",
+          "Description": "Podívejte se na obsah.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.GetCategory",
+      "Id": "7318e9dc11814576a17f3ad2beefc6be",
+      "Inputs": [
+        {
+          "Id": "99a75c7bfd31451ab1b3b1f3ff743a86",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "20da0be13c2a498f8f5bf2da63878b88",
+          "Name": "Category",
+          "Description": "Category",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Načíst kategorii prvku\n\nElement.GetCategory: Category"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "inList[1];",
+      "Id": "55ca0dc9eb1141a88f221aba5f31d843",
+      "Inputs": [
+        {
+          "Id": "74e8da28ee8d40beac4f22db5ef0a351",
+          "Name": "inList",
+          "Description": "inList",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "560c6fb8eb494dab8f2d9bf5f91d99f6",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.String.Contains@string,string,bool",
+      "Id": "fa7988e587e34bc1afb8cf8a44aa2120",
+      "Inputs": [
+        {
+          "Id": "7ea82c7693484378859741a2773f0c09",
+          "Name": "str",
+          "Description": "Řetězec, ve kterém se má hledat\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ef5729e0a2a94648b4c5f1742a29632f",
+          "Name": "searchFor",
+          "Description": "Dílčí řetězec, který chcete vyhledat\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0cbff78e2ca8433bb0f7aee461761a9e",
+          "Name": "ignoreCase",
+          "Description": "Určuje, zda porovnání bere v úvahu velká a malá písmena.\n\nbool\nVýchozí hodnota : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "767c383d1b6d4ffc923561dfc45c0545",
+          "Name": "bool",
+          "Description": "Určuje, zda řetězec obsahuje dílčí řetězec.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Určuje, zda zadaný řetězec obsahuje daný dílčí řetězec.\n\nString.Contains (str: string, searchFor: string, ignoreCase: bool = false): bool"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Category.Name",
+      "Id": "62543f1b7e394c879ca6da448420ef55",
+      "Inputs": [
+        {
+          "Id": "fa37667c93cf488387e86924fc2b2abd",
+          "Name": "category",
+          "Description": "Revit.Elements.Category",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7ef1f146b2f14e319c614063e80b2517",
+          "Name": "string",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Název kategorie\n\nCategory.Name: string"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Anal\";",
+      "Id": "7de0fd76bb2e4ab69feece65f4e2fe97",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "df0aafacbce340f6bb6fd5a6fba7d37f",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Not@var[]..[]",
+      "Id": "74cdac3db20643b5887e01107a877b35",
+      "Inputs": [
+        {
+          "Id": "b223fab1602b416e910e16a97096bfd5",
+          "Name": "x",
+          "Description": "Hodnota x\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9a67f57a40a74d87964978f2de752419",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vypočítá faktoriál hodnoty x.\n\nNot (x: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Id": "397c5466d0f94ad3a14489415e6196e4",
+      "Inputs": [
+        {
+          "Id": "08a95fa0029e4c758171dfc7ac94d3e8",
+          "Name": "list",
+          "Description": "Seznam k filtrování\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d3417ad795fd42239f00700981ffb0e5",
+          "Name": "mask",
+          "Description": "Seznam logických hodnot představujících masku\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c8b8bc789dd4461f910ccf5aaee0be7f",
+          "Name": "in",
+          "Description": "Položky, jejichž index masky je true (pravda)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "033320f4ada54a9cab01d11287ea2d61",
+          "Name": "out",
+          "Description": "Položky, jejichž index masky je false (nepravda)",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Filtruje pořadí na základě vyhledávání příslušných indexů v samostatném seznamu logických hodnot.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "534e4d3d8ab4458c83088b0829076eb8",
+      "Inputs": [
+        {
+          "Id": "b87149886eb649fd885db4f97a5606cf",
+          "Name": "",
+          "Description": "Uzel k vyhodnocení",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ad5cdb5895e746abae1f1d407ab674ca",
+          "Name": "",
+          "Description": "Podívejte se na obsah.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\n# Copyright(c) 2022, Daniel Gercak\r\n#Script for creating number sequence of elements for selected parameter\r\n#resource_path: H:\\_WORK\\PYTHON\\REVIT_API\\DYNAMO\\renumberMarkParameter_D.py\r\n\r\nimport sys\r\nimport re\r\nfrom itertools import groupby\r\npyt_path = r'C:\\Program Files (x86)\\IronPython 2.7\\Lib'\r\nlib_path = r'H:\\_WORK\\PYTHON\\REVIT_API\\LIB'\r\nsys.path.append(pyt_path)\r\nsys.path.append(lib_path)\r\n\r\n\r\n# from itertools import chain, groupby\r\n# from RevitSelection import *\r\n# import RevitSelection as RevitSelection\r\n# from ListUtils import *\r\n# import ListUtils as ListUtils\r\n\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\n#import Autodesk\r\nimport Autodesk.Revit.DB as DB\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nclr.AddReference('ProtoGeometry')\r\nimport Autodesk.DesignScript.Geometry as DSGeometry\r\n\r\n# Import Element wrapper extension methods\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\n\r\nclr.AddReference(\"System\")\r\n\r\nfrom System.Collections.Generic import List as Clist\r\nfrom System import Enum \r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\"\"\" clr.AddReference(\"System.Windows.Forms\")\r\nclr.AddReference(\"System.Drawing\")\r\n\r\nimport System.Drawing\r\nimport System.Windows.Forms\r\nfrom System.Drawing import *\r\nfrom System.Windows.Forms import Application, Button, Form, ComboBox, Label, TextBox, DockStyle, AnchorStyles, FormBorderStyle \"\"\"\r\n\r\nclass Errors(object):\r\n\treport = []\r\n\tvariables = []\r\n\tvarNames = []\r\n\tdef __init__(self):\r\n\t\tpass\r\n\r\n\t@classmethod\r\n\tdef hasError(cls):\r\n\t\tif len(cls.report) > 0:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\t\r\n\t@classmethod\r\n\tdef hasContent(cls):\r\n\t\tif len(cls.variables) > 0:\r\n\t\t\treturn True\r\n\t\telse:\r\n\t\t\treturn False\r\n\t\t\t\r\n\t@classmethod\r\n\tdef catch(cls, inEx, *args):\r\n\t\t\"\"\"\r\n\t\tcatches the error in Exception block as a class parameter report \r\n\r\n\t\targ: inEx: an Exception catched in Exception block\r\n\t\t*args[0]: inText: short description of the error. Where it ocured (function or block of commands) type: string\r\n\r\n\t\tReturns: None\r\n\t\t\"\"\"\r\n\t\tif len(args) > 0:\r\n\t\t\tinText = args[0]\r\n\t\telse:\r\n\t\t\tinText = \"\"\r\n\t\terror_type, error_instance, traceback = sys.exc_info()\r\n\t\tcls.report.append(\"{0} \\\r\n\t\t\t\t\t\t\tException: {1} error_type: {2}, error_instance {3}, traceback -{4}\" \\\r\n\t\t\t\t\t\t\t.format(inText \\\r\n\t\t\t\t\t\t\t\t\t,inEx \\\r\n\t\t\t\t\t\t\t\t\t,error_type \\\r\n\t\t\t\t\t\t\t\t\t,error_instance \\\r\n\t\t\t\t\t\t\t\t\t,traceback))\r\n\t\r\n\t@classmethod\r\n\tdef catchVar(cls, inVar, inName, *args, **kwargs):\r\n\t\t\"\"\"\r\n\t\tcatches the variable and stores it in variables for direct acces during tuning of code \r\n\r\n\t\tinput:\r\n\t\tinVar: content of variable to store\r\n\t\tinName: name of variable type: string \r\n\r\n\t\tReturns: None\r\n\t\t\"\"\"\r\n\t\tfront = kwargs['front'] if 'front' in kwargs else False\r\n\t\tif front:\r\n\t\t\tcls.variables.insert(0, inVar)\r\n\t\t\tcls.varNames.insert(0, inName)\r\n\t\telse:\r\n\t\t\tcls.variables.append(inVar)\r\n\t\t\tcls.varNames.append(inName)\r\n\r\n\t@classmethod\r\n\tdef getConntainerContent(cls, *args, **kwargs):\r\n\t\twithName = kwargs[\"withName\"] if \"withName\" in kwargs else True\r\n\t\tif withName == True:\t\t\t\r\n\t\t\treturn zip(cls.varNames, cls.variables)\r\n\t\telse:\r\n\t\t\treturn cls.variables\r\n\r\ndef processList(_func, _list, *args, **kwargs):\r\n\t\"\"\"Iterates trough input list and aplies a function to each item of the list\r\n\r\n\t\targs:\r\n\t\t\t_func: name of the func type: callable\r\n\t\t\t_list: input list - type: list \r\n\t\t\t*args: arguments for input function\r\n\r\n\t\treturn: list of the same structure as input list - type: list\r\n\t\"\"\"\r\n\treturn map( lambda x: processList(_func, x, *args, **kwargs) if type(x)==list else _func(x, *args, **kwargs), _list )\r\n\r\ndef getAllElements(doc, *args, **kwargs):\r\n\t\"\"\"\r\n\t\tacquire all Elements from active view\r\n\r\n\t\tkwargs[\"toId\"] type boolean: returns collection of DB.ElementId if True, else return DB.Element\r\n\t\tkwargs[\"inActiveView\"] type bool: returns elements depending on active view if True, default = False\r\n\t\"\"\"\r\n\ttoId = kwargs[\"toId\"] if \"toId\" in kwargs else False\r\n\tinActiveView = kwargs[\"inActiveView\"] if \"inActiveView\" in kwargs else False\r\n\tallElements = DB.FilteredElementCollector(doc)\r\n\tif inActiveView:\r\n\t\tparamId = DB.ElementId(DB.BuiltInParameter.VIEW_PHASE)\r\n\t\tparam_provider = DB.ParameterValueProvider(paramId)\r\n\t\tactiveViewPhaseId = param_provider.GetElementIdValue(doc.ActiveView)\r\n\r\n\t\tmyElementPhaseStatusFilter1 = DB.ElementPhaseStatusFilter(activeViewPhaseId, DB.ElementOnPhaseStatus.Existing, False)\r\n\t\tmyElementPhaseStatusFilter2 = DB.ElementPhaseStatusFilter(activeViewPhaseId, DB.ElementOnPhaseStatus.New,False)\t\r\n\t\t\r\n\t\tif toId == False:\r\n\t\t\treturnElements = allElements.WherePasses(DB.LogicalOrFilter(DB.ElementIsElementTypeFilter(False), DB.ElementIsElementTypeFilter(True))) \\\r\n\t\t\t\t\t.WherePasses(DB.LogicalOrFilter(myElementPhaseStatusFilter1 \\\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t,myElementPhaseStatusFilter2)) \\\r\n\t\t\t\t\t.ToElements()\r\n\t\telse:\r\n\t\t\treturnElements = allElements.WherePasses(DB.LogicalOrFilter(DB.ElementIsElementTypeFilter(False), DB.ElementIsElementTypeFilter(True))) \\\r\n\t\t\t\t   .WherePasses(LogicalOrFilter(myElementPhaseStatusFilter1 \\\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t ,myElementPhaseStatusFilter2)) \\\r\n\t\t\t\t   .ToElementIds()\r\n\telse:\r\n\t\tif toId == False:\r\n\t\t\treturnElements = allElements.WherePasses(DB.LogicalOrFilter(DB.ElementIsElementTypeFilter(False), DB.ElementIsElementTypeFilter(True))).ToElements()\r\n\t\telse:\r\n\t\t\treturnElements = allElements.WherePasses(DB.LogicalOrFilter(DB.ElementIsElementTypeFilter(False), DB.ElementIsElementTypeFilter(True))).ToElementIds()\r\n\r\n\treturn returnElements\r\n\r\ndef getBuiltInParameterInstance(inBuiltInParamName):\r\n\t#print(\"RevitSelection.getBuiltInParameterInstance inBuiltInParamName {}\".format(inBuiltInParamName))\r\n\t#builtInParams = Enum.GetValues(DB.BuiltInParameter)\r\n\t#bipNames = Enum.GetNames(DB.BuiltInParameter)\r\n\treturnVar = None\r\n\t''' for bip in builtInParams:\r\n\t\t#print(\"bip.ToString() {0} inBuiltInParamName {1}\".format(bip.ToString(), inBuiltInParamName))\r\n\t\tif bip.ToString() in inBuiltInParamName:\r\n\t\t\t#print(\"bip.ToString() {0}\".format(bip.ToString()))\r\n\t\t\tparam_ID = DB.ElementId(bip)\r\n\t\t\treturnVar = bip\r\n\t\t\tbreak '''\r\n\ttry:\r\n\t\tvalue = Enum.Parse(DB.BuiltInParameter, inBuiltInParamName, False)\r\n\t\tif Enum.IsDefined(DB.BuiltInParameter, value):\r\n\t\t\treturnVar = value\r\n\t\telse:\r\n\t\t\treturnVar = None\r\n\texcept Exception as ex:\r\n\t\t#Errors.catch(\"Nevhodná (neexistujici) hodnota stringu pro funkci Enum.Parse\", ex)\r\n\t\treturnVar = None\r\n\treturn returnVar\r\n\r\n''' def getValuesByParameterName(inElements, inName, doc, *args, **kwargs):\r\n\t\"\"\"\r\n\t\tget parameter value from element by parameter name\r\n\r\n\t\targs:\r\n\t\tinElement type: list(DB.Element,...)\r\n\t\tinName: type: string\r\n\t\tkwargs['info'] type: bool returns parameter info as string (element name, element Id, parameter name, parameter value as string) if True, default False\r\n\t\tkwargs['allParametersInfo'] type: bool returns list of all parameters names of instance as a list default False\r\n\t\"\"\"\r\n\tinfo = kwargs['info'] if 'info' in kwargs else False\r\n\tallParametersInfo = kwargs['allParametersInfo'] if 'allParametersInfo' in kwargs else False\r\n\tinBip = kwargs[\"bip\"] if 'bip' in kwargs else None\r\n\t#print(\"this is BIP param {0}\".format(inName))\r\n\tbip = getBuiltInParameterInstance(inName)\r\n\tif bip:\r\n\t\tpass\r\n\t\t#print(\"this is BIP param {0}\".format(inName))\r\n\telse:\r\n\t\tif inBip:\r\n\t\t\tbip = inBip\r\n\t\telse:\r\n\t\t\tbip = None\r\n\t#raise TypeError(\"bip {0} inName {1}\".format(bip, inName))\r\n\treturnValues = []\r\n\treturnValuesAsString = []\r\n\tallParametersNames = []\r\n\tfirstTime = True\r\n\t\r\n\tfor el in inElements:\r\n\t\tif not el.LookupParameter(inName) and not bip:\r\n\t\t\ttypeElement = doc.GetElement(el.GetTypeId())\r\n\t\t\t#print(\"{0} {1} is typeParameter of type {2}\".format(el.Id, inName, typeElement.FamilyName))\r\n\t\t\t#el = typeElement\r\n\t\t#elif not el.LookupParameter(inName) and bip:\r\n\t\telse:\r\n\t\t\ttypeElement = None\r\n\t\tparameterFound = False\r\n\t\tif bip:\r\n\t\t\tparameterFound = True\r\n\t\t\tparam_ID = DB.ElementId(bip)\r\n\t\t\tparameterVP = DB.ParameterValueProvider(param_ID)\r\n\t\t\tif parameterVP.IsDoubleValueSupported(el):\r\n\t\t\t\treturnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameterVP.GetDoubleValue(el), DB.DisplayUnitType.DUT_MILLIMETERS))\r\n\t\t\telif parameterVP.IsIntegerValueSupported(el):\r\n\t\t\t\treturnValues.append(parameterVP.GetIntegerValue(el))\r\n\t\t\telif parameterVP.IsStringValueSupported(el):\r\n\t\t\t\treturnValues.append(parameterVP.GetStringValue(el) if parameterVP.GetStringValue(el) != None else \"\")\r\n\t\t\telif parameterVP.IsElementIdValueSupported(el):\r\n\t\t\t\treturnValues.append(parameterVP.GetElementIdValue(el).IntegerValue)\r\n\t\t\telse:\r\n\t\t\t\treturnValues.append(\"\")\r\n\t\t\r\n\t\telse:\r\n\t\t\tif not typeElement:\r\n\t\t\t\tparameter = el.LookupParameter(inName)\r\n\t\t\t\tif parameter:\t\t\t\t\t\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.Double:\r\n\t\t\t\t\t\treturnValuesAsString.append(\"{0}, {4}, {1}, {2}, {3:.4f}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id))\r\n\t\t\t\t\t\treturnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS))\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.Integer:\r\n\t\t\t\t\t\treturnValuesAsString.append(\"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id))\r\n\t\t\t\t\t\treturnValues.append(parameter.AsInteger())\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.String:\r\n\t\t\t\t\t\treturnValuesAsString.append(\"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsString(), el.Id))\r\n\t\t\t\t\t\treturnValues.append(parameter.AsString() if parameter.AsString() != None else \"\")\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.ElementId:\r\n\t\t\t\t\t\treturnValuesAsString.append(\"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id))\r\n\t\t\t\t\t\treturnValues.append(parameter.AsElementId())\r\n\t\t\t\t\tparameterFound = True\r\n\t\t\t\telse:\r\n\t\t\t\t\traise RuntimeError(\"parameter {0} not in {1}\".format(inName, el.Id.IntegerValue))\r\n\t\t\telse:\r\n\t\t\t\tparameter = typeElement.LookupParameter(inName)\r\n\t\t\t\tif parameter:\t\t\t\t\t\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.Double:\r\n\t\t\t\t\t\treturnValuesAsString.append(\"{0}, {4}, {1}, {2}, {3:.4f}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id))\r\n\t\t\t\t\t\treturnValues.append(DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS))\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.Integer:\r\n\t\t\t\t\t\treturnValuesAsString.append(\"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id))\r\n\t\t\t\t\t\treturnValues.append(parameter.AsInteger())\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.String:\r\n\t\t\t\t\t\treturnValuesAsString.append(\"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsString(), el.Id))\r\n\t\t\t\t\t\treturnValues.append(parameter.AsString() if parameter.AsString() != None else \"\")\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.ElementId:\r\n\t\t\t\t\t\treturnValuesAsString.append(\"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id))\r\n\t\t\t\t\t\treturnValues.append(parameter.AsElementId())\r\n\t\t\t\telse:\r\n\t\t\t\t\traise RuntimeError(\"parameter {0} not in {1}\".format(typeElement.Name, el.Id.IntegerValue))\r\n\tif info:\r\n\t\treturn returnValuesAsString\r\n\telif allParametersInfo:\r\n\t\treturn allParametersNames\r\n\telse:\r\n\t\treturn returnValues '''\r\n\r\ndef getValueByParameterName(el, inName, doc, *args, **kwargs):\r\n\t\"\"\"\r\n\t\tget parameter value from element by parameter name\r\n\r\n\t\targs:\r\n\t\tinElement type: list(DB.Element,...)\r\n\t\tinName: type: string\r\n\t\tkwargs['info'] type: bool returns parameter info as string (element name, element Id, parameter name, parameter value as string) if True, default False\r\n\t\tkwargs['allParametersInfo'] type: bool returns list of all parameters names of instance as a list default False\r\n\t\"\"\"\r\n\tinfo = kwargs['info'] if 'info' in kwargs else False\r\n\tallParametersInfo = kwargs['allParametersInfo'] if 'allParametersInfo' in kwargs else False\r\n\tinBip = kwargs[\"bip\"] if 'bip' in kwargs else None\r\n\t#print(\"this is BIP param {0}\".format(inName))\r\n\ttry:\r\n\t\tbip = getBuiltInParameterInstance(inName)\r\n\texcept Exception as ex:\r\n\t\tbip = None\r\n\tif bip:\r\n\t\tpass\r\n\t\t#print(\"this is BIP param {0}\".format(inName))\r\n\telse:\r\n\t\tif inBip:\r\n\t\t\tbip = inBip\r\n\t\telse:\r\n\t\t\tbip = None\r\n\t#raise TypeError(\"bip {0} inName {1}\".format(bip, inName))\r\n\t#returnValues = []\r\n\treturnValue = None\r\n\treturnValueAsString = \"\"\r\n\tallParametersNames = []\r\n\tfirstTime = True\r\n\t\r\n\tif not el.LookupParameter(inName) and not bip:\r\n\t\ttypeElement = doc.GetElement(el.GetTypeId())\r\n\t\t#print(\"{0} {1} is typeParameter of type {2}\".format(el.Id, inName, typeElement.FamilyName))\r\n\t\t#el = typeElement\r\n\t#elif not el.LookupParameter(inName) and bip:\r\n\telse:\r\n\t\ttypeElement = None\r\n\tparameterFound = False\r\n\tif bip:\r\n\t\tparameterFound = True\r\n\t\tparam_ID = DB.ElementId(bip)\r\n\t\tparameterVP = DB.ParameterValueProvider(param_ID)\r\n\t\tif parameterVP.IsDoubleValueSupported(el):\r\n\t\t\treturnValue = DB.UnitUtils.ConvertFromInternalUnits(parameterVP.GetDoubleValue(el), DB.DisplayUnitType.DUT_MILLIMETERS)\r\n\t\telif parameterVP.IsIntegerValueSupported(el):\r\n\t\t\treturnValue = parameterVP.GetIntegerValue(el)\r\n\t\telif parameterVP.IsStringValueSupported(el):\r\n\t\t\treturnValue = parameterVP.GetStringValue(el) if parameterVP.GetStringValue(el) != None else \"\"\r\n\t\telif parameterVP.IsElementIdValueSupported(el):\r\n\t\t\treturnValue = parameterVP.GetElementIdValue(el).IntegerValue\r\n\t\telse:\r\n\t\t\treturnValue = \"\"\r\n\t\r\n\telse:\r\n\t\tif not typeElement:\r\n\t\t\tparameter = el.LookupParameter(inName)\r\n\t\t\tif parameter:\t\t\t\t\t\r\n\t\t\t\tif parameter.StorageType == DB.StorageType.Double:\r\n\t\t\t\t\treturnValueAsString = \"{0}, {4}, {1}, {2}, {3:.4f}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id)\r\n\t\t\t\t\treturnValue = DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS)\r\n\t\t\t\tif parameter.StorageType == DB.StorageType.Integer:\r\n\t\t\t\t\treturnValueAsString = \"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id)\r\n\t\t\t\t\treturnValue = parameter.AsInteger()\r\n\t\t\t\tif parameter.StorageType == DB.StorageType.String:\r\n\t\t\t\t\treturnValueAsString = \"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsString(), el.Id)\r\n\t\t\t\t\treturnValue = parameter.AsString() if parameter.AsString() != None else \"\"\r\n\t\t\t\tif parameter.StorageType == DB.StorageType.ElementId:\r\n\t\t\t\t\treturnValueAsString = \"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id)\r\n\t\t\t\t\treturnValue = parameter.AsElementId()\r\n\t\t\t\tparameterFound = True\r\n\t\t\telse:\r\n\t\t\t\traise RuntimeError(\"parameter {0} not in {1}\".format(inName, el.Id.IntegerValue))\r\n\t\telse:\r\n\t\t\tparameter = typeElement.LookupParameter(inName)\r\n\t\t\tif parameter:\t\t\t\t\t\r\n\t\t\t\tif parameter.StorageType == DB.StorageType.Double:\r\n\t\t\t\t\treturnValueAsString = \"{0}, {4}, {1}, {2}, {3:.4f}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS), el.Id)\r\n\t\t\t\t\treturnValue = DB.UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), DB.DisplayUnitType.DUT_MILLIMETERS)\r\n\t\t\t\tif parameter.StorageType == DB.StorageType.Integer:\r\n\t\t\t\t\treturnValueAsString = \"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsInteger(), el.Id)\r\n\t\t\t\t\treturnValue = parameter.AsInteger()\r\n\t\t\t\tif parameter.StorageType == DB.StorageType.String:\r\n\t\t\t\t\treturnValueAsString = \"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsString(), el.Id)\r\n\t\t\t\t\treturnValue = parameter.AsString() if parameter.AsString() != None else \"\"\r\n\t\t\t\tif parameter.StorageType == DB.StorageType.ElementId:\r\n\t\t\t\t\treturnValueAsString = \"{0}, {4}, {1}, {2}, {3}\".format(el.Name if hasattr(el, \"Name\") else el.FamilyName, el.Id, parameter.Definition.Name, parameter.AsElementId().IntegerValue, el.Id)\r\n\t\t\t\t\treturnValue = parameter.AsElementId()\r\n\t\t\telse:\r\n\t\t\t\traise RuntimeError(\"parameter {0} not in {1}\".format(typeElement.Name, el.Id.IntegerValue))\r\n\tif info:\r\n\t\treturn returnValueAsString\r\n\telif allParametersInfo:\r\n\t\treturn allParametersNames\r\n\telse:\r\n\t\treturn returnValue\r\n\r\ndef setValueByParameterName(el, inValue, inName, doc, *args, **kwargs):\r\n\t\"\"\"\r\n\t\tset parameter value from element by parameter name\r\n\t\tmust be in Transaction block\r\n\r\n\t\targs:\r\n\t\tinElement type: list(DB.Element,...)\r\n\t\tinValues type: list(DB.Element or str, or int, or float...)\r\n\t\tinName: type: string\r\n\r\n\t\"\"\"\r\n\tinBip = kwargs[\"bip\"] if 'bip' in kwargs else None\r\n\t#print(\"this is BIP param {0}\".format(inName))\r\n\tbip = getBuiltInParameterInstance(inName)\r\n\tif bip:\r\n\t\tpass\r\n\t\t#print(\"this is BIP param {0}\".format(inName))\r\n\telse:\r\n\t\tif inBip:\r\n\t\t\tbip = inBip\r\n\t\telse:\r\n\t\t\tbip = None\r\n\r\n\t#returnValues = []\r\n\treturnValue = None\r\n\t#firstTime = True\r\n\ttry:\r\n\t\t#TransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\t#trans = SubTransaction(doc)\r\n\t\t#trans.Start()\r\n\t\tparameterFound = False\r\n\t\tif bip:\r\n\t\t\tparameterFound = True\r\n\t\t\tparam_ID = DB.ElementId(bip)\r\n\t\t\tparameterVP = DB.ParameterValueProvider(param_ID)\r\n\t\t\tif parameterVP.IsDoubleValueSupported(el):\r\n\t\t\t\tif type(inValue) == float:\r\n\t\t\t\t\treturnValue = \"parameter {0} as DoubleValue of element {1} has been set to {2}\".format(inName, el.Id.IntegerValue, inValue)\r\n\t\t\t\t\tmyParam = el.Parameter[bip].Set(inValue)\r\n\t\t\t\telse: \r\n\t\t\t\t\traise TypeError(\"Wrong format of input value {0} of type {1}. It must be of type int or float\".format(inValue, type(inValue)))\r\n\t\t\tif parameterVP.IsIntegerValueSupported(el):\r\n\t\t\t\tif type(inValue) == int:\r\n\t\t\t\t\tmyParam = el.Parameter[bip].Set(inValue)\r\n\t\t\t\t\tturnValue = \"parameter {0} as IntegerValue of element {1} has been set to {2}\".format(inName, el.Id.IntegerValue, inValue)\r\n\t\t\t\telse: \r\n\t\t\t\t\traise TypeError(\"Wrong format of input value {0} of type {1}. It must be of type int\".format(inValue, type(inValue)))\r\n\t\t\tif parameterVP.IsStringValueSupported(el):\r\n\t\t\t\tif type(inValue) == str:\r\n\t\t\t\t\t#paramElementId = parameterVP.Parameter\r\n\t\t\t\t\t#paramElement = doc.GetElement(paramElementId)\r\n\t\t\t\t\tif el.Parameter[bip] != None:\r\n\t\t\t\t\t\tmyParam = el.Parameter[bip].Set(inValue)\r\n\t\t\t\t\t\treturnValue = \"parameter {0} as StringValue of element {1} has been set to {2}\".format(inName, el.Id.IntegerValue, inValue)\r\n\t\t\t\t\telse:\r\n\t\t\t\t\t\treturnValue = \"el is None!!\"\r\n\t\t\t\telse: \r\n\t\t\t\t\traise TypeError(\"Wrong format of input value {0} of type {1}. It must be of type str\".format(inValue, type(inValue)))\r\n\t\t\tif parameterVP.IsElementIdValueSupported(el):\r\n\t\t\t\tif type(inValue) == DB.ElementId:\r\n\t\t\t\t\tmyParam = el.Parameter[bip].Set(inValue)\r\n\t\t\t\t\treturnValue = \"parameter {0} as ElementIdValue of element {1} has been set to {2}\".format(inName, el.Id.IntegerValue, inValue)\r\n\t\t\t\telse: \r\n\t\t\t\t\traise TypeError(\"Wrong format of input value {0} of type {1}. It must be of type ElementId\".format(inValue, type(inValue)))\r\n\t\t\r\n\t\telse:\r\n\t\t\tif el.GetTypeId().IntegerValue > -1:\r\n\t\t\t\ttypeElement = doc.GetElement(el.GetTypeId())\r\n\t\t\t\tparameter = typeElement.LookupParameter(inName)\r\n\t\t\t\tif parameter:\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.Double:\r\n\t\t\t\t\t\treturnValue = setParameterAsDouble(el, parameter, inValue)\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.Integer:\r\n\t\t\t\t\t\treturnValue = setParameterAsInteger(el, parameter, inValue)\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.String:\r\n\t\t\t\t\t\treturnValue = setParameterAsString(el, parameter, inValue)\r\n\t\t\t\t\tif parameter.StorageType == DB.StorageType.ElementId:\r\n\t\t\t\t\t\treturnValue = setParamAsElementId(el, parameter, inValue)\r\n\t\t\t\t\tparameterFound = True\r\n\t\t\t\t\r\n\t\t\t\telse:\r\n\t\t\t\t\telparameter = el.LookupParameter(inName)\r\n\t\t\t\t\tif elparameter:\r\n\t\t\t\t\t# parameters = el.GetOrderedParameters()\r\n\t\t\t\t\t# for parameter in parameters:\r\n\t\t\t\t\t\t# if parameter.Definition.Name == inName:\r\n\t\t\t\t\t\tif elparameter.StorageType == DB.StorageType.Double:\r\n\t\t\t\t\t\t\treturnValue = setParameterAsDouble(el, elparameter, inValue)\r\n\t\t\t\t\t\tif elparameter.StorageType == DB.StorageType.Integer:\r\n\t\t\t\t\t\t\treturnValue = setParameterAsInteger(el, elparameter, inValue)\r\n\t\t\t\t\t\tif elparameter.StorageType == DB.StorageType.String:\r\n\t\t\t\t\t\t\treturnValue = setParameterAsString(el, elparameter, inValue)\r\n\t\t\t\t\t\tif elparameter.StorageType == DB.StorageType.ElementId:\r\n\t\t\t\t\t\t\treturnValue= setParamAsElementId(el, elparameter, inValue)\r\n\t\t\t\t\t\tparameterFound = True\r\n\t\t\t\t\t\t\t# if not firstTime:\r\n\t\t\t\t\t\t\t# \tbreak\t\t\t\t\t\r\n\t\t#TransactionManager.Instance.TransactionTaskDone()\r\n\t\tif not parameterFound:\r\n\t\t\traise NameError(\"Parameter name {0} not found in element {1}\".format(inName, el.Id.IntegerValue))\r\n\t\t#firstTime = False\r\n\t\telse:\r\n\t\t\treturn returnValue\r\n\t\t\r\n\texcept:\r\n\t\t\r\n\t\timport traceback\r\n\t\terrorReport = traceback.format_exc()\r\n\t\t#trans.RollBack()\r\n\t\t#TransactionManager.Instance.TransactionTaskDone()\r\n\t\traise RuntimeError(\"Parameter name {0} not set !!! {1}\".format(inName, errorReport))\r\n\t\t\r\ndef setParameterAsDouble(inElement, inParameter, inValue):\r\n\tif inParameter.StorageType == DB.StorageType.Double:\r\n\t\ttry:\r\n\t\t\tstrToFloat = float(inValue)\r\n\t\texcept:\r\n\t\t\tstrToFloat = False\r\n\t\tif type(inValue) == float:\r\n\t\t\tconvertedValue = DB.UnitUtils.ConvertToInternalUnits(inValue, DB.DisplayUnitType.DUT_MILLIMETERS)\r\n\t\t\tinParameter.Set(convertedValue)\r\n\t\t\treturn \"parameter {0} as DoubleValue of element {1} has been set to {2}\".format(inParameter.Definition.Name, inElement.Id.IntegerValue, convertedValue)\r\n\t\telif strToFloat != False:\r\n\t\t\tconvertedValue = DB.UnitUtils.ConvertToInternalUnits(strToFloat, DB.DisplayUnitType.DUT_MILLIMETERS)\r\n\t\t\tinParameter.Set(convertedValue)\r\n\t\t\treturn \"parameter {0} as strToFloat DoubleValue of element {1} has been set to {2}\".format(inParameter.Definition.Name, inElement.Id.IntegerValue, convertedValue)\r\n\t\telse: \r\n\t\t\traise TypeError(\"Wrong format of input value {0} of type {1}. It must be of type float, int or str and conversion from str or from int by float() must throw no exception\".format(inValue, type(inValue)))\r\n\telse:\r\n\t\traise TypeError(\"input parameter.StorageType is not of type StorageType.Double in RevitSelection.py setDouble()\")\r\n\r\ndef setParameterAsInteger(inElement, inParameter, inValue):\r\n\tif inParameter.StorageType == DB.StorageType.Integer:\r\n\t\ttry:\r\n\t\t\tstrToInt = int(inValue)\r\n\t\texcept:\r\n\t\t\tstrToInt = False\r\n\t\tif type(inValue) == int:\r\n\t\t\tinParameter.Set(inValue)\r\n\t\t\treturn \"parameter {0} as IntegerValue of element {1} has been set to {2}\".format(inParameter.Definition.Name, inElement.Id.IntegerValue, inValue)\r\n\t\telif strToInt != False:\r\n\t\t\tinParameter.Set(strToInt)\r\n\t\t\treturn \"parameter {0} as strToInt IntegerValue of element {1} has been set to {2}\".format(inParameter.Definition.Name, inElement.Id.IntegerValue, strToInt)\r\n\t\telse: \r\n\t\t\traise TypeError(\"Wrong format of input value {0} of type {1}. It must be of type int or str and conversion from str to int by int() must throw no exception\".format(inValues[i], type(inValues[i])))\r\n\telse:\r\n\t\traise TypeError(\"input parameter.StorageType is not of type StorageType.Integer in RevitSelection.py setInteger()\")\r\n\r\ndef setParameterAsString(inElement, inParameter, inValue):\r\n\tif inParameter.StorageType == DB.StorageType.String:\r\n\t\ttry:\r\n\t\t\tvalToStr = str(inValue)\r\n\t\texcept:\r\n\t\t\tvalToStr = False\r\n\t\tif type(inValue) == str:\r\n\t\t\tinParameter.Set(inValue)\r\n\t\t\t#Errors.catchVar(\"Element {0} has been set to {1}\".format(inElement.Id, inValue))\r\n\t\t\treturn \"parameter {0} as StringValue of element {1} has been set to {2}\".format(inParameter.Definition.Name, inElement.Id.IntegerValue, inValue)\r\n\t\telif valToStr != False:\r\n\t\t\tinParameter.Set(valToStr)\r\n\t\t\treturnValue = \"parameter {0} as valToStr StringValue of element {1} has been set to {2}\".format(inParameter.Definition.Name, inElement.Id.IntegerValue, valToStr)\r\n\t\t\treturn returnValue\r\n\t\telse: \r\n\t\t\traise TypeError(\"Wrong format of input value {0} of type {1}. It must be of type str or conversion from other format by str() must throw no exception\".format(inValue, type(inValue)))\r\n\telse:\r\n\t\traise TypeError(\"input parameter.StorageType is not of type StorageType.String in RevitSelection.py setString()\")\r\n\r\ndef setParamAsElementId(inElement, inParameter, inValue):\r\n\tif inParameter.StorageType == DB.StorageType.ElementId:\r\n\t\tif type(inValue) == DB.ElementId:\r\n\t\t\tinParameter.Set(inValue)\r\n\t\t\treturn \"parameter {0} as StringValue of element {1} has been set to {2}\".format(inParameter.Definition.Name, inElement.Id.IntegerValue, inValue)\r\n\t\telse: \r\n\t\t\traise TypeError(\"Wrong format of input value {0} of type {1}. It must be of type ElementId\".format(inValue, type(inValue)))\r\n\r\ndef getElementsMatchingRegEx(inElementsIds, inBip, inRegExp):\r\n\tpvp = DB.ParameterValueProvider(DB.ElementId(int(inBip)))\r\n\t#regExp = r\"^[A-Z][A-Z]\\.\"\r\n\tregExp = r\"\" + inRegExp\r\n\tvalidRexExp = re.compile(regExp)\r\n\t#evaluator = DB.FilterStringRuleEvaluator()\r\n\tparamElId = DB.ElementId(int(inBip))\r\n\telementsCol = DB.FilteredElementCollector(doc, inElementsIds).WhereElementIsNotElementType().ToElements()\r\n\tvalues = []\r\n\treturnElements = []\r\n\ttry:\r\n\t\tfor el in list(elementsCol):\r\n\t\t\tif pvp.IsStringValueSupported(el):\r\n\t\t\t\t#values.append(pvp.GetStringValue(el) if pvp.GetStringValue(el) != None else \"\")\r\n\t\t\t\tvalue = pvp.GetStringValue(el) if pvp.GetStringValue(el) != None else \"\"\r\n\t\t\t\t#matches = validRexExp.match(pvp.GetStringValue(el) if pvp.GetStringValue(el) != None else \"\")\r\n\t\t\t\tmatches = validRexExp.match(pvp.GetStringValue(el))\r\n\t\t\t\tif matches:\r\n\t\t\t\t\tvalues.append(\"{0} matches regExp {1} : {2}\".format(value, regExp, matches))\r\n\t\t\t\t\treturnElements.append(el)\r\n\t\t\t\telse:\r\n\t\t\t\t\tvalues.append(\"{0} doesn't match regExp {1} : {2}\".format(value, regExp, matches))\r\n\t\t\telse:\r\n\t\t\t\tpass\r\n\t\t\t\t#values.append(\"Not StringValuesSupported\")\r\n\t\treturn (returnElements ,values)\r\n\texcept Exception as ex:\r\n\t\tErrors.catch('Error ', ex)\r\n\t\treturn None\r\n\r\ndef copyParameterValues(inElements, inFromParamName, inToParamName, doc, *args, **kwargs):\r\n\tinBipTo = kwargs[\"bipTo\"] if 'bipTo' in kwargs else None\r\n\tinBipFrom = kwargs[\"bipFrom\"] if 'bipFrom' in kwargs else None\r\n\t#print(\"this is BIP param {0}\".format(inName))\r\n\tbipTo = getBuiltInParameterInstance(inToParamName)\r\n\tbipFrom = getBuiltInParameterInstance(inFromParamName)\r\n\tif bipTo:\r\n\t\tpass\r\n\t\t#print(\"this is BIP param {0}\".format(inName))\r\n\telse:\r\n\t\tif inBipTo:\r\n\t\t\tbipTo = inBipTo\r\n\t\telse:\r\n\t\t\tbipTo = None\r\n\t\r\n\tif bipFrom:\r\n\t\tpass\r\n\t\t#print(\"this is BIP param {0}\".format(inName))\r\n\telse:\r\n\t\tif inBipFrom:\r\n\t\t\tbipFrom = inBipFrom\r\n\t\telse:\r\n\t\t\tbipFrom = None\r\n\r\n\tresults = []\r\n\tfor el in inElements:\r\n\t\tfromParamValue = getValueByParameterName(el, inFromParamName, doc, bip = bipFrom)\r\n\t\t# set to inToParamterName\r\n\t\tif fromParamValue != None:\r\n\t\t\tsetValue = setValueByParameterName(el, fromParamValue, inToParamName, doc, bip = bipTo)\r\n\t\t\tresults.append(setValue)\r\n\t\telse:\r\n\t\t\tpass\r\n\treturn results\r\n\r\ndef getMembers(inElements):\r\n\tuniqueParams = {}\r\n\tuniqueTypeIds = []\r\n\tuniqueFamilies = {}\r\n\tnameToParamDic = {}\r\n\tfor el in inElements:\r\n\t\tif el.GetTypeId().IntegerValue > -1:\r\n\t\t\tif el.GetTypeId() not in uniqueTypeIds:\r\n\t\t\t\tuniqueTypeIds.append(el.GetTypeId())\r\n\t\t\tfamilyName = doc.GetElement(el.GetTypeId()).FamilyName\r\n\t\t\tif familyName not in uniqueFamilies:\r\n\t\t\t\tuniqueFamilies[familyName] = el.GetTypeId()\r\n\t\telParams = el.GetOrderedParameters()\r\n\t\tfor elParam in elParams:\r\n\t\t\tif elParam != None:\r\n\t\t\t\tif elParam.Definition.Name not in uniqueParams:\r\n\t\t\t\t\tuniqueParams[elParam.Definition.Name] = elParam\r\n\t\t\t\t\tnameToParamDic[elParam.Definition.Name] = elParam\r\n\r\n\tfor k, elId in uniqueFamilies.items():\r\n\t\tel = doc.GetElement(elId)\r\n\t\telParams = el.GetOrderedParameters()\r\n\t\tfor elParam in elParams:\r\n\t\t\tif elParam.Definition.Name not in uniqueParams:\r\n\t\t\t\tuniqueParams[elParam.Definition.Name] = UnwrapElement(elParam)\r\n\t\t\t\tnameToParamDic[elParam.Definition.Name] = UnwrapElement(elParam)\r\n\t\r\n\treturn (uniqueParams, nameToParamDic)\r\n\r\ndef parameterNameTest(inElements, inParamName):\r\n\tisElement = False\r\n\tisParameter = False\r\n\tif isinstance(inElements, list):\r\n\t\tif len(inElements) > 0:\r\n\t\t\tif isinstance(inElements[0], DB.Element):\r\n\t\t\t\tisElement = True\r\n\t\t\t\tisParameter = doTest(inElements[0], inParamName)\r\n\telif isinstance(inElements, DB.Element):\r\n\t\tisElement = True\r\n\t\tisParameter = doTest(inElements[0], inParamName)\r\n\r\n\treturn isParameter\r\n\t\t\r\n\r\ndef doTest(inElement, inParamName):\r\n\tisParameter = False\r\n\ttry:\r\n\t\tparam = inElement.LookupParameter(inParamName)\r\n\t\tif param:\r\n\t\t\tisParameter = True\r\n\texcept Exception as ex:\r\n\t\tpass\r\n\tif not isParameter:\r\n\t\ttry:\r\n\t\t\tparam = getBuiltInParameterInstance(inParamName)\r\n\t\t\tif param:\r\n\t\t\t\tisParameter = True\r\n\t\texcept Exception as ex:\r\n\t\t\tpass\r\n\treturn isParameter\r\n\r\n#MAIN INSTRUCTIONS\r\n\r\ninElements = IN[0]\r\nmarkBipName = \"ALL_MODEL_MARK\"\r\nwriteParamName = IN[1]\r\ninStartPosition = IN[2] if len(IN)>2 else None\r\n\r\n#writeParamName = \"Komentář 2\"\r\n#writeParamName = \"ALL_MODEL_MARK\"\r\nassemblyCodeBipName = \"UNIFORMAT_CODE\"\r\n\r\nunWrapped = processList(UnwrapElement, inElements)\r\n\r\n#INPUT PARAMETER TEST\r\nparamTest = parameterNameTest(unWrapped, writeParamName)\r\nif not paramTest:\r\n\traise TypeError(\"Input Prameter Name isn't right name for Parameter, or Input elements has no such parameter Name\")\r\n\r\nelementsIds = [x.Id for x in unWrapped]\r\n\r\nelementsIdsCol = Clist[DB.ElementId](elementsIds)\r\nelementsCol = Clist[DB.Element](unWrapped)\r\n\r\n#allElements = processList(UnwrapElement, allElements)\r\n\r\n\r\nmarkBip = getBuiltInParameterInstance(markBipName)\r\nassemblyCodeBip = getBuiltInParameterInstance(assemblyCodeBipName)\r\n#copyToBip = getBuiltInParameterInstance(copyToBipName)\r\nwriteParamVals = processList(getValueByParameterName, unWrapped, writeParamName, doc)\r\n\r\n\r\nmarkParamVals = processList(getValueByParameterName, unWrapped, markBipName, doc, bip = markBip)\r\n\r\nassemblyCodeParamVals = processList(getValueByParameterName, unWrapped, assemblyCodeBipName, doc, bip = assemblyCodeBip)\r\n#composite for grouping tuple(markParamVals, assemblyCodeParamVals, elementsCol)\r\ngrComp = zip(assemblyCodeParamVals, markParamVals, list(elementsCol))\r\ngrComp = sorted(grComp, key = lambda x: x[0])\r\nkey_func = lambda x: x[0]\r\n#groupedACPVobj = groupby(assemblyCodeParamVals, lambda x: x[0])\r\ngroups = {}\r\nfor key, group in groupby(grComp, key_func):\r\n\tgroups[key] = list(group)\r\n\r\n#BEGIN TRANSACTION\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ntrans = DB.SubTransaction(doc)\r\ntrans.Start()\r\nresults = []\r\nfor k,group in groups.items():\r\n\tfor i, item in enumerate(group):\r\n\t\tif inStartPosition:\r\n\t\t\tvalue = i+int(inStartPosition)\r\n\t\t\twriteStr = \"{0:0>3}\".format(value)\r\n\t\telse:\r\n\t\t\twriteStr = \"{0:0>3}\".format(i+1)\r\n\t\tresults.append(setValueByParameterName(item[2], writeStr, writeParamName, doc))\r\ntrans.Commit()\r\nTransactionManager.Instance.TransactionTaskDone()\r\n#END TRANSACTION\r\n\r\nmyOutput = results\r\n\r\nif Errors.hasError():\r\n \tOUT = Errors.report\r\nelif Errors.hasContent():\r\n\tOUT = Errors.getConntainerContent()\r\nelse:\r\n\tOUT = myOutput",
+      "VariableInputPorts": true,
+      "Id": "06161987f66b40beb775806513993985",
+      "Inputs": [
+        {
+          "Id": "ed5da519f70f4ffe8b58b01ab2183b32",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "95aaec334c4b4e29882a6fe2268ad505",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "76e8c17417fd4f609c10a89e60931443",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "aceb76b3c2d74c738d864e00ba8e74dc",
+          "Name": "OUT",
+          "Description": "Výsledek skriptu jazyka Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spustí vložený skript IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "inList[0];",
+      "Id": "5607e9ff47f5461f8331d288f9a18a54",
+      "Inputs": [
+        {
+          "Id": "362c42c789ef4033bd4147dee8b3dfd0",
+          "Name": "inList",
+          "Description": "inList",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1f74304fbde242a484e81230bade9723",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "2e2714b0f7814bf9acb9878ed787b22b",
+      "Inputs": [
+        {
+          "Id": "68811965ca334f06b5b013d5b15391af",
+          "Name": "",
+          "Description": "Uzel k vyhodnocení",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5b7e86f941a24c399c8c32e358625eef",
+          "Name": "",
+          "Description": "Podívejte se na obsah.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "inList[1];",
+      "Id": "7bb8eb1236794f43a9ff80bf27582373",
+      "Inputs": [
+        {
+          "Id": "2e4c6ee35ac649609da07f0f891ffd52",
+          "Name": "inList",
+          "Description": "inList",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "04faf398b1504a70a2a63500d9a46bd6",
+          "Name": "",
+          "Description": "Hodnota výrazu na řádku 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "0b7271cf28784777999de1de63f1805d",
+      "Inputs": [
+        {
+          "Id": "f9d49de07ace41e09f39c16e789fa45a",
+          "Name": "",
+          "Description": "Uzel k vyhodnocení",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4ba2d9a4445d42a596399107a425877a",
+          "Name": "",
+          "Description": "Podívejte se na obsah.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Count@var[]..[]",
+      "Id": "62aa0d71685145f384cb635ded4f1a7c",
+      "Inputs": [
+        {
+          "Id": "06d720d16e844f5b8ab2873606db211e",
+          "Name": "list",
+          "Description": "Seznam, u něhož chcete načíst počet položek\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "484c405bea55425e9a4c55d2546c634a",
+          "Name": "count",
+          "Description": "Délka seznamu",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Vrátí počet položek uložených v daném seznamu.\n\nList.Count (list: var[]..[]): int"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "ALL_MODEL_MARK",
+      "Id": "0ea91357da8246029f205587352708d6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ec45a501a06345e094f8c2894cd45e95",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří řetězec."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "99ce5d482a3e4c528a6155fd907efc33",
+      "Inputs": [
+        {
+          "Id": "8b201af2975d4ebe9be28aef1c3a7ea4",
+          "Name": "",
+          "Description": "Uzel k vyhodnocení",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "72c42d8713ad42d3949efb8dda1f739f",
+          "Name": "",
+          "Description": "Podívejte se na obsah.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Zobrazení výstupu uzlu"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "",
+      "Id": "2218e94e6bd447718ba0d3a8bbbb94f2",
+      "Inputs": [],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Umožňuje přímé vytváření kódu DesignScript."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.DoubleInput, CoreNodeModels",
+      "NodeType": "NumberInputNode",
+      "NumberType": "Double",
+      "InputValue": 0.0,
+      "Id": "fd61ba7cf3314703aa00ee26e65e05b1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "aadb42076a3b4bd795c70a9661f63d01",
+          "Name": "",
+          "Description": "Double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vytvoří číslo."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "dbde1b27a55947a3b902c92a9bad5902",
+      "End": "0e2bf144e88749b8b360da6706af671e",
+      "Id": "722e775cd0134739ab14e9c786e13657"
+    },
+    {
+      "Start": "7d703ccedb2b46909c4e7bc2a474bfc3",
+      "End": "03f2f169dd664181af024dee11361612",
+      "Id": "34be3b6596604bd6b3458e04adeb79c0"
+    },
+    {
+      "Start": "952e51f0faae409d9416938bb1c19ce0",
+      "End": "74e8da28ee8d40beac4f22db5ef0a351",
+      "Id": "d920d5608c684945975731f1d8493631"
+    },
+    {
+      "Start": "952e51f0faae409d9416938bb1c19ce0",
+      "End": "362c42c789ef4033bd4147dee8b3dfd0",
+      "Id": "71e524e39fc444f98dfd9b93f5407f67"
+    },
+    {
+      "Start": "952e51f0faae409d9416938bb1c19ce0",
+      "End": "2e4c6ee35ac649609da07f0f891ffd52",
+      "Id": "74692a4cd0ce4449ada7b0ca622ee210"
+    },
+    {
+      "Start": "20da0be13c2a498f8f5bf2da63878b88",
+      "End": "fa37667c93cf488387e86924fc2b2abd",
+      "Id": "6e172bce0b3740e6bfa4f5915db7f571"
+    },
+    {
+      "Start": "560c6fb8eb494dab8f2d9bf5f91d99f6",
+      "End": "99a75c7bfd31451ab1b3b1f3ff743a86",
+      "Id": "04cf028748a344f681819e5572f04b97"
+    },
+    {
+      "Start": "560c6fb8eb494dab8f2d9bf5f91d99f6",
+      "End": "08a95fa0029e4c758171dfc7ac94d3e8",
+      "Id": "cb7859e1154c4524a4b6f1d32dce622e"
+    },
+    {
+      "Start": "767c383d1b6d4ffc923561dfc45c0545",
+      "End": "b223fab1602b416e910e16a97096bfd5",
+      "Id": "82a10db165044044ad70f9fa94b5200c"
+    },
+    {
+      "Start": "7ef1f146b2f14e319c614063e80b2517",
+      "End": "7ea82c7693484378859741a2773f0c09",
+      "Id": "6605750e6d544f729929c1c97fdafca7"
+    },
+    {
+      "Start": "df0aafacbce340f6bb6fd5a6fba7d37f",
+      "End": "ef5729e0a2a94648b4c5f1742a29632f",
+      "Id": "90cd6c2ce1a34ba39f3a3c688437a991"
+    },
+    {
+      "Start": "9a67f57a40a74d87964978f2de752419",
+      "End": "d3417ad795fd42239f00700981ffb0e5",
+      "Id": "06760ba346284df8bbc7ce1dec58df89"
+    },
+    {
+      "Start": "c8b8bc789dd4461f910ccf5aaee0be7f",
+      "End": "b87149886eb649fd885db4f97a5606cf",
+      "Id": "650ed03a7e28417e99d3163e95c780ed"
+    },
+    {
+      "Start": "c8b8bc789dd4461f910ccf5aaee0be7f",
+      "End": "ed5da519f70f4ffe8b58b01ab2183b32",
+      "Id": "3ac2887273454f6a81daadf6ec4d017f"
+    },
+    {
+      "Start": "aceb76b3c2d74c738d864e00ba8e74dc",
+      "End": "8b201af2975d4ebe9be28aef1c3a7ea4",
+      "Id": "cdcaed95965e45c9b91d26050347908a"
+    },
+    {
+      "Start": "1f74304fbde242a484e81230bade9723",
+      "End": "68811965ca334f06b5b013d5b15391af",
+      "Id": "38c64f39df5149d9990a193e08233154"
+    },
+    {
+      "Start": "04faf398b1504a70a2a63500d9a46bd6",
+      "End": "06d720d16e844f5b8ab2873606db211e",
+      "Id": "1a538dc0f0b940fc8f2e272bddc09dd1"
+    },
+    {
+      "Start": "484c405bea55425e9a4c55d2546c634a",
+      "End": "f9d49de07ace41e09f39c16e789fa45a",
+      "Id": "88a41a9cca474ae1996f1a011c00d5e5"
+    },
+    {
+      "Start": "ec45a501a06345e094f8c2894cd45e95",
+      "End": "95aaec334c4b4e29882a6fe2268ad505",
+      "Id": "6724c671c440439fb8e569a522562811"
+    },
+    {
+      "Start": "aadb42076a3b4bd795c70a9661f63d01",
+      "End": "76e8c17417fd4f609c10a89e60931443",
+      "Id": "a129b93b555a45c5bba62058a15a4ccf"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Náhled pozadí",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Select Schedule View",
+        "Id": "faef79e4d9b84d298793c8671bd1a907",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -65.4965853248633,
+        "Y": -31.31224453723371
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Get Elements From Schedule",
+        "Id": "6ec0aa492fb7412db0dcc3fc54aa4c5d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 378.98999048713415,
+        "Y": 184.25202935675378
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "d461bef01e7346b4948b0b1b7bf2326e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 580.54709231213383,
+        "Y": 187.83279286152293
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.GetCategory",
+        "Id": "7318e9dc11814576a17f3ad2beefc6be",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1445.0958590740636,
+        "Y": 363.83001430984996
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Extracted Elements",
+        "Id": "55ca0dc9eb1141a88f221aba5f31d843",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 804.53449025457076,
+        "Y": 190.92556911971496
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String.Contains",
+        "Id": "fa7988e587e34bc1afb8cf8a44aa2120",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1938.0519583271794,
+        "Y": 362.39389576442659
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Category.Name",
+        "Id": "62543f1b7e394c879ca6da448420ef55",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1701.5330859426285,
+        "Y": 363.7397476236539
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "7de0fd76bb2e4ab69feece65f4e2fe97",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1730.5445599575728,
+        "Y": 462.21642936535949
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Not",
+        "Id": "74cdac3db20643b5887e01107a877b35",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2201.4723967459086,
+        "Y": 365.34263201538255
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.FilterByBoolMask",
+        "Id": "397c5466d0f94ad3a14489415e6196e4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2408.7604077449887,
+        "Y": 279.42732196081295
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "534e4d3d8ab4458c83088b0829076eb8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2631.5105373575666,
+        "Y": -92.898518798931576
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Renumber Mark Parameter",
+        "Id": "06161987f66b40beb775806513993985",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2957.1197932395194,
+        "Y": 546.578607508438
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "5607e9ff47f5461f8331d288f9a18a54",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 766.62101098330027,
+        "Y": -46.417530600831412
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Number Of Rows",
+        "Id": "2e2714b0f7814bf9acb9878ed787b22b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 1137.9785852566883,
+        "Y": -70.427852408488491
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Extracted Elements",
+        "Id": "7bb8eb1236794f43a9ff80bf27582373",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 760.25016330875656,
+        "Y": 68.153785197531874
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Number Of Extracted Elements",
+        "Id": "0b7271cf28784777999de1de63f1805d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 1153.8282158093004,
+        "Y": 65.95940721501654
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Count",
+        "Id": "62aa0d71685145f384cb635ded4f1a7c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 938.48301556007368,
+        "Y": 67.400013274916574
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Built In or Real Parameter Name",
+        "Id": "0ea91357da8246029f205587352708d6",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -48.666301028908947,
+        "Y": 479.91925786389754
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "99ce5d482a3e4c528a6155fd907efc33",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 2984.4091451244549,
+        "Y": 713.16206787176418
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "2218e94e6bd447718ba0d3a8bbbb94f2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 270.14067889789521,
+        "Y": -514.34029165293532
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Start from:",
+        "Id": "fd61ba7cf3314703aa00ee26e65e05b1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 92.504874950308363,
+        "Y": 573.1941552864123
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "685132e750bc4fe7b276f4268ad60969",
+        "Title": "Extrakce elementů z tabulky:",
+        "Nodes": [
+          "6ec0aa492fb7412db0dcc3fc54aa4c5d",
+          "d461bef01e7346b4948b0b1b7bf2326e",
+          "55ca0dc9eb1141a88f221aba5f31d843",
+          "5607e9ff47f5461f8331d288f9a18a54",
+          "2e2714b0f7814bf9acb9878ed787b22b",
+          "7bb8eb1236794f43a9ff80bf27582373",
+          "0b7271cf28784777999de1de63f1805d",
+          "62aa0d71685145f384cb635ded4f1a7c"
+        ],
+        "Left": 368.98999048713415,
+        "Top": -123.42785240848849,
+        "Width": 999.83822532216629,
+        "Height": 689.26064527001131,
+        "FontSize": 36.0,
+        "InitialTop": -70.427852408488491,
+        "InitialHeight": 406.35342152820346,
+        "TextblockHeight": 43.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "48bd2f6395f94801902f07be87cc0bb9",
+        "Title": "Odfiltrování elementu analytického modelu:",
+        "Nodes": [
+          "7318e9dc11814576a17f3ad2beefc6be",
+          "fa7988e587e34bc1afb8cf8a44aa2120",
+          "62543f1b7e394c879ca6da448420ef55",
+          "7de0fd76bb2e4ab69feece65f4e2fe97",
+          "74cdac3db20643b5887e01107a877b35",
+          "397c5466d0f94ad3a14489415e6196e4",
+          "534e4d3d8ab4458c83088b0829076eb8"
+        ],
+        "Left": 1435.0958590740636,
+        "Top": -145.89851879893158,
+        "Width": 1496.414678283503,
+        "Height": 701.114948164291,
+        "FontSize": 36.0,
+        "InitialTop": -92.898518798931576,
+        "InitialHeight": 700.114948164291,
+        "TextblockHeight": 43.0,
+        "Background": "#FFFFC999"
+      },
+      {
+        "Id": "54f36887f48044c280718c1d4b5b13e1",
+        "Title": "INPUT",
+        "Nodes": [
+          "faef79e4d9b84d298793c8671bd1a907",
+          "0ea91357da8246029f205587352708d6",
+          "fd61ba7cf3314703aa00ee26e65e05b1"
+        ],
+        "Left": -75.4965853248633,
+        "Top": -113.31224453723371,
+        "Width": 256.00146027517167,
+        "Height": 754.506399823646,
+        "FontSize": 60.0,
+        "InitialTop": -31.31224453723371,
+        "InitialHeight": 656.23150240113137,
+        "TextblockHeight": 72.0,
+        "Background": "#FFBB87C6"
+      },
+      {
+        "Id": "4d6e8a9b118e4273b53fbca49f1fbe11",
+        "Title": "OUTPUT",
+        "Nodes": [
+          "06161987f66b40beb775806513993985",
+          "99ce5d482a3e4c528a6155fd907efc33"
+        ],
+        "Left": 2947.1197932395194,
+        "Top": 464.57860750843804,
+        "Width": 337.28935188493551,
+        "Height": 626.58346036332614,
+        "FontSize": 60.0,
+        "InitialTop": 546.578607508438,
+        "InitialHeight": 311.58346036332614,
+        "TextblockHeight": 72.0,
+        "Background": "#FF48B9FF"
+      },
+      {
+        "Id": "6be3aed7fbef494eaed5915871e325c7",
+        "Title": "Script zapisuje číselnou posloupnost do zvoleného parametru na základě seskupení prvků podle Assembly code parametru (Kód sestavy). Podmínkou pro provedení funkce je vyplněný tento parametr.\r\n\r\nScript prochází všechny elementy v tabulce a seskupuje je do seznamů na základě hodnoty parametru Assembly code \r\n\r\nNásledně pro každou skupinu vytvoří řetězce číselné posloupnosti ve tvaru 001...999 a zapíše je do zvoleného parametru, který musí byť parametr instance.\r\nNázev zvoleného parametru může být dle zobrazení v Revitu, nebo lepší varianta, když je to vestavěný parametr, tak použít Built In Parametr name ze seznamu vyčtové třídy Autodesk.Revit.DB.BuiltInParameter.\r\n\r\nPředpokladaný parametr pro zápis číselných řad je Označení, nebo ALL_MODEL_MARK\r\n\r\nvýčet BuiltIn Parametrů:\r\nhttps://www.revitapidocs.com/2020.1/fb011c91-be7e-f737-28c7-3f1e1917a0e0.htm",
+        "Nodes": [
+          "2218e94e6bd447718ba0d3a8bbbb94f2"
+        ],
+        "Left": 260.14067889789521,
+        "Top": -1302.3402916529353,
+        "Width": 1334.3666666666668,
+        "Height": 881.0,
+        "FontSize": 36.0,
+        "InitialTop": -514.34029165293532,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 778.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 246.37271519836486,
+    "Y": 386.2447361439921,
+    "Zoom": 0.74314516203283076
+  }
+}

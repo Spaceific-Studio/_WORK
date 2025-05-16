@@ -1,0 +1,85 @@
+{
+  "Uuid": "6a8c9bc6-12f5-4231-92d3-672e7bde709b",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "buildingEnvelopeAnalyser",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import sys\r\nimport time\r\n#import traceback\r\npyt_path = r'C:\\Program Files (x86)\\IronPython 2.7\\Lib'\r\nlib_path = r'H:\\_WORK\\PYTHON\\REVIT_API\\LIB'\r\nsys.path.append(pyt_path)\r\nsys.path.append(lib_path)\r\n\r\nfrom itertools import chain, groupby\r\nfrom RevitSelection import *\r\nimport RevitSelection as RevitSelection\r\nfrom ListUtils import *\r\nimport ListUtils as ListUtils\r\nfrom Errors import *\r\nfrom SpaceOrganize import *\r\n\r\nimport clr\r\n# Import Element wrapper extension methods\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n# Import geometry conversion extension methods\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n#import windows forms\r\nclr.AddReference(\"System.Windows.Forms\")\r\nclr.AddReference(\"System.Drawing\")\r\nimport System.Drawing\r\nimport System.Windows.Forms as WF\r\nfrom System.Drawing import *\r\nfrom System.Windows.Forms import Application, Button, Form, ComboBox, Label, TextBox, DockStyle, AnchorStyles\r\n\r\n# Import DocumentManager and TransactionManager\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nclr.AddReference(\"System\")\r\nfrom System.Collections.Generic import List as Clist\r\nfrom System.Collections.Generic import IEnumerable as iEnum\r\nfrom System import Guid as Guid\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nimport Autodesk.Revit.DB\r\n#import Autodesk.Revit.DB as DB\r\n\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\n#clr.AddReference('DSCoreNodes')\r\n#from DSCore import List, Solid\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\ndef getBuildInParams(inElement):\r\n\tbuiltInParams = System.Enum.GetValues(DB.BuiltInParameter)\r\n\t#builtInNames = System.Enum.GetType(BuiltInParameter)\r\n\tbips = []\r\n\tfor bip in builtInParams:\r\n\t\tparameter = inElement.get_Parameter(bip)\r\n\t\tif parameter != None:\r\n\t\t\tbips.append(bip)\r\n\treturn bips\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ntrans = DB.SubTransaction(doc)\r\n\r\nanalyser = DB.Analysis.BuildingEnvelopeAnalyzer.Create(doc, Autodesk.Revit.DB.Analysis.BuildingEnvelopeAnalyzerOptions())\r\nelements = analyser.GetBoundingElements()\r\nhostElementIds = [x.HostElementId for x in list(elements)]\r\nIdsCol = Clist[Autodesk.Revit.DB.ElementId](hostElementIds)\r\nhostElements = [doc.GetElement(x.HostElementId) for x in list(elements)]\r\n\r\nlinkedElementIds = [x.LinkedElementId for x in list(elements)]\r\ntrans.Start()\r\ntry:\r\n\tEAmodelOptions = DB.Analysis.EnergyAnalysisDetailModelOptions()\r\nexcept Exception as ex:\r\n\tErrors.catch(ex, \"didn't get EAmodel\")\r\ntrans.Commit()\r\nTransactionManager.Instance.TransactionTaskDone()\r\nEAmodelOptions.EnergyModelType = DB.Analysis.EnergyModelType.BuildingElement\r\nEAmodelOptions.ExportMullions = True\r\nEAmodelOptions.IncludeShadingSurfaces = True\r\nEAmodelOptions.SimplifyCurtainSystems = True\r\nEAmodelOptions.Tier =  DB.Analysis.EnergyAnalysisDetailModelTier.FirstLevelBoundaries\r\nanalModel = DB.Analysis.EnergyAnalysisDetailModel.Create(doc, EAmodelOptions)\r\nmyOutput = analModel.GetMaterialIds(False)\r\nprInfo = doc.ProjectInformation.Parameters\r\nparameters = []\r\nfor params in prInfo:\r\n\tif params.__class__.__name__ == \"ParameterSet\":\r\n\t\tfor iterator in params.ForwardIterator():\r\n\t\t\tparameters.append(iterator)\r\n\telif params.__class__.__name__ == \"Parameter\":\r\n\t\tif params.Definition.Name == \"Energy Settings\":\r\n\t\t\tEnergySettings = params.AsValueString()\r\n\t\t\t#EnergySettingsElement = doc.GetElement(EnergySettings)\r\n\t\t\t#parameter = DB.ParameterValueProvider(params.Definition.ParameterGroup)\r\n\t\t\tparameters.append((params.Definition.Name, params.HasValue, DB.LabelUtils.GetLabelFor(params.Definition.ParameterGroup)))\r\n\t\tparameters.append(params.Definition.Name)\r\nparam_ID = DB.ElementId(DB.BuiltInParameter.RBS_CONSTRUCTION_SET_PARAM)\r\nenSettingsElement = DB.FilteredElementCollector(doc).OfClass(DB.Analysis.EnergyDataSettings).ToElements()\r\nenSettingsElementBIPS = getBuildInParams(enSettingsElement[0])\r\nparam_ID = DB.ElementId(DB.BuiltInParameter.ENERGY_ANALYSIS_BUILDING_OPERATING_SCHEDULE)\r\nEABOS = DB.ParameterValueProvider(param_ID).GetIntegerValue(enSettingsElement[0])\r\nErrors.catchVar(EABOS, \"EABOS\")\r\nErrors.catchVar(enSettingsElementBIPS, \"enSettingsElementBIPS\")\r\nErrors.catchVar(enSettingsElement[0].AnalysisType, \"enSettingsElement.Category\")\r\nErrors.catchVar([(x.Definition.Name, x.Definition.ParameterGroup, x.Definition.Name, x.Definition.ParameterType, x.Definition.UnitType, x.StorageType, x.Element, x.HasValue, x.Id, x.IsReadOnly, x.UserModifiable) for x in enSettingsElement[0].GetOrderedParameters()], \"enSettingsElement\")\r\n#Errors.catchVar(DB.ParameterValueProvider(param_ID).GetStringValue(enSettingsElement), \"RBS_CONSTRUCTION_SET_PARAM\")\r\nErrors.catchVar(parameters,\"parameters\")\r\n#buildingConstructionSet = doc.GetElement(enSettingsElement[0].GetBuildingConstructionSetElementId(doc))\r\n#buildingConstructionParameters = buildingConstructionSet.GetOrderedParameters()\r\n#construction = buildingConstructionSet.GetConstructions(DB.ConstructionType.ExteriorWall)\r\n#analConstrLookUpTableParamId = DB.ElementId(DB.BuiltInParameter.ANALYTIC_CONSTRUCTION_LOOKUP_TABLE)\r\n#Errors.catchVar(doc.GetElement(buildingConstructionSet), \"buildingConstructionSet\")\r\n#Errors.catchVar(buildingConstructionParameters, \"buildingConstructionParameters\")\r\nif Errors.hasError():\r\n \tOUT = Errors.report\r\nelif Errors.hasContent():\r\n\tOUT = Errors.getConntainerContent()\r\nelse:\r\n\tOUT = myOutput",
+      "VariableInputPorts": true,
+      "Id": "cf3148ef2bab4c5a8f39963f3e491203",
+      "Inputs": [
+        {
+          "Id": "267c14403c90431ea921a3d0d459823f",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "56edf9e1d0b347e28f8ed3c109236463",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Náhled pozadí",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "cf3148ef2bab4c5a8f39963f3e491203",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 757.19999999999993,
+        "Y": 458.79999999999995
+      }
+    ],
+    "Annotations": [],
+    "X": -376.79999999999995,
+    "Y": 63.200000000000045,
+    "Zoom": 1.0
+  }
+}
