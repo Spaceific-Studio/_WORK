@@ -210,7 +210,7 @@ if response.status == 200:
     for project in project_list['data']:
         project_id = project['id']
         project_name = project['attributes']['name']
-        print(f"Project ID: {project_id}, Název: {project_name}")
+        print(f"Project ID: {project_id}, Název: {project_name}, project_list_url - {project_list_url}")
 else:
     print(f"Chyba při získávání seznamu projektů ({response.status}): {response_data}")
 
@@ -241,7 +241,9 @@ def ziskat_id_slozky(token, project_id, folder_name, base_url):
 
 def ziskat_Top_folder(token, hub_id, project_id, folder_name, base_url):
     #url = f"{base_url}/project/v1/hubs/:{hub_id}/projects/:{project_id}/topFolders
-    top_folder_url = f"/project/v1/hubs/:{hub_id}/projects/:{project_id}/topFolders"
+    splittedHubId = hub_id.split('.')[1]
+    print(f"splitted_HUB ID: {splittedHubId}")
+    top_folder_url = f"/project/v1/hubs/b.8a0397e0-4e1b-4a3c-8af2-266938cb8473/projects/b.f560e904-c5c2-4b56-afe6-20fa267287fe/topFolders"
 
     # Vytvoření připojení k serveru
     conn = http.client.HTTPSConnection("developer.api.autodesk.com")
@@ -261,6 +263,8 @@ def ziskat_Top_folder(token, hub_id, project_id, folder_name, base_url):
     #conn.request("GET", project_list_url, headers=headers)
     response = conn.getresponse()
     response_data = response.read()
+    print("HUB_ID in ziskat_Top_Folder: {0}".format(hub_id))
+    print(f"top_folder_url: {top_folder_url}")
     if response.status == 200:
         print(f"top folder response: {response_data}")
     else:
@@ -282,7 +286,7 @@ except HTTPError as error:
         print(error.status, error.reason)
 """        
 
-ziskat_Top_folder(MyCode.getTwoLeggedToken(), hub_id, 'b.aeeffa13-fa76-4740-8c75-ccced3afc914', "MODELY", "https://developer.api.autodesk.com")
+ziskat_Top_folder(MyCode.getTwoLeggedToken(), hub_id, project_list['data'][1]['id'], "MODELY", "https://developer.api.autodesk.com")
 
 
 

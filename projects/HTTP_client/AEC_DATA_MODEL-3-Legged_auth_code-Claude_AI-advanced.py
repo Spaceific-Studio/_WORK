@@ -297,7 +297,7 @@ def get_authorization_code():
         "scope": SCOPE
     }
     auth_url = f"{AUTH_URL}?{urlencode(params)}"
-
+    print(f"auth_url: {auth_url}")
     print(f"Please authorize the application in your browser.")
     webbrowser.open(auth_url)
 
@@ -502,6 +502,7 @@ def main():
     messagebox.showinfo("Selected Project", 
                         f"Hub: {selected_hub['attributes']['name']}\n"
                         f"Hub ID: {selected_hub['id']}\n"
+                        f"custom attributes: {custom_attributes}\n"
                         f"Project: {selected_project['attributes']['name']}\n"
                         f"Project ID: {project_id}\n\n"
                         f"Folder Structure:\n{folder_structure}"

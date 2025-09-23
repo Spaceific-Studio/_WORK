@@ -267,8 +267,7 @@ class MainForm(Form):
 		self.startFromLabel.Parent = self.textFrame
 		self.startFromLabel.Anchor = AnchorStyles.Top
 		self.startFromLabel.Dock = DockStyle.Top
-		
-  		self.parameterCB = ComboBox()
+		self.parameterCB = ComboBox()
 		self.parameterCB.Width = 150
 		self.parameterCB.Parent = self.textFrame
 		self.parameterCB.Anchor = AnchorStyles.Top
