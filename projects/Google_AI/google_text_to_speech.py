@@ -26,7 +26,7 @@ def wave_file(filename, pcm, channels=1, rate=24000, sample_width=2):
 #client = genai.Client()
 client = genai.Client(api_key="AIzaSyDXeKBly1UEiA_HMi1dKNNap-qTtneHZl8")
 
-voiceName = 'charon'
+voiceName = 'callirrhoe'
 
 text = {'1_1':'Předmětem stavby je dílčí rekonstrukce stávajícího zařízení technologické linky úpravny vody Podolí – zařízení čiřič číslo sedm. Čiřiče tvoří v rámci technologické linky úpravy vody první separační stupeň. V objektu A jsou umístěny tři čiřiče sedm, osum a devět. V současné dobějsou všechny tři čiřiče odstavené z provozu.', \
         '1_2':'Přítok surové vody do čiřičů je z přerušovacích nádrží - oxidérů umístěných v budově B pomocí přívodního uzavřeného tlakového železobetonového kanálu. Kanál prochází objektem B, kde jsou z něj napájeny funkční čiřiče tři až šest, dále budovou C do budovy A k čiřičům sedm až devět. Úseky přítokového kanálu umístěné v objektech A a C jsou předmětem řešení této stavby.' ,\
@@ -44,9 +44,11 @@ text = {'1_1':'Předmětem stavby je dílčí rekonstrukce stávajícího zaří
         '13_1_1':'Projekty jsou dostupné skrze webové prostředí. Je zachována většina funkcionalit, mimo tvorbu schémat. Vzhled uživatelského prostředí webové verze je možné na základě požadavků upravit.' ,\
         '13_2':'Mobilní aplikace Comos Mobile Worker je dostupná na všech standardně využívaných operačních systémech.  Zajišťuje správu a řešení údržby buď samostatně, nebo na základě informací v projektech systému Comos.' ,\
         '13_3':'Comos Walk-inside -  umožňuje přímé propoiení s 3D modelem provozu.' ,\
-        '13_4':'"Comos Integration" - umožňuje propojení na provozní data z platformy Siemens Insights Hub. Insights Hub umožňuje shromažďovat aj-ou-tý data z širokého spektra zdroiů a pracovat s nimi v rámci kyberneticky zabezpečeného prostředí.'
+        '13_4':'"Comos Integration" - umožňuje propojení na provozní data z platformy Siemens Insights Hub. Insights Hub umožňuje shromažďovat aj-ou-tý data z širokého spektra zdroiů a pracovat s nimi v rámci kyberneticky zabezpečeného prostředí.' ,\
+        'Outro_1':'"Digitalizace!"' ,\
+        'Outro_2':'"Digitalizace!... Od myšlenky k realitě."' \
         }
-current_text_paragraph = '5_3'
+current_text_paragraph = 'Outro_2'
 response = client.models.generate_content(
    model="gemini-2.5-flash-preview-tts",
    contents=text[current_text_paragraph],
