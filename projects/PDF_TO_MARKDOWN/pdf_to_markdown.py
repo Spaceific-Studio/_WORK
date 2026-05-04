@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 try:
-    from kreuzberg import extract_file, ExtractionConfig, OutputFormat
+    from kreuzberg import extract_file, ExtractionConfig, OutputFormat, ImageExtractionConfig
 except ImportError as exc:
     raise ImportError(
         "Knihovna kreuzberg není nainstalovaná. Nainstalujte ji pomocí `pip install kreuzberg`."
@@ -16,7 +16,7 @@ async def main() -> None:
     config = ExtractionConfig(
         output_format=OutputFormat.MARKDOWN,
         include_document_structure=True,
-        images=True,
+        images=ImageExtractionConfig(extract_images=True),
     )
     result = await extract_file(pdf_path, config=config)
     output_text = save_extracted_images(output_path, result.content or "", result)
