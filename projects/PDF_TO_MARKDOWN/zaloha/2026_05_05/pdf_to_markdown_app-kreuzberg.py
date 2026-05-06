@@ -7,9 +7,6 @@ import pathlib
 import os
 import shutil
 import io
-from unittest import result
-
-from kreuzberg import HierarchyConfig
  
 try:
     import fitz
@@ -39,7 +36,7 @@ except ImportError:
     select_ocr_function = None
  
 try:
-    from kreuzberg import extract_file, extract_bytes, HierarchyConfig, ExtractionConfig, PageConfig, ImageExtractionConfig, PdfConfig, OcrConfig, LayoutDetectionConfig, TesseractConfig, OutputFormat
+    from kreuzberg import extract_file, extract_bytes, ExtractionConfig, ImageExtractionConfig, OcrConfig, TesseractConfig, OutputFormat
 except ImportError:
     extract_file = None
     extract_bytes = None
@@ -81,7 +78,7 @@ class PDFToMarkdownApp:
         self.ocr_supported = self._check_ocr_support()
         self.ocr_pdf_available = (fitz is not None and Image is not None and self.ocr_installed)
         
-        self.ocr_enabled_var = tk.BooleanVar(value=None)
+        self.ocr_enabled_var = tk.BooleanVar(value=self.ocr_installed and self.ocr_supported)
         self.ocr_lang_var = tk.StringVar(value="ces")
         self.ocr_lang_var.trace_add("write", lambda *args: self._refresh_tesseract_info())
         self.mode_var = tk.StringVar(value="markdown")
@@ -311,47 +308,18 @@ class PDFToMarkdownApp:
  
     def convert_file(self):
         # Zeptáme se na cestu uložení dříve, abychom mohli nastavit cestu pro obrázky[cite: 5]
-        #ext = ".pdf" if self.mode_var.get() == "ocr_pdf" else ".md"
-        #save_path = filedialog.asksaveasfilename(defaultextension=ext, filetypes=[("Cílový soubor", f"*{ext}")])
-        save_path = pathlib.Path(self.selected_file)
-        #if not save_path:
-        #    return
+        ext = ".pdf" if self.mode_var.get() == "ocr_pdf" else ".md"
+        save_path = filedialog.asksaveasfilename(defaultextension=ext, filetypes=[("Cílový soubor", f"*{ext}")])
+        
+        if not save_path:
+            return
 
         self.is_converting = True
         self.convert_btn.config(state=tk.DISABLED)
         self.status_label.config(text="Zpracovávám dokument a extrahuji obrázky...", fg="#FF9800")
         
         threading.Thread(target=self._convert_file_thread, args=(save_path,), daemon=True).start()
-
-    def _save_extracted_images(self, output_file, result):
-        #if result and getattr(result, "images", None):
-        img_dir = output_file.parent / output_file.stem
-        img_dir.mkdir(exist_ok=True) 
-        for idx, img in enumerate(result.images):
-            if isinstance(img, dict) and img.get("data"):
-                (img_dir / f"image_{idx}.png").write_bytes(img["data"])
-
-    """   
-    def _post_conversion(self, md_text, result, error):
-        self.is_converting = False
-        self.update_ui = lambda: self._update_ui_state()
-        self.root.after(0, self.update_ui)
  
-        if error:
-            messagebox.showerror("Chyba", str(error))
-            return
- 
-        path = pathlib.Path(self.selected_file)
-        ext = ".pdf" if self.mode_var.get() == "ocr_pdf" else ".md"
-        out = filedialog.asksaveasfilename(defaultextension=ext, initialfile=path.stem + ("_ocr" if ext==".pdf" else "") + ext)
-        
-        if out:
-            if ext == ".pdf": result.save(out)
-            else:
-                md_text = self._save_extracted_images(pathlib.Path(out), md_text, result)
-                pathlib.Path(out).write_text(md_text, encoding="utf-8")
-            messagebox.showinfo("Hotovo", f"Uloženo do: {out}")
-    """
     def _convert_file_thread(self, save_path):
         try:
             mode = self.mode_var.get()
@@ -359,9 +327,6 @@ class PDFToMarkdownApp:
             # Definujeme složku pro obrázky relativně k MD souboru[cite: 5]
             img_rel_path = "images"
             img_full_path = os.path.join(save_dir, img_rel_path)
-            path = pathlib.Path(self.selected_file)
-            ext = ".pdf" if self.mode_var.get() == "ocr_pdf" else ".md"
-            out = filedialog.asksaveasfilename(defaultextension=ext, initialfile=path.stem + ("_ocr" if ext==".pdf" else "") + ext)
 
             if mode == "ocr_pdf":
                 res = self._extract_searchable_pdf_with_ocr(self.selected_file)
@@ -370,15 +335,7 @@ class PDFToMarkdownApp:
             elif self.engine_var.get() == "kreuzberg":
                 # Kreuzberg primárně vrací text, obrázky v MD odkazuje, ale fyzicky je neukládá tak přímo jako PyMuPDF
                 res = asyncio.run(self._extract_kreuzberg(self.selected_file))
-                content = (res.content or "").encode("utf-8")         
-                pathlib.Path(out).write_bytes(content)
-                if out:
-                    if ext == ".pdf": res.save(out)
-                    else:
-                        self._save_extracted_images(pathlib.Path(out), res)
-                        #pathlib.Path(out).write_text(md_text, encoding="utf-8")
-                        #messagebox.showinfo("Hotovo", f"Uloženo do: {out}")
-                self.root.after(0, self._save_extracted_images, img_full_path, res)
+                pathlib.Path(save_path).write_bytes(res.content.encode('utf-8'))
                 self.root.after(0, lambda: messagebox.showinfo("Hotovo", "Markdown byl uložen (Kreuzberg)."))
             else:
                 # PyMuPDF engine - Zde aktivujeme ukládání obrázků[cite: 5]
@@ -393,8 +350,7 @@ class PDFToMarkdownApp:
                 self.root.after(0, lambda: messagebox.showinfo("Hotovo", f"Markdown a obrázky (ve složce /{img_rel_path}) byly uloženy."))
         
         except Exception as e:
-            error_msg = str(e)
-            self.root.after(0, lambda: messagebox.showerror("Chyba", error_msg))
+            self.root.after(0, lambda: messagebox.showerror("Chyba", str(e)))
         finally:
             self.root.after(0, self._cleanup_after_conversion)
 
@@ -404,30 +360,13 @@ class PDFToMarkdownApp:
         self._update_ui_state()
  
     async def _extract_kreuzberg(self, file):
-        cfg = ExtractionConfig(output_format=OutputFormat.MARKDOWN, \
-                                pdf_options=PdfConfig( \
-                                                        extract_images=True, \
-                                                        hierarchy = HierarchyConfig(ocr_coverage_threshold=0.5, \
-                                                            include_bbox=True) \
-                                                        ), \
-                                force_ocr=self.ocr_enabled_var.get(), \
-                                include_document_structure=True, \
-                                images = ImageExtractionConfig( \
-                                                                extract_images = True \
-                                                                ), \
-                                ocr=OcrConfig( \
-                                                backend="tesseract", \
-                                                language=self.ocr_lang_var.get(), \
-                                                tesseract_config=TesseractConfig( \
-                                                                                psm=3, \
-                                                                                enable_table_detection=False \
-                                                                                ) \
-                                                ), \
-                                pages = PageConfig(insert_page_markers=True) \
-                                ) \
-                                
-                                
-        return await extract_file(file, config=cfg)
+        cfg = ExtractionConfig(output_format=OutputFormat.MARKDOWN, force_ocr=self.ocr_enabled_var.get(),
+                               ocr=OcrConfig(backend="tesseract", language=self.ocr_lang_var.get()))
+        with open(file, mode="rb") as byte_file:
+            contents = byte_file.read()
+        print(f"type contents {type(contents)}")
+        return await extract_bytes(contents, config=cfg)
+        #return await extract_file(path, config=cfg)
  
     def _extract_searchable_pdf_with_ocr(self, path):
         doc = fitz.open(path)

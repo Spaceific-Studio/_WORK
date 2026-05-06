@@ -7,7 +7,6 @@ import pathlib
 import os
 import shutil
 import io
-from unittest import result
 
 from kreuzberg import HierarchyConfig
  
@@ -311,47 +310,18 @@ class PDFToMarkdownApp:
  
     def convert_file(self):
         # Zeptáme se na cestu uložení dříve, abychom mohli nastavit cestu pro obrázky[cite: 5]
-        #ext = ".pdf" if self.mode_var.get() == "ocr_pdf" else ".md"
-        #save_path = filedialog.asksaveasfilename(defaultextension=ext, filetypes=[("Cílový soubor", f"*{ext}")])
-        save_path = pathlib.Path(self.selected_file)
-        #if not save_path:
-        #    return
+        ext = ".pdf" if self.mode_var.get() == "ocr_pdf" else ".md"
+        save_path = filedialog.asksaveasfilename(defaultextension=ext, filetypes=[("Cílový soubor", f"*{ext}")])
+        
+        if not save_path:
+            return
 
         self.is_converting = True
         self.convert_btn.config(state=tk.DISABLED)
         self.status_label.config(text="Zpracovávám dokument a extrahuji obrázky...", fg="#FF9800")
         
         threading.Thread(target=self._convert_file_thread, args=(save_path,), daemon=True).start()
-
-    def _save_extracted_images(self, output_file, result):
-        #if result and getattr(result, "images", None):
-        img_dir = output_file.parent / output_file.stem
-        img_dir.mkdir(exist_ok=True) 
-        for idx, img in enumerate(result.images):
-            if isinstance(img, dict) and img.get("data"):
-                (img_dir / f"image_{idx}.png").write_bytes(img["data"])
-
-    """   
-    def _post_conversion(self, md_text, result, error):
-        self.is_converting = False
-        self.update_ui = lambda: self._update_ui_state()
-        self.root.after(0, self.update_ui)
  
-        if error:
-            messagebox.showerror("Chyba", str(error))
-            return
- 
-        path = pathlib.Path(self.selected_file)
-        ext = ".pdf" if self.mode_var.get() == "ocr_pdf" else ".md"
-        out = filedialog.asksaveasfilename(defaultextension=ext, initialfile=path.stem + ("_ocr" if ext==".pdf" else "") + ext)
-        
-        if out:
-            if ext == ".pdf": result.save(out)
-            else:
-                md_text = self._save_extracted_images(pathlib.Path(out), md_text, result)
-                pathlib.Path(out).write_text(md_text, encoding="utf-8")
-            messagebox.showinfo("Hotovo", f"Uloženo do: {out}")
-    """
     def _convert_file_thread(self, save_path):
         try:
             mode = self.mode_var.get()
@@ -359,9 +329,6 @@ class PDFToMarkdownApp:
             # Definujeme složku pro obrázky relativně k MD souboru[cite: 5]
             img_rel_path = "images"
             img_full_path = os.path.join(save_dir, img_rel_path)
-            path = pathlib.Path(self.selected_file)
-            ext = ".pdf" if self.mode_var.get() == "ocr_pdf" else ".md"
-            out = filedialog.asksaveasfilename(defaultextension=ext, initialfile=path.stem + ("_ocr" if ext==".pdf" else "") + ext)
 
             if mode == "ocr_pdf":
                 res = self._extract_searchable_pdf_with_ocr(self.selected_file)
@@ -370,15 +337,8 @@ class PDFToMarkdownApp:
             elif self.engine_var.get() == "kreuzberg":
                 # Kreuzberg primárně vrací text, obrázky v MD odkazuje, ale fyzicky je neukládá tak přímo jako PyMuPDF
                 res = asyncio.run(self._extract_kreuzberg(self.selected_file))
-                content = (res.content or "").encode("utf-8")         
-                pathlib.Path(out).write_bytes(content)
-                if out:
-                    if ext == ".pdf": res.save(out)
-                    else:
-                        self._save_extracted_images(pathlib.Path(out), res)
-                        #pathlib.Path(out).write_text(md_text, encoding="utf-8")
-                        #messagebox.showinfo("Hotovo", f"Uloženo do: {out}")
-                self.root.after(0, self._save_extracted_images, img_full_path, res)
+                content = (res.content or "").encode("utf-8")
+                pathlib.Path(save_path).write_bytes(content)
                 self.root.after(0, lambda: messagebox.showinfo("Hotovo", "Markdown byl uložen (Kreuzberg)."))
             else:
                 # PyMuPDF engine - Zde aktivujeme ukládání obrázků[cite: 5]
