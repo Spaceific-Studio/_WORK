@@ -384,34 +384,39 @@ class PDFToMarkdownApp:
                 self.root.after(0, self._save_extracted_images, img_full_path, res)
                 self.root.after(0, lambda: messagebox.showinfo("Hotovo", "Markdown byl uložen (Kreuzberg)."))
             else:
-                # PyMuPDF engine - Zde aktivujeme ukládání obrázků[cite: 5]
+                # PyMuPDF engine – engine vytvoří složku "images" v CWD běžícího programu.
+                # Po konverzi ji postprocessingem přesuneme vedle výstupního .md souboru.
+                cwd_images_src = pathlib.Path(os.getcwd()) / "images"
+                target_images_dir = out_path.parent / "images"
+
                 params = {
                     "show_progress": False,
                     "use_ocr": self.ocr_enabled_var.get() and self.ocr_supported,
                     "force_ocr": self.ocr_enabled_var.get() and self.ocr_supported,
-                    "write_images" : False,          # Povolení zápisu obrázků[cite: 5]
-                    "image_path" : img_rel_path,    # Relativní cesta v MD souboru[cite: 5]
-                    #"image_path" : img_full_path,    # Relativní cesta v MD souboru[cite: 5]
-                    "image_folder" : str(img_full_path), # Fyzická cesta na disku[cite: 5]
-                    "page_separators": True                    
+                    "write_images": True,       # povolení zápisu obrázků
+                    "image_path": "images",     # relativní odkaz na obrázky v MD souboru
+                    "page_separators": True,
                 }
-                messagebox.showinfo(
-                    f"Ukladání obrázků {'je povoleno' if params['write_images'] else 'není povoleno'}",
-                    f"image_path : {params['image_path']}\nimage_folder : {params['image_folder']}"
+                if self.ocr_enabled_var.get():
+                    params["ocr_language"] = self.ocr_lang_var.get()
+
+                txt = pymupdf4llm.to_markdown(self.selected_file, **params)
+
+                # --- Postprocessing: přesun vygenerovaných obrázků ---
+                # Engine uloží obrázky do CWD/images; zkopírujeme je vedle výstupního .md
+                # a poté zdrojovou složku smažeme.
+                # Pozn.: shutil.move se vyhýbáme záměrně – na síťových discích selhává
+                # přes os.rename() s WinError 5 (přístup odepřen).
+                if cwd_images_src.exists() and cwd_images_src.is_dir():
+                    target_images_dir.mkdir(parents=True, exist_ok=True)
+                    shutil.copytree(
+                        str(cwd_images_src),
+                        str(target_images_dir),
+                        dirs_exist_ok=True,   # Python 3.8+, přepíše případný obsah
                     )
-                if self.ocr_enabled_var.get(): params["ocr_language"] = self.ocr_lang_var.get()
-                #img_dir = pathlib.Path(out).parent / img_rel_path
-                #img_dir.mkdir(exist_ok=True)                
-                old_cwd = os.getcwd()
-                try:
-                    os.chdir(out_path.parent)
-                    txt = pymupdf4llm.to_markdown(self.selected_file, **params)                
-                finally:
-                    os.chdir(old_cwd)
-    
-                #pathlib.Path(out).write_text(txt, encoding="utf-8")
-                self.root.after(0, self._post_conversion(txt, out, None))
-                #self.root.after(0, lambda: messagebox.showinfo("Hotovo", f"Markdown a obrázky (ve složce /{img_rel_path}) byly uloženy."))
+                    shutil.rmtree(str(cwd_images_src))
+
+                self.root.after(0, self._post_conversion, txt, out, None)
         
         except Exception as e:
             error_msg = str(e)
@@ -486,7 +491,7 @@ class PDFToMarkdownApp:
             "Úspěch",
             f"Soubor byl úspěšně převeden a uložen:\n\n{output_file}"
         )
-        
+
     def _cleanup_after_conversion(self):
         self.is_converting = False
         self.status_label.config(text="")
