@@ -1,0 +1,81 @@
+
+
+Pokaždé, když zavřete terminál (PowerShell) a znovu ho otevřete, musíte prostředí "aktivovat". Je to jako vejít do té správné místnosti, kde máte všechny ty nástroje připravené.
+
+Zde je postup:
+
+1. Otevřete PowerShell
+Najděte složku, kde máte nainstalovaný Python (nebo prostě otevřete PowerShell v základním okně).
+
+2. Přejděte do složky s Pythonem (volitelné, ale jistější)
+Pokud nejste v cestě, kde je python.exe, doporučuji tam skočit:
+
+PowerShell
+cd C:\Users\GercakD\AppData\Local\Programs\Python\Python310
+3. Aktivujte prostředí
+Spusťte aktivační skript, který přepne PowerShell do režimu MarkerVenv:
+
+PowerShell
+C:\MarkerVenv\Scripts\activate.ps1
+Jak poznáte, že to funguje?
+Na začátku příkazového řádku se musí objevit v závorce text: (MarkerVenv).
+Vypadá to pak takto: (MarkerVenv) PS C:\Users\...>
+
+Co když se objeví chyba "Execution Policy"?
+Pokud vám PowerShell napíše červeně, že "skripty jsou zakázány", zadejte nejdříve tento příkaz a pak zkuste znovu aktivaci:
+
+PowerShell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+
+Rychlá kontrola, jestli tam máte GPU verzi
+Až budete v prostředí (MarkerVenv), můžete si hned ověřit, zda je tam ta správná verze pro grafickou kartu:
+
+python -c "import torch; print('CUDA verze:', torch.version.cuda); print('GPU viditelné:', torch.cuda.is_available())"
+
+
+JAK VYTVORIT ODDELENE PROSTREDI:
+1. Vytvořte čisté prostředí (izolovanou složku):
+
+PowerShell
+.\python.exe -m venv C:\MarkerVenv
+2. Aktivujte toto prostředí:
+
+PowerShell
+C:\MarkerVenv\Scripts\activate.ps1
+Poznámka: Pokud vám PowerShell zakáže spuštění skriptu, napište nejprve Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process a pak zkuste aktivaci znovu.
+
+3. Teď uvidíte v konzoli na začátku řádku (MarkerVenv). Nainstalujte tam Marker:
+
+PowerShell
+pip install marker-pdf torch torchvision --index-url https://download.pytorch.org/whl/cpu
+4. Zkuste znovu nápovědu (v tomto prostředí už to musí jít):
+
+PowerShell
+marker_single --help
+Proč to v tomto prostředí půjde?
+Když vytvoříte venv, vytvoříte úplně prázdnou "místnost" pro Python. Všechny ty konfliktní knihovny jako docling, které vám teď shazují program, zůstanou "venku". Marker si uvnitř nainstaluje přesně ty verze, které potřebuje k životu.
+
+Jak pak spustit konverzi?
+Až budete mít aktivované prostředí (MarkerVenv), příkaz bude vypadat takto jednoduše:
+
+PowerShell
+marker_single "H:\_NORMY\AI_priprava\73 0540-1_Tepelná ochrana budov - 1_Terminologie\73 0540-1_Tepelná ochrana budov - 1_Terminologie.pdf" --output_dir "H:\TempOutput"
+Zkuste ten první krok (vytvoření venv). Pokud se v konzoli objeví ten nápis (MarkerVenv), máme vyhráno a jsme jen krůček od funkčního převodu.
+
+
+marker_single "H:/_NORMY/AI_priprava/73 0540-1_Tepelná ochrana budov - 4_Výpočtové metody/73 0540-1_Tepelná ochrana budov - 4_Výpočtové metody_ocred_pdf24_manual_delete_background.pdf" --output_dir "H:/_NORMY/AI_priprava/73 0540-1_Tepelná ochrana budov - 4_Výpočtové metody/73 0540-1_Tepelná ochrana budov"
+marker_single "H:/_NORMY/AI_priprava/73 4130_Schodiště a šikmé rampy - Základní požadavky/73 4130_Schodiště a šikmé rampy - Základní požadavky_ocred_pdf24.pdf" --output_dir "H:/_NORMY/AI_priprava/73 4130_Schodiště a šikmé rampy - Základní požadavky"
+marker_single "H:/_NORMY/AI_priprava/73 0540-1_Tepelná ochrana budov - 2_Požadavky/73 0540-1_Tepelná ochrana budov - 2_Požadavky.pdf" --output_dir "H:/_NORMY/AI_priprava/73 0540-1_Tepelná ochrana budov - 2_Požadavky"
+marker_single "H:/_NORMY/AI_priprava/73 0540-1_Tepelná ochrana budov - 3_Návrhové hodnoty veličin/73 0540-1_Tepelná ochrana budov - 3_Návrhové hodnoty veličin.pdf" --output_dir "H:/_NORMY/AI_priprava/73 0540-1_Tepelná ochrana budov - 3_Návrhové hodnoty veličin"
+marker_single "H:/_NORMY/AI_priprava/73 0540-1_Tepelná ochrana budov - 4_Výpočtové metody/73 0540-1_Tepelná ochrana budov - 4_Výpočtové metody.pdf" --output_dir "H:/_NORMY/AI_priprava/73 0540-1_Tepelná ochrana budov - 4_Výpočtové metody"
+marker_single "H:/_NORMY/AI_priprava/73 6060_Čerpací stanice pohonných hmot/73 6060_Čerpací stanice pohonných hmot.pdf" --output_dir "H:/_NORMY/AI_priprava/73 6060_Čerpací stanice pohonných hmot"
+marker_single "H:/_NORMY/AI_priprava/73 6060_Čerpací stanice pohonných hmot/73 6060_Čerpací stanice pohonných hmot_Z1.pdf" --output_dir "H:/_NORMY/AI_priprava/73 6060_Čerpací stanice pohonných hmot_Z1"
+marker_single "H:/_NORMY/AI_priprava/74 4505_Podlahy - Společná ustanovení/74 4505_Podlahy - Společná ustanovení.pdf" --output_dir "H:/_NORMY/AI_priprava/74 4505_Podlahy - Společná ustanoveni"
+marker_single "H:/_NORMY/AI_priprava/75 5409_Vnitřní vodovody/75 5409_Vnitřní vodovody.pdf" --output_dir "H:/_NORMY/AI_priprava/75 5409_Vnitřní vodovody"
+marker_single "H:/_NORMY/AI_priprava/75 6101_Stokové sítě a kanalizační přípojky/75 6101_Stokové sítě a kanalizační přípojky.pdf" --output_dir "H:/_NORMY/AI_priprava/75 6101_Stokové sítě a kanalizační přípojky"
+marker_single "H:/_NORMY/AI_priprava/75 6415_Plynové hospodářství čistíren odpadních vod\75 6415_Plynové hospodářství čistíren odpadních vod.pdf" --output_dir "H:/_NORMY/AI_priprava/75 6415_Plynové hospodářství čistíren odpadních vod"
+marker_single "H:/_NORMY/AI_priprava/75 6760_Vnitřní kanalizace/75 6760_Vnitřní kanalizace.pdf" --output_dir "H:/_NORMY/AI_priprava/75 6760_Vnitřní kanalizace"
+marker_single "H:/_NORMY/AI_priprava/75 6760_Vnitřní kanalizace/75 6760_Vnitřní kanalizace_Z1.pdf" --output_dir "H:/_NORMY/AI_priprava/75 6760_Vnitřní kanalizace"
+marker_single "H:/_NORMY/AI_priprava/ČSN 33 2000-5-52 ed_2_Elektrické instalace nízkého napětí - Část 5-52\ČSN 33 2000-5-52 ed_2_Elektrické instalace nízkého napětí - Část 5-52.pdf" --output_dir "H:/_NORMY/AI_priprava/ČSN 33 2000-5-52 ed_2_Elektrické instalace nízkého napětí - Část 5-52"
+
+marker_single "H:/_NORMY/AI_priprava/ČSN EN 1992-1-1 ed_2_Eurokód 2_Navrhování betonových konstrukcí - Část 1-1_Obecná pravidla a pravidla pro pozemní stavby\ČSN EN 1992-1-1 ed_2_Eurokód 2_Navrhování betonových konstrukcí - Část 1-1.pdf" --output_dir "H:/_NORMY/AI_priprava/ČSN EN 1992-1-1 ed_2_Eurokód 2_Navrhování betonových konstrukcí - Část 1-1_Obecná pravidla a pravidla pro pozemní stavby"
