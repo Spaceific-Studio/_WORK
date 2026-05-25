@@ -62,12 +62,12 @@
         });
 
         // 3. Posun dolů
-        const step = (scroller === window ? window.innerHeight : scroller.clientHeight) * 0.6;
+        const step = (scroller === window ? window.innerHeight : scroller.clientHeight) * 0.05;
         currentPos += step;
         scroller.scrollTo(0, currentPos);
 
         // Pauza, aby se stihla načíst další várka a disk stíhal zapisovat
-        await new Promise(r => setTimeout(r, 300)); 
+        await new Promise(r => setTimeout(r, 10)); 
 
         let newHeight = scroller === window ? document.documentElement.scrollHeight : scroller.scrollHeight;
         if (currentPos >= newHeight) break;
