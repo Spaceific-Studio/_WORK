@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Name>PVS Batch PBP</Name>
+    <Assembly>C:\DANO\_WORK\REVIT_ADDINS\PvsBatchPbp\PvsBatchPbp.dll</Assembly>
+    <AddInId>74D50A1E-63BE-4DA2-A32F-82DD5ED15B4E</AddInId>
+    <FullClassName>Pvs.RevitTools.BatchPbpCommand</FullClassName>
+    <Text>Batch PBP</Text>
+    <Description>
+      Dávkové načtení Project Base Point z lokálních RVT.
+    </Description>
+    <VendorId>PVS</VendorId>
+    <VendorDescription>
+      Pražská vodohospodářská společnost a.s.
+    </VendorDescription>
+  </AddIn>
+</RevitAddIns>

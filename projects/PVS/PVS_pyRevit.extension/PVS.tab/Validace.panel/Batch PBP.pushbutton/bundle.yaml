@@ -1,0 +1,11 @@
+title:
+  en_us: Batch PBP
+  cs_cz: Souřadnice RVT
+
+tooltip:
+  en_us: Reads Project Base Point coordinates from multiple RVT models.
+  cs_cz: Dávkově načte souřadnice Project Base Point z více RVT modelů.
+
+author: Daniel Gerčák
+
+min_revit_version: 2025
