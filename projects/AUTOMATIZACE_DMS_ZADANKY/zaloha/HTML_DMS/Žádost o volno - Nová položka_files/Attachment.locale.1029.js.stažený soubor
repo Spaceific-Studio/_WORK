@@ -1,0 +1,28 @@
+﻿"use strict";
+
+var TiSa = TiSa || {};
+TiSa.ComponentResource = TiSa.ComponentResource || {};
+TiSa.ComponentResource["Attachment"] = {
+    Delete: "Odstranit vybrané",
+    DeleteOne: "Chcete opravdu odebrat přílohu?",
+    Download: "Stáhnout nebo otevřít",
+    Open: "Otevřít dokument",
+    OpenFolder: "Otevřít složku",
+    InsertAttach: "Vložit přílohy",
+    NoAttach: "Žádné přílohy",
+    FileName: "Název souboru",
+    ContentType: "Typ obsahu",
+    Autor: "Autor",
+    Created: "Vytvořeno",
+    FileSize: "Velikost",
+    Total: "Celkem",
+    DeleteConfirm: "Opravdu chcete odstranit vybrané přílohy?",
+    AddAttachDlgTitle: "Přidat soubor",
+    Close: "Zavřít",
+    RenameFileDlgTitle: "Přejmenovat soubor",
+    UnableRename: "Soubor nelze přejmenovat",
+    ConfirmRename: "Soubor s názvem {0} již existuje, chcete jej přepsat?",
+    ConfirmRenameTitle: "Přepis souboru",
+    UploadOverwritePrompt: "Následující soubory již existují a budou přepsány:{0}\nChcete pokračovat?",
+    ViewProperties: "Zobrazit vlastnosti",
+};

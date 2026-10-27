@@ -1,0 +1,2390 @@
+﻿/* _lcid="1033"
+_LocalBinding */
+.o365button{
+background-color:transparent;
+}
+@font-face{
+font-family:'ShellIcons';
+src:url("/_layouts/15/fonts/shellicons.eot");
+src:url("/_layouts/15/fonts/shellicons.eot?#iefix") format('embedded-opentype'),
+url("/_layouts/15/fonts/shellicons.woff") format('woff'),
+url("/_layouts/15/fonts/shellicons.ttf") format('truetype'),
+url("/_layouts/15/fonts/shellicons.svg") format('svg');
+font-weight:normal;
+font-style:normal;
+}
+.o365cs-base [class^="ms-Icon--"]:before,.o365cs-base [class*=" ms-Icon--"]:before{
+font-family:"ShellIcons";
+font-style:normal;
+font-weight:normal;
+speak:none;
+display:inline-block;
+text-decoration:inherit;
+text-align:center;
+font-variant:normal;
+text-transform:none;
+line-height:1;
+width:auto;
+margin-left:0;
+margin-right:0;
+}
+.o365cs-base [class^="ms-Icon--"],.o365cs-base [class*=" ms-Icon--"]{
+display:inline-block;
+line-height:1;
+}
+.ms-icon-font-circle:before{
+border-style:solid;
+border-radius:1em;
+line-height:1.15;
+-webkit-box-sizing:border-box;
+box-sizing:border-box;
+-moz-box-sizing:border-box;
+padding:0.1em;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0){
+.ms-icon-font-circle:before{
+line-height:1;
+}
+}
+.ms-icon-font-size-8{
+font-size:8px !important;
+}
+.ms-icon-font-size-11{
+font-size:11px !important;
+}
+.ms-icon-font-size-12{
+font-size:12px !important;
+}
+.ms-icon-font-size-14{
+font-size:14px !important;
+}
+.ms-icon-font-size-15{
+font-size:15px! important;
+}
+.ms-icon-font-size-17{
+font-size:17px! important;
+}
+.ms-icon-font-size-18{
+font-size:18px !important;
+}
+.ms-icon-font-size-20{
+font-size:20px !important;
+}
+.ms-icon-font-size-22{
+font-size:22px !important;
+}
+.ms-icon-font-size-24{
+font-size:24px! important;
+}
+.ms-icon-font-size-25{
+font-size:25px !important;
+}
+.ms-icon-font-size-26{
+font-size:26px !important;
+}
+.ms-icon-font-size-35{
+font-size:35px !important;
+}
+.ms-icon-font-size-64{
+font-size:64px !important;
+}
+[data-icon]:before{
+content:attr(data-icon);
+}
+.ms-Icon--circleFill:before{
+content:'\e001';
+}
+.ms-Icon--plus:before{
+content:'\e004';
+}
+.ms-Icon--question:before{
+content:'\e006';
+}
+.ms-Icon--person:before{
+content:'\e008';
+}
+.ms-Icon--person2:before{
+content:'\e307';
+}
+.ms-Icon--mail:before{
+content:'\e009';
+}
+.ms-Icon--infoCircle:before{
+content:'\e00a';
+}
+.ms-Icon--alert:before{
+content:'\e00b';
+}
+.ms-Icon--xCircle:before{
+content:'\e00c';
+}
+.ms-Icon--bell:before{
+content:'\e010';
+}
+.ms-Icon--calendar:before{
+content:'\e011';
+}
+.ms-Icon--scheduling:before{
+content:'\e012';
+}
+.ms-Icon--event:before{
+content:'\e013';
+}
+.ms-Icon--onedrive:before{
+content:'\e016';
+}
+.ms-Icon--chat:before{
+content:'\e017';
+}
+.ms-Icon--menu:before{
+content:'\e020';
+}
+.ms-Icon--favorites:before{
+content:'\e022';
+}
+.ms-Icon--phone:before{
+content:'\e023';
+}
+.ms-Icon--clock:before{
+content:'\e105';
+}
+.ms-Icon--miniatures:before{
+content:'\e02a';
+}
+.ms-Icon--gear:before{
+content:'\e035';
+}
+.ms-Icon--smiley:before{
+content:'\e036';
+}
+.ms-Icon--search:before{
+content:'\e039';
+}
+.ms-Icon--questionReverse:before{
+content:'\e03a';
+}
+.ms-Icon--tasks:before{
+content:'\e040';
+}
+.ms-Icon--check:before{
+content:'\e041';
+}
+.ms-Icon--x:before{
+content:'\e042';
+}
+.ms-Icon--ellipsis:before{
+content:'\e045';
+}
+.ms-Icon--refresh:before{
+content:'\e034';
+}
+.ms-Icon--arrowLeft:before{
+content:'\e049';
+}
+.ms-Icon--arrowRight:before{
+content:'\e04a';
+}
+.ms-Icon--download:before{
+content:'\e04b';
+}
+.ms-Icon--save:before{
+content:'\e025';
+}
+.ms-Icon--pencil:before{
+content:'\e027';
+}
+.ms-Icon--caretUp:before{
+content:'\e051';
+}
+.ms-Icon--caretDown:before{
+content:'\e052';
+}
+.ms-Icon--officeThreshold:before{
+content:'\e055';
+}
+.ms-Icon--office365:before{
+content:'\e056';
+}
+.ms-Icon--office365Preview:before{
+content:'\e057';
+}
+.ms-Icon--apps:before{
+content:'\e060';
+}
+.ms-Icon--officeStore:before{
+content:'\e061';
+}
+.ms-Icon--windowsStore:before{
+content:'\e37a';
+}
+.ms-Icon--outlook:before{
+content:'\e062';
+}
+.ms-Icon--project:before{
+content:'\e063';
+}
+.ms-Icon--yammer:before{
+content:'\e064';
+}
+.ms-Icon--dynamicsCrm:before{
+content:'\e065';
+}
+.ms-Icon--adminP:before{
+content:'\e137';
+}
+.ms-Icon--admin:before{
+content:'\e081';
+}
+.ms-Icon--microsoft:before{
+content:'\e083';
+}
+.ms-Icon--powerBi:before{
+content:'\e08b';
+}
+.ms-Icon--newsfeed:before{
+content:'\e08d';
+}
+.ms-Icon--gallatin:before{
+content:'\e0b3';
+}
+.ms-Icon--chevronUp:before{
+content:'\e087';
+}
+.ms-Icon--chevronDown:before{
+content:'\e088';
+}
+.ms-Icon--chevronLeft:before{
+content:'\e089';
+}
+.ms-Icon--chevronRight:before{
+content:'\e08a';
+}
+.ms-Icon--waffle2:before{
+content:'\e303';
+}
+.ms-Icon--tile:before{
+content:'\e070';
+}
+.ms-Icon--delve:before{
+content:'\e118';
+}
+.ms-Icon--camera:before{
+content:'\e119';
+}
+.ms-Icon--people:before{
+content:'\e00e';
+}
+.ms-Icon--lync:before{
+content:'\e066';
+}
+.ms-Icon--sharepoint:before{
+content:'\e072';
+}
+.ms-Icon--word:before{
+content:'\e0b9';
+}
+.ms-Icon--excel:before{
+content:'\e0b5';
+}
+.ms-Icon--powerpoint:before{
+content:'\e0b8';
+}
+.ms-Icon--onenote:before{
+content:'\e0b7';
+}
+.ms-Icon--socialListening:before{
+content:'\e123';
+}
+.ms-Icon--adminA:before{
+content:'\e130';
+}
+.ms-Icon--group:before{
+content:'\e155';
+}
+.ms-Icon--video:before{
+content:'\e170';
+}
+.ms-Icon--skype:before{
+content:'\e199';
+}
+.ms-Icon--officeVideo:before{
+content:'\e202';
+}
+.ms-Icon--parature:before{
+content:'\e20a';
+}
+.ms-Icon--thumbUp:before{
+content:'\e044';
+}
+.ms-Icon--bing:before{
+content:'\e225';
+}
+.ms-Icon--docs:before{
+content:'\e290';
+}
+.ms-Icon--msn:before{
+content:'\e241';
+}
+.ms-Icon--sway:before{
+content:'\e247';
+}
+.ms-Icon--skypeForBusiness:before{
+content:'\e258';
+}
+.ms-Icon--checkPeople:before{
+content:'\e259';
+}
+.ms-Icon--classroom:before{
+content:'\e276';
+}
+.ms-Icon--globe:before{
+content:'\e222';
+}
+.ms-Icon--mobile:before{
+content:'\e195';
+}
+.ms-Icon--classNotebook:before{
+content:'\e25f';
+}
+.ms-Icon--fileWord:before{
+content:'\e269';
+}
+.ms-Icon--filePowerPoint:before{
+content:'\e26a';
+}
+.ms-Icon--fileExcel:before{
+content:'\e26b';
+}
+.ms-Icon--protectionCenter:before{
+content:'\e289';
+}
+.ms-Icon--oneNoteEdu:before{
+content:'\e280';
+}
+.ms-Icon--nonProfitPortal:before{
+content:'\e37e';
+}
+.ms-Icon--powerBi3:before{
+content:'\e39d';
+}
+.ms-Icon--kaizala:before{
+content:'\e407';
+}
+.ms-Icon--myAnalytics:before{
+content:'\e409';
+}
+.ms-Icon--myAnalytics2:before{
+content:'\e40a';
+}
+.ms-Icon--powerBi2:before{
+content:'\e281';
+}
+.ms-Icon--chevronThinUp:before{
+content:'\e231';
+}
+.ms-Icon--chevronThinDown:before{
+content:'\e232';
+}
+.ms-Icon--chevronThickDown:before{
+content:'\e236';
+}
+.ms-Icon--chevronThickLeft:before{
+content:'\e237';
+}
+.ms-Icon--chevronThickRight:before{
+content:'\e238';
+}
+.ms-Icon--starburst:before{
+content:'\e29a';
+}
+.ms-Icon--lightBulb2:before{
+content:'\e313';
+}
+.ms-Icon--powerApps:before{
+content:'\e314';
+}
+.ms-Icon--skypeCheck:before{
+content:'\e315';
+}
+.ms-Icon--skypeClock:before{
+content:'\e316';
+}
+.ms-Icon--skypeMinus:before{
+content:'\e317';
+}
+.ms-Icon--skypeMeetings:before{
+content:'\e258';
+}
+.ms-Icon--bookings:before{
+content:'\e32a';
+}
+.ms-Icon--dynamicsNAV:before{
+content:'\e32c';
+}
+.ms-Icon--officeForms:before{
+content:'\e333';
+}
+.ms-Icon--skypeMessage:before{
+content:'\e338';
+}
+.ms-Icon--flowLight:before{
+content:'\e361';
+}
+.ms-Icon--stream:before{
+content:'\e34f';
+}
+.ms-Icon--skypeTeams:before{
+content:'\e362';
+}
+.ms-Icon--teams:before{
+content:'\e379';
+}
+.ms-Icon--dynamics365:before{
+content:'\e375';
+}
+.ms-Icon--businessCenter:before{
+content:'\e37b';
+}
+.ms-Icon--minus:before{
+content:'\e005';
+}
+.ms-Icon--folder:before{
+content:'\e014';
+}
+.ms-Icon--trash:before{
+content:'\e026';
+}
+.ms-Icon--reload:before{
+content:'\e19f';
+}
+.ms-Icon--picture2:before{
+content:'\e358';
+}
+.ms-Icon--toDoLogo:before{
+content:'\e418';
+}
+.ms-Icon--circlePlus2:before{
+content:'\e403';
+}
+.ms-Icon--document:before{
+content:'\e182';
+}
+.ms-Icon--visio:before{
+content:'\e201';
+}
+.ms-Icon--staffHub:before{
+content:'\e421';
+}
+.o365cs-base .ms-Icon,.o365cs-base .ms-Icon::before{
+font-family:'ShellFabricMDL2Icons';
+}
+.o365cs-base .ms-Icon--GlobalNavButton::before{
+content:"\E700";
+}
+.o365cs-base .ms-Icon--More::before{
+content:"\E712";
+}
+.o365cs-base .ms-Icon--Settings::before{
+content:"\E713";
+}
+.o365cs-base .ms-Icon--People::before{
+content:"\E716";
+}
+.o365cs-base .ms-Icon--Search::before{
+content:"\E721";
+}
+.o365cs-base .ms-Icon--Forward::before{
+content:"\E72A";
+}
+.o365cs-base .ms-Icon--Back::before{
+content:"\E72B";
+}
+.o365cs-base .ms-Icon--ChevronLeft::before{
+content:"\E76B";
+}
+.o365cs-base .ms-Icon--ChevronRight::before{
+content:"\E76C";
+}
+.o365cs-base .ms-Icon--Emoji2::before{
+content:"\E76E";
+}
+.o365cs-base .ms-Icon--Contact::before{
+content:"\E77B";
+}
+.o365cs-base .ms-Icon--Calendar::before{
+content:"\E787";
+}
+.o365cs-base .ms-Icon--News::before{
+content:"\E900";
+}
+.o365cs-base .ms-Icon--Download::before{
+content:"\E896";
+}
+.o365cs-base .ms-Icon--Help::before{
+content:"\E897";
+}
+.o365cs-base .ms-Icon--ChromeClose::before{
+content:"\E8BB";
+}
+.o365cs-base .ms-Icon--OneDrive::before{
+content:"\E941";
+background:url("/_layouts/15/fonts/OneDrive_24x.svg") 50% no-repeat;
+color:transparent;
+}
+.o365cs-base .ms-Icon--ChevronUpMed::before{
+content:"\E971";
+}
+.o365cs-base .ms-Icon--ChevronDownMed::before{
+content:"\E972";
+}
+.o365cs-base .ms-Icon--Ringer::before{
+content:"\EA8F";
+}
+.o365cs-base .ms-Icon--StoreLogo::before{
+content:"\EA96";
+}
+.o365cs-base .ms-Icon--CircleFill::before{
+content:"\EA3B";
+}
+.o365cs-base .ms-Icon--HelpMirrored::before{
+content:"\EA51";
+}
+.o365cs-base .ms-Icon--Lightbulb::before{
+content:"\EA80";
+}
+.o365cs-base .ms-Icon--BingLogo::before{
+content:"\EB6B";
+}
+.o365cs-base .ms-Icon--MSNLogo::before{
+content:"\EB6C";
+}
+.o365cs-base .ms-Icon--OfficeLogo::before{
+content:"\EB6E";
+}
+.o365cs-base .ms-Icon--SkypeLogo::before{
+content:"\EB6F";
+}
+.o365cs-base .ms-Icon--PowerBILogo::before{
+content:"\EA1E";
+}
+.o365cs-base .ms-Icon--YammerLogo::before{
+content:"\ED19";
+}
+.o365cs-base .ms-Icon--AdminALogo::before{
+content:"\ED6A";
+}
+.o365cs-base .ms-Icon--AdminPLogo::before{
+content:"\ED71";
+}
+.o365cs-base .ms-Icon--ParatureLogo::before{
+content:"\ED7B";
+}
+.o365cs-base .ms-Icon--SocialListeningLogo::before{
+content:"\ED7C";
+}
+.o365cs-base .ms-Icon--Waffle::before{
+content:"\ED89";
+}
+.o365cs-base .ms-Icon--BookingsLogo::before{
+content:"\EDC7";
+}
+.o365cs-base .ms-Icon--DocsLogoInverse::before{
+content:"\EDCB";
+}
+.o365cs-base .ms-Icon--Dynamics365Logo::before{
+content:"\EDCC";
+}
+.o365cs-base .ms-Icon--DynamicSMBLogo::before{
+content:"\EDCD";
+}
+.o365cs-base .ms-Icon--OfficeStoreLogo::before{
+content:"\EDCF";
+}
+.o365cs-base .ms-Icon--PlannerLogo::before{
+content:"\EDD1";
+}
+.o365cs-base .ms-Icon--OfficeAddinsLogo::before{
+content:"\EEC7";
+}
+.o365cs-base .ms-Icon--ClassroomLogo::before{
+content:"\EF75";
+}
+.o365cs-base .ms-Icon--CaretSolidDown::before{
+content:"\F08E";
+}
+.o365cs-base .ms-Icon--PowerAppsLogo::before{
+content:"\F091";
+}
+.o365cs-base .ms-Icon--SkypeForBusinessLogo::before{
+content:"\F0FC";
+}
+.o365cs-base .ms-Icon--AnalyticsLogo::before{
+content:"\F1DE";
+}
+.o365cs-base .ms-Icon--WordLogo::before{
+content:"\F1E3";
+}
+.o365cs-base .ms-Icon--ExcelLogo::before{
+content:"\F1E5";
+}
+.o365cs-base .ms-Icon--OneNoteLogo::before{
+content:"\F1E7";
+}
+.o365cs-base .ms-Icon--OutlookLogo::before{
+content:"\F1E9";
+}
+.o365cs-base .ms-Icon--PowerPointLogo::before{
+content:"\F1EB";
+}
+.o365cs-base .ms-Icon--TeamsLogo::before{
+content:"\F27B";
+}
+.o365cs-base .ms-Icon--SharepointLogo::before{
+content:"\F27E";
+background:url("/_layouts/15/fonts/SharePoint_24x.svg") 50% no-repeat;
+color:transparent;
+}
+.o365cs-base .ms-Icon--DelveLogo::before{
+content:"\F280";
+}
+.o365cs-base .ms-Icon--OfficeVideoLogo::before{
+content:"\F282";
+}
+.o365cs-base .ms-Icon--VisioLogo::before{
+content:"\F2A7";
+}
+.o365cs-base .ms-Icon--MoreVertical::before{
+content:"\F2BC";
+}
+.o365cs-base .ms-Icon--StreamLogo::before{
+content:"\F329";
+}
+.o365cs-base .ms-Icon--OfficeFormsLogo::before{
+content:"\F434";
+}
+.o365cs-base .ms-Icon--ProjectLogo32::before{
+content:"\F47E";
+}
+.o365cs-base .ms-Icon--SwayLogo32::before{
+content:"\F482";
+}
+.o365cs-base .ms-Icon--ClassNotebookLogo32::before{
+content:"\F486";
+}
+.o365cs-base .ms-Icon--StaffNotebookLogo32::before{
+content:"\F48C";
+}
+.o365cs-base .ms-Icon--KaizalaLogo::before{
+content:"\F492";
+}
+.o365cs-base .ms-Icon--TaskLogo::before{
+content:"\F493";
+}
+.o365cs-base .ms-Icon--ProtectionCenterLogo32::before{
+content:"\F494";
+}
+.o365cs-base .ms-Icon--NonprofitLogo32::before{
+content:"\F495";
+}
+.o365cs-base .ms-Icon--GallatinLogo::before{
+content:"\F496";
+}
+.o365cs-base .ms-Icon--MicrosoftFlowLogo::before{
+content:"\F4B1";
+}
+.o365cs-base .ms-Icon--BusinessCenterLogo::before{
+content:"\F4B2";
+}
+.o365cs-base .ms-Icon--ToDoLogoInverse::before{
+content:"\F4BC";
+}
+.o365cs-base .ms-Icon--Mail::before{
+content:"\F715";
+}
+.o365cs-base .ms-Icon--MicrosoftStaffhubLogo::before{
+content:"\F130";
+}
+.o365cs-base *{
+-webkit-box-sizing:content-box;
+-moz-box-sizing:content-box;
+box-sizing:content-box;
+}
+.o365cs-clear{
+clear:both;
+}
+.o365cs-segoeSemibold{
+font-family:"Segoe UI Semibold","Segoe UI Web Semibold","Segoe WP Semibold","Segoe UI","Segoe WP",Segoe,Tahoma,Arial,sans-serif;
+}
+.o365cs-nav-header16{
+width:100%;
+height:50px;
+display:table;
+border-spacing:0;
+font-size:0;
+white-space:nowrap;
+line-height:normal;
+}
+@media print{
+.o365cs-nav-header16 [class^="ms-Icon--"]:before,.o365cs-nav-header16 [class*=" ms-Icon--"]:before{
+content:'' !important;
+}
+.o365cs-nav-header16 [class^="ms-Icon--"],.o365cs-nav-header16 [class*=" ms-Icon--"]{
+display:none !important;
+}
+}
+.o365cs-nav-header16 .o365cs-nav-leftAlign{
+display:table-cell;
+vertical-align:middle;
+}
+.o365cs-navMenuButton{
+-webkit-transition:background-color 0.65s ease;
+-moz-transition:background-color 0.65s ease;
+transition:background-color 0.65s ease;
+}
+.o365cs-newAL-on.o365cs-nav-switcher{
+background-color:rgba(255,255,255,0.97);
+border:1px solid #D6D6D6;
+-webkit-box-shadow:0 0 6px rgba(0,0,0,0.24);
+box-shadow:0 0 6px rgba(0,0,0,0.24);
+-webkit-box-sizing:content-box !important;
+-moz-box-sizing:content-box !important;
+box-sizing:content-box !important;
+position:absolute;
+top:50px !important;
+left:0 !important;
+right:auto !important;
+margin:11px 0 0 11px;
+padding:8px 6px 6px 6px;
+width:auto;
+min-width:208px;
+max-width:510px;
+height:auto;
+max-height:-webkit-calc(100vh - 80px) !important;
+max-height:-moz-calc(100vh - 80px) !important;
+max-height:calc(100vh - 80px) !important;
+outline:0;
+}
+.o365cs-newALV2-on.o365cs-nav-switcher,.o365cs-newALV3-on.o365cs-nav-switcher{
+border:0;
+-webkit-box-shadow:none;
+box-shadow:none;
+-webkit-box-sizing:border-box !important;
+-moz-box-sizing:border-box !important;
+box-sizing:border-box !important;
+position:absolute;
+top:50px !important;
+left:0 !important;
+right:auto !important;
+margin:0;
+padding:0;
+width:320px;
+min-width:320px;
+max-width:320px;
+height:-webkit-calc(100vh - 50px);
+height:-moz-calc(100vh - 50px);
+height:calc(100vh - 50px);
+max-height:none !important;
+overflow-y:auto;
+outline:0;
+}
+.o365cs-newALV3-on.o365cs-nav-switcher{
+-webkit-box-shadow:0 16px 24px 0 rgba(0,0,0,0.10);
+box-shadow:0 16px 24px 0 rgba(0,0,0,0.10);
+top:0px !important;
+height:-webkit-calc(100vh);
+height:-moz-calc(100vh);
+height:calc(100vh);
+}
+.o365cs-newAL-on.o365cs-nav-launcher{
+padding:8px 6px 6px 6px;
+max-width:510px;
+}
+.o365cs-newALV2-on.o365cs-nav-launcher,.o365cs-newALV3-on.o365cs-nav-launcher{
+max-width:320px;
+}
+.o365cs-newAL-on.o365cs-nav-navMenu{
+background-color:rgba(255,255,255,0.97);
+border:0;
+-webkit-box-shadow:none;
+box-shadow:none;
+top:50px !important;
+overflow-y:auto;
+outline:0;
+}
+.o365cs-newALV2-on.o365cs-nav-navMenu,.o365cs-newALV3-on.o365cs-nav-navMenu{
+border:0;
+overflow-y:auto;
+outline:0;
+}
+.o365cs-newALV2-on.o365cs-nav-navMenu{
+-webkit-box-shadow:none;
+box-shadow:none;
+top:50px !important;
+}
+.o365cs-newALV3-on.o365cs-nav-navMenu{
+-webkit-box-shadow:0 16px 24px 0 rgba(0,0,0,0.10);
+box-shadow:0 16px 24px 0 rgba(0,0,0,0.10);
+top:0 !important;
+height:-webkit-calc(100vh);
+height:-moz-calc(100vh);
+height:calc(100vh);
+overflow:hidden;
+}
+@media (max-width:1023px){
+.o365cs-newAL-on.o365cs-nav-navMenu{
+border-left:1px solid #D6D6D6;
+-webkit-box-sizing:border-box !important;
+-moz-box-sizing:border-box !important;
+box-sizing:border-box !important;
+left:auto !important;
+right:0 !important;
+padding:20px 20px 10px 20px;
+width:306px;
+max-width:none !important;
+height:-webkit-calc(100vh - 50px);
+height:-moz-calc(100vh - 50px);
+height:calc(100vh - 50px);
+max-height:none !important;
+}
+.o365cs-newALV2-on.o365cs-nav-navMenu,.o365cs-newALV3-on.o365cs-nav-navMenu{
+border-left:none;
+-webkit-box-sizing:border-box !important;
+-moz-box-sizing:border-box !important;
+box-sizing:border-box !important;
+left:auto !important;
+right:0 !important;
+width:320px;
+max-width:none !important;
+max-height:none !important;
+}
+.o365cs-newALV2-on.o365cs-nav-navMenu{
+height:-webkit-calc(100vh - 50px);
+height:-moz-calc(100vh - 50px);
+height:calc(100vh - 50px);
+}
+}
+@media (min-width:1024px){
+.o365cs-rsp-m-hide{
+display:none !important;
+}
+.o365cs-newAL-on.o365cs-nav-navMenu{
+border:1px solid #D6D6D6;
+-webkit-box-shadow:0 0 6px rgba(0,0,0,0.24);
+box-shadow:0 0 6px rgba(0,0,0,0.24);
+-webkit-box-sizing:content-box !important;
+-moz-box-sizing:content-box !important;
+box-sizing:content-box !important;
+position:absolute;
+left:0 !important;
+right:auto !important;
+margin:11px 0 0 11px;
+padding:8px 6px 6px 6px;
+width:auto;
+min-width:208px;
+max-width:510px;
+height:auto;
+max-height:-webkit-calc(100vh - 80px) !important;
+max-height:-moz-calc(100vh - 80px) !important;
+max-height:calc(100vh - 80px) !important;
+}
+.o365cs-newALV2-on.o365cs-nav-navMenu,.o365cs-newALV3-on.o365cs-nav-navMenu{
+border:0;
+-webkit-box-sizing:border-box !important;
+-moz-box-sizing:border-box !important;
+box-sizing:border-box !important;
+position:absolute;
+right:auto !important;
+margin:0;
+width:320px;
+min-width:320px;
+max-width:320px;
+max-height:none !important;
+}
+.o365cs-newALV2-on.o365cs-nav-navMenu{
+-webkit-box-shadow:none;
+box-shadow:none;
+height:-webkit-calc(100vh - 50px);
+height:-moz-calc(100vh - 50px);
+height:calc(100vh - 50px);
+}
+}
+@media (min-width:640px) and (max-width:1023px){
+.o365cs-rsp-tw-hide{
+display:none !important;
+}
+}
+@media (min-width:640px) and (max-width:899px){
+.o365cs-rsp-tw-sm-hide{
+display:none !important;
+}
+}
+@media (max-width:639px){
+.o365cs-rsp-tn-hide{
+display:none !important;
+}
+.o365cs-rsp-affordance-on .o365cs-rsp-tn-hideIfAffordanceOn{
+display:none !important;
+}
+.o365cs-rsp-affordance-off .o365cs-rsp-tn-hideIfAffordanceOff{
+display:none !important;
+}
+}
+.o365cs-newALV2-on .o365cs-nav-navMenuContent{
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+background-color:#333333;
+height:-webkit-calc(100vh - 50px);
+height:-moz-calc(100vh - 50px);
+height:calc(100vh - 50px);
+}
+.o365cs-newALV3-on .o365cs-nav-navMenuContent{
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+background-color:#ffffff;
+height:-webkit-calc(100vh);
+height:-moz-calc(100vh);
+height:calc(100vh);
+}
+.o365cs-newALV2-on .o365cs-nav-navMenuContent{
+padding-top:36px;
+}
+.o365cs-nav-navMenuBeak{
+position:absolute;
+bottom:-8px;
+left:14px;
+z-index:2100;
+}
+.o365cs-newALV2-on .o365cs-nav-navMenuBeak,.o365cs-newALV3-on .o365cs-nav-navMenuBeak{
+display:none !important;
+}
+.o365cs-nav-navMenuBeak:before,.o365cs-nav-navMenuBeak:after{
+border:solid transparent;
+content:' ';
+height:0;
+position:absolute;
+width:0;
+}
+.o365cs-nav-navMenuBeak:before{
+border-width:11px 12.5px;
+border-bottom-color:#D6D6D6;
+top:-18px;
+left:5px;
+}
+.o365cs-nav-navMenuBeak:after{
+border-width:10px 11.5px;
+border-bottom-color:#fff;
+top:-16px;
+left:6px;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar,.o365cs-newALV3-on .o365cs-nav-scrollbar{
+overflow-y:auto;
+-webkit-overflow-scrolling:touch;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar:not(:-webkit-any-link),.o365cs-newALV3-on .o365cs-nav-scrollbar:not(:-webkit-any-link){
+margin-right:6px;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar{
+width:6px;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-button,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-button,.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-track,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-track,.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-corner,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-corner{
+background-color:transparent;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-button,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-button{
+background-repeat:no-repeat;
+cursor:pointer;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-button:vertical,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-button:vertical{
+background-position:center;
+width:18px;
+height:18px;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-button:vertical:increment,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-button:vertical:increment{
+background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAAAUUlEQVQ4T6XLMQ6AMAwEwfz/bXRIfOeQCxckK8iKYgqvfCPJLxgNjAZGA6OB0VjCcV55M/8/jkbDMv+VJbSdccHYvsYFo4HRwGhgNDAaGPdl3LNlBnofQ4+bAAAAAElFTkSuQmCC);
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-button:vertical:decrement,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-button:vertical:decrement{
+background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAAAVUlEQVQ4T6XMMQoAIQxEUe9/NrsFrzOSIqDxgzu7xSv8ZGySfsHowOjA6MDowOjAmPozFGpfYQw5vn2CsY5TvQtHoOGq3m+PLzA6MDowOjA6ML6nNgFW+wZ6kTk6FAAAAABJRU5ErkJggg==);
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-button:vertical:increment:hover,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-button:vertical:increment:hover{
+background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAAAUklEQVQ4T6XLsQ2AMAwF0ey/A1swAnt95MIFyQlyoniFT/4jyS8YDYwGRgOjgdFYwnFeeTP/P45GwzL/lSW0nXHB2L7GBaOB0cBoYDQwGhj3Zdx8sf7rjOGQqwAAAABJRU5ErkJggg==);
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-thumb{
+border-radius:9px;
+border:none;
+background-color:rgba(255,255,255,0.85);
+}
+.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-thumb{
+border-radius:9px;
+border:none;
+background-color:#ccd3d6;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-thumb:vertical,.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-thumb:vertical{
+min-height:50px;
+}
+.o365cs-newALV2-on .o365cs-nav-scrollbar::-webkit-scrollbar-thumb:hover{
+background-color:#fff;
+}
+.o365cs-newALV3-on .o365cs-nav-scrollbar::-webkit-scrollbar-thumb:hover{
+background-color:#9db4c4;
+}
+.o365cs-nav-closeButton{
+display:block;
+vertical-align:middle;
+background-clip:content-box !important;
+background-color:transparent !important;
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+border-width:0;
+margin:0 5px 5px 0;
+padding:5px 0 0 5px !important;
+min-width:45px;
+height:45px !important;
+text-align:center;
+line-height:normal;
+cursor:pointer;
+-webkit-transition:background-color .083s linear;
+-moz-transition:background-color .083s linear;
+transition:background-color .083s linear;
+}
+.o365cs-nav-closeButton:hover{
+background-color:#DBDAD7 !important;
+-webkit-transition:background-color .167s linear;
+-moz-transition:background-color .167s linear;
+transition:background-color .167s linear;
+}
+.o365cs-nav-closeButton:active{
+background-color:#B9B7B5 !important;
+}
+.o365cs-nav-navMenuTabs{
+margin-left:24px;
+height:47px;
+}
+.o365cs-nav-navMenuTab{
+font-size:12px !important;
+background-color:transparent !important;
+border-bottom-width:2px !important;
+border-bottom-style:solid;
+padding:0 4px 2px 4px !important;
+margin:0 8px 0 0;
+min-width:0;
+height:auto;
+}
+.o365cs-nav-navMenuTab:not(.ms-bcl-tt){
+border-bottom-color:transparent;
+}
+.o365cs-newALV2-on .o365cs-nav-navMenuTabContainer{
+padding-left:24px;
+height:-webkit-calc(100vh - 160px);
+height:-moz-calc(100vh - 160px);
+height:calc(100vh - 160px);
+}
+.o365cs-newALV3-on .o365cs-nav-navMenuTabContainer{
+height:-webkit-calc(100vh - 50px);
+height:-moz-calc(100vh - 50px);
+height:calc(100vh - 50px);
+}
+.o365cs-newALV2-on .o365cs-nav-hasAllAppsLink .o365cs-nav-navMenuTabContainer,.o365cs-newALV2-on .o365cs-nav-hasGetMoreAppsLink .o365cs-nav-navMenuTabContainer{
+height:-webkit-calc(100vh - 188px);
+height:-moz-calc(100vh - 188px);
+height:calc(100vh - 188px);
+}
+.o365cs-newALV2-on .o365cs-nav-hasAllAppsLink.o365cs-nav-hasGetMoreAppsLink .o365cs-nav-navMenuTabContainer{
+height:-webkit-calc(100vh - 216px);
+height:-moz-calc(100vh - 216px);
+height:calc(100vh - 216px);
+}
+.o365cs-newALV3-on .o365cs-nav-pinnedTab.slideInT{
+-webkit-animation-duration:0.25s;
+-moz-animation-duration:0.25s;
+animation-duration:0.25s;
+-webkit-animation-name:o365cs-nav-pinnedTab-slideInT;
+-moz-animation-name:o365cs-nav-pinnedTab-slideInT;
+animation-name:o365cs-nav-pinnedTab-slideInT;
+-webkit-animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+-moz-animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+}
+@-webkit-keyframes o365cs-nav-pinnedTab-slideInT{
+from{
+visibility:hidden;
+opacity:0;
+margin-left:-30px;
+}
+to{
+visibility:visible;
+opacity:1;
+margin-left:0;
+}
+}
+@-moz-keyframes o365cs-nav-pinnedTab-slideInT{
+from{
+visibility:hidden;
+opacity:0;
+margin-left:-30px;
+}
+to{
+visibility:visible;
+opacity:1;
+margin-left:0;
+}
+}
+@keyframes o365cs-nav-pinnedTab-slideInT{
+from{
+visibility:hidden;
+opacity:0;
+margin-left:-30px;
+}
+to{
+visibility:visible;
+opacity:1;
+margin-left:0;
+}
+}
+.o365cs-nav-placesLinks{
+position:absolute;
+top:15px;
+left:202px;
+}
+.o365cs-nav-placesLink{
+font-size:14px !important;
+text-decoration:none !important;
+}
+.o365cs-nav-placesLink .owaimg{
+font-size:12px !important;
+margin-top:-4px;
+margin-left:12px;
+vertical-align:middle;
+}
+.o365cs-nav-moduleLabel{
+display:block;
+font-size:22px !important;
+margin:30px 0 20px 18px;
+letter-spacing:0.01px;
+}
+.o365cs-nav-appItem{
+float:left;
+}
+.o365cs-nav-listView{
+padding-left:0 !important;
+}
+.o365cs-nav-listView .o365cs-nav-appItem{
+float:none;
+}
+.o365cs-nav-appItemGroup{
+width:92px;
+height:92px;
+}
+.o365cs-nav-appTile{
+display:block;
+text-align:center;
+line-height:normal;
+position:relative;
+text-decoration:none !important;
+-webkit-touch-callout:none;
+-webkit-user-select:none;
+-moz-user-select:-moz-none;
+-ms-user-select:none;
+user-select:none;
+}
+.o365cs-newAL-on .o365cs-nav-appTile{
+margin:0 2px 2px 0;
+padding:2px;
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+-webkit-transition:outline 2.125s ease-in-out,-webkit-transform .125s ease-in-out;
+-moz-transition:outline 2.125s ease-in-out,-moz-transform .125s ease-in-out;
+transition:outline 2.125s ease-in-out,transform .125s ease-in-out;
+}
+.o365cs-newALV2-on .o365cs-nav-appTile{
+margin:0 4px 4px 0;
+-webkit-transition:outline 2.125s ease-in-out,-webkit-transform .125s ease-in-out;
+-moz-transition:outline 2.125s ease-in-out,-moz-transform .125s ease-in-out;
+transition:outline 2.125s ease-in-out,transform .125s ease-in-out;
+}
+.o365cs-newALV3-on .o365cs-nav-appTile{
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+border:1px solid transparent;
+margin:0;
+text-align:left;
+-webkit-transition:border-color .083s linear,-webkit-box-shadow .083s linear;
+-moz-transition:border-color .083s linear,box-shadow .083s linear;
+transition:border-color .083s linear,box-shadow .083s linear;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileHovered,.o365cs-newALV3-on .o365cs-nav-appTileMenuShown{
+border-color:#F4F4F4;
+-webkit-box-shadow:0 8px 16px 0 rgba(0,0,0,0.10);
+box-shadow:0 8px 16px 0 rgba(0,0,0,0.10);
+-webkit-transition:border-color .167s linear,-webkit-box-shadow .167s linear;
+-moz-transition:border-color .167s linear,box-shadow .167s linear;
+transition:border-color .167s linear,box-shadow .167s linear;
+}
+.o365cs-newALV3-on .o365cs-nav-appTile:active{
+border-color:#F4F4F4;
+-webkit-box-shadow:0 1px 2px 0 rgba(0,0,0,0.10);
+box-shadow:0 1px 2px 0 rgba(0,0,0,0.10);
+}
+.o365cs-newALV2-on .o365cs-nav-listView .o365cs-nav-appTile{
+width:auto;
+height:auto;
+margin:0;
+padding:4px 0 4px 24px;
+outline-offset:-1px;
+}
+.o365cs-newALV3-on .o365cs-nav-listView .o365cs-nav-appTile{
+width:289px;
+margin-left:8px;
+}
+.o365cs-nav-appTileDisabled,.o365cs-nav-appTileLoading{
+cursor:default !important;
+pointer-events:none;
+}
+.o365cs-nav-appTileBackground{
+width:100%;
+height:100%;
+}
+.o365cs-newAL-on .o365cs-nav-appTileBackground{
+margin:0 2px 2px 0;
+padding:2px;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileBackground{
+background-color:transparent !important;
+}
+.o365cs-newAL-on .o365cs-nav-appTileHovered .o365cs-nav-appTileBackground,.o365cs-newAL-on .o365cs-nav-appTile:focus .o365cs-nav-appTileBackground,.o365cs-newAL-on .o365cs-nav-appTileMenuShown .o365cs-nav-appTileBackground{
+border:2px solid rgba(255,255,255,0.45);
+padding:0;
+}
+.o365cs-newALV2-on .o365cs-nav-listView .o365cs-nav-appTileHovered,.o365cs-newALV2-on .o365cs-nav-listView .o365cs-nav-appTile:focus,.o365cs-newALV2-on .o365cs-nav-listView .o365cs-nav-appTileMenuShown{
+background-image:-webkit-linear-gradient(180deg,rgba(0,0,0,0.00) 3%,rgba(230,230,230,0.16) 50%,rgba(255,255,255,0.00) 100%);
+background-image:-moz-linear-gradient(180deg,rgba(0,0,0,0.00) 3%,rgba(230,230,230,0.16) 50%,rgba(255,255,255,0.00) 100%);
+background-image:linear-gradient(-90deg,rgba(0,0,0,0.00) 3%,rgba(230,230,230,0.16) 50%,rgba(255,255,255,0.00) 100%);
+-webkit-box-shadow:none;
+box-shadow:none;
+}
+.o365cs-newALV2-on .o365cs-nav-appTile:not(.o365cs-nav-appTileDisabled):not(.o365cs-nav-appTileHovered):not(:focus):not(.o365cs-nav-appTileMenuShown) .o365cs-nav-appTileBackground{
+background-color:rgba(255,255,255,0.09) !important;
+}
+.o365cs-newALV2-on .o365cs-nav-listView .o365cs-nav-appTileBackground{
+width:48px;
+height:48px;
+position:relative;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileDisabled .o365cs-nav-appTileBackground{
+color:#A6A6A6;
+}
+.o365cs-nav-appTileSmall{
+width:42px;
+height:42px;
+}
+.o365cs-newAL-on .o365cs-nav-appTileMedium{
+width:100px;
+height:100px;
+}
+.o365cs-newALV2-on .o365cs-nav-appTileMedium{
+width:88px;
+height:88px;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileMedium{
+width:145px;
+height:48px;
+}
+.o365cs-nav-appTileWide{
+width:180px;
+height:88px;
+}
+.o365cs-newAL-on .o365cs-nav-appTilePressed,.o365cs-newALV2-on .o365cs-nav-appTilePressed{
+-webkit-transform:scale(0.9125);
+-moz-transform:scale(0.9125);
+transform:scale(0.9125);
+}
+.o365cs-nav-appTileIcon{
+display:inline-block;
+}
+.o365cs-nav-appTileSmall .o365cs-nav-appTileIcon{
+font-size:28px !important;
+margin-top:7px;
+}
+.o365cs-newAL-on .o365cs-nav-appTileMedium .o365cs-nav-appTileIcon{
+font-size:36px !important;
+margin-top:22px;
+height:auto;
+}
+.o365cs-newALV2-on .o365cs-nav-appTileMedium .o365cs-nav-appTileIcon,.o365cs-newALV2-on .o365cs-nav-appTileWide .o365cs-nav-appTileIcon{
+font-size:36px !important;
+margin-top:16px;
+height:36px;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileMedium .o365cs-nav-appTileIcon{
+font-size:26px !important;
+color:inherit !important;
+margin-top:12px;
+margin-left:10px;
+-webkit-transition:color .167s linear;
+-moz-transition:color .167s linear;
+transition:color .167s linear;
+}
+.o365cs-newALV2-on .o365cs-nav-listView .o365cs-nav-appTileIcon{
+font-size:24px !important;
+margin-top:10px !important;
+height:36px;
+}
+.o365cs-nav-appTileImage{
+border:none;
+}
+.o365cs-nav-appTileSmall .o365cs-nav-appTileImage{
+width:100%;
+height:100%;
+}
+.o365cs-newALV2-on .o365cs-nav-appTileMedium .o365cs-nav-appTileImage,.o365cs-newALV2-on .o365cs-nav-appTileWide .o365cs-nav-appTileImage{
+width:36px;
+height:36px;
+margin-top:16px;
+vertical-align:top;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileMedium .o365cs-nav-appTileImage{
+width:28px;
+height:28px;
+margin-top:10px;
+margin-left:8px;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileLoading .o365cs-nav-appTileImage{
+display:inline-block;
+background-color:#F6F6F6;
+border-radius:1px;
+}
+.o365cs-newALV2-on .o365cs-nav-listView .o365cs-nav-appTileImage{
+width:24px;
+height:24px;
+margin-top:12px;
+vertical-align:top;
+}
+.o365cs-newAL-on .o365cs-nav-appTileTitle,.o365cs-newALV2-on .o365cs-nav-appTileTitle{
+display:table-cell;
+position:static;
+left:10px;
+bottom:4px;
+padding:1px 5px 0 5px;
+height:30px;
+vertical-align:middle;
+}
+.o365cs-newALV2-on .o365cs-nav-appTileTitle{
+opacity:0.91;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileTitle{
+display:block;
+position:absolute;
+left:47px;
+top:15px;
+color:inherit !important;
+-webkit-transition:color .083s linear;
+-moz-transition:color .083s linear;
+transition:color .083s linear;
+}
+.o365cs-newALV2-on .o365cs-nav-appTile:not(.o365cs-nav-appTileDisabled) .o365cs-nav-appTileIcon,.o365cs-newALV2-on .o365cs-nav-appTile:not(.o365cs-nav-appTileDisabled) .o365cs-nav-appTileTitle{
+color:#EAEAEA !important;
+}
+.o365cs-newALV3-on .o365cs-nav-appTile:not(.o365cs-nav-appTileDisabled):not(.o365cs-nav-appTileHovered):not(:focus):not(.o365cs-nav-appTileMenuShown) .o365cs-nav-appTileIcon{
+-webkit-transition:color .167s linear;
+-moz-transition:color .167s linear;
+transition:color .167s linear;
+}
+.o365cs-newALV3-on .o365cs-nav-appTile:not(.o365cs-nav-appTileDisabled):not(.o365cs-nav-appTileHovered):not(:focus):not(.o365cs-nav-appTileMenuShown) .o365cs-nav-appTileTitle{
+color:#212121 !important;
+-webkit-transition:color .167s linear;
+-moz-transition:color .167s linear;
+transition:color .167s linear;
+}
+.o365cs-nav-appTileSmall .o365cs-nav-appTileTitle{
+display:none;
+}
+.o365cs-newAL-on .o365cs-nav-appTileMedium .o365cs-nav-appTileTitle{
+width:85px;
+}
+.o365cs-newALV2-on .o365cs-nav-appTileMedium .o365cs-nav-appTileTitle{
+width:78px;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileMedium .o365cs-nav-appTileTitle{
+width:-webkit-calc(100% - 45px);
+width:-moz-calc(100% - 45px);
+width:calc(100% - 45px);
+}
+.o365cs-newALV3-on .o365cs-nav-appTileLoading .o365cs-nav-appTileTitle{
+background-color:#F6F6F6;
+width:56px;
+height:15px;
+}
+.o365cs-nav-appTileWide .o365cs-nav-appTileTitle{
+width:170px;
+}
+.o365cs-newALV2-on .o365cs-nav-listView .o365cs-nav-appTileTitle{
+display:block;
+position:absolute;
+left:55px;
+width:180px;
+max-width:180px !important;
+line-height:48px !important;
+}
+.o365cs-nav-appTileTitle > span{
+font-family:"SegoeUI-Regular-final","Segoe UI","Segoe UI WPC",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+font-size:12px;
+display:block;
+overflow:hidden;
+text-overflow:ellipsis;
+text-align:center;
+white-space:normal;
+}
+.o365cs-newAL-on .o365cs-nav-appTileTitle > span{
+font-family:"SegoeUI-SemiLight-final","Segoe UI SemiLight","Segoe UI WPC Semilight","Segoe UI",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+line-height:16px;
+max-height:32px;
+}
+.o365cs-newALV2-on .o365cs-nav-appTileTitle > span{
+line-height:16px;
+max-height:32px;
+}
+.o365cs-newALV3-on .o365cs-nav-appTileTitle > span{
+font-size:14px;
+white-space:nowrap;
+text-align:left;
+letter-spacing:0.01px;
+}
+.o365cs-nav-listView .o365cs-nav-appTileTitle > span{
+white-space:nowrap;
+text-align:left;
+}
+.o365cs-newALV3-on .o365cs-nav-appsModuleTiles{
+margin-left:8px;
+}
+.o365cs-nav-fluentLink{
+background-color:transparent !important;
+min-width:0;
+height:auto !important;
+text-decoration:none !important;
+}
+.o365cs-nav-fluentLink:not(.owaimg){
+border-bottom:1px solid transparent;
+padding-bottom:1px;
+-webkit-transition:border-bottom-color .083s linear;
+-moz-transition:border-bottom-color .083s linear;
+transition:border-bottom-color .083s linear;
+}
+.o365cs-nav-fluentLink:hover:not(.owaimg){
+border-bottom-color:currentColor;
+}
+.o365cs-nav-appsModuleMore{
+display:block;
+position:relative;
+font-size:14px !important;
+border:0;
+margin:12px 0 35px 20px !important;
+padding:0;
+text-align:left;
+cursor:pointer;
+}
+.o365cs-nav-appsModuleMore .owaimg{
+font-size:12px !important;
+margin-top:-2px;
+margin-left:12px;
+vertical-align:middle;
+}
+.o365cs-newALV3-on .o365cs-nav-allView{
+-webkit-animation-duration:0.25s;
+-moz-animation-duration:0.25s;
+animation-duration:0.25s;
+-webkit-animation-name:o365cs-nav-allView-slideInT;
+-moz-animation-name:o365cs-nav-allView-slideInT;
+animation-name:o365cs-nav-allView-slideInT;
+-webkit-animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+-moz-animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+}
+@-webkit-keyframes o365cs-nav-allView-slideInT{
+from{
+visibility:hidden;
+opacity:0;
+margin-left:30px;
+}
+to{
+visibility:visible;
+opacity:1;
+margin-left:0;
+}
+}
+@-moz-keyframes o365cs-nav-allView-slideInT{
+from{
+visibility:hidden;
+opacity:0;
+margin-left:30px;
+}
+to{
+visibility:visible;
+opacity:1;
+margin-left:0;
+}
+}
+@keyframes o365cs-nav-allView-slideInT{
+from{
+visibility:hidden;
+opacity:0;
+margin-left:30px;
+}
+to{
+visibility:visible;
+opacity:1;
+margin-left:0;
+}
+}
+.o365cs-nav-allViewBackButton{
+font-size:12px !important;
+border:0;
+margin:0 0 14px 18px !important;
+padding:0;
+cursor:pointer;
+}
+.o365cs-nav-allViewBackButton > span{
+vertical-align:middle;
+}
+.o365cs-nav-allViewBackButton .owaimg{
+font-size:12px !important;
+margin-top:2px;
+margin-right:8px;
+}
+.o365cs-newALV3-on .o365cs-nav-allViewScrollContainer{
+height:-webkit-calc(100% - 102px);
+height:-moz-calc(100% - 102px);
+height:calc(100% - 102px);
+padding-bottom:10px;
+}
+.o365cs-newALV3-on .o365cs-nav-navMenuGroupLabel{
+display:block;
+font-family:"Segoe UI Semibold","Segoe UI Web Semibold","Segoe WP Semibold","Segoe UI","Segoe WP",Segoe,Tahoma,Arial,sans-serif !important;
+font-size:16px !important;
+color:#212121 !important;
+margin:10px 0 10px 18px;
+letter-spacing:0.01px;
+}
+.o365cs-nav-allViewFooter{
+display:block;
+position:absolute;
+bottom:0;
+width:100%;
+}
+.o365cs-nav-allViewAppGallery{
+display:block;
+font-size:12px !important;
+-webkit-box-shadow:0 -1px 2px 0 rgba(0,0,0,0.10);
+box-shadow:0 -1px 2px 0 rgba(0,0,0,0.10);
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+padding-left:20px !important;
+width:100%;
+line-height:54px !important;
+letter-spacing:0.01px;
+}
+.o365cs-nav-allViewAppGallery > span{
+vertical-align:middle;
+}
+.o365cs-nav-allViewAppGallery .owaimg{
+font-size:12px !important;
+margin-top:2px;
+margin-right:18px;
+}
+.o365cs-nav-navMenuFooter{
+border-top:1px solid rgba(255,255,255,0.08);
+padding-top:12px;
+padding-bottom:13px;
+}
+.o365cs-nav-navMenuFooterLink{
+display:block;
+margin-left:24px;
+margin-bottom:5px;
+}
+.o365cs-nav-navMenuFooterLink > a{
+font-family:"SegoeUI-Regular-final","Segoe UI","Segoe UI WPC",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+font-size:14px;
+text-decoration:none !important;
+}
+.o365cs-nav-header16 .o365cs-nav-topItem{
+display:inline-block;
+vertical-align:top;
+}
+.o365cs-nav-header16 .o365cs-nav-o365Branding{
+padding-right:20px;
+border-left:1px solid rgba(255,255,255,0.3);
+}
+.o365cs-nav-header16 .o365cs-nav-bposLogo{
+display:inline-block;
+white-space:nowrap;
+vertical-align:middle;
+padding:0 20px;
+height:50px;
+outline-offset:-1px;
+}
+.o365cs-nav-header16.o365cs-newALV3-on .o365cs-nav-bposLogo{
+padding:0 18px;
+}
+.o365cs-nav-header16 .o365cs-nav-brandingText{
+line-height:48px;
+display:inline-block;
+font-family:"SegoeUI-SemiLight-final","Segoe UI SemiLight","Segoe UI WPC Semilight","Segoe UI",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+font-size:22px;
+-webkit-font-smoothing:antialiased;
+}
+.o365cs-nav-header16.o365cs-newALV3-on .o365cs-nav-brandingText{
+font-size:17px;
+}
+.o365cs-nav-header16 .o365cs-nav-gallatinLogo{
+display:inline-block;
+vertical-align:top;
+margin-left:6px;
+margin-top:12px;
+}
+.o365cs-nav-header16 .o365cs-nav-appTitleLine{
+display:inline-block;
+vertical-align:middle;
+height:40px;
+width:1px;
+background-color:rgba(255,255,255,0.4);
+}
+.o365cs-nav-header16.o365cs-newALV3-on .o365cs-nav-appTitleLine{
+height:30px;
+}
+.o365cs-nav-headerLogoHidden{
+display:none !important;
+}
+.o365cs-nav-header16 .o365cs-nav-appTitle{
+display:inline-block;
+vertical-align:middle;
+margin-left:20px;
+height:50px;
+outline-offset:-1px;
+}
+.o365cs-nav-header16.o365cs-newALV3-on .o365cs-nav-appTitle{
+margin-left:18px;
+}
+.o365cs-nav-header16 .o365cs-nav-tenantBranding{
+display:inline;
+vertical-align:top;
+}
+.o365cs-nav-header16 .o365cs-nav-leftAlign .o365cs-nav-tenantBranding{
+display:table-cell;
+vertical-align:middle;
+border-left:1px solid rgba(255,255,255,0.3);
+padding:0 20px;
+height:50px;
+}
+.o365cs-nav-header16 .o365cs-nav-tenantLogo{
+max-width:200px;
+max-height:50px;
+overflow:hidden;
+display:inline-block;
+font-size:0;
+}
+.o365cs-nav-header16 .o365cs-nav-tenantLogo img{
+max-height:50px;
+border-style:none !important;
+}
+.o365cs-nav-header16 .o365cs-nav-brandingLeftText,.o365cs-nav-header16 .o365cs-nav-brandingRightText{
+display:inline-block;
+width:auto;
+padding:0px;
+vertical-align:middle;
+font-size:10px;
+}
+.o365cs-nav-header16 .o365cs-nav-centerAlign{
+display:table-cell;
+width:100%;
+text-align:center;
+vertical-align:middle;
+}
+.o365cs-nav-header16 .o365cs-nav-rightAlign{
+display:table-cell;
+vertical-align:top;
+text-align:right;
+}
+.o365cs-nav-header16 .o365cs-nav-rightMenus{
+display:table-cell;
+vertical-align:top;
+}
+.o365cs-nav-header16 .o365cs-nav-link{
+display:block;
+font-size:0;
+margin:0;
+min-width:50px;
+text-align:center;
+line-height:50px;
+outline-offset:-1px;
+}
+.o365cs-mfp-doughboy-container{
+position:absolute;
+right:6px;
+}
+.o365cs-nav-header16 .o365cs-nav-button{
+display:block;
+vertical-align:middle;
+border-width:0;
+margin:0;
+padding:0;
+min-width:50px;
+height:50px;
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+text-align:center;
+line-height:normal;
+overflow:visible;
+cursor:pointer;
+outline-offset:-1px;
+}
+.meflexpane-enabled .o365cs-nav-button{
+min-width:48px;
+}
+@media (min-width:640px){
+.o365cs-nav-header16 .o365cs-mfp-headerbutton{
+min-width:177px;
+width:177px;
+}
+}
+.o365cs-mfp-header{
+max-width:176px;
+display:table;
+}
+.o365cs-mfp-header-displayname{
+text-align:right;
+vertical-align:middle;
+display:table-cell;
+overflow:hidden;
+max-width:126px;
+width:126px;
+}
+.o365cs-mfp-header-displayname-wrap{
+text-overflow:ellipsis;
+word-break:break-all;
+white-space:nowrap;
+}
+.o365cs-mfp-header-spacer{
+min-width:3px;
+display:table-cell;
+}
+.o365cs-mfp-header-img{
+display:table-cell;
+}
+.o365cs-mfp-header-img .o365cs-mfp-doughboy,.o365cs-mfp-mebutton{
+margin:7px 0 0 0;
+}
+.o365cs-mfp-circular-small,.o365cs-mfp-circular-medium,.o365cs-mfp-circular-other{
+border-radius:50%;
+}
+.o365cs-nav-button .o365cs-mfp-header-img{
+border-left-width:0 !important;
+}
+.o365cs-mfp-header-img-container{
+position:absolute;
+overflow:hidden;
+display:inline-block;
+margin-top:7px;
+right:6px;
+top:0;
+}
+.o365cs-mfp-circular-small{
+width:36px;
+height:36px;
+}
+.o365cs-mfp-doughboy{
+font-size:28px !important;
+position:static;
+background-color:#767676 !important;
+line-height:1.3 !important;
+}
+.o365cs-newALV3-on .o365cs-mfp-doughboy{
+font-size:24px !important;
+line-height:1.45 !important;
+}
+.o365cs-mfp-textboy{
+position:absolute;
+overflow:hidden;
+right:6px;
+top:7px;
+border-radius:50%;
+font-size:21px;
+text-align:center;
+line-height:33px;
+color:white;
+font-family:"SegoeUI-SemiLight-final","Segoe UI SemiLight","Segoe UI WPC Semilight","Segoe UI",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+}
+.o365cs-mfp-skypeAvailable{
+background-color:#5DD255;
+color:white;
+border:1px solid white;
+}
+.o365cs-mfp-skypeOffline,.o365cs-mfp-hidden{
+background-color:white;
+border:1px solid green;
+}
+.o365cs-mfp-skypeBusy{
+background-color:red;
+border:1px solid white;
+}
+.o365cs-mfp-skypeDND{
+background-color:red;
+color:white;
+border:1px solid white;
+}
+.o365cs-mfp-skypeAway{
+background-color:#FFD200;
+border:1px solid white;
+color:white;
+}
+.o365cs-mfp-skypeUnkown{
+background-color:white;
+border:1px solid green;
+color:green;
+}
+.o365cs-mfp-presenceButton{
+top:30px;
+right:5px;
+border-radius:10px;
+height:12px;
+width:12px;
+position:absolute;
+text-align:center;
+font-size:11px;
+}
+html[dir="rtl"] .o365cs-mfp-presenceButton{
+left:5px;
+}
+.o365cs-nav-header16 .o365cs-nav-rightAlign .o365cs-nav-button{
+border-left:1px solid rgba(255,255,255,0.3);
+}
+.o365cs-nav-header16.o365cs-newALV3-on .o365cs-nav-rightAlign .o365cs-nav-button{
+border-left:none;
+}
+.o365cs-nav-header16.o365cs-newDefaultTheme-on .o365cs-nav-button:hover{
+background-color:#dbd9d7 !important;
+}
+.o365cs-nav-header16.o365cs-newDefaultTheme-on .o365cs-nav-bposLogo .o365cs-nav-brandingText{
+color:#D83B01;
+font-family:"Segoe UI Bold","Segoe UI Semibold","Segoe UI Web Semibold","Segoe WP Semibold","Segoe UI","Segoe WP",Segoe,Tahoma,Arial,sans-serif;
+}
+.o365cs-nav-header16 .o365cs-nav-item{
+position:relative;
+-webkit-transition:background-color 0.467s cubic-bezier(0.1,0.9,0.2,1) 34ms;
+-moz-transition:background-color 0.467s cubic-bezier(0.1,0.9,0.2,1) 34ms;
+transition:background-color 0.467s cubic-bezier(0.1,0.9,0.2,1) 34ms;
+}
+.o365cs-nav-contextMenu{
+background-color:#fff;
+border-left:1px solid #DEDEDE;
+border-right:1px solid #DEDEDE;
+border-bottom:1px solid #DEDEDE;
+-webkit-box-shadow:0 0 10px rgba(0,0,0,0.2);
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+min-width:180px;
+max-width:375px;
+clip:rect(0,10000px,10000px,-10px);
+outline:0;
+}
+.o365cs-nav-contextMenu .o365cs-contextMenuItem,.o365cs-nav-contextMenu .o365cs-contextMenuInactiveItem{
+display:block;
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+padding:10px 30px;
+font:15px "SegoeUI-Regular-final","Segoe UI","Segoe UI WPC",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+text-align:left;
+outline-offset:-1px;
+}
+.o365cs-nav-contextMenu button.o365cs-contextMenuItem,.o365cs-nav-contextMenu button.o365cs-contextMenuInactiveItem{
+width:100%;
+}
+.o365cs-nav-contextMenu .o365cs-contextMenuInactiveItem{
+cursor:default !important;
+}
+.o365cs-nav-contextMenu .o365cs-contextMenuSeparator{
+border-top-style:solid;
+border-top-width:1px;
+}
+.o365cs-nav-contextMenu .o365cs-labelledContextMenuSeparator{
+padding:10px 16px 0 16px;
+font-size:13px;
+border-top-width:1px;
+border-top-style:solid;
+}
+.o365cs-me-tile-nophoto{
+border-left:1px solid rgba(255,255,255,0.3);
+}
+.o365cs-newALV3-on .o365cs-me-tile-nophoto{
+border-left:none;
+}
+.o365cs-me-tile-nophoto-username-container{
+display:table-cell;
+height:50px;
+padding-left:5px;
+vertical-align:middle;
+white-space:nowrap;
+max-width:200px;
+overflow:hidden;
+text-align:left;
+text-overflow:ellipsis;
+}
+.o365cs-me-tile-nophoto-down{
+display:table-cell;
+padding:0 10px;
+vertical-align:middle;
+}
+.o365cs-me-tile-nophoto-username{
+vertical-align:middle;
+height:50px;
+font-size:15px;
+padding-left:15px;
+padding-right:5px;
+font-family:"Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+}
+@media screen and (min-resolution:350dpi){
+.o365cs-me-tile-nophoto-username-container{
+max-width:3rem;
+text-overflow:ellipsis;
+}
+.o365cs-me-tile-nophoto-username{
+display:contents;
+}
+}
+.o365cs-me-presence5x50{
+width:5px;
+height:50px;
+position:absolute;
+top:0;
+left:0;
+}
+.o365cs-nav-header16 .o365cs-me-nav-item{
+border-left:none !important;
+z-index:1;
+min-width:55px;
+}
+.o365cs-me-tileview-container{
+position:absolute;
+top:0;
+left:0;
+z-index:-1;
+}
+.o365cs-me-tileview{
+width:55px;
+height:50px;
+overflow:hidden;
+}
+.o365cs-me-presenceColor-Offline{
+background-color:#B6CFD8;
+}
+.o365cs-me-tileimg{
+width:50px;
+height:50px;
+overflow:hidden;
+position:absolute;
+line-height:normal;
+top:0;
+left:5px;
+}
+.o365cs-me-tileimg-doughboy{
+width:52px;
+height:49px;
+font-size:52px;
+padding:3px 0 0 2px;
+left:0;
+position:static;
+}
+.o365cs-newALV3-on .o365cs-me-tileimg-doughboy{
+font-size:44px !important;
+padding-top:6px;
+}
+.o365cs-nav-header16 .o365cs-nav-signIn{
+vertical-align:middle;
+font-size:14px;
+font-family:"SegoeUI-Regular-final",Segoe UI,Arial,Helvetica,sans-serif;
+padding-left:10px;
+padding-right:10px;
+text-decoration:none;
+}
+.o365cs-semiLightFont{
+font-family:"SegoeUI-SemiLight-final","Segoe UI",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+font-weight:lighter;
+-webkit-font-smoothing:antialiased;
+}
+.o365cs-lightFont{
+font-family:"Segoe UI Light","Segoe UI",Segoe,Tahoma,Helvetica,Arial,Sans-Serif;
+}
+.o365cs-newAL-on.o365cs-nav-navMenu.slideInT,.o365cs-newALV2-on.o365cs-nav-navMenu.slideInT,.o365cs-newAL-on .o365cs-nav-navMenuBeak.slideInT{
+-webkit-animation-duration:0.15s;
+-moz-animation-duration:0.15s;
+animation-duration:0.15s;
+-webkit-animation-name:slideInTTransformFrames;
+-moz-animation-name:slideInTTransformFrames;
+animation-name:slideInTTransformFrames;
+-webkit-animation-fill-mode:both;
+-moz-animation-fill-mode:both;
+animation-fill-mode:both;
+}
+@-webkit-keyframes slideInTTransformFrames{
+from{
+opacity:0;
+-webkit-transform:translate(0px,-12px);
+transform:translate(0px,-12px);
+-webkit-animation-timing-function:cubic-bezier(0,0,0,1);
+animation-timing-function:cubic-bezier(0,0,0,1);
+}
+to{
+opacity:1;
+-webkit-transform:translate(0px,0px);
+transform:translate(0px,0px);
+}
+}
+@-moz-keyframes slideInTTransformFrames{
+from{
+opacity:0;
+-moz-transform:translate(0px,-12px);
+transform:translate(0px,-12px);
+-moz-animation-timing-function:cubic-bezier(0,0,0,1);
+animation-timing-function:cubic-bezier(0,0,0,1);
+}
+to{
+opacity:1;
+-moz-transform:translate(0px,0px);
+transform:translate(0px,0px);
+}
+}
+@keyframes slideInTTransformFrames{
+from{
+opacity:0;
+-webkit-transform:translate(0px,-12px);
+-moz-transform:translate(0px,-12px);
+transform:translate(0px,-12px);
+-webkit-animation-timing-function:cubic-bezier(0,0,0,1);
+-moz-animation-timing-function:cubic-bezier(0,0,0,1);
+animation-timing-function:cubic-bezier(0,0,0,1);
+}
+to{
+opacity:1;
+-webkit-transform:translate(0px,0px);
+-moz-transform:translate(0px,0px);
+transform:translate(0px,0px);
+}
+}
+.o365cs-newALV3-on.o365cs-nav-navMenu.slideInT{
+-webkit-animation-duration:0.25s;
+-moz-animation-duration:0.25s;
+animation-duration:0.25s;
+-webkit-animation-fill-mode:both;
+-moz-animation-fill-mode:both;
+animation-fill-mode:both;
+-webkit-animation-name:slideInTTransformFramesV3;
+-moz-animation-name:slideInTTransformFramesV3;
+animation-name:slideInTTransformFramesV3;
+-webkit-animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+-moz-animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+animation-timing-function:cubic-bezier(0.26,1,0.48,1);
+}
+@-webkit-keyframes slideInTTransformFramesV3{
+from{
+opacity:0;
+-webkit-transform:scaleX(0.93);
+transform:scaleX(0.93);
+height:65vh;
+}
+to{
+opacity:1;
+-webkit-transform:scaleX(1);
+transform:scaleX(1);
+height:-webkit-calc(100vh - 8px);
+height:calc(100vh - 8px);
+}
+}
+@-moz-keyframes slideInTTransformFramesV3{
+from{
+opacity:0;
+-moz-transform:scaleX(0.93);
+transform:scaleX(0.93);
+height:65vh;
+}
+to{
+opacity:1;
+-moz-transform:scaleX(1);
+transform:scaleX(1);
+height:-moz-calc(100vh - 8px);
+height:calc(100vh - 8px);
+}
+}
+@keyframes slideInTTransformFramesV3{
+from{
+opacity:0;
+-webkit-transform:scaleX(0.93);
+-moz-transform:scaleX(0.93);
+transform:scaleX(0.93);
+height:65vh;
+}
+to{
+opacity:1;
+-webkit-transform:scaleX(1);
+-moz-transform:scaleX(1);
+transform:scaleX(1);
+height:-webkit-calc(100vh - 8px);
+height:-moz-calc(100vh - 8px);
+height:calc(100vh - 8px);
+}
+}
+.o365cs-newAL-on.o365cs-nav-navMenu.slideOutT,.o365cs-newALV2-on.o365cs-nav-navMenu.slideOutT,.o365cs-newAL-on .o365cs-nav-navMenuBeak.slideOutT{
+-webkit-animation-duration:1.0s;
+-moz-animation-duration:1.0s;
+animation-duration:1.0s;
+-webkit-animation-name:slideOutTTransformFrames;
+-moz-animation-name:slideOutTTransformFrames;
+animation-name:slideOutTTransformFrames;
+-webkit-animation-fill-mode:both;
+-moz-animation-fill-mode:both;
+animation-fill-mode:both;
+}
+@-webkit-keyframes slideOutTTransformFrames{
+from{
+opacity:1;
+-webkit-transform:translate(0px,0px);
+transform:translate(0px,0px);
+-webkit-animation-timing-function:cubic-bezier(0.33,0,0.67,1);
+animation-timing-function:cubic-bezier(0.33,0,0.67,1);
+}
+to{
+opacity:0;
+-webkit-transform:translate(0px,-12px);
+transform:translate(0px,-12px);
+}
+}
+@-moz-keyframes slideOutTTransformFrames{
+from{
+opacity:1;
+-moz-transform:translate(0px,0px);
+transform:translate(0px,0px);
+-moz-animation-timing-function:cubic-bezier(0.33,0,0.67,1);
+animation-timing-function:cubic-bezier(0.33,0,0.67,1);
+}
+to{
+opacity:0;
+-moz-transform:translate(0px,-12px);
+transform:translate(0px,-12px);
+}
+}
+@keyframes slideOutTTransformFrames{
+from{
+opacity:1;
+-webkit-transform:translate(0px,0px);
+-moz-transform:translate(0px,0px);
+transform:translate(0px,0px);
+-webkit-animation-timing-function:cubic-bezier(0.33,0,0.67,1);
+-moz-animation-timing-function:cubic-bezier(0.33,0,0.67,1);
+animation-timing-function:cubic-bezier(0.33,0,0.67,1);
+}
+to{
+opacity:0;
+-webkit-transform:translate(0px,-12px);
+-moz-transform:translate(0px,-12px);
+transform:translate(0px,-12px);
+}
+}
+.o365cs-newALV3-on.o365cs-nav-navMenu.slideOutT{
+-webkit-animation-duration:0.25s;
+-moz-animation-duration:0.25s;
+animation-duration:0.25s;
+-webkit-animation-fill-mode:both;
+-moz-animation-fill-mode:both;
+animation-fill-mode:both;
+-webkit-animation-name:slideOutTTransformFramesV3;
+-moz-animation-name:slideOutTTransformFramesV3;
+animation-name:slideOutTTransformFramesV3;
+-webkit-animation-timing-function:cubic-bezier(0.52,0,0.74,0);
+-moz-animation-timing-function:cubic-bezier(0.52,0,0.74,0);
+animation-timing-function:cubic-bezier(0.52,0,0.74,0);
+}
+@-webkit-keyframes slideOutTTransformFramesV3{
+from{
+opacity:1;
+-webkit-transform:scale(1);
+transform:scale(1);
+height:-webkit-calc(100vh - 8px);
+height:calc(100vh - 8px);
+}
+to{
+opacity:0;
+-webkit-transform:scale(0.93);
+transform:scale(0.93);
+height:65vh;
+}
+}
+@-moz-keyframes slideOutTTransformFramesV3{
+from{
+opacity:1;
+-moz-transform:scale(1);
+transform:scale(1);
+height:-moz-calc(100vh - 8px);
+height:calc(100vh - 8px);
+}
+to{
+opacity:0;
+-moz-transform:scale(0.93);
+transform:scale(0.93);
+height:65vh;
+}
+}
+@keyframes slideOutTTransformFramesV3{
+from{
+opacity:1;
+-webkit-transform:scale(1);
+-moz-transform:scale(1);
+transform:scale(1);
+height:-webkit-calc(100vh - 8px);
+height:-moz-calc(100vh - 8px);
+height:calc(100vh - 8px);
+}
+to{
+opacity:0;
+-webkit-transform:scale(0.93);
+-moz-transform:scale(0.93);
+transform:scale(0.93);
+height:65vh;
+}
+}
+.wf-o365-placeholder:before{
+content:'\e001';
+}
+.wf-o365-outlooklogo:before{
+content:'\e062';
+}
+.wf-o365-calendar:before{
+content:'\e011';
+}
+.wf-o365-peoplelogo:before{
+content:'\e00e';
+}
+.wf-o365-yammerlogo:before{
+content:'\e064';
+}
+.wf-o365-newsfeed:before{
+content:'\e08d';
+}
+.wf-o365-cloud:before{
+content:'\e016';
+}
+.wf-o365-tasks:before{
+content:'\e040';
+}
+.wf-o365-projectlogo:before{
+content:'\e063';
+}
+.wf-o365-pulselogo:before{
+content:'\e118';
+}
+.wf-o365-powerbilogo:before{
+content:'\e08b';
+}
+.wf-o365-powerbiv2logo:before{
+content:'\e281';
+}
+.wf-o365-crmlogo:before{
+content:'\e065';
+}
+.wf-o365-sociallisteninglogo:before{
+content:'\e123';
+}
+.wf-o365-videologo:before{
+content:'\e202';
+}
+.wf-o365-paraturelogo:before{
+content:'\e20a';
+}
+.wf-o365-swaylogo:before{
+content:'\e247';
+}
+.wf-o365-highlanderlogo:before{
+content:'\e259';
+}
+.wf-o365-wordlogo:before{
+content:'\e0b9';
+}
+.wf-o365-excellogo:before{
+content:'\e0b5';
+}
+.wf-o365-powerpointlogo:before{
+content:'\e0b8';
+}
+.wf-o365-onenotelogo:before{
+content:'\e0b7';
+}
+.wf-o365-sharepointlogo:before{
+content:'\e072';
+}
+.wf-o365-office365adminlogo:before{
+content:'\e130';
+}
+.wf-o365-partner:before{
+content:'\e137';
+}
+.wf-o365-smiley:before{
+content:'\e036';
+}
+.wf-o365-officestorelogo:before{
+content:'\e061';
+}
+.wf-o365-windowsstorelogo:before{
+content:'\e37a';
+}
+.wf-o365-pawlogo:before{
+content:'\e271';
+}
+.wf-o365-homeroomlogo:before{
+content:'\e276';
+}
+.wf-o365-classnotebooklogo:before{
+content:'\e25f';
+}
+.wf-o365-compliancecenterlogo:before{
+content:'\e289';
+}
+.wf-o365-staffnotebooklogo:before{
+content:'\e280';
+}
+.wf-o365-powerappslogo:before{
+content:'\e314';
+}
+.wf-o365-collabdblogo:before{
+content:'\e31f';
+}
+.wf-o365-skypemeetingslogo:before{
+content:'\e258';
+}
+.wf-o365-bookingslogo:before{
+content:'\e32a';
+}
+.wf-o365-dynamicsnavlogo:before{
+content:'\e32c';
+}
+.wf-o365-officeformslogo:before{
+content:'\e333';
+}
+.wf-o365-flowLightlogo:before{
+content:'\e361';
+}
+.wf-o365-microsoftstreamlogo:before{
+content:'\e34f';
+}
+.wf-o365-skypeteamslogo:before{
+content:'\e379';
+}
+.wf-o365-dynamics365logo:before{
+content:'\e375';
+}
+.wf-o365-businesscenterlogo:before{
+content:'\e37b';
+}
+.wf-o365-nonprofitportallogo:before{
+content:'\e37e';
+}

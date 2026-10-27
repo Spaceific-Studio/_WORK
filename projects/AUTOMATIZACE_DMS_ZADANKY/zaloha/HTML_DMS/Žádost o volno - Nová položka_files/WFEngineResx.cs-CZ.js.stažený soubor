@@ -1,0 +1,21 @@
+WFEngine.RESX = Object.assign(WFEngine.RESX, {
+    "StartForm_Title": "Spustit pracovní postup",
+    "Engine_Wait": "Moment prosím...",
+    "Engine_StartingWorkflow": "Spouštění pracovního postupu...",
+    "Engine_StoppingWorkflow": "Ukončování pracovního postupu...",
+    "Engine_WorkflowStarted": "Pracovní postup byl spuštěn.",
+    "Engine_UnableToStartWorkflow": "Pracovní postup se nepodařilo spustit.",
+    "Engine_WorkflowStopped": "Pracovní postup byl ukončen.",
+    "Engine_UnableToStopWorkflow": "Pracovní postup se nepodařilo ukončit."
+});
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map 
+//# sourceMappingURL=WFEngineResx.cs-CZ.js.map

@@ -1,0 +1,37 @@
+{
+  "__metadata": {
+    "id": "b5b98ac9-fb70-44c0-904b-3a6396e4c251",
+    "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Items(6303)",
+    "etag": "\"6\"",
+    "type": "SP.Data.HolidayRequestItem"
+  },
+  "Rq_All_Applicant": {
+    "__metadata": {
+      "id": "b47ccd22-754c-44f7-a7ae-bc164daed922",
+      "type": "SP.Data.UserInfoItem"
+    },
+    "Id": 192,
+    "Title": "Gerčák Daniel",
+    "EMail": "GercakD@pvs.cz"
+  },
+  "Rq_All_ApplicantManager": {
+    "__deferred": {
+      "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Items(6303)/Rq_All_ApplicantManager"
+    }
+  },
+  "Id": 6303,
+  "Title": "Pracovní nepřítomnost - PV/D4/006304 - Placené volno (13. 11. 2024 - 13. 11. 2024)",
+  "Rq_H_TypeOfHoliday": "Placené volno",
+  "Rq_H_PaidHoliday": "Jiné",
+  "Rq_H_SpecifyOther": null,
+  "Rq_H_ValidSince": "2024-11-12T23:00:00Z",
+  "Rq_H_ValidTo": "2024-11-12T23:00:00Z",
+  "Rq_H_WorkingDay": 1,
+  "Rq_All_RequestNumber": null,
+  "Rq_All_StatusChoice": "Approved",
+  "Rq_All_type": "Absence",
+  "Rq_All_RelatedLink": "[{\"Cells\":[\"\",\"Home office\"]}]",
+  "ID": 6303,
+  "Modified": "2024-11-12T15:40:20Z",
+  "Created": "2024-11-12T15:38:38Z"
+}

@@ -1,0 +1,678 @@
+﻿.tisa-AdvancedTable {
+    display: block;
+}
+
+    .tisa-AdvancedTable .hidden {
+        display: none;
+    }
+
+    .tisa-AdvancedTable .containerItems {
+        margin: 2px 0;
+        font-size: 9pt;
+        display: inline-block;
+    }
+
+    .tisa-AdvancedTable .tableWithItems {
+        border-collapse: collapse;
+        border-spacing: 0;
+        border: 1px solid #abacab;
+        color: #666;
+    }
+
+    .tisa-AdvancedTable .readOnly .tableWithItems tr.dataRow {
+        display: none;
+    }
+
+        .tisa-AdvancedTable .readOnly .tableWithItems tr.dataRow.sel {
+            display: table-row;
+        }
+
+            .tisa-AdvancedTable .readOnly .tableWithItems tr.dataRow.sel > td {
+                background: none;
+            }
+
+    .tisa-AdvancedTable.fullWidth .containerItems {
+        display: block;
+    }
+
+    .tisa-AdvancedTable.fullWidth .tableWithItems {
+        width: 100%;
+    }
+
+    .tisa-AdvancedTable .toogleCollapse {
+        margin-bottom: 4px;
+        clear: both;
+        display: block;
+        cursor: pointer;
+    }
+
+    .tisa-AdvancedTable .tableWithItems th {
+        text-align: left;
+        font-size: 8pt;
+        font-weight: normal;
+        color: #999;
+        /* IE8 */
+        border-bottom: 1px solid #717171;
+        border-bottom: 1px solid rgba(113, 113, 113, 0.50);
+        padding: 2px 4px;
+    }
+
+        .tisa-AdvancedTable .tableWithItems th.columnType2 {
+            text-align: right;
+        }
+
+        .tisa-AdvancedTable .tableWithItems th.columnType3 {
+            text-align: center;
+        }
+
+        .tisa-AdvancedTable .tableWithItems th.columnType4 {
+            text-align: center;
+        }
+
+    .tisa-AdvancedTable .tableWithItems > tbody > tr > td {
+        font-size: 8pt;
+        white-space: normal;
+        text-align: left;
+        vertical-align: top;
+        padding: 0;
+        /* IE8 */
+        border-left: 1px solid #DBDBDB;
+        border-top: 1px solid #DBDBDB;
+        /* others */
+        border-left: 1px solid rgba(213, 213, 213, 0.50);
+        border-top: 1px solid rgba(213, 213, 213, 0.50);
+    }
+
+    .tisa-AdvancedTable .tableWithItems td.validationError {
+        border: 1px solid red;
+        background: #ffddc0;
+    }
+
+    .tisa-AdvancedTable .tableWithItems tr.first td {
+        border-top: none;
+    }
+
+    .tisa-AdvancedTable .tableWithItems > tbody > tr > td:first-child {
+        border-left: none;
+    }
+
+    .tisa-AdvancedTable .tableWithItems > thead > tr > th.cSelect,
+    .tisa-AdvancedTable .tableWithItems > tbody > tr > td.cSelect {
+        text-align: center;
+        min-width: 24px;
+    }
+
+        .tisa-AdvancedTable .tableWithItems > tbody > tr > td.cSelect input {
+            visibility: hidden;
+        }
+
+    .tisa-AdvancedTable .tableWithItems tr.dataRow.sel td.cSelect input,
+    .tisa-AdvancedTable .tableWithItems tr.dataRow:hover td.cSelect input {
+        display: inline;
+        visibility: visible;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td input.textInput,
+    .tisa-AdvancedTable .tableWithItems td input.searchBox,
+    .tisa-AdvancedTable .tableWithItems td textarea.textInput,
+    .tisa-AdvancedTable .tableWithItems td select,
+    .tisa-AdvancedTable .tableWithItems td .select2-selection {
+        /*background-color: rgba(255, 255, 255, 0.85098);*/
+        background-color: inherit;
+        font-family: inherit;
+        font-size: inherit;
+        width: 100%;
+        margin: 0;
+        padding: 0 4px;
+        border: 1px solid transparent;
+        color: inherit;
+        font: inherit;
+        font-style: inherit;
+        font-weight: inherit;
+        text-decoration: inherit;
+        text-align: left;
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box; /* Firefox, other Gecko */
+        box-sizing: border-box; /* Opera/IE 8+ */
+    }
+
+    .tisa-AdvancedTable .tableWithItems td select,
+    .tisa-AdvancedTable .tableWithItems td .select2-selection {
+        padding: 0;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td .select2 {
+        min-width: 200px;
+        width: 100% !important;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td .select2-selection--single,
+    .tisa-AdvancedTable .tableWithItems td .select2-container--default .select2-selection--single .select2-selection__rendered,
+    .tisa-AdvancedTable .tableWithItems td .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 16px;
+        line-height: 16px;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td [class^='select2'] {
+        border-radius: 0px !important;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td .select2-container--open .select2-dropdown {
+        left: -1px;
+    }
+
+
+
+    .tisa-AdvancedTable .tableWithItems td > input.textInput:hover .tisa-AdvancedTable .tableWithItems td > textarea.textInput:hover,
+    .tisa-AdvancedTable .columnType6 .sp-peoplepicker-topLevel:hover,
+    .tisa-AdvancedTable .columnType7 .ms-taxonomy-writeableregion:hover {
+        border: 1px solid #A5C0D5;
+        background-color: rgba(255, 255, 255, 0.85098);
+    }
+
+    .tisa-AdvancedTable .tableWithItems td > span.text, .tisa-AdvancedTable .tableWithItems td > span.tisa-readonly-text {
+        padding: 2px 4px 0px 4px;
+        display: block;
+        min-width: 60px;
+    }
+
+
+
+        .tisa-AdvancedTable .tableWithItems td > span.text.multiline {
+            min-width: 240px;
+        }
+
+    .tisa-AdvancedTable .tableWithItems td > textarea.textInput {
+        min-width: 240px;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td.numeric,
+    .tisa-AdvancedTable .tableWithItems td.date {
+        text-align: right;
+    }
+
+
+    .tisa-AdvancedTable .tableWithItems td.text {
+        min-width: 60px;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td.numeric input.textInput,
+    .tisa-AdvancedTable .tableWithItems td.date input.textInput,
+    .tisa-AdvancedTable .tableWithItems td.numeric > span,
+    .tisa-AdvancedTable .tableWithItems td.date > span {
+        text-align: right;
+    }
+
+
+
+
+    .tisa-AdvancedTable .tableWithItems td.numeric > input.textInput {
+        min-width: 40px;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td.date > input.textInput {
+        min-width: 70px;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td.date.dateTime > input.textInput {
+        min-width: 100px;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td.numeric > span,
+    .tisa-AdvancedTable .tableWithItems td.date > span {
+        white-space: nowrap;
+    }
+
+    /*.tisa-AdvancedTable .tableWithItems td.numeric span,
+.tisa-AdvancedTable .tableWithItems td.date span {
+    display: block;
+}*/
+
+    .tisa-AdvancedTable .tableWithItems td.bool {
+        text-align: center;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td.externalLookup {
+        min-width: 100px;
+    }
+
+        .tisa-AdvancedTable .tableWithItems td.externalLookup .searchBox.autocomplete-not-found {
+            color: red !important;
+        }
+
+        .tisa-AdvancedTable .tableWithItems td.externalLookup .dataTableContainer {
+            font-size: 100%;
+            margin: 6px;
+            border: 1px solid #ccc;
+            padding: 4px;
+            background-color: #fafafa;
+        }
+
+        .tisa-AdvancedTable .tableWithItems td.externalLookup .searchBox {
+            width: calc(100% - 74px);
+            min-width: 250px;
+        }
+
+        .tisa-AdvancedTable .tableWithItems td.externalLookup .externalLookupButtons {
+            float: right;
+            margin-right: 3px;
+        }
+
+            .tisa-AdvancedTable .tableWithItems td.externalLookup .externalLookupButtons > * {
+                margin-top: 1px;
+            }
+
+    .tisa-AdvancedTable .tableWithItems td.reference > .referenceItem {
+        display: inline-block;
+        line-height: 18px;
+        height: 18px;
+        white-space: nowrap;
+        padding: 1px 4px 0 4px;
+        margin: 0;
+        vertical-align: top;
+    }
+
+        .tisa-AdvancedTable .tableWithItems td.reference > .referenceItem.link {
+            cursor: pointer;
+        }
+
+        .tisa-AdvancedTable .tableWithItems td.reference > .referenceItem > i {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-size: auto;
+            background-position: 50% 50%;
+            margin-right: 2px;
+        }
+
+        .tisa-AdvancedTable .tableWithItems td.reference > .referenceItem > u {
+            text-decoration: none;
+            display: inline-block;
+            line-height: 18px;
+            height: 18px;
+            white-space: nowrap;
+            padding: 0 2px 0 1px;
+            margin: 0;
+            vertical-align: top;
+        }
+
+        .tisa-AdvancedTable .tableWithItems td.reference > .referenceItem.link:hover > u {
+            text-decoration: underline;
+        }
+
+
+    .tisa-AdvancedTable .tableWithItems .checker, .tisa-AdvancedTable .addReferenceIcon, .tisa-AdvancedTable .downloadIcon {
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        background-image: url('icons13.png?v=4');
+    }
+
+        .tisa-AdvancedTable .tableWithItems .checker.checked {
+            background-position: -52px 0;
+        }
+
+    .tisa-AdvancedTable .addReferenceIcon {
+        background-position: -65px 0;
+    }
+
+    .tisa-AdvancedTable .downloadIcon {
+        background-position: -78px 0;
+    }
+
+    .tisa-AdvancedTable .tableWithItems td.cIcon,
+    .tisa-AdvancedTable .tableWithItems th.cIcon {
+        width: 21px;
+        text-align: center;
+    }
+
+
+    .tisa-AdvancedTable .tableWithItems .cIcon span, .tisa-AdvancedTable .pager span.icon {
+        background-image: url('icons13.png?v=4');
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        cursor: pointer;
+        margin: 2px 4px 0 2px;
+    }
+
+        .tisa-AdvancedTable .tableWithItems .cIcon span.empty {
+            background-position: 0 0;
+        }
+
+        .tisa-AdvancedTable .tableWithItems .cIcon span.remove {
+            background-position: -13px 0;
+        }
+
+        .tisa-AdvancedTable .tableWithItems .cIcon span.add {
+            background-position: -26px 0;
+        }
+
+        .tisa-AdvancedTable .tableWithItems .cIcon span.copy {
+            background-position: -104px 0;
+        }
+
+        .tisa-AdvancedTable .tableWithItems .cIcon span.reply {
+            background-position: -104px -13px;
+        }
+
+        .tisa-AdvancedTable .tableWithItems .cIcon span.edit {
+            background-position: -117px 0;
+        }
+
+    .tisa-AdvancedTable .tableWithItems .cCalcIcon span.calc {
+        background-position: -39px 0;
+        cursor: default;
+    }
+
+    .tisa-AdvancedTable .tableWithItems .cCalc td {
+        text-align: right;
+        border-top: 1px solid #abacab;
+    }
+
+    .tisa-AdvancedTable .pager {
+        float: right;
+        margin: 10px 0 0 0;
+    }
+
+        .tisa-AdvancedTable .pager span {
+            margin: 0 2px;
+        }
+
+        .tisa-AdvancedTable .pager .currentPage, .tisa-AdvancedTable .pager .totalItems {
+            position: relative;
+            top: -2px;
+            display: inline-block;
+            height: 13px;
+        }
+
+        .tisa-AdvancedTable .pager .totalItems {
+            margin-right: 6px;
+        }
+
+        .tisa-AdvancedTable .pager span.firstPage {
+            background-position: 0px -13px;
+        }
+
+        .tisa-AdvancedTable .pager span.previousPage {
+            background-position: -13px -13px;
+        }
+
+        .tisa-AdvancedTable .pager span.nextPage {
+            background-position: -26px -13px;
+        }
+
+        .tisa-AdvancedTable .pager span.lastPage {
+            background-position: -39px -13px;
+        }
+
+        .tisa-AdvancedTable .pager span.firstPageDisabled {
+            background-position: -52px -13px;
+        }
+
+        .tisa-AdvancedTable .pager span.previousPageDisabled {
+            background-position: -65px -13px;
+        }
+
+        .tisa-AdvancedTable .pager span.nextPageDisabled {
+            background-position: -78px -13px;
+        }
+
+        .tisa-AdvancedTable .pager span.lastPageDisabled {
+            background-position: -91px -13px;
+        }
+
+
+    /*------------*/
+
+    .tisa-AdvancedTable .AdvancedTableWithComments {
+        min-width: 400px;
+    }
+
+        .tisa-AdvancedTable .AdvancedTableWithComments tr {
+        }
+
+            .tisa-AdvancedTable .AdvancedTableWithComments tr.collapseRow {
+                display: none;
+            }
+
+        .tisa-AdvancedTable .AdvancedTableWithComments th {
+            text-align: center;
+        }
+
+        .tisa-AdvancedTable .AdvancedTableWithComments td {
+            border: 1px solid #d5d5d5;
+            padding: 2px 4px;
+            vertical-align: top;
+        }
+
+            .tisa-AdvancedTable .AdvancedTableWithComments td.cIndex-0, .tisa-AdvancedTable .AdvancedTableWithComments th.cIndex-0 {
+                text-wrap: none;
+                white-space: nowrap;
+            }
+
+            .tisa-AdvancedTable .AdvancedTableWithComments td.cIndex-1, .tisa-AdvancedTable .AdvancedTableWithComments th.cIndex-1 {
+                text-wrap: none;
+                white-space: nowrap;
+            }
+
+            .tisa-AdvancedTable .AdvancedTableWithComments td.cIndex-2, .tisa-AdvancedTable .AdvancedTableWithComments th.cIndex-2 {
+                width: 99%;
+            }
+
+            .tisa-AdvancedTable .AdvancedTableWithComments td.cIndex-0 {
+                color: gray;
+            }
+
+            .tisa-AdvancedTable .AdvancedTableWithComments td.cIndex-1 {
+                font-style: italic;
+            }
+
+            .tisa-AdvancedTable .AdvancedTableWithComments td.cIndex-2 {
+            }
+
+    .tisa-AdvancedTable .buttons a.isDisabled {
+        cursor: not-allowed;
+        pointer-events: none;
+        opacity: 0.3;
+    }
+
+    .tisa-AdvancedTable a.AdvancedTableWithCommentsShowMore {
+        display: block;
+        margin: 4px;
+        cursor: pointer;
+        font-size: 11px;
+    }
+
+    .tisa-AdvancedTable a.AdvancedTableWithCommentsAddComment {
+        display: inline-block;
+        margin: 4px;
+        cursor: pointer;
+        float: right;
+        text-align: right;
+        font-size: 11px;
+    }
+
+.dlgAddComment {
+    margin: 0 20px;
+}
+
+
+    .dlgAddComment .commentBox {
+        width: 625px;
+        height: 100px;
+    }
+
+    .dlgAddComment .replyToContent {
+        white-space: pre-wrap;
+        display: block;
+        padding: 4px;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        margin: 4px 0;
+    }
+
+    .dlgAddComment .buttons {
+        margin: 20px 0 0 0;
+        text-align: right;
+    }
+
+    .dlgAddComment .tabs {
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+    }
+
+
+        .dlgAddComment .tabs .ui-tabs-active {
+            background: #dbdbdb; /* Old browsers */
+            background: -moz-linear-gradient(top, #dbdbdb 0%, #ffffff 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dbdbdb), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #dbdbdb 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #dbdbdb 0%,#ffffff 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #dbdbdb 0%,#ffffff 100%); /* IE10+ */
+            background: linear-gradient(to bottom, #dbdbdb 0%,#ffffff 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dbdbdb', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+            border-left: 1px solid #dbdbdb;
+            border-top: 1px solid #dbdbdb;
+            border-right: 1px solid #dbdbdb;
+        }
+
+        .dlgAddComment .tabs > div {
+            background: white;
+        }
+
+.tisa-AdvancedTable .columnType6 .sp-peoplepicker-topLevel {
+    width: 192px;
+    background-color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid transparent;
+    color: inherit;
+    font: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    text-decoration: inherit;
+    text-align: left;
+    padding: 0px 5px 0px 0px;
+    margin: 0;
+}
+
+
+
+.tisa-AdvancedTable .columnType6 .sp-peoplepicker-userSpan {
+    margin: 0px 5px 0px 0px;
+}
+
+
+.tisa-AdvancedTable .columnType6 .sp-peoplepicker-initialHelpText {
+    top: 2px;
+    left: 2px;
+}
+
+.tisa-AdvancedTable .columnType6 .sp-peoplepicker-editorInput {
+    margin: 0;
+}
+
+.tisa-AdvancedTable .columnType7 .ms-long {
+    width: 160px;
+}
+
+.tisa-AdvancedTable .columnType7 .ms-taxonomy-writeableregion {
+    border: 1px solid transparent;
+    background-color: inherit;
+    padding: 1px;
+}
+.tisa-AdvancedTable .columnType22 > span {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    width: calc(100% - 6px);
+    margin-left: 2px;
+}
+.tisa-AdvancedTable .columnType22 > span.text {
+    width: calc(100% - 8px);
+    margin-left: 0;
+}
+.tisa-AdvancedTable .columnType22 > span:after {
+    content: '-';
+    display: inline;
+    visibility: hidden;
+    width: 0;
+}
+.tisa-AdvancedTable .columnType22 a.raw-url {
+    position: absolute;
+    left: 0;
+    right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tisa-AdvancedTable .columnType22 > span.text a.raw-url {
+    left: 4px;
+    right: 4px;
+}
+.tisa-AdvancedTable .columnType22 > span span + a.raw-url {
+    left: 19px;
+}
+.tisa-AdvancedTable .columnType22 textarea {
+    white-space: pre !important;
+    overflow-wrap: normal !important;
+    overflow-x: scroll !important;
+    resize: horizontal !important;
+}
+.tisa-AdvancedTable .columnType22 .cIcon {
+    /*vertical-align: -1px;*/
+}
+
+
+
+
+
+
+.tisa-AdvancedTable .tableWithItems tr.dataRow:hover td, .tisa-AdvancedTable .tableWithItems tr.dataRow.sel:hover td {
+}
+
+.tisa-AdvancedTable .tableWithItems tr.dataRow.sel td {
+    background: #ffe34b;
+}
+
+.tisa-AdvancedTable .buttons a {
+    cursor: pointer;
+    margin-right: 16px;
+}
+
+.tisa-AdvancedTable .tisa-Attachment .containerItems {
+    float: left;
+    margin: 2px 0;
+}
+
+.tisa-AdvancedTable .tisa-Attachment .buttons {
+    float: left;
+    margin: 2px;
+}
+
+.tisa-AdvancedTable .tisa-Attachment .float .attachment {
+    white-space: nowrap;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.tisa-AdvancedTable .tisa-Attachment .float .del {
+    margin-left: 3px;
+    display: inline-block;
+}
+
+.tisa-AdvancedTable .search {
+    text-align: right;
+}
+
+    .tisa-AdvancedTable .search > span {
+        margin-right: 4px;
+        vertical-align: middle;
+    }
+    .tisa-AdvancedTable .search > input {
+        border: 1px solid #717171;
+        padding: 4px;
+        width: 40%;
+        min-width: 200px;
+    }

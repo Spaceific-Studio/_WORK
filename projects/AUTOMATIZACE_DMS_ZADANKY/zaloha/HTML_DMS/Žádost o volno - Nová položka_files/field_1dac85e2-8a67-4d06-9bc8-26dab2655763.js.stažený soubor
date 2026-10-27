@@ -1,0 +1,71 @@
+"use strict";
+
+(function () {
+	var FIELD_INFO_OBJECT = {"Id":"1dac85e2-8a67-4d06-9bc8-26dab2655763","FieldOnWeb":true,"FieldOnList":false,"ScriptToken":43326845,"FieldType":{"FieldType":"AdvancedChoice","ComponentPath":"AdvancedChoice","ComponentAppUrlEncoded":"https:://dms.pvs.cz/tisa","ComponentAppUrl":"https://dms.pvs.cz/tisa","ApplicationName":"TiSa.BaseWeb"},"Data":{"Choices":[{"Value":"CompanyCars","Title":"Kniha jízd"},{"Value":"BusinessTrips","Title":"Služební cesta"},{"Value":"Absence","Title":"Pracovní nepřítomnost"},{"Value":"Request","Title":"Žádost"},{"Value":"Supplier","Title":"Žádost o dodavatele"},{"Value":"Project","Title":"Projektová příprava"}]},"StaticName":"Rq_All_type","DisplayName":"Typ žádanky","InternalName":"Rq_All_type","FieldPath":""};
+
+	var __tisa_InitField = function () {
+		var componentRootUrlApp = TiSa.Environment.GetComponentAppUrl(FIELD_INFO_OBJECT.FieldType);
+		TiSa.RegisterScript("AdvancedChoice.js", componentRootUrlApp + '/AdvancedChoice.js', ["jquery.js"]);
+		TiSa.RegisterStyle(componentRootUrlApp + "/AdvancedChoice.css", ["Templates"]);
+
+		var RESX = null;
+
+		var getDisplayValue = function (v) {
+
+			if (FIELD_INFO_OBJECT.Data.Choices) {
+				for (var i = 0; i < FIELD_INFO_OBJECT.Data.Choices.length; i++) {
+					var choice = FIELD_INFO_OBJECT.Data.Choices[i];
+					if (choice.Value == v) {
+						v = choice.Title;
+						break;
+					}
+				}
+			}
+			if (v.indexOf("RESX.") == 0) {
+				if (RESX == null)
+					RESX = TiSa.Templates.BuildResources(FIELD_INFO_OBJECT, {});
+				v = eval(v);				
+			}
+			v = TiSa.TextTemplates.ReplaceText(v);
+			return v;
+		};
+
+		var templateFunctionView = function (ctx, field, listItem, listSchema) {
+			if (ctx == null || field == null)
+				return "";
+			if (!listItem[field.Name])
+				return "";
+			return getDisplayValue(listItem[field.Name]);
+		};
+		var templateFunctionDisplayForm = function (ctx, field) {
+			if (ctx == null || ctx.CurrentFieldValue == null)
+				return "";
+			return getDisplayValue(ctx.CurrentFieldValue);
+		};
+
+		var templateFunction = TiSa.Templates.CreateDefaultTemplateFunction(FIELD_INFO_OBJECT, {
+			ControlScript: "AdvancedChoice.js"
+		});
+
+		SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+			TiSa.Templates.RegisterFieldTemplate(FIELD_INFO_OBJECT, templateFunction, TiSa.Templates.RegisterFieldFlags.Editable, function (ctx) {
+				ctx.Templates.Fields[FIELD_INFO_OBJECT.InternalName]["View"] = templateFunctionView;
+				ctx.Templates.Fields[FIELD_INFO_OBJECT.InternalName]["DisplayForm"] = templateFunctionDisplayForm;
+			});
+		}, 'clienttemplates.js');
+
+		SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+			TiSa.Templates.OverrideCSRFilter(FIELD_INFO_OBJECT.InternalName, function (str) { return getDisplayValue(str) });
+		}, 'core.js');
+	};
+
+	var __tisa_StartField = function __tisa_StartField_() {
+		if (!TiSa || !TiSa.Environment || !TiSa.Templates)
+			setTimeout(__tisa_StartField, 20);
+		else {
+			__tisa_InitField();
+		}
+	};
+	__tisa_StartField();
+
+})();

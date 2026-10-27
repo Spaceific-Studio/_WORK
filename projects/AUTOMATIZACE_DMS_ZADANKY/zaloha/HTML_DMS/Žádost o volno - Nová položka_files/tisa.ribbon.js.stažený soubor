@@ -1,0 +1,1773 @@
+﻿var TiSa = TiSa || {};
+TiSa.Forms = TiSa.Forms || {};
+TiSa.Forms.RibbonComponents = {};
+
+TiSa.Forms.Ribbon = function create_tisa_Form_Ribbon(form, resources) {
+    var _form = form;
+    var _baseUrl = TiSa.Environment.AppUrl + '/Components'; //TiSa.Environment.SiteServerRelativeUrl + "/SiteAssets/TiSa";
+    var RESX = resources;
+    // prida tlacitko do ribbonu
+    var _initialized = false;
+    var _ribbonInstance = null;
+    var _ribbonDispatcher = null;
+    var _ribbon = null;
+    var _ribbonInitCallBacks = [];
+    var _pageInEditMode = false;
+    var _this = this;
+    var _createdUserLayoutGroup = false;
+    var _createdPrintFormGroup = false;
+    var _createdDocumentPreviewGroup = false;
+    var _createdBrowseGroup = false;
+    var _createdAdminGroup = false;
+    var _createdCopy = false;
+
+    var _Initialize = function (initializeCallbackFunction) {
+        if (_initialized) {
+            $(document).trigger("tisa-ribbon-initialized", { Ribbon: _ribbon, Form: _form, RibbonComponent: _this });
+            initializeCallbackFunction();
+            return;
+        }
+
+        if (_ribbonInstance == null) {
+            // async
+            _ribbonInitCallBacks.push(initializeCallbackFunction);
+
+            SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+                _pageInEditMode = SP.Ribbon.PageState.Handlers.isInEditMode();
+                if (_pageInEditMode)
+                    return;
+
+                _ribbonInstance = SP.Ribbon.PageManager.get_instance();
+                _ribbonDispatcher = _ribbonInstance.get_commandDispatcher();
+                _ribbon = _ribbonInstance.get_ribbon();
+                if (!_ribbon) {
+                    _ribbonInstance.add_ribbonInited(function () {
+                        _ribbon = _ribbonInstance.get_ribbon();
+                        _initialized = true;
+                        $(document).trigger("tisa-ribbon-initialized", { Ribbon: _ribbon, Form: _form, RibbonComponent: _this });
+                        for (var i = 0; i < _ribbonInitCallBacks.length; i++)
+                            _ribbonInitCallBacks[i]();
+                    });
+                }
+                else {
+                    _initialized = true;
+                    $(document).trigger("tisa-ribbon-initialized", { Ribbon: _ribbon, Form: _form, RibbonComponent: _this });
+                    for (var i = 0; i < _ribbonInitCallBacks.length; i++)
+                        _ribbonInitCallBacks[i]();
+                    //initializeCallbackFunction();
+                }
+
+            }, 'SP.Ribbon.js');
+        }
+        else {
+            _pageInEditMode = SP.Ribbon.PageState.Handlers.isInEditMode();
+            if (_pageInEditMode)
+                return;
+
+            if (!_ribbon) {
+                _ribbonInitCallBacks.push(initializeCallbackFunction);
+                _ribbonInstance.add_ribbonInited(function () {
+                    _ribbon = _ribbonInstance.get_ribbon();
+                    _initialized = true;
+                    for (var i = 0; i < _ribbonInitCallBacks.length; i++)
+                        _ribbonInitCallBacks[i]();
+                });
+            }
+            else {
+                _initialized = true;
+                $(document).trigger("tisa-ribbon-initialized", { Ribbon: _ribbon, Form: _form, RibbonComponent: _this });
+                initializeCallbackFunction();
+            }
+
+        }
+    };
+
+    this.Refresh = function () {
+        RefreshCommandUI();
+    };
+
+
+    this.UpdateRibbonForTaskForm = function (s, e) {
+        var tab = _FindCurrentTab();
+        //console.dir(tab);
+        _ribbon.removeChild("Ribbon.WebPartPage");
+        tab.get_enabled = function () {
+            return true;
+        };
+        $(document.getElementById(tab.get_id())).children().each(function (i, em) {
+            if ($(em).attr("id").indexOf("TiSa.") != 0) {
+                tab.removeChild($(em).attr("id"));
+            }
+        });
+        this.Refresh();
+    }
+
+    this.AddPrintFormGroup = function (config) {
+        _Initialize(function () {
+            if (_createdPrintFormGroup)
+                return;
+            _createdPrintFormGroup = true;
+            config.ComponentInstance = new __initialize_PrintFormComponent(config);
+
+            //
+            // prepare layout
+            var idPrefix = "TiSa.PrintForm.";
+            var tab = _FindCurrentTab();
+
+            if (tab == null)
+                return;
+
+            //_ribbon.set_enabled(false);
+
+            var group = new CUI.Group(_ribbon, idPrefix + 'Group', RESX.Ribbon_PrintForm_GroupTitle, 'PrintForm Description', idPrefix + 'Group.Command', null);
+            tab.addChild(group);
+            var layout = new CUI.Layout(_ribbon, idPrefix + 'Layout', 'The Layout');
+            group.addChild(layout);
+            var section1 = new CUI.Section(_ribbon, idPrefix + 'Section1', 4, 'Top'); //2==OneRow
+            layout.addChild(section1);
+            var section2 = new CUI.Section(_ribbon, idPrefix + 'Section2', 2, 'Top'); //2==OneRow
+            layout.addChild(section2);
+
+            //
+            // create controls
+
+            var cp = new CUI.ControlProperties();
+            cp.Id = idPrefix + 'TemplateSelectorLabel';
+            cp.TemplateAlias = 'c1';
+            cp.LabelText = RESX.Ribbon_PrintForm_SelectTemplate;
+            var templateSelectorLabel = new CUI.Controls.Label(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + 'TemplateSelector.Command';
+            cp.Id = idPrefix + 'TemplateSelector';
+            cp.TemplateAlias = 'c2';
+            cp.PopulateDynamically = "true";
+            cp.PopulateOnlyOnce = "true";
+            cp.QueryCommand = idPrefix + 'TemplateSelector.QueryCommand';
+            cp.PopulateQueryCommand = idPrefix + 'TemplateSelector.PopulateQueryCommand';
+            cp.Width = "75px";
+            var templateSelector = new CUI.Controls.DropDown(_ribbon, cp.Id, cp);
+
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + 'ButtonPreview.Command';
+            cp.Id = idPrefix + 'ButtonPreview';
+            cp.TemplateAlias = 'c3';
+            cp.Image16by16 = _baseUrl + '/Forms/PrintForm/prtview16.png';
+            cp.ToolTipTitle = RESX.Ribbon_PrintForm_ButtonPreviewToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_PrintForm_ButtonPreviewToolTipDescription;
+            cp.LabelText = RESX.Ribbon_PrintForm_ButtonPreview;
+            cp.Width = "75px";
+            var buttonPreview = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + 'ButtonPrint.Command';
+            cp.Id = idPrefix + 'ButtonPrint';
+            cp.TemplateAlias = 'o1';
+            cp.Image32by32 = _baseUrl + '/Forms/PrintForm/printer32.png';
+            cp.ToolTipTitle = RESX.Ribbon_PrintForm_ButtonPrintToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_PrintForm_ButtonPrintToolTipDescription;
+            cp.LabelText = RESX.Ribbon_PrintForm_ButtonPrint;
+            var buttonPrint = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+            //
+            // add controls to layout
+            var section1row1 = section1.getRow(1);
+            section1row1.addChild(templateSelectorLabel.createComponentForDisplayMode('Medium'));
+            var section1row2 = section1.getRow(2);
+            section1row2.addChild(templateSelector.createComponentForDisplayMode('Medium'));
+            var section1row3 = section1.getRow(3);
+            section1row3.addChild(buttonPreview.createComponentForDisplayMode('Medium'));
+            var section2row1 = section2.getRow(1);
+            section2row1.addChild(buttonPrint.createComponentForDisplayMode('Large'));
+
+            //group.set_enabled(false);
+            //
+            // apply layout		
+            group.selectLayout('The Layout');
+            setTimeout(RefreshCommandUI, 0);
+            //_this.Refresh();
+        });
+    };
+
+    this.AddUserLayoutGroup = function (config) {
+        _Initialize(function () {
+            if (_createdUserLayoutGroup)
+                return;
+            _createdUserLayoutGroup = true;
+            config.ComponentInstance = new __initialize_UserLayoutComponent(config);
+
+
+
+            //
+            // prepare layout
+            var idPrefix = "TiSa.UserLayout.";
+            var tab = _FindCurrentTab();
+            if (tab == null)
+                return;
+
+            var group = new CUI.Group(_ribbon, idPrefix + 'Group', RESX.Ribbon_UserLayout_GroupTitle, 'UserLayout Description', idPrefix + 'Group.Command', null);
+            tab.addChild(group);
+            var layout = new CUI.Layout(_ribbon, idPrefix + 'Layout', 'LayoutLarge');
+            group.addChild(layout);
+            var section1 = new CUI.Section(_ribbon, idPrefix + 'Section1', 2, 'Top'); //2==OneRow
+            layout.addChild(section1);
+
+
+            //
+            // create controls   	
+
+            var cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + 'ButtonEdit.Command';
+            cp.Id = idPrefix + 'ButtonEdit';
+            cp.TemplateAlias = 'o1';
+            cp.Image32by32 = _baseUrl + '/Forms/UserLayout/editlayout32.png';
+            cp.ToolTipTitle = RESX.Ribbon_UserLayout_ButtonEditToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_UserLayout_ButtonEditToolTipDescription;
+            cp.LabelText = RESX.Ribbon_UserLayout_ButtonEdit;
+            var buttonEdit = new CUI.Controls.ToggleButton(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + 'ButtonRefresh.Command';
+            cp.Id = idPrefix + 'ButtonRefresh';
+            cp.TemplateAlias = 'o1';
+            cp.Image32by32 = _baseUrl + '/Forms/UserLayout/refreshlayout32.png';
+            cp.ToolTipTitle = RESX.Ribbon_UserLayout_ButtonRefreshToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_UserLayout_ButtonRefreshToolTipDescription;
+            cp.LabelText = RESX.Ribbon_UserLayout_ButtonRefresh;
+            var buttonRefresh = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+            config.Controls = {
+                ButtonEdit: buttonEdit,
+                ButtonRefresh: buttonRefresh
+            };
+
+
+            config.CancelEdit = function () {
+                _ribbonDispatcher.executeCommand(idPrefix + "ButtonEdit.Command", { On: false, DisableEvent: true });
+            };
+
+            //
+            // add controls to layout
+
+            var section1row1 = section1.getRow(1);
+            section1row1.addChild(buttonEdit.createComponentForDisplayMode('Large'));
+            section1row1.addChild(buttonRefresh.createComponentForDisplayMode('Large'));
+
+            //
+            // apply layout		
+            group.selectLayout('LayoutLarge');
+            //_this.Refresh();
+        });
+    };
+
+    this.AddDocumentPreviewGroup = function (config) {
+        _Initialize(function () {
+            if (_createdDocumentPreviewGroup)
+                return;
+            _createdDocumentPreviewGroup = true;
+
+            config.GetSpinnerText = function () {
+                return ' ' + (this.SpinnerCurrent || this.SpinnerInitial).toString() + ' % / ' + (100 - (this.SpinnerCurrent || this.SpinnerInitial)).toString() + ' % ';
+            }
+
+            config.ComponentInstance = new __initialize_DocumentPreviewComponent(config);
+
+            //
+            // prepare layout
+            var idPrefix = "TiSa.DocumentPreview.";
+            var tab = _FindCurrentTab();
+
+            if (config.RibbonTab) {
+                tab = _ribbon.getChild(config.RibbonTab.Id);
+                if (tab == null) {
+                    tab = new CUI.Tab(_ribbon, config.RibbonTab.Id, config.RibbonTab.Title, 'Use this tab', config.RibbonTab.Command, false, '', null);
+                    _ribbon.addChild(tab);
+                    SelectRibbonTab(config.RibbonTab.Id, true);
+                }
+            }
+
+            if (tab == null)
+                return;
+
+            var group = new CUI.Group(_ribbon, idPrefix + 'Group', RESX.Ribbon_DocumentPreview_GroupTitle, 'DocumentPreview Description', idPrefix + 'Group.Command', null);
+            tab.addChild(group);
+
+
+            //
+            // create controls
+            function createToggleButton(id, image1, image2, selected, displayState) {
+                var cp = new CUI.ControlProperties();
+                cp.Command = idPrefix + id + '.Command';
+                cp.Id = idPrefix + id;
+                cp.TemplateAlias = 'c1';
+                cp.Image32by32 = _baseUrl + '/Forms/PreviewDocument/' + (selected ? image1 : image2);
+                cp.ToolTipTitle = eval("RESX.Ribbon_DocumentPreview_" + id + "ToolTip");
+                cp.ToolTipDescription = eval("RESX.Ribbon_DocumentPreview_" + id + "ToolTipDescription");
+                cp.LabelText = eval("RESX.Ribbon_DocumentPreview_" + id);
+                var b = new CUI.Controls.ToggleButton(_ribbon, cp.Id, cp);
+                b.ID = id;
+                b.Image1 = _baseUrl + '/Forms/PreviewDocument/' + image1;
+                b.Image2 = _baseUrl + '/Forms/PreviewDocument/' + image2;
+                b.DisplayState = displayState;
+
+                if (selected)
+                    b.set_on(true);
+
+                return b;
+            }
+
+            var dpFullForm = createToggleButton("dpFullForm", "dpFullForm32b.png", "dpFullForm32.png", config.DisplayStateCurrent == 0, 0);
+            var dpDocument = createToggleButton("dpDocument", "dpDocument32b.png", "dpDocument32.png", config.DisplayStateCurrent == 1, 1);
+            var dpDividedForm = createToggleButton("dpDividedForm", "dpDividedForm32b.png", "dpDividedForm32.png", config.DisplayStateCurrent == 2, 2);
+            config.ToggleButtons = [];
+            config.ToggleButtons.push(dpFullForm);
+            config.ToggleButtons.push(dpDocument);
+            config.ToggleButtons.push(dpDividedForm);
+
+            var cp = new CUI.ControlProperties();
+            cp.Id = idPrefix + 'Separator';
+            cp.TemplateAlias = 'c1';
+            var separator = new CUI.Controls.Separator(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Id = idPrefix + 'SpinnerLabel';
+            cp.TemplateAlias = 'c1';
+            cp.LabelText = RESX.Ribbon_DocumentPreview_spinnerLabel;
+            var spinnerLabel = new CUI.Controls.Label(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Id = idPrefix + 'SpinnerValue';
+            cp.TemplateAlias = 'c1';
+            cp.LabelText = config.GetSpinnerText();
+            var spinnerValue = new CUI.Controls.Label(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + "spinnerDown" + '.Command';
+            cp.Id = idPrefix + "spinnerDown";
+            cp.TemplateAlias = 'c1';
+            cp.Image16by16 = _baseUrl + '/Forms/PreviewDocument/' + "spinnerDown16.png";
+            cp.ToolTipTitle = RESX.Ribbon_DocumentPreview_spinnerDownToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_DocumentPreview_spinnerDownToolTipDescription;
+            cp.LabelText = RESX.Ribbon_DocumentPreview_spinnerDown;
+            var spinnerDown = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + "spinnerUp" + '.Command';
+            cp.Id = idPrefix + "spinnerUp";
+            cp.TemplateAlias = 'c1';
+            cp.Image16by16 = _baseUrl + '/Forms/PreviewDocument/' + "spinnerUp16.png";
+            cp.ToolTipTitle = RESX.Ribbon_DocumentPreview_spinnerUpToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_DocumentPreview_spinnerUpToolTipDescription;
+            cp.LabelText = RESX.Ribbon_DocumentPreview_spinnerUp;
+            var spinnerUp = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + "dpDefault" + '.Command';
+            cp.Id = idPrefix + "dpDefault";
+            cp.TemplateAlias = 'c1';
+            cp.Image16by16 = _baseUrl + '/Forms/PreviewDocument/' + "dpDefault16.png";
+            cp.ToolTipTitle = RESX.Ribbon_DocumentPreview_dpDefaultToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_DocumentPreview_dpDefaultToolTipDescription;
+            cp.LabelText = RESX.Ribbon_DocumentPreview_dpDefault;
+            var buttonDefault = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + "dpSave" + '.Command';
+            cp.Id = idPrefix + "dpSave";
+            cp.TemplateAlias = 'c1';
+            cp.Image16by16 = _baseUrl + '/Forms/PreviewDocument/' + "dpSave16.png";
+            cp.ToolTipTitle = RESX.Ribbon_DocumentPreview_dpSaveToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_DocumentPreview_dpSaveToolTipDescription;
+            cp.LabelText = RESX.Ribbon_DocumentPreview_dpSave;
+            var buttonSave = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+            var css = '#TiSa\\.DocumentPreview\\.dpSave-Small { float: right; } ';
+            var head = document.head || document.getElementsByTagName('head')[0];
+            var style = document.createElement('style');
+            style.type = 'text/css';
+            style.id = 'tisa-ribbon-style-' + cp.Id;
+            if (style.styleSheet) {
+                style.styleSheet.cssText = css;
+            } else {
+                style.appendChild(document.createTextNode(css));
+            }
+            head.appendChild(style);
+
+            config.Controls = {};
+            config.Controls.SpinnerLabel = spinnerLabel;
+            config.Controls.SpinnerValue = spinnerValue;
+            config.Controls.SpinnerDown = spinnerDown;
+            config.Controls.SpinnerUp = spinnerUp;
+            config.Controls.ButtonDefault = buttonDefault;
+            config.Controls.ButtonSave = buttonSave;
+
+
+            var layout = new CUI.Layout(_ribbon, idPrefix + 'Layout', 'LayoutLarge');
+            group.addChild(layout);
+            var section1 = new CUI.Section(_ribbon, idPrefix + 'Section1', 2, 'Top'); //3==TwoRow
+            layout.addChild(section1);
+            var section2 = new CUI.Section(_ribbon, idPrefix + 'Section2', 4, 'Top'); //2==OneRow
+            layout.addChild(section2);
+
+
+            //
+            // add controls to layout
+            var section1row1 = section1.getRow(1);
+            section1row1.addChild(dpFullForm.createComponentForDisplayMode('Large'));
+            section1row1.addChild(dpDocument.createComponentForDisplayMode('Large'));
+            section1row1.addChild(dpDividedForm.createComponentForDisplayMode('Large'));
+            section1row1.addChild(separator.createComponentForDisplayMode('Small'));
+            var section2row1 = section2.getRow(1);
+            section2row1.addChild(spinnerLabel.createComponentForDisplayMode('Medium'));
+            var section2row2 = section2.getRow(2);
+            section2row2.addChild(spinnerDown.createComponentForDisplayMode('Small'));
+            section2row2.addChild(spinnerValue.createComponentForDisplayMode('Medium'));
+            section2row2.addChild(spinnerUp.createComponentForDisplayMode('Small'));
+            var section2row3 = section2.getRow(3);
+            section2row3.addChild(buttonDefault.createComponentForDisplayMode('Medium'));
+            section2row3.addChild(buttonSave.createComponentForDisplayMode('Small'));
+
+
+            //
+            // apply layout		
+            group.selectLayout('LayoutLarge');
+            //_this.Refresh();
+        });
+    };
+
+    //AddBrowseGroup/
+    this.AddBrowseGroup = function (id, listId, browseData) {
+
+        var config = {
+            CurrentId: id,
+            CurrentListId: listId,
+            CurrentIndex: -1,
+            BrowseData: browseData,
+            FindIndex: function () {
+                if (this.CurrentIndex >= 0)
+                    return this.CurrentIndex;
+                if (this.BrowseData.IsTaskForm) {
+                    var taskid = parseInt(GetUrlKeyValue("TaskId"));
+                    for (var i = 0; i < this.BrowseData.Data.length; i++) {
+                        var item = this.BrowseData.Data[i];
+                        if (this.CurrentId === item.id && this.CurrentListId.replace(/-/g, '') === item.list.replace(/-/g, '') && taskid === item.taskid) {
+                            this.CurrentIndex = i;
+                            return i;
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < this.BrowseData.Data.length; i++) {
+                        var item = this.BrowseData.Data[i];
+                        if (this.CurrentId === item.id && this.CurrentListId.replace(/-/g, '') === item.list.replace(/-/g, '')) {
+                            this.CurrentIndex = i;
+                            return i;
+                        }
+                    }
+                }
+                return -1;
+            },
+            Enable: function (btnIndex) {
+                var ix = this.FindIndex();
+                if ((ix === 0 && btnIndex === 0) || (ix === (this.BrowseData.Data.length - 1) && btnIndex === 1))
+                    return false;
+                return true;
+            },
+            Command: function (btnIndex) {
+                var ix = this.FindIndex();
+                btnIndex === 0 ? ix-- : btnIndex === 1 ? ix++ : ix;
+                var item = this.BrowseData.Data[ix];
+                var href = null;
+                if (this.BrowseData.IsTaskForm) {
+                    href = item.taskurl;
+                }
+                else {
+                    var listInfo = this.BrowseData.ListInfo[item.list];
+                    var page = window.location.href.indexOf("DispForm.aspx") > 0 ? listInfo.DefaultDisplayUrl : listInfo.DefaultEditUrl;
+                    href = page + "?ID=" + item.id;
+                }
+                window.location.href = href;
+            },
+            Next: function () {
+                if ((this.CurrentIndex + 1) < this.BrowseData.Data.length) {
+                    this.Command(1);
+                    return false;
+                }
+                return true;
+            },
+            Prev: function () {
+                if (this.CurrentIndex > 0) {
+                    this.Command(0);
+                    return false;
+                }
+                return true;
+            }
+        };
+        
+
+        _Initialize(function () {
+            if (_createdBrowseGroup)
+                return;
+            _createdBrowseGroup = true;
+
+            
+
+            config.ComponentInstance = new __initialize_BrowseComponent(config);
+
+            //
+            // prepare layout
+            var idPrefix = "TiSa.Browse.";
+            var tab = _FindCurrentTab();
+
+            if (tab == null)
+                return;
+                     
+
+            var group = tab.getChild("Ribbon.ListForm.Display.Actions") || tab.getChild("Ribbon.ListForm.Edit.Actions") || tab.getChild("Ribbon.DocLibListForm.Edit.Actions");
+            if (group == null)
+                return;
+
+            
+
+            var cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + 'ButtonPrev.Command';
+            cp.Id = idPrefix + 'ButtonPrev';
+            cp.TemplateAlias = 'o1';
+            cp.Image32by32 = _baseUrl + '/Forms/Left.png';
+            cp.ToolTipTitle = browseData.IsTaskForm ? RESX.Ribbon_Browse_btnPrevTask : RESX.Ribbon_Browse_btnPrev;
+            cp.ToolTipDescription = browseData.IsTaskForm ? RESX.Ribbon_Browse_btnPrevDescriptionTask : RESX.Ribbon_Browse_btnPrevDescription;
+            cp.LabelText = cp.ToolTipTitle
+            var buttonPrev = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+            cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + 'ButtonNext.Command';
+            cp.Id = idPrefix + 'ButtonNext';
+            cp.TemplateAlias = 'o1';
+            cp.Image32by32 = _baseUrl + '/Forms/Right.png';
+            cp.ToolTipTitle = browseData.IsTaskForm ? RESX.Ribbon_Browse_btnNextTask : RESX.Ribbon_Browse_btnNext;
+            cp.ToolTipDescription = browseData.IsTaskForm ? RESX.Ribbon_Browse_btnNextDescriptionTask : RESX.Ribbon_Browse_btnNextDescription;
+            cp.LabelText = cp.ToolTipTitle
+            var buttonNext = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+             
+
+            var layout = group.get_selectedLayout();
+            var section1 = new CUI.Section(_ribbon, idPrefix + 'SectionBrowse', 2, 'Top');
+            layout.addChildAtIndex(section1, 1);
+
+
+            var section1row1 = section1.getRow(1);
+            section1row1.addChild(buttonPrev.createComponentForDisplayMode('Large'));     
+            section1row1.addChild(buttonNext.createComponentForDisplayMode('Large'));  
+        });
+
+        return config;
+    };
+
+    this.AddAdminGroup = function (data) {
+
+        var config = {
+            Data: data,
+            State: false,
+            ShowConsoleButton: null,
+            OnShowConsole: data.FnShowConsole.bind(data)
+        };
+
+        _Initialize(function () {
+            if (_createdAdminGroup)
+                return;
+            _createdAdminGroup = true;
+
+
+            config.ComponentInstance = new __initialize_AdminComponent(config);
+
+            //
+            // prepare layout
+            var idPrefix = "TiSa.Admin.";
+            var tab = _FindCurrentTab();
+
+            if (tab == null)
+                return;
+
+
+            var group = tab.getChild("Ribbon.ListForm.Display.Actions") || tab.getChild("Ribbon.ListForm.Edit.Actions") || tab.getChild("Ribbon.DocLibListForm.Edit.Actions");
+            if (group == null)
+                return;
+
+
+
+            var cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + 'ShowConsole.Command';
+            cp.Id = idPrefix + 'ShowConsole';
+            cp.TemplateAlias = 'o1';
+            cp.Image32by32 = _baseUrl + '/Forms/' + (config.State ? "AdminEnabled.png" : "Admin.png");
+            cp.ToolTipTitle = "Show TreeINFO console";
+            cp.ToolTipDescription = "Show TreeINFO console";
+            cp.LabelText = cp.ToolTipTitle
+            var b = new CUI.Controls.ToggleButton(_ribbon, cp.Id, cp);
+            b.ID = idPrefix + 'ShowConsole.Toggle';
+            b.Image1 = _baseUrl + '/Forms/AdminEnabled.png';
+            b.Image2 = _baseUrl + '/Forms/Admin.png';
+            b.DisplayState = false;
+
+            config.ShowConsoleButton = b;
+            
+
+            var layout = group.get_selectedLayout();
+            var section1 = new CUI.Section(_ribbon, idPrefix + 'SectionAdmin', 2, 'Top');
+            layout.addChildAtIndex(section1, 1);
+
+
+            var section1row1 = section1.getRow(1);
+            section1row1.addChild(config.ShowConsoleButton.createComponentForDisplayMode('Large'));
+        });
+
+        return config;
+    };
+
+    this.AddCopy = function (config) {
+        _Initialize(function () {
+            if (_createdCopy)
+                return;
+            _createdCopy = true;
+
+
+
+            config.ComponentInstance = new __initialize_CopyComponent(config);
+
+            //
+            // prepare layout
+            var idPrefix = "TiSa.Copy.";
+            var tab = _FindCurrentTab();
+
+            if (config.RibbonTab) {
+                tab = _ribbon.getChild(config.RibbonTab.Id);
+                if (tab == null) {
+                    tab = new CUI.Tab(_ribbon, config.RibbonTab.Id, config.RibbonTab.Title, 'Use this tab', config.RibbonTab.Command, false, '', null);
+                    _ribbon.addChild(tab);
+                    SelectRibbonTab(config.RibbonTab.Id, true);
+                }
+            }
+
+            if (tab == null)
+                return;
+
+            var group = tab.getChild("Ribbon.ListForm.Display.Manage") || tab.getChild("Ribbon.ListForm.Edit.Commit") || tab.getChild("Ribbon.DocLibListForm.Edit.Commit");
+            if (group == null)
+                return;
+            //
+            // create controls
+
+
+            var cp = new CUI.ControlProperties();
+            cp.Command = idPrefix + "btnCopy" + '.Command';
+            cp.Id = idPrefix + "btnCopy";
+            cp.TemplateAlias = 'c1';
+            cp.Image16by16 = _baseUrl + '/Forms/Copy/' + "copy16.png";
+            cp.Image32by32 = _baseUrl + '/Forms/Copy/' + "copy32.png";
+            cp.ToolTipTitle = RESX.Ribbon_CopyToolTip;
+            cp.ToolTipDescription = RESX.Ribbon_CopyToolTipDescription;
+            cp.LabelText = RESX.Ribbon_Copy;
+            var buttonCopy = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+
+            //var layout = new CUI.Layout(_ribbon, idPrefix + 'Layout', 'LayoutLarge');
+            var layout = group.get_selectedLayout();
+            //group.addChild(layout);
+            var section1 = new CUI.Section(_ribbon, idPrefix + 'SectionCopy', 2, 'Top');
+            layout.addChildAtIndex(section1, 1);
+
+
+
+            //
+            // add controls to layout
+            var section1row1 = section1.getRow(1);
+            section1row1.addChild(buttonCopy.createComponentForDisplayMode('Large'));
+
+            //
+            // apply layout		
+            //group.selectLayout('LayoutLarge');
+        });
+    };
+
+    var _customButtonsConfig = null;
+    var _customGroups = {};
+
+    this.AddCustomButtons = function (buttonCollection) {
+        if (!buttonCollection)
+            return;
+
+        _Initialize(function () {
+            // prepare config
+            if (!_customButtonsConfig) {
+                _customButtonsConfig = {
+                    Prefix: "TiSa.CustomButtons.",
+                    RibbonButtons: [],
+                    RibbonGroups: [],
+                    ComponentInstance: null,
+                    Form: _form,
+                    Ribbon: _this
+                };
+            }
+
+            var tab = _FindCurrentTab();
+            if (!tab)
+                return;
+
+            // add buttons
+            for (var i = 0; i < buttonCollection.length; i++) {
+                var buttonConfig = _ValidateButtonConfig(buttonCollection[i]);
+                var group = _CreateCustomGroup(tab, { Id: buttonConfig.GroupId, Title: buttonConfig.GroupTitle });
+                var button = _CreateCustomButton(tab, group, buttonConfig);
+            }
+
+            if (!_customButtonsConfig.ComponentInstance)
+                _customButtonsConfig.ComponentInstance = new __initialize_CustomButtonsComponent(_customButtonsConfig);
+            else {
+                // refresh
+            }
+
+            var ee = tab.get_enabled();
+            tab.set_enabled(true);
+
+            _customButtonsConfig._resizeWindow = function () {
+                for (var i = 0; i < this.RibbonGroups.length; i++) {
+                    var g = this.RibbonGroups[i];
+                    g.Group.selectLayout(g.LayoutName1);
+                }
+                _this.Refresh();
+
+                setTimeout($.proxy(function () {
+                    var isNarrow2 = false;
+                    for (var i = 0; i < this.RibbonGroups.length; i++) {
+                        var g = this.RibbonGroups[i];
+                        var id = "TiSa.CustomButtons." + g.Id + ".Group";
+                        var element = $("#" + id.replace(/\./g, "\\."));
+                        if (element.length > 0 && element.offset().top > element.parent().offset().top) {
+                            isNarrow2 = true;
+                        }
+                        g.Group.selectLayout(isNarrow2 ? g.LayoutName3 : g.LayoutName1);
+                    }
+                    _this.Refresh();
+                }, this), 50);
+            };
+            // refresh layout
+            _customButtonsConfig._resizeWindow();
+            /*setTimeout(function () {
+                _customButtonsConfig._resizeWindow();
+            }, 100);*/
+            var doit;
+            window.onresize = function () {
+                clearTimeout(doit);
+                doit = setTimeout(function () {
+                    _customButtonsConfig._resizeWindow();
+                }, 50);
+            };
+
+
+            //_this.Refresh();
+        }); //end _Initialize		
+    };
+
+    var _ValidateButtonConfig = function (button) {
+
+
+        if (!button.GroupId)
+            button.GroupId = button.GroupID;
+        if (!button.GroupId)
+            button.GroupId = TiSa.Environment.CreateGuid();
+
+        if (!button.Id)
+            button.Id = button.ID;
+        if (!button.Id)
+            button.Id = TiSa.Environment.CreateGuid();
+
+        if (!button.GroupTitle)
+            button.GroupTitle = "";
+        if (!button.Title)
+            button.Title = "";
+        if (!button.ToolTipTitle)
+            button.ToolTipTitle = button.Title;
+        if (!button.ToolTipDescription)
+            button.ToolTipDescription = button.ToolTipTitle;
+        if (!button.Icon)
+            button.Icon = "_layouts/15/images/placeholder32x32.png";
+        if (!button.Icon16)
+            button.Icon16 = "_layouts/15/images/placeholder16x16.png";
+        if (!button.Visible)
+            button.Visible = true;
+
+        if (button.GroupTitle.indexOf("RESX.") == 0) {
+            button.GroupTitleResource = button.GroupTitle;
+            var r = eval(button.GroupTitleResource);
+            if (r)
+                button.GroupTitle = r;
+        }
+
+        if (button.Title.indexOf("RESX.") == 0) {
+            button.TitleResource = button.Title;
+            var r = eval(button.TitleResource);
+            if (r)
+                button.Title = r;
+        }
+
+        if (button.ToolTipTitle.indexOf("RESX.") == 0) {
+            button.ToolTipTitleResource = button.ToolTipTitle;
+            var r = eval(button.ToolTipTitleResource);
+            if (r)
+                button.ToolTipTitle = r;
+        }
+
+        if (button.ToolTipDescription.indexOf("RESX.") == 0) {
+            button.ToolTipDescriptionResource = button.ToolTipDescription;
+            var r = eval(button.ToolTipDescriptionResource);
+            if (r)
+                button.ToolTipDescription = r;
+        }
+
+        return button;
+    };
+
+    var _CreateCustomButton = function (tabInstance, groupInstance, buttonConfig) {
+        for (var i = 0; i < _customButtonsConfig.RibbonButtons.length; i++) {
+            var bb = _customButtonsConfig.RibbonButtons[i];
+            if (bb.Id == buttonConfig.Id)
+                return bb;
+        }
+
+        var id = _customButtonsConfig.Prefix + buttonConfig.Id + ".Button";
+
+        var cp = new CUI.ControlProperties();
+        cp.Command = id + '.Command';
+        cp.Id = id;
+        cp.TemplateAlias = 'o1';
+        cp.Image32by32 = buttonConfig.Icon ? buttonConfig.Icon.replace("{SiteCollectionUrl}", TiSa.Environment.SiteServerRelativeUrl) : '_layouts/15/images/placeholder32x32.png';
+        cp.Image16by16 = buttonConfig.Icon16 ? buttonConfig.Icon.replace("{SiteCollectionUrl}", TiSa.Environment.SiteServerRelativeUrl) : '_layouts/15/images/placeholder16x16.png';
+        cp.ToolTipTitle = buttonConfig.ToolTipTitle;
+        cp.ToolTipDescription = buttonConfig.ToolTipDescription;
+        cp.LabelText = buttonConfig.Title;
+        var button = new CUI.Controls.Button(_ribbon, cp.Id, cp);
+
+        var section1row1 = groupInstance.Section1.getRow(1);
+        section1row1.addChild(button.createComponentForDisplayMode('Large'));
+
+        if (!groupInstance.SectionIndex || groupInstance.SectionIndex > 3)
+            groupInstance.SectionIndex = 1;
+        var section2row = groupInstance.Section2.getRow(groupInstance.SectionIndex);
+        section2row.addChild(button.createComponentForDisplayMode('Medium'));
+        var section3row = groupInstance.Section3.getRow(groupInstance.SectionIndex);
+        section3row.addChild(button.createComponentForDisplayMode('Small'));
+
+        var b = {
+            Config: buttonConfig,
+            Id: buttonConfig.Id,
+            Group: groupInstance,
+            Button: button,
+            Tab: tabInstance
+        }
+        groupInstance.Buttons.push(b);
+        groupInstance.SectionIndex++;
+
+        _customButtonsConfig.RibbonButtons.push(b);
+
+        return b;
+    };
+
+    var _CreateCustomGroup = function (tabInstance, groupConfig) {
+        for (var i = 0; i < _customButtonsConfig.RibbonGroups.length; i++) {
+            var gg = _customButtonsConfig.RibbonGroups[i];
+            if (gg.Id == groupConfig.Id)
+                return gg;
+        }
+        var id = _customButtonsConfig.Prefix + groupConfig.Id + ".Group";
+        var group = new CUI.Group(_ribbon, id, groupConfig.Title, '', id + '.Command', null);
+        tabInstance.addChild(group);
+
+        var layoutName1 = "Large";
+        var layout1 = new CUI.Layout(_ribbon, id + '.Layout1', layoutName1);
+        group.addChild(layout1);
+        var section1 = new CUI.Section(_ribbon, id + '.Section1', 2, 'Top');
+        layout1.addChild(section1);
+
+
+        var layoutName2 = "Medium";
+        var layout2 = new CUI.Layout(_ribbon, id + '.Layout2', layoutName2);
+        group.addChild(layout2);
+        var section2 = new CUI.Section(_ribbon, id + '.Section2', 4, 'Top');
+        layout2.addChild(section2);
+
+        var layoutName3 = "Small";
+        var layout3 = new CUI.Layout(_ribbon, id + '.Layout3', layoutName3);
+        group.addChild(layout3);
+        var section3 = new CUI.Section(_ribbon, id + '.Section3', 4, 'Top');
+        layout3.addChild(section3);
+
+        var g = {
+            Id: groupConfig.Id,
+            Group: group,
+            Tab: tabInstance,
+            Layout1: layout1,
+            Layout2: layout2,
+            Layout3: layout3,
+            Section1: section1,
+            Section2: section2,
+            Section3: section3,
+            LayoutName1: layoutName1,
+            LayoutName2: layoutName2,
+            LayoutName3: layoutName3,
+            Buttons: [],
+            Visible: true
+        }
+        _customButtonsConfig.RibbonGroups.push(g);
+        return g;
+    };
+
+    var _FindCurrentTab = function () {
+        var tabId = "";
+        switch (_form.FormContext.Context.FormControlMode) {
+            case SPClientTemplates.ClientControlMode.DisplayForm:
+                tabId = "Ribbon.ListForm.Display";
+                break;
+            case SPClientTemplates.ClientControlMode.NewForm:
+            case SPClientTemplates.ClientControlMode.EditForm:
+                switch (_form.FormContext.Context.ListAttributes.ListTemplateType) {
+                    case 100: // generics list
+                        tabId = "Ribbon.ListForm.Edit";
+                        break;
+                    case 101: // document library
+                        tabId = "Ribbon.DocLibListForm.Edit";
+                        break;
+                }
+                break;
+        }
+
+        var tab = _ribbon.getChild(tabId);
+        if (tab == null)
+            tab = _ribbon.getChild("Ribbon.ListForm.Edit");
+        return tab;
+    };
+
+
+    /* 
+    ===========================================================================================================
+    Components
+    ===========================================================================================================
+    */
+    function __initialize_PrintFormComponent(config) {
+        var _config = config;
+        var _idPrefix = "TiSa.PrintForm.";
+
+        TiSa.Forms.RibbonComponents.PrintFormComponent = function () {
+            TiSa.Forms.RibbonComponents.PrintFormComponent.initializeBase(this);
+        }
+        TiSa.Forms.RibbonComponents.PrintFormComponent.initializePageComponent = function () {
+            var ribbonPageManager = SP.Ribbon.PageManager.get_instance();
+            if (null !== ribbonPageManager) {
+                var rbnInstance = TiSa.Forms.RibbonComponents.PrintFormComponent.get_instance();
+                ribbonPageManager.addPageComponent(rbnInstance);
+            }
+        }
+
+        TiSa.Forms.RibbonComponents.PrintFormComponent.get_instance = function () {
+            if (TiSa.Forms.RibbonComponents.PrintFormComponent.instance == null) {
+                TiSa.Forms.RibbonComponents.PrintFormComponent.instance = new TiSa.Forms.RibbonComponents.PrintFormComponent();
+            }
+            return TiSa.Forms.RibbonComponents.PrintFormComponent.instance;
+        };
+
+        TiSa.Forms.RibbonComponents.PrintFormComponent.prototype = {
+            /* Create an array of handled commands with handler methods */
+            init: function () {
+                var buttonEnabled = false;
+                //var selectedTemplate = "";
+                //if (_config.Templates.length > 0)
+                //    selectedTemplate = _config.SelectedTemplate;
+
+                function getDropdownItemsXml() {
+                    var sb = new Sys.StringBuilder();
+                    sb.append('<Menu Id=\'' + _idPrefix + 'TemplateSelector.Menu\'>');
+                    sb.append('<MenuSection DisplayMode=\'Menu\' Id=\'' + _idPrefix + 'TemplateSelector.Menu.Manage\'>');
+                    sb.append('<Controls Id=\'' + _idPrefix + 'TemplateSelector.Menu.Manage.Controls\'>');
+                    if (true) {
+
+                        for (var i = 0; i < _config.Templates.length; i++) {
+                            var template = _config.Templates[i];
+                            sb.append('<Button');
+                            sb.append(' Id=\'' + _idPrefix + 'TemplateSelector.Menu.Manage.');
+                            sb.append("template" + i.toString());
+                            sb.append('\'');
+                            sb.append(' Command=\'');
+                            sb.append(_idPrefix + 'TemplateSelector.SelectItemCommand');
+                            sb.append('\'');
+                            sb.append(' CommandValueId=\'');
+                            sb.append(template.TemplateId);
+                            sb.append('\'');
+                            sb.append(' Width=\'');
+                            sb.append('75px');
+                            sb.append('\'');
+                            sb.append(' LabelText=\'');
+                            sb.append(SP.Utilities.HttpUtility.htmlEncode(template.TemplateName));
+                            sb.append('\'');
+                            sb.append('/>');
+                        }
+                    }
+                    sb.append('</Controls>');
+                    sb.append('</MenuSection>');
+                    sb.append('</Menu>');
+                    return sb.toString();
+                }
+
+                var ddlInited = false;
+                function ddlInit(commandId, props, seq) {
+                    if (ddlInited) {
+                        if (_config.SelectedTemplate != null) {
+                            props[CUI.Controls.DropDownCommandProperties.Value] = _config.SelectedTemplate.TemplateName;
+                        }
+                        return;
+                    }
+                    ddlInited = true;
+                    if (_config.Templates == null) {
+
+                        if (_config.OnInitTemplates)
+                            _config.OnInitTemplates(function () {
+                                if (_config.SelectedTemplate != null) {
+                                    props[CUI.Controls.DropDownCommandProperties.Value] = _config.SelectedTemplate.TemplateName;
+                                    RefreshCommandUI();
+                                }
+                            });
+                    }
+                    else if (_config.SelectedTemplate != null) {
+                        props[CUI.Controls.DropDownCommandProperties.Value] = _config.SelectedTemplate.TemplateName;
+                    }
+                }
+
+                var selected = false;
+                function ddlPopulate(commandId, props, seq) {
+                    if (_config.SelectedTemplate != null) {
+                        props[CUI.Controls.DropDownCommandProperties.Value] = _config.SelectedTemplate.TemplateName;
+                        props.PopulationXML = getDropdownItemsXml();
+                    }
+                }
+
+                function ddlSelect(commandId, props, seq) {
+                    var template = null;
+                    for (var i = 0; i < _config.Templates.length; i++) {
+                        var t = _config.Templates[i];
+                        if (t.TemplateId.toString() == props.CommandValueId) {
+                            template = t;
+                            break;
+                        }
+                    }
+                    _config.SelectedTemplate = template;
+                    if (!selected) {
+                        selected = true;
+                        RefreshCommandUI();
+                        selected = false;
+                    }
+                }
+
+
+                this._handledCommands = new Object();
+                //this._handledCommands['Sample.Tab.Command'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { /* do action */ } };
+                this._handledCommands[_idPrefix + 'Group.Command'] = {
+                    enable: function () {
+                        //ensurePopulateDDL();
+                        return true;
+                    }, handle: function (commandId, props, seq) { /* do action */ }
+                };
+                this._handledCommands[_idPrefix + 'TemplateSelector.Command'] = {
+                    enable: function () {
+                        //ensurePopulateDDL();
+                        return true;
+                    }, handle: function (commandId, props, seq) { /* do action */ }
+                };
+                this._handledCommands[_idPrefix + 'TemplateSelector.PopulateQueryCommand'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { ddlPopulate(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'TemplateSelector.QueryCommand'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { ddlInit(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'TemplateSelector.SelectItemCommand'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { ddlSelect(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'ButtonPreview.Command'] = { enable: function () { return _config.SelectedTemplate != null; }, handle: function (commandId, props, seq) { if (_config.OnPreview) _config.OnPreview(); } };
+                this._handledCommands[_idPrefix + 'ButtonPrint.Command'] = { enable: function () { return _config.SelectedTemplate != null; }, handle: function (commandId, props, seq) { if (_config.OnPrint) _config.OnPrint(); } };
+                this._commands = [
+                    _idPrefix + 'Group.Command',
+                    _idPrefix + 'TemplateSelector.Command',
+                    _idPrefix + 'TemplateSelector.PopulateQueryCommand',
+                    _idPrefix + 'TemplateSelector.QueryCommand',
+                    _idPrefix + 'TemplateSelector.SelectItemCommand',
+                    _idPrefix + 'ButtonPreview.Command',
+                    _idPrefix + 'ButtonPrint.Command'
+                ];
+            },
+
+            getFocusedCommands: function () { return []; },
+            getGlobalCommands: function () { return this._commands; },
+            canHandleCommand: function (commandId) {
+                var handlerFn = this._handledCommands[commandId].enable;
+                if (typeof (handlerFn) == 'function') {
+                    return handlerFn();
+                }
+                return true;
+            },
+            handleCommand: function (commandId, properties, sequence) {
+                return this._handledCommands[commandId].handle(commandId, properties, sequence);
+            },
+            isFocusable: function () { return false; },
+            yieldFocus: function () { return false; },
+            receiveFocus: function () { return true; },
+            handleGroup: function () { }
+
+        }
+        /* Register classes and initialize page component */
+        TiSa.Forms.RibbonComponents.PrintFormComponent.registerClass('TiSa.Forms.RibbonComponents.PrintFormComponent', CUI.Page.PageComponent);
+        TiSa.Forms.RibbonComponents.PrintFormComponent.initializePageComponent();
+    }
+
+    function __initialize_UserLayoutComponent(config) {
+        var _config = config;
+        var _idPrefix = "TiSa.UserLayout.";
+        var _baseUrl = TiSa.Environment.AppUrl + '/Components'; //TiSa.Environment.SiteServerRelativeUrl + "/SiteAssets/TiSa";
+
+        TiSa.Forms.RibbonComponents.UserLayoutComponent = function () {
+            TiSa.Forms.RibbonComponents.UserLayoutComponent.initializeBase(this);
+        }
+        TiSa.Forms.RibbonComponents.UserLayoutComponent.initializePageComponent = function () {
+            var ribbonPageManager = SP.Ribbon.PageManager.get_instance();
+            if (null !== ribbonPageManager) {
+                var rbnInstance = TiSa.Forms.RibbonComponents.UserLayoutComponent.get_instance();
+                ribbonPageManager.addPageComponent(rbnInstance);
+            }
+        }
+
+        TiSa.Forms.RibbonComponents.UserLayoutComponent.get_instance = function () {
+            if (TiSa.Forms.RibbonComponents.UserLayoutComponent.instance == null) {
+                TiSa.Forms.RibbonComponents.UserLayoutComponent.instance = new TiSa.Forms.RibbonComponents.UserLayoutComponent();
+            }
+            return TiSa.Forms.RibbonComponents.UserLayoutComponent.instance;
+        };
+
+        TiSa.Forms.RibbonComponents.UserLayoutComponent.prototype = {
+            /* Create an array of handled commands with handler methods */
+            init: function () {
+
+                function onButtonEditClick(commandId, props, seq) {
+                    if (_config.OnEdit) {
+                        var state = props.DisableEvent ? props.On : _config.OnEdit(props.On);
+                        _config.Controls.ButtonEdit.set_on(state);
+                        _config.Controls.ButtonRefresh.set_enabled(state);
+
+                        var cButtonEdit = _config.Controls.ButtonEdit.get_components()[0];
+                        var cp = _config.Controls.ButtonEdit.get_controlProperties();
+                        if (state)
+                            cp.Image32by32 = _baseUrl + '/Forms/UserLayout/editlayoutsave32.png';
+                        else
+                            cp.Image32by32 = _baseUrl + '/Forms/UserLayout/editlayout32.png';
+                        var icon = $("img", document.getElementById(cp.Id + "-Large"));
+                        if (icon.length > 0)
+                            icon.attr("src", cp.Image32by32);
+                        _config.Controls.ButtonRefresh.refreshDOMElements();
+                    }
+                }
+
+                function onButtonRefreshEnable() {
+                    var state = _config.Controls.ButtonEdit.get_on();
+                    return state;
+                }
+
+                this._handledCommands = new Object();
+                this._handledCommands[_idPrefix + 'Group.Command'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { /* do action */ } };
+                this._handledCommands[_idPrefix + 'ButtonEdit.Command'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { onButtonEditClick(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'ButtonRefresh.Command'] = { enable: function () { return onButtonRefreshEnable(); }, handle: function (commandId, props, seq) { _config.OnRefresh(); } };
+                this._commands = [
+                    _idPrefix + 'Group.Command',
+                    _idPrefix + 'ButtonEdit.Command',
+                    _idPrefix + 'ButtonRefresh.Command'
+                ];
+            },
+
+            getFocusedCommands: function () { return []; },
+            getGlobalCommands: function () { return this._commands; },
+            canHandleCommand: function (commandId) {
+                var handlerFn = this._handledCommands[commandId].enable;
+                if (typeof (handlerFn) == 'function') {
+                    return handlerFn();
+                }
+                return true;
+            },
+            handleCommand: function (commandId, properties, sequence) {
+                return this._handledCommands[commandId].handle(commandId, properties, sequence);
+            },
+            isFocusable: function () { return false; },
+            yieldFocus: function () { return false; },
+            receiveFocus: function () { return true; },
+            handleGroup: function () { }
+
+        }
+        /* Register classes and initialize page component */
+        TiSa.Forms.RibbonComponents.UserLayoutComponent.registerClass('TiSa.Forms.RibbonComponents.UserLayoutComponent', CUI.Page.PageComponent);
+        TiSa.Forms.RibbonComponents.UserLayoutComponent.initializePageComponent();
+    }
+
+    function __initialize_DocumentPreviewComponent(config) {
+        var _config = config;
+        var _idPrefix = "TiSa.DocumentPreview.";
+        var _baseUrl = TiSa.Environment.AppUrl + '/Components'; //TiSa.Environment.SiteServerRelativeUrl + "/SiteAssets/TiSa";
+
+        TiSa.Forms.RibbonComponents.DocumentPreviewComponent = function () {
+            TiSa.Forms.RibbonComponents.DocumentPreviewComponent.initializeBase(this);
+        }
+        TiSa.Forms.RibbonComponents.DocumentPreviewComponent.initializePageComponent = function () {
+            var ribbonPageManager = SP.Ribbon.PageManager.get_instance();
+            if (null !== ribbonPageManager) {
+                var rbnInstance = TiSa.Forms.RibbonComponents.DocumentPreviewComponent.get_instance();
+                ribbonPageManager.addPageComponent(rbnInstance);
+            }
+        }
+
+        TiSa.Forms.RibbonComponents.DocumentPreviewComponent.get_instance = function () {
+            if (TiSa.Forms.RibbonComponents.DocumentPreviewComponent.instance == null) {
+                TiSa.Forms.RibbonComponents.DocumentPreviewComponent.instance = new TiSa.Forms.RibbonComponents.DocumentPreviewComponent();
+            }
+            return TiSa.Forms.RibbonComponents.DocumentPreviewComponent.instance;
+        };
+
+        TiSa.Forms.RibbonComponents.DocumentPreviewComponent.prototype = {
+            /* Create an array of handled commands with handler methods */
+            init: function () {
+
+                function onToogleClick(commandId, props, seq) {
+                    //if (_config.OnEdit) {
+                    //var state = props.DisableEvent ? props.On : _config.OnEdit(props.On);
+                    var btn = null;
+                    for (var i = 0; i < _config.ToggleButtons.length; i++) {
+                        var b = _config.ToggleButtons[i];
+                        var cp = b.get_controlProperties();
+                        if (cp.Command == commandId) {
+                            b.set_on(true);
+                            cp.Image32by32 = b.Image1;
+                            btn = b;
+                        }
+                        else {
+                            b.set_on(false);
+                            cp.Image32by32 = b.Image2;
+                        }
+                        var icon = $("img", document.getElementById(cp.Id + "-Large"));
+                        if (icon.length > 0)
+                            icon.attr("src", cp.Image32by32);
+                        b.refreshDOMElements();
+                    }
+
+                    var spinnerUp = _config.Controls.SpinnerUp;
+                    var spinnerDown = _config.Controls.SpinnerDown;
+                    spinnerUp.set_enabled(btn.DisplayState == 2 && _config.SpinnerCurrent < _config.SpinnerMax);
+                    spinnerDown.set_enabled(btn.DisplayState == 2 && _config.SpinnerCurrent > _config.SpinnerMin);
+                    spinnerUp.refreshDOMElements();
+                    spinnerDown.refreshDOMElements();
+
+                    _config.DisplayStateCurrent = btn.DisplayState;
+
+                    if (_config.OnUpdate)
+                        _config.OnUpdate();
+                    updateButtonSave();
+                }
+
+                function onSpinnerEnabled(commandId) {
+
+                    if (commandId == _idPrefix + 'spinnerUp.Command' && _config.SpinnerCurrent == _config.SpinnerMax ||
+                        commandId == _idPrefix + 'spinnerDown.Command' && _config.SpinnerCurrent == _config.SpinnerMin || _config.DisplayStateCurrent != 2)
+                        return false;
+                    return true;
+                }
+
+                function onSpinnerClick(commandId, props, seq) {
+
+                    var spinnerValue = _config.Controls.SpinnerValue;
+                    var cp = spinnerValue.get_controlProperties();
+
+                    if (commandId == _idPrefix + 'spinnerUp.Command') {
+                        _config.SpinnerCurrent += _config.SpinnerStep;
+                        if (_config.SpinnerCurrent > _config.SpinnerMax)
+                            _config.SpinnerCurrent = _config.SpinnerMax;
+                    }
+                    else if (commandId == _idPrefix + 'spinnerDown.Command') {
+                        _config.SpinnerCurrent -= _config.SpinnerStep;
+                        if (_config.SpinnerCurrent < _config.SpinnerMin)
+                            _config.SpinnerCurrent = _config.SpinnerMin;
+                    }
+
+                    cp.LabelText = _config.GetSpinnerText();
+                    var lbl = $("span", document.getElementById(cp.Id + "-Medium"));
+                    if (lbl.length > 0)
+                        lbl.text(cp.LabelText);
+                    spinnerValue.refreshDOMElements();
+
+                    var spinnerUp = _config.Controls.SpinnerUp;
+                    var spinnerDown = _config.Controls.SpinnerDown;
+                    spinnerUp.set_enabled(_config.SpinnerCurrent < _config.SpinnerMax);
+                    spinnerDown.set_enabled(_config.SpinnerCurrent > _config.SpinnerMin);
+                    spinnerUp.refreshDOMElements();
+                    spinnerDown.refreshDOMElements();
+
+                    if (_config.OnUpdate)
+                        _config.OnUpdate();
+                    updateButtonSave();
+                }
+
+                function onDefaultClick(commandId, props, seq) {
+                    _config.SpinnerCurrent = _config.SpinnerInitial;
+                    _config.DisplayStateCurrent = _config.DisplayStateInitial;
+                    onSpinnerClick(commandId, props, seq);
+
+                    for (var i = 0; i < _config.ToggleButtons.length; i++) {
+                        var b = _config.ToggleButtons[i];
+                        if (b.DisplayState == _config.DisplayStateInitial) {
+                            var cp = b.get_controlProperties();
+                            onToogleClick(cp.Command, props, seq);
+                            break;
+                        }
+                    }
+                    updateButtonSave();
+                }
+
+                function updateButtonSave() {
+                    var buttonSave = _config.Controls.ButtonSave;
+                    buttonSave.set_enabled(onSaveEnabled());
+                    buttonSave.refreshDOMElements();
+                }
+
+                function onSaveEnabled() {
+                    return _config.SpinnerUserInitial != _config.SpinnerCurrent || _config.DisplayStateUserInitial != _config.DisplayStateCurrent;
+                }
+
+                function onSaveClick(commandId, props, seq) {
+                    if (_config.OnSave) {
+                        _config.OnSave();
+                        updateButtonSave();
+                    }
+                }
+
+                //}
+
+                this._handledCommands = new Object();
+                //this._handledCommands['Sample.Tab.Command'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { /* do action */ } };
+                this._handledCommands[_idPrefix + 'Group.Command'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { /* do action */ } };
+                this._handledCommands[_idPrefix + 'dpFullForm.Command'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { onToogleClick(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'dpDividedForm.Command'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { onToogleClick(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'dpDocument.Command'] = { enable: function () { return true; }, handle: function (commandId, props, seq) { onToogleClick(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'spinnerUp.Command'] = { enable: function (commandId) { return onSpinnerEnabled(); }, handle: function (commandId, props, seq) { onSpinnerClick(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'spinnerDown.Command'] = { enable: function (commandId) { return onSpinnerEnabled(); }, handle: function (commandId, props, seq) { onSpinnerClick(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'dpDefault.Command'] = { enable: function (commandId) { return true; }, handle: function (commandId, props, seq) { onDefaultClick(commandId, props, seq); } };
+                this._handledCommands[_idPrefix + 'dpSave.Command'] = { enable: function (commandId) { return onSaveEnabled(); }, handle: function (commandId, props, seq) { onSaveClick(commandId, props, seq); } };
+                this._commands = [
+                    _idPrefix + 'Group.Command',
+                    _idPrefix + 'dpFullForm.Command',
+                    _idPrefix + 'dpDividedForm.Command',
+                    _idPrefix + 'dpDocument.Command',
+                    _idPrefix + 'spinnerUp.Command',
+                    _idPrefix + 'spinnerDown.Command',
+                    _idPrefix + 'dpDefault.Command',
+                    _idPrefix + 'dpSave.Command'
+                ];
+
+                if (_config.RibbonTab && _config.RibbonTab.IsCustom) {
+                    this._handledCommands[_config.RibbonTab.Command] = { enable: function () { return true; }, handle: function (commandId, props, seq) { /* do action */ } };
+                    this._commands.push(_config.RibbonTab.Command);
+                }
+            },
+
+            getFocusedCommands: function () { return []; },
+            getGlobalCommands: function () { return this._commands; },
+            canHandleCommand: function (commandId) {
+                var handlerFn = this._handledCommands[commandId].enable;
+                if (typeof (handlerFn) == 'function') {
+                    return handlerFn();
+                }
+                return true;
+            },
+            handleCommand: function (commandId, properties, sequence) {
+                return this._handledCommands[commandId].handle(commandId, properties, sequence);
+            },
+            isFocusable: function () { return false; },
+            yieldFocus: function () { return false; },
+            receiveFocus: function () { return true; },
+            handleGroup: function () { }
+
+        }
+        /* Register classes and initialize page component */
+        TiSa.Forms.RibbonComponents.DocumentPreviewComponent.registerClass('TiSa.Forms.RibbonComponents.DocumentPreviewComponent', CUI.Page.PageComponent);
+        TiSa.Forms.RibbonComponents.DocumentPreviewComponent.initializePageComponent();
+    }
+
+    function __initialize_BrowseComponent(config) {
+        var _config = config;
+        var _idPrefix = "TiSa.Browse.";
+        var _baseUrl = TiSa.Environment.AppUrl + '/Components';
+
+        TiSa.Forms.RibbonComponents.BrowseComponent = function () {
+            TiSa.Forms.RibbonComponents.BrowseComponent.initializeBase(this);
+        }
+        TiSa.Forms.RibbonComponents.BrowseComponent.initializePageComponent = function () {
+            var ribbonPageManager = SP.Ribbon.PageManager.get_instance();
+            if (null !== ribbonPageManager) {
+                var rbnInstance = TiSa.Forms.RibbonComponents.BrowseComponent.get_instance();
+                ribbonPageManager.addPageComponent(rbnInstance);
+            }
+        }
+
+        TiSa.Forms.RibbonComponents.BrowseComponent.get_instance = function () {
+            if (!TiSa.Forms.RibbonComponents.BrowseComponent.instance) {
+                TiSa.Forms.RibbonComponents.BrowseComponent.instance = new TiSa.Forms.RibbonComponents.BrowseComponent();
+            }
+            return TiSa.Forms.RibbonComponents.BrowseComponent.instance;
+        };
+
+        
+
+        TiSa.Forms.RibbonComponents.BrowseComponent.prototype = {
+            /* Create an array of handled commands with handler methods */
+            init: function () {
+                var buttonEnabled = false;
+
+                this._handledCommands = new Object();
+                this._handledCommands[_idPrefix + 'Group.Command'] = {
+                    enable: function () {
+                        return true;
+                    }, handle: function (commandId, props, seq) { /* do action */ }
+                };
+                this._handledCommands[_idPrefix + 'TemplateSelector.Command'] = {
+                    enable: function () {
+                        return true;
+                    }, handle: function (commandId, props, seq) { /* do action */ }
+                };
+                this._handledCommands[_idPrefix + 'ButtonPrev.Command'] = { enable: function () { return _config.Enable(0); }, handle: function (commandId, props, seq) { _config.Command(0); } };
+                this._handledCommands[_idPrefix + 'ButtonNext.Command'] = { enable: function () { return _config.Enable(1); }, handle: function (commandId, props, seq) { _config.Command(1); } };
+                this._commands = [
+                    _idPrefix + 'Group.Command',
+                    _idPrefix + 'ButtonPrev.Command',
+                    _idPrefix + 'ButtonNext.Command'
+                ];
+            },
+
+            getFocusedCommands: function () { return []; },
+            getGlobalCommands: function () { return this._commands; },
+            canHandleCommand: function (commandId) {
+                var handlerFn = this._handledCommands[commandId].enable;
+                if (typeof (handlerFn) == 'function') {
+                    return handlerFn();
+                }
+                return true;
+            },
+            handleCommand: function (commandId, properties, sequence) {
+                return this._handledCommands[commandId].handle(commandId, properties, sequence);
+            },
+            isFocusable: function () { return false; },
+            yieldFocus: function () { return false; },
+            receiveFocus: function () { return true; },
+            handleGroup: function () { }
+
+        }
+        /* Register classes and initialize page component */
+        TiSa.Forms.RibbonComponents.BrowseComponent.registerClass('TiSa.Forms.RibbonComponents.BrowseComponent', CUI.Page.PageComponent);
+        TiSa.Forms.RibbonComponents.BrowseComponent.initializePageComponent();
+    }
+
+    function __initialize_AdminComponent(config) {
+        var _config = config;
+        var _idPrefix = "TiSa.Admin.";
+        var _baseUrl = TiSa.Environment.AppUrl + '/Components'; //TiSa.Environment.SiteServerRelativeUrl + "/SiteAssets/TiSa";
+
+        TiSa.Forms.RibbonComponents.AdminComponent = function () {
+            TiSa.Forms.RibbonComponents.AdminComponent.initializeBase(this);
+        }
+        TiSa.Forms.RibbonComponents.AdminComponent.initializePageComponent = function () {
+            var ribbonPageManager = SP.Ribbon.PageManager.get_instance();
+            if (null !== ribbonPageManager) {
+                var rbnInstance = TiSa.Forms.RibbonComponents.AdminComponent.get_instance();
+                ribbonPageManager.addPageComponent(rbnInstance);
+            }
+        }
+
+        TiSa.Forms.RibbonComponents.AdminComponent.get_instance = function () {
+            if (TiSa.Forms.RibbonComponents.AdminComponent.instance == null) {
+                TiSa.Forms.RibbonComponents.AdminComponent.instance = new TiSa.Forms.RibbonComponents.AdminComponent();
+            }
+            return TiSa.Forms.RibbonComponents.AdminComponent.instance;
+        };
+
+        TiSa.Forms.RibbonComponents.AdminComponent.prototype = {
+            /* Create an array of handled commands with handler methods */
+            init: function () {
+                function onShowConsoleEnabled() {
+                    return _spPageContextInfo.isSiteAdmin;                    
+                }
+
+                function onShowConsoleClick(commandId, props, seq) {
+                    var b = _config.ShowConsoleButton;
+                    _config.State = !_config.State;
+                    var cp = b.get_controlProperties();                    
+                    b.set_on(_config.State);
+                    cp.Image32by32 = _config.State ? b.Image1 : b.Image2;
+                    
+                    var icon = $("img", document.getElementById(cp.Id + "-Large"));
+                    if (icon.length > 0)
+                        icon.attr("src", cp.Image32by32);
+                    b.refreshDOMElements();
+
+                    if (_config.OnShowConsole)
+                        _config.OnShowConsole(_config.State);
+                }
+
+                //}
+
+                this._handledCommands = new Object();
+
+                this._handledCommands[_idPrefix + 'ShowConsole.Command'] = { enable: function (commandId) { return onShowConsoleEnabled(); }, handle: function (commandId, props, seq) { onShowConsoleClick(commandId, props, seq); } };
+                this._commands = [
+                    _idPrefix + 'ShowConsole.Command'
+                ];
+
+                if (_config.RibbonTab && _config.RibbonTab.IsCustom) {
+                    this._handledCommands[_config.RibbonTab.Command] = { enable: function () { return true; }, handle: function (commandId, props, seq) { /* do action */ } };
+                    this._commands.push(_config.RibbonTab.Command);
+                }
+            },
+
+            getFocusedCommands: function () { return []; },
+            getGlobalCommands: function () { return this._commands; },
+            canHandleCommand: function (commandId) {
+                var handlerFn = this._handledCommands[commandId].enable;
+                if (typeof (handlerFn) == 'function') {
+                    return handlerFn();
+                }
+                return true;
+            },
+            handleCommand: function (commandId, properties, sequence) {
+                return this._handledCommands[commandId].handle(commandId, properties, sequence);
+            },
+            isFocusable: function () { return false; },
+            yieldFocus: function () { return false; },
+            receiveFocus: function () { return true; },
+            handleGroup: function () { }
+
+        }
+        /* Register classes and initialize page component */
+        TiSa.Forms.RibbonComponents.AdminComponent.registerClass('TiSa.Forms.RibbonComponents.AdminComponent', CUI.Page.PageComponent);
+        TiSa.Forms.RibbonComponents.AdminComponent.initializePageComponent();
+    }
+
+    function __initialize_CopyComponent(config) {
+        var _config = config;
+        var _idPrefix = "TiSa.Copy.";
+        var _baseUrl = TiSa.Environment.AppUrl + '/Components'; //TiSa.Environment.SiteServerRelativeUrl + "/SiteAssets/TiSa";
+
+        TiSa.Forms.RibbonComponents.CopyComponent = function () {
+            TiSa.Forms.RibbonComponents.CopyComponent.initializeBase(this);
+        }
+        TiSa.Forms.RibbonComponents.CopyComponent.initializePageComponent = function () {
+            var ribbonPageManager = SP.Ribbon.PageManager.get_instance();
+            if (null !== ribbonPageManager) {
+                var rbnInstance = TiSa.Forms.RibbonComponents.CopyComponent.get_instance();
+                ribbonPageManager.addPageComponent(rbnInstance);
+            }
+        }
+
+        TiSa.Forms.RibbonComponents.CopyComponent.get_instance = function () {
+            if (TiSa.Forms.RibbonComponents.CopyComponent.instance == null) {
+                TiSa.Forms.RibbonComponents.CopyComponent.instance = new TiSa.Forms.RibbonComponents.CopyComponent();
+            }
+            return TiSa.Forms.RibbonComponents.CopyComponent.instance;
+        };
+
+        TiSa.Forms.RibbonComponents.CopyComponent.prototype = {
+            /* Create an array of handled commands with handler methods */
+            init: function () {
+
+
+                function onCopyEnabled() {
+                    return true;
+                }
+                function onCopyClick(commandId, props, seq) {
+                    if (_config.OnCopy)
+                        _config.OnCopy();
+                }
+
+                //}
+
+                this._handledCommands = new Object();
+
+                this._handledCommands[_idPrefix + 'btnCopy.Command'] = { enable: function (commandId) { return onCopyEnabled(); }, handle: function (commandId, props, seq) { onCopyClick(commandId, props, seq); } };
+                this._commands = [
+                    _idPrefix + 'btnCopy.Command'
+                ];
+
+                if (_config.RibbonTab && _config.RibbonTab.IsCustom) {
+                    this._handledCommands[_config.RibbonTab.Command] = { enable: function () { return true; }, handle: function (commandId, props, seq) { /* do action */ } };
+                    this._commands.push(_config.RibbonTab.Command);
+                }
+            },
+
+            getFocusedCommands: function () { return []; },
+            getGlobalCommands: function () { return this._commands; },
+            canHandleCommand: function (commandId) {
+                var handlerFn = this._handledCommands[commandId].enable;
+                if (typeof (handlerFn) == 'function') {
+                    return handlerFn();
+                }
+                return true;
+            },
+            handleCommand: function (commandId, properties, sequence) {
+                return this._handledCommands[commandId].handle(commandId, properties, sequence);
+            },
+            isFocusable: function () { return false; },
+            yieldFocus: function () { return false; },
+            receiveFocus: function () { return true; },
+            handleGroup: function () { }
+
+        }
+        /* Register classes and initialize page component */
+        TiSa.Forms.RibbonComponents.CopyComponent.registerClass('TiSa.Forms.RibbonComponents.CopyComponent', CUI.Page.PageComponent);
+        TiSa.Forms.RibbonComponents.CopyComponent.initializePageComponent();
+    }
+
+    function __initialize_CustomButtonsComponent(config) {
+
+
+        TiSa.Forms.RibbonComponents.CustomButtonsComponent = function () {
+            TiSa.Forms.RibbonComponents.CustomButtonsComponent.initializeBase(this);
+        }
+        TiSa.Forms.RibbonComponents.CustomButtonsComponent.initializePageComponent = function () {
+            var ribbonPageManager = SP.Ribbon.PageManager.get_instance();
+            if (null !== ribbonPageManager) {
+                var rbnInstance = TiSa.Forms.RibbonComponents.CustomButtonsComponent.get_instance();
+                ribbonPageManager.addPageComponent(rbnInstance);
+            }
+        }
+
+        TiSa.Forms.RibbonComponents.CustomButtonsComponent.get_instance = function () {
+            if (TiSa.Forms.RibbonComponents.CustomButtonsComponent.instance == null) {
+                TiSa.Forms.RibbonComponents.CustomButtonsComponent.instance = new TiSa.Forms.RibbonComponents.CustomButtonsComponent();
+            }
+            return TiSa.Forms.RibbonComponents.CustomButtonsComponent.instance;
+        };
+
+        TiSa.Forms.RibbonComponents.CustomButtonsComponent.prototype = {
+            /* Create an array of handled commands with handler methods */
+            init: function () {
+                this._handledCommands = {};
+                this._commands = [];
+
+                for (var i = 0; i < config.RibbonGroups.length; i++) {
+                    var g = config.RibbonGroups[i];
+                    if (!g.EventsCreated) {
+                        var id = config.Prefix + g.Id + '.Group.Command';
+                        this._handledCommands[id] = { enable: function () { return true; }, handle: function (commandId, props, seq) { /* do action */ } };
+                        this._commands.push(id);
+                        g.EventsCreated = true;
+                    }
+                }
+
+                for (var i = 0; i < config.RibbonButtons.length; i++) {
+                    var b = config.RibbonButtons[i];
+                    if (!b.EventsCreated) {
+                        var id = config.Prefix + b.Id + '.Button.Command';
+                        var form = config.Form;
+
+                        this._handledCommands[id] = {
+                            Button: b,
+                            Config: config,
+                            enableFunc: b.Config.EnabledFunction,
+                            visibleFunc: b.Config.VisibleFunction,
+                            handleFunc: b.Config.CommandFunction,
+                            enable: function () {
+                                if (this.enableFunc && typeof (window[this.enableFunc]) == "function")
+                                    return window[this.enableFunc](this.Button.Config, form);
+                                else
+                                    return true;
+                            },
+                            visible: function () {
+                                if (this.visibleFunc && typeof (window[this.visibleFunc]) == "function") {
+                                    var sb = window[this.visibleFunc](this.Button.Config, form);
+                                    this.Button.Config.Visible = sb;
+                                    var visibledInGroupCnt = 0;
+                                    for (var k = 0; k < this.Button.Group.Buttons.length; k++) {
+                                        var bb = this.Button.Group.Buttons[k];
+                                        if (bb.Config.Visible)
+                                            visibledInGroupCnt++;
+                                    }
+
+                                    var visibleGroup = visibledInGroupCnt > 0;
+                                    if (this.Button.Group.Visible != visibleGroup) {
+                                        var domGroup = document.getElementById(this.Button.Group.Group.get_id());
+                                        domGroup.style.display = visibleGroup ? "" : "none";
+                                        this.Button.Group.Visible = visibleGroup;
+                                    }
+
+                                    if (this.Button.Group.Visible) {
+                                        var sid = 'RB-' + this.Button.Id;
+                                        var inlineStyleElement = document.getElementById(sid);
+
+                                        if (!this.Button.Config.Visible && !inlineStyleElement) {
+                                            var css = '#' + (this.Config.Prefix + this.Button.Id).replace(/\./g, "\\.") + '\\.Button-Large, #' + (this.Config.Prefix + this.Button.Id).replace(/\./g, "\\.") + '\\.Button-Small  {display:none; }';
+                                            var head = document.head || document.getElementsByTagName('head')[0];
+                                            var style = document.createElement('style');
+                                            style.type = 'text/css';
+                                            style.id = sid;
+                                            if (style.styleSheet) {
+                                                style.styleSheet.cssText = css;
+                                            } else {
+                                                style.appendChild(document.createTextNode(css));
+                                            }
+                                            head.appendChild(style);
+                                        }
+                                        if (this.Button.Config.Visible && inlineStyleElement) {
+                                            var head = document.head || document.getElementsByTagName('head')[0];
+                                            head.removeChild(inlineStyleElement);
+                                        }
+                                    }
+
+
+                                    return sb;
+                                }
+                                else
+                                    return true;
+                            },
+                            handle: function (commandId, props, seq) {
+                                window[this.handleFunc](this.Button.Config, form);
+                            }
+                        };
+                        this._commands.push(id);
+                        g.EventsCreated = true;
+                    }
+                }
+            },
+
+            getFocusedCommands: function () { return []; },
+            getGlobalCommands: function () { return this._commands; },
+            canHandleCommand: function (commandId) {
+                var handlerFn = this._handledCommands[commandId].visible;
+                if (typeof (handlerFn) == 'function') {
+                    var state = handlerFn.call(this._handledCommands[commandId]);
+                    if (!state)
+                        return false;
+                }
+
+                handlerFn = this._handledCommands[commandId].enable;
+                if (typeof (handlerFn) == 'function') {
+                    return handlerFn.call(this._handledCommands[commandId]);
+                }
+                return true;
+            },
+            handleCommand: function (commandId, properties, sequence) {
+                return this._handledCommands[commandId].handle(commandId, properties, sequence);
+            },
+            isFocusable: function () { return false; },
+            yieldFocus: function () { return false; },
+            receiveFocus: function () { return true; },
+            handleGroup: function () { }
+
+        }
+        /* Register classes and initialize page component */
+        TiSa.Forms.RibbonComponents.CustomButtonsComponent.registerClass('TiSa.Forms.RibbonComponents.CustomButtonsComponent', CUI.Page.PageComponent);
+        TiSa.Forms.RibbonComponents.CustomButtonsComponent.initializePageComponent();
+    }
+}
+
+if (SP && SP.SOD)
+    SP.SOD.notifyScriptLoadedAndExecuteWaitingJobs("tisa.ribbon.js");

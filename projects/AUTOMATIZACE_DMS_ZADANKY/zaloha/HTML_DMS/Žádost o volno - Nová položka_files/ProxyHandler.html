@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!-- saved from url=(0193)https://dms.pvs.cz/tisa/Pages/ProxyHandler.aspx?SPHostUrl=https%3A%2F%2Fdms%2Epvs%2Ecz%2Fsites%2FZadanky&SPLanguage=cs-CZ&SPClientTag=0&SPProductNumber=16%2E0%2E18526%2E20424&token=1&userid=192 -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+
+</title><meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script type="text/javascript" src="./jquery-1.11.1.min.js.stažený soubor"></script>
+    <script type="text/javascript">
+
+
+        var parentWindow;
+        var spContextInfo = JSON.parse('{"Redirecting":false,"RequireRedirect":false,"CurrentUserId":192}');
+
+
+        function getUrlParameterByName(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
+        var token = parseInt(getUrlParameterByName("token"));
+        var reloads = parseInt(getUrlParameterByName("r")) || 0;
+        
+        function proxyLog(msg) {
+            if (typeof (console) != "undefined") {
+                var suffix = 'reload=' + reloads.toString() + '; session=ih04jivdjexntlwi2nmstykx; attempt=0';
+                console.log('%cwnd ' + token.toString() + ': ' + msg + ' # ' + suffix, "color:#c6a");
+            }
+        }
+
+        $(document).ready(function () {
+
+            if (!token) {
+                proxyLog('token missing');
+                return;
+            }
+
+            //parentWindow = window;
+            //if (parentWindow.parent)
+            parentWindow = window.parent;
+
+            if (spContextInfo.RequireRedirect) {
+
+                if (!spContextInfo.Redirecting) {
+                    proxyLog('redirect request required');
+                    proxyLog('redirect to ' + spContextInfo.RedirectUrl);
+                }
+                else 
+                    proxyLog('redirecting...');
+                
+                
+                var responseObject = {
+                    Token: token,
+                    Data: "redirect",
+                    UserId: spContextInfo.CurrentUserId,
+                    SessionId: "ih04jivdjexntlwi2nmstykx"
+                }
+                if (parentWindow)
+                    parentWindow.postMessage(JSON.stringify(responseObject), '*');
+
+                if (!spContextInfo.Redirecting) 
+                    window.location.href = spContextInfo.RedirectUrl; 
+                return;
+            }
+
+
+            var responseObject = {
+                Token: token,
+                Data: "ready",
+                UserId: spContextInfo.CurrentUserId,
+                SessionId: "ih04jivdjexntlwi2nmstykx"
+            }
+            
+            parentWindow = window.parent;
+            if (parentWindow) {
+                proxyLog('is ready');
+                parentWindow.postMessage(JSON.stringify(responseObject), '*');                
+            }
+            else
+                proxyLog('is ready (no parent)');
+        });
+
+
+        $(window).on("message", function (e) {
+            var oe = e.originalEvent;
+            _receiveMessage(oe);
+        });
+
+        function logMessage(index, msg) {
+            //if (typeof (console) != "undefined")
+            //    console.log('wnd ' + token + '(' + index + '): ' + msg);
+        }
+
+
+        function _receiveMessage(e) {
+            var requestObject = JSON.parse(e.data);
+
+            var handler = requestObject.Handler;
+            if (handler.indexOf('?') > 0)
+                handler += '&SessionID=ih04jivdjexntlwi2nmstykx';
+            else
+                handler += '?SessionID=ih04jivdjexntlwi2nmstykx';
+
+            logMessage(requestObject.Index, 'call ' + handler);
+
+            if (requestObject.UserId) {
+                if (requestObject.UserId != spContextInfo.CurrentUserId) {
+                    // přerušení požadavku pokud by došlo ke změně uživatele na straně SP a né v APP
+                    //alert("požadavek byl přerušen, protože požadavek přichází od jiného uživatele, zkuste obnovit stránku");
+                    return;
+                }
+            }
+
+
+
+            var responseObject = {
+                Index: requestObject.Index,
+                Token: token,
+                Data: null
+            }
+            var dt = new Date().getTime();
+            if (requestObject.WebGet) {
+                $.get(handler, requestObject.Data,
+                    function (data) {
+                        var responseObject = {
+                            Index: requestObject.Index,
+                            Token: token,
+                            Data: data
+                        }
+                        logMessage(requestObject.Index, "receive data");
+
+                        parentWindow.postMessage(JSON.stringify(responseObject), '*');
+                        dt = dt - new Date().getTime();
+                        logMessage(requestObject.Index, "send data back " + dt.toString());
+
+                    }, "json").error(function (xhr, textStatus, errorThrown) {
+                        responseObject.IsError = true;
+                        responseObject.TextStatus = textStatus;
+                        responseObject.Error = errorThrown;
+                        parentWindow.postMessage(JSON.stringify(responseObject), '*');
+                        logMessage(requestObject.Index, "send data back with error");
+                    });
+            }
+            else {
+                $.post(handler, requestObject.Data,
+                    function (data) {
+                        var responseObject = {
+                            Index: requestObject.Index,
+                            Token: token,
+                            Data: data
+                        }
+                        logMessage(requestObject.Index, "receive data");
+
+                        parentWindow.postMessage(JSON.stringify(responseObject), '*');
+                        dt = dt - new Date().getTime();
+                        logMessage(requestObject.Index, "send data back " + dt.toString());
+
+                    }, "json").error(function (xhr, textStatus, errorThrown) {
+                        responseObject.IsError = true;
+                        responseObject.TextStatus = textStatus;
+                        responseObject.Error = errorThrown;
+                        parentWindow.postMessage(JSON.stringify(responseObject), '*');
+                        logMessage(requestObject.Index, "send data back with error");
+                    });
+            }
+
+        }
+
+    </script>
+</head>
+<body>
+
+
+</body></html>

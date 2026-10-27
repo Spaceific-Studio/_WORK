@@ -1,0 +1,29 @@
+﻿.tisa-loadingpanel {
+}
+.tisa-loadingpanel img {
+    vertical-align:middle;
+}
+.tisa-loadingpanel .ms-descriptiontext {
+    vertical-align:middle; 
+    padding-left:4px; color:#AAA;
+}
+.tisa-clear-inline {
+    clear:both;
+    display:inline-block;
+}
+.tisa-clear-block {
+    clear:both;
+    display:block;
+}
+.tisa-clear {
+    clear:both;    
+}
+
+.licenseExpiredAlert {
+	background-color: rgba(255, 229, 229, 0.42);
+	border: 1px solid rgba(255, 0, 0, 0.18);
+	padding: 3px;
+	display: inline-block;
+	font-style: italic;
+	color: red;
+}

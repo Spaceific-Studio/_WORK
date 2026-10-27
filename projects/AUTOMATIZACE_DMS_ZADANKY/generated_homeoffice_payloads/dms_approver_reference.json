@@ -1,0 +1,33 @@
+{
+  "source_item_id": 14735,
+  "source_item_title": "Pracovní nepřítomnost - PV/D4/014756 - Placené volno (4. 9. 2026 - 4. 9. 2026)",
+  "source_item_created": "2026-09-01T15:05:55Z",
+  "source_item_modified": "2026-09-02T10:17:22Z",
+  "source_item_status": "Approved",
+  "source_item_type_of_holiday": "Placené volno",
+  "source_content_type_id": "0x01007DB943C40B3C3B40B251CC0B9B3AF7D8006C0F3ADA5430B84BB19163A3AE860CAA",
+  "applicant_id": 192,
+  "department": "D4",
+  "division": "stavebni",
+  "approver_1_id": 260,
+  "approver_1": {
+    "__metadata": {
+      "id": "32ea24ba-405f-49db-88e1-dbaa380d662d",
+      "type": "SP.Data.UserInfoItem"
+    },
+    "Id": 260,
+    "Title": "Kortus Marek",
+    "EMail": "kortusm@pvs.cz"
+  },
+  "approver_2_id": 58,
+  "approver_2": {
+    "__metadata": {
+      "id": "7dd804fa-f6f5-4eeb-8971-8986caa8e4eb",
+      "type": "SP.Data.UserInfoItem"
+    },
+    "Id": 58,
+    "Title": "Miškovský Jiří",
+    "EMail": "miskovskyj@pvs.cz"
+  },
+  "loaded_by_get_only": true
+}

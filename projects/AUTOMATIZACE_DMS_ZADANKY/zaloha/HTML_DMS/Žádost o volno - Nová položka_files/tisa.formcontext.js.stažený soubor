@@ -1,0 +1,1784 @@
+"use strict";
+
+var TiSa = TiSa || {};
+TiSa.Forms = TiSa.Forms || {};
+TiSa.Templates = TiSa.Templates || {};
+TiSa.Templates.Controls = TiSa.Templates.Controls || {};
+TiSa.Templates.RegisteredFields = TiSa.Templates.RegisteredFields || {};
+
+TiSa.Forms.GetFormTable = function () {
+    var elements = TiSa.Utils.GetElementsByClassName(document, "ms-formtable");
+    if (elements.length > 0)
+        return elements[0];
+    return null;
+};
+
+TiSa.Forms._CurrentFormContext = null;
+
+TiSa.Forms.GetFormControlContext = function () {
+    if (TiSa.Forms._CurrentFormContext !== null)
+        return TiSa.Forms._CurrentFormContext;
+
+    var formControlContext = {};
+    var wp = null;
+
+    var wpSelected = document.getElementById("_wpSelected");
+    if (wpSelected != null) {
+        var wpn = wpSelected.value.split('_').pop();
+        wp = document.getElementById(wpn);
+    }
+    if (!wp)
+        wp = document.getElementById("WebPartWPQ2"); //flexiform
+    if (!wp)
+        wp = document.getElementById("WebPartWPQ1"); // online
+
+    if ($(".ms-formtable", wp).length == 0) {
+        wp = document.getElementById("WebPartWPQ1"); // online        
+    }
+
+    if (!wp) {
+        if (window.console && window.console.debug)
+            window.console.debug("WebPart not found");
+        return;
+    }
+
+    formControlContext.Qualifier = wp.id.substring(wp.id.indexOf("WebPart") + "WebPart".length);
+    formControlContext.Form = SPClientForms.ClientFormManager.GetClientForm(formControlContext.Qualifier);
+    formControlContext.Context = window[formControlContext.Qualifier + "FormCtx"];
+    if (!formControlContext.Context)
+        return null;
+
+    //formControlContext.Form
+
+    formControlContext.Fields = [];
+    formControlContext.FieldsByName = {};
+
+    //var elements = TiSa.Utils.GetElementsByClassName(wp, "ms-formtable");    
+
+    var table = null;
+    var tables = $(".ms-formtable", wp);
+    for (var i = 0; i < tables.length; i++) {
+        if ($(tables[i]).parent().closest(".ms-formtable").length == 0) {
+            table = $(tables[i]);
+            break;
+        }
+    }
+    formControlContext.Table = table; //  TiSa.Forms.GetFormTable();
+
+    function updateFieldControl(fieldControl, callbackFunction) {
+        // instance jiz byla ziskana
+        if (fieldControl._fieldControlUpdated) {
+            if (callbackFunction)
+                callbackFunction.call(fieldControl);
+            return;
+        }
+
+        // instance je vytvorena
+        if (TiSa.Templates.Controls.hasOwnProperty(fieldControl.InternalName)) {
+            fieldControl.TiSaControl = TiSa.Templates.Controls[fieldControl.InternalName];
+            fieldControl._fieldControlUpdated = true;
+            if (callbackFunction)
+                callbackFunction.call(fieldControl);
+            return;
+        }
+
+        // instance bude vytvorena pozdeji
+        if (TiSa.Templates.RegisteredFields.hasOwnProperty(fieldControl.InternalName)) {
+            TiSa.Templates.RegisteredFields[fieldControl.InternalName].AddInitializeCallbackFunctions(function () {
+                fieldControl.TiSaControl = TiSa.Templates.RegisteredFields[fieldControl.InternalName].ControlReference;
+                fieldControl._fieldControlUpdated = true;
+                if (callbackFunction)
+                    callbackFunction.call(fieldControl);
+                return;
+            });
+            return;
+        }
+
+        // instance neobsahuje control
+        fieldControl._fieldControlUpdated = true;
+        if (callbackFunction)
+            callbackFunction.call(fieldControl);
+    }
+
+    function warnMethodMissing(control, methodName) {
+        TiSa.Console.Warn("Control template '" + control.Control.constructor.name + "' does not have method '" + methodName + "'.");
+    }
+
+    function warnNotImplemented(methodName, msg) {
+        TiSa.Console.Warn("Warning implementation for method: " + methodName + ". " + msg);
+    }
+
+    var fieldControlEvents = {
+        _fieldControlUpdated: false,
+
+        SetValue: function (value, triggerChange) {
+            if (typeof (value) === 'undefined') {
+                return;
+            }
+
+            if (typeof (triggerChange) === 'undefined') {
+                triggerChange = false;
+            }
+
+            updateFieldControl(this, function () {
+                if (this.TiSaControl != null) {
+                    if (this.TiSaControl.Control.SetValue)
+                        this.TiSaControl.Control.SetValue(value, triggerChange);
+                    else
+                        warnMethodMissing(this.TiSaControl, "SetValue");
+                }
+                else {
+                    if (this.Editable) {
+                        var t = $("span.tisa-readonly-text", this.TableCell);
+                        if (this.FieldType !== "SPFieldNote")
+                            t.text(value ? value : "");
+                        switch (this.FieldType) {
+                            case 'SPFieldCurrency':
+                            case 'SPFieldInteger':
+                            case 'SPFieldNumber':
+                                var regionalCulture = _spPageContextInfo.currentCultureName;
+                                if (typeof value === 'number' || value instanceof Number)
+                                    value = value.toString();
+                                if (regionalCulture === "cs-CZ" && value)
+                                    value = value.replace(".", ",");
+                                var input = $("input[type!=hidden]:first", this.TableCell);
+                                input.val(value);
+                                if (triggerChange)
+                                    input.trigger("change");
+                                break;
+
+                            case 'SPFieldURL':
+                            case 'SPFieldText':
+                            case 'SPFieldFile':
+                                var input = $("input[type!=hidden]:first", this.TableCell);
+                                input.val(value);
+                                if (triggerChange)
+                                    input.trigger("change");
+                                break;
+
+                            case 'SPFieldChoice':
+                            case 'SPFieldLookup':
+                                var input = this.GetInput();
+
+                                if (input.length > 1) {
+                                    // radios
+                                    if (this.FieldType == "SPFieldChoice") {
+                                        for (var i = 0; i < input.length; i++) {
+                                            var ii = input[i];
+                                            if (ii.value == value) {
+                                                ii.checked = true;
+                                                if (triggerChange)
+                                                    $(ii).trigger("change");
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                else {
+                                    input.val(value);
+                                    if (triggerChange)
+                                        input.trigger("change");
+                                }
+                                break;
+
+                            case 'SPFieldDateTime':
+                                var input = $("input[type!=hidden]:first", this.TableCell);
+
+                                if (value == null)
+                                    break;
+
+                                if (value instanceof Date
+                                    || (typeof (value) == "object" && value.getDate)
+                                    || value.indexOf("Z") === (value.length - 1)
+                                ) {
+                                    var m = moment(value);
+                                    if (m.isValid()) {
+                                        var f = (TiSa.GetDefaultDateFormat) ? TiSa.GetDefaultDateFormat() : "l";
+                                        value = m.format(f + " LT");
+                                    }
+                                    else
+                                        value = "";
+                                    t.text(value);
+                                }
+
+                                var mTime = value.match(/[\|\sT]?(\d{1,2}\:\d{1,2}(\:\d{1,2})?)\s?(AM|PM)?\s?$/i);
+                                if (mTime)
+                                    value = value.substring(0, mTime.index);
+
+                                input.val(value);
+                                if (mTime) {
+                                    var isAM = mTime[2] && mTime[2].match(/AM/i);
+                                    var isPM = mTime[2] && mTime[2].match(/PM/i);
+                                    var timeParts = mTime[1].split(':');
+                                    var sh = "0";
+                                    var sm = "00";
+                                    if (timeParts.length == 2) {
+                                        var h = parseInt(timeParts[0]);
+                                        if (isAM || isPM) {
+                                            if (isAM && h == 12)
+                                                h = 0;
+                                            else if (isPM && h < 12)
+                                                h += 12;
+                                        }
+                                        sh = h.toString();
+                                        $("select[id$=DateTimeFieldDateHours]", this.TableCell).val(sh);
+
+                                        var m = parseInt(timeParts[1]);
+                                        m = m - m % 5; // round for SP control
+                                        sm = m >= 10 ? m.toString() : "0" + m.toString();
+                                        $("select[id$=DateTimeFieldDateMinutes]", this.TableCell).val(sm);
+                                    }
+                                }
+
+
+                                if (triggerChange)
+                                    input.trigger("change");
+                                break;
+
+                            case 'SPFieldNote':
+                                //var input = $("textarea:first", this.TableCell);
+                                var input = this.GetInput();
+                                if (input.length > 0) {
+                                    if (input.hasClass("ms-rtestate-field")) {
+                                        $("div", input).html(value);
+                                        if (triggerChange)
+                                            input.trigger("change");
+
+                                        $(" > div > div", t).html(value);
+                                    }
+                                    else {
+                                        input.val(value);
+                                        if (triggerChange)
+                                            input.trigger("change");
+                                        t.text(value ? value : "");
+                                    }
+                                }
+                                break;
+
+                            case 'SPFieldBoolean':
+                                var input = $("input[type!=hidden]:first", this.TableCell);
+                                var bVal = value === "True" || value === 1 || value == true;
+                                if (input.length > 0) {
+                                    var inputDOM = input[0];
+                                    inputDOM.checked = bVal;
+                                }
+                                if (triggerChange)
+                                    input.trigger("change");
+                                break;
+                            case 'SPFieldUser':
+                            case 'SPFieldUserMulti':
+                                //var c = $(fieldParams.controlsCell);
+
+                                //ie8 fix;
+                                var visible = $(this.TableRow).is(":visible");
+                                if (__isIE8 && __isIE8())
+                                    if (!visible)
+                                        this.Show();
+
+
+                                var dispLink = $(".ms-peopleux-userdisplink", this.TableCell);
+                                var pickerDiv = $("div", this.TableCell);
+                                if (dispLink.length > 0) {
+                                    dispLink.text(s);
+                                }
+                                else if (pickerDiv.length > 0) {
+
+                                    var fnEnsurePicker = function (pid, callback) {
+                                        // je nutnÃ© v pÅ™Ã­pade user pole poÄkat na zobrazenÃ­ formu, bohuÅ¾el nÅ¡kdy to dÄ›lalo problÃ©m :-(
+                                        if (TiSa.Forms && TiSa.Forms.CurrentForm && !TiSa.Forms.CurrentForm.IsVisible()) {
+                                            setTimeout(function () { fnEnsurePicker(pid, callback); }, 100);
+                                        }
+                                        else {
+
+                                            var picker = SPClientPeoplePicker.SPClientPeoplePickerDict[pid];
+                                            if (picker.AutoFillEnabled && picker.AutoFillControl == null) {
+                                                var autoFillContext;
+
+                                                try {
+                                                    autoFillContext = typeof SPClientAutoFill;
+                                                }
+                                                catch (e) {
+                                                    autoFillContext = "undefined";
+                                                }
+                                                EnsureScript("autofill.js", autoFillContext, function () {
+                                                    picker.EnsureAutoFillControl();
+                                                    callback(picker);
+                                                });
+                                            }
+                                            else
+                                                callback(picker);
+                                        }
+                                    };
+
+                                    var fnSetSPClientPeoplePicker = function (pid, v) {
+
+                                        fnEnsurePicker(pid, function (picker) {
+
+                                            // clean old values
+                                            if (!picker.IsEmpty())
+                                                for (var puk in picker.ProcessedUserList) {
+                                                    var pu = picker.ProcessedUserList[puk];
+                                                    if (pu) {
+                                                        var el = document.getElementById(pu.DeleteUserElementId).parentNode;
+                                                        picker.DeleteProcessedUser(el);
+                                                    }
+                                                    delete picker.ProcessedUserList[puk];
+                                                }
+
+
+                                            if (Array.isArray && Array.isArray(v)) {
+                                                for (var b = 0; b < v.length; b++) {
+                                                    var c = v[b];
+
+                                                    if (c && c.get_loginName) {
+                                                        picker.AddProcessedUser({
+                                                            Key: c.get_loginName(),
+                                                            Description: c.get_loginName().split('|').pop(),
+                                                            DisplayText: c.get_title(),
+                                                            EntityType: "User",
+                                                            IsResolved: true,
+                                                            MultipleMatches: [],
+                                                            Resolved: true
+                                                        }, true);
+                                                    }
+                                                    else if (c && c.get_lookupId) {
+                                                        var userId = c.get_lookupId();
+                                                        var cctx = SP.ClientContext.get_current();
+                                                        var web = cctx.get_web();
+                                                        var u = web.getUserById(userId);
+                                                        cctx.load(u, "LoginName", 'Title');
+                                                        cctx.executeQueryAsync(function () {
+                                                            if (u.isPropertyAvailable("LoginName")) {
+                                                                var login = u.get_loginName().split('|').pop();
+                                                                picker.AddProcessedUser({
+                                                                    Key: u.get_loginName(),
+                                                                    Description: u.get_loginName().split('|').pop(),
+                                                                    DisplayText: u.get_title(),
+                                                                    EntityType: "User",
+                                                                    IsResolved: true,
+                                                                    MultipleMatches: [],
+                                                                    Resolved: true
+                                                                }, true);
+                                                            }
+                                                        }, function () {
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                            else if (typeof (v) === 'string') {
+
+                                                // set new value
+                                                if (v.length > 0) {
+
+
+                                                    var unresolvedUserInfo = SPClientPeoplePicker.BuildUnresolvedEntity(v, v);
+                                                    if (picker.AutoFillEnabled && picker.AutoFillControl == null) {
+                                                        var autoFillContext;
+
+                                                        try {
+                                                            autoFillContext = typeof SPClientAutoFill;
+                                                        }
+                                                        catch (e) {
+                                                            autoFillContext = "undefined";
+                                                        }
+                                                        EnsureScript("autofill.js", autoFillContext, function () {
+                                                            picker.EnsureAutoFillControl();
+                                                            picker.AddUnresolvedUser(unresolvedUserInfo, true);
+                                                        });
+                                                    }
+                                                    else
+                                                        picker.AddUnresolvedUser(unresolvedUserInfo, true);
+
+                                                }
+                                            }
+                                            else {
+                                                if (v && v.get_loginName) {
+
+                                                    picker.AddProcessedUser({
+                                                        Key: v.get_loginName(),
+                                                        Description: v.get_loginName().split('|').pop(),
+                                                        DisplayText: v.get_title(),
+                                                        EntityType: "User",
+                                                        IsResolved: true,
+                                                        MultipleMatches: [],
+                                                        Resolved: true
+                                                    }, true);
+
+                                                }
+                                                else if (v && v.get_lookupId) {
+                                                    var userId = v.get_lookupId();
+                                                    var cctx = SP.ClientContext.get_current();
+                                                    var web = cctx.get_web();
+                                                    var u = web.getUserById(userId);
+                                                    cctx.load(u, "LoginName", 'Title');
+                                                    cctx.executeQueryAsync(function () {
+                                                        var login = u.get_loginName().split('|').pop();
+                                                        picker.AddProcessedUser({
+                                                            Key: u.get_loginName(),
+                                                            Description: u.get_loginName().split('|').pop(),
+                                                            DisplayText: u.get_title(),
+                                                            EntityType: "User",
+                                                            IsResolved: true,
+                                                            MultipleMatches: [],
+                                                            Resolved: true
+                                                        }, true);
+                                                    }, function () {
+
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }; //end fn
+
+
+                                    var pkID = pickerDiv[1].id;
+                                    if (window.SPClientPeoplePicker) {
+                                        var s = value;
+                                        var multi = false;
+                                        if ((typeof (value) == 'string' && (
+                                            value.indexOf(";#") >= 0
+                                            || /^\d+$/.test(value)
+                                            || /^(i|c):\d/.test(value) && (value.indexOf(",") > 0 || value.indexOf(";") > 0) // claims separated by ',' or ';'
+                                            || /^\[\s*\{/.test(value) && value.indexOf("Key") > 0 // AT with users
+                                        )
+                                        )
+                                            || value === parseInt(value, 0)
+                                            || Array.isArray && Array.isArray(value)
+                                        ) {
+
+                                            var ctx = SP.ClientContext.get_current();
+                                            var web = ctx.get_web();
+
+                                            var id = 0;
+                                            var name = value;
+
+                                            if (typeof (value) == 'string') {
+
+                                                if (/^(i|c):\d/.test(value) && (value.indexOf(",") > 0 || value.indexOf(";") > 0)) {
+                                                    multi = true;
+                                                    var arr = value.split(/[,;\s]+/);
+                                                    id = [];
+                                                    name = [];
+                                                    for (var b = 0; b < arr.length; b++) {
+                                                        var c = arr[b];
+                                                        //id.push(parseInt(c.split(';')[0], 0));
+                                                        if (c)
+                                                            name.push(c);
+                                                    }
+                                                }
+                                                else if (/^\[\s*\{/.test(value) && value.indexOf("Key") > 0) {
+                                                    multi = true;
+                                                    var tbl = JSON.parse(value);
+                                                    id = [];
+                                                    name = [];
+                                                    for (var b = 0; b < tbl.length; b++) {
+                                                        var c = tbl[b];
+                                                        if (!c.Cells[0])
+                                                            continue;
+                                                        var arr = JSON.parse(c.Cells[0]);
+                                                        for (var d = 0; d < arr.length; d++) {
+                                                            name.push(arr[d].Key);
+                                                        }
+                                                    }
+                                                }
+                                                else if (value.indexOf(";#") >= 0 && value.indexOf("|") >= 0) {
+                                                    multi = true;
+                                                    var arr = value.split('|');
+                                                    id = [];
+                                                    name = [];
+                                                    for (var b = 0; b < arr.length; b++) {
+                                                        var c = arr[b];
+                                                        if (c.indexOf(";#") >= 0) {
+                                                            s = c.split(';')[0];
+                                                            id.push(parseInt(s, 0));
+                                                        }
+                                                    }
+                                                }
+                                                else {
+                                                    if (value.indexOf(";#") >= 0) {
+                                                        s = value.split(';')[0];
+                                                        name = value.split('#').pop();
+                                                    }
+                                                    id = parseInt(s, 0);
+                                                }
+                                            }
+                                            else if (Array.isArray && Array.isArray(value)) {
+                                                // array of ids, or logins
+                                                id = [];
+                                                name = [];
+                                                for (var b = 0; b < value.length; b++) {
+                                                    var c = value[b];
+                                                    if (c.get_lookupId)
+                                                        id.push(c.get_lookupId());
+                                                    else if (!isNaN(c))
+                                                        id.push(parseInt(c, 0));
+                                                    else {
+                                                        name.push(c);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                                id = value; // value is int
+
+
+
+                                            if (Array.isArray(id) && id.length > 0) {
+                                                var uu = [];
+                                                for (var b = 0; b < id.length; b++) {
+                                                    var u = web.getUserById(id[b]);
+                                                    ctx.load(u);
+                                                    uu.push(u);
+                                                }
+                                                ctx.executeQueryAsync(function () {
+                                                    fnSetSPClientPeoplePicker(pkID, uu);
+                                                }, function () {
+                                                    TiSa.Console.Warn("unresolved " + id.join(';'));
+                                                    fnSetSPClientPeoplePicker(pkID, name);
+                                                });
+                                            }
+                                            else if (Array.isArray(name) && name.length > 0) {
+                                                var uu = [];
+                                                for (var b = 0; b < name.length; b++) {
+                                                    var u = web.ensureUser(name[b]);
+                                                    ctx.load(u);
+                                                    uu.push(u);
+                                                }
+                                                ctx.executeQueryAsync(function () {
+                                                    fnSetSPClientPeoplePicker(pkID, uu);
+                                                }, function () {
+                                                    TiSa.Console.Warn("unresolved " + name.join(';'));
+                                                    fnSetSPClientPeoplePicker(pkID, name);
+                                                });
+                                            }
+                                            else {
+                                                var u = web.getUserById(id);
+                                                ctx.load(u);
+                                                ctx.executeQueryAsync(function () {
+                                                    fnSetSPClientPeoplePicker(pkID, u);
+                                                }, function () {
+                                                    TiSa.Console.Warn("unresolved " + id);
+                                                    fnSetSPClientPeoplePicker(pkID, name);
+                                                });
+                                            }
+
+
+
+                                        }
+                                        else
+                                            fnSetSPClientPeoplePicker(pkID, s);
+
+                                    }
+                                    else {
+                                        var me = this;
+                                        setTimeout(function () {
+                                            TiSa.Console.Log("wait for SPClientPeoplePicker...");
+                                            if (!window.__SPClientPeoplePickerCounter)
+                                                window.__SPClientPeoplePickerCounter = 1;
+                                            else
+                                                window.__SPClientPeoplePickerCounter++;
+                                            if (window.__SPClientPeoplePickerCounter >= 100) {
+                                                TiSa.Console.Log("wait for SPClientPeoplePicker limit exceeded");
+                                                delete window.__SPClientPeoplePickerCounter;
+                                                return;
+                                            }
+                                            me.SetValue(value, triggerChange);
+                                        }, 100);
+                                    }
+
+
+                                    // ie8 fix
+                                    if (__isIE8 && __isIE8())
+                                        if (!visible)
+                                            this.Hide();
+                                }
+                                break;
+                            case "SPFieldTaxonomyFieldType":
+                            case "SPFieldTaxonomyFieldTypeMulti":
+                                var container = this.GetInput()[0];
+
+                                var inputId = container.InputFieldId;
+                                var inputTaxonomy = document.getElementById(inputId);
+
+
+                                //var hiddenInputValue = $("[id$=input]", this.TableCell);
+                                var values = [];
+                                if (value.getEnumerator) {
+                                    var termsEnumerator = value.getEnumerator();
+                                    var resultInput = [];
+                                    var resultElements = [];
+                                    var breakLoop = false;
+                                    while (termsEnumerator.moveNext()) {
+                                        var term = termsEnumerator.get_current();
+                                        values.push(term.get_name() + "|" + term.get_id().toString());
+                                    }
+                                }
+                                else
+                                    values = value.split(/;|\|/g);
+                                var sspId = container.SspId;
+                                var termSetId = container.TermSetId;
+                                var isMulti = container.IsMulti;
+                                var lcid = container.Lcid;
+
+                                var cctx = SP.ClientContext.get_current();
+
+                                var taxonomySession = SP.Taxonomy.TaxonomySession.getTaxonomySession(cctx);
+                                var termStore = taxonomySession.get_termStores().getById(sspId);
+                                var tss = termStore.getTermSet(termSetId, lcid);
+                                var terms = tss.getAllTerms();
+                                cctx.load(terms);
+
+                                var region = $("[id$=containereditableRegion]", this.TableCell);
+                                region.html("&ZeroWidthSpace;");
+
+                                cctx.executeQueryAsync(function () {
+                                    var termsEnumerator = terms.getEnumerator();
+                                    var resultInput = [];
+                                    var resultElements = [];
+                                    var breakLoop = false;
+                                    while (termsEnumerator.moveNext()) {
+                                        var term = termsEnumerator.get_current();
+                                        var name = term.get_name();
+                                        var id = term.get_id().toString();
+                                        for (var i = 0; i < values.length; i++) {
+                                            var v = values[i];
+                                            var k = name + "|" + id;
+                                            if ((v == name || v == id) && resultInput.indexOf(k) < 0) {
+                                                resultInput.push(k);
+                                                var s = '<span class="valid-text" title="">' + name + '</span>';
+                                                if (isMulti)
+                                                    s += "; ";
+                                                resultElements.push(s);
+                                                if (!isMulti) {
+                                                    breakLoop = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (breakLoop)
+                                            break;
+                                    }
+                                    inputTaxonomy.value = resultInput.join(';');
+                                    region.html("&ZeroWidthSpace;");
+                                    for (var i = 0; i < resultElements.length; i++) {
+                                        region.append(resultElements[i]);
+                                    }
+                                }, function (sender, e) {
+
+                                });
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            });
+        },
+        GetValue: function (callBackFunction) {
+            if (callBackFunction)
+                updateFieldControl(this, function () {
+                    var v = this.GetValue();
+                    callBackFunction.call(this, v);
+
+                });
+
+            if (this.TiSaControl != null) {
+                if (this.TiSaControl.Control.GetValue)
+                    return this.TiSaControl.Control.GetValue();
+                else
+                    warnMethodMissing(this.TiSaControl, "GetValue");
+            }
+            else {
+                if (this.Editable) {
+                    var input = this.GetInput();
+                    if (this.FieldType == "SPFieldUser" || this.FieldType == "SPFieldUserMulti") {
+                        if (input != null) {
+                            var uu = input.GetAllUserInfo();
+                            var r = [];
+                            for (var i = 0; i < uu.length; i++)
+                                r.push(uu[i].Key.split('|').pop());
+                            return r.join(", ");
+                        }
+                        else {
+                            this.GetInput(function (input) {
+                                if (input != null && callBackFunction) {
+                                    var uu = input.GetAllUserInfo();
+                                    var r = [];
+                                    for (var i = 0; i < uu.length; i++)
+                                        r.push(uu[i].Key.split('|').pop());
+                                    callBackFunction(r.join(", "));
+                                }
+                            });
+                            return null;
+                        }
+                    }
+                    if (input != null)
+                        switch (this.FieldType) {
+                            case "SPFieldChoice":
+                                if (input.length > 1) {
+                                    for (var i = 0; i < input.length; i++) {
+                                        var ii = input[i];
+                                        if (ii.checked) {
+                                            return ii.value;
+                                        }
+                                    }
+                                    return null;
+                                }
+                                else
+                                    return input.val();
+                            case "SPFieldBoolean":
+                                var ii = input[0];
+                                return ii.checked;
+                            case "SPFieldTaxonomyFieldType":
+                            case "SPFieldTaxonomyFieldTypeMulti":
+                                var inputId = input[0].InputFieldId;
+                                return document.getElementById(inputId).value;
+                            case "SPFieldNote":
+                                if (input.hasClass("ms-rtestate-field"))
+                                    return $("div", input).html();
+                                else
+                                    return input.val();
+                            default:
+                                return input.val();
+                        }
+                }
+                else {
+                    var v = this.FormControlContext.Context.ListData[this.InternalName];
+                    if (v.indexOf("<div") >= 0) {
+
+                        // SP FIX - remove envelope
+                        v = v.substring(12, v.length - 6);
+
+                        // SP FIX - SP generate links => remove links
+                        v = v.replace(new RegExp('<a href="[^>]*>([^<>]*)</a>', 'ig'), "$1");
+                        // SP FIX - decode        		
+                        v = v.replace(/\&quot;/g, "\"");
+                        // SP FIX - decode
+                        v = v.replace(/\&lt;/g, "<").replace(/\&gt;/g, ">");
+                    }
+
+                    switch (this.FieldType) {
+                        case "SPFieldBoolean":
+                            return v && (v == "1" || v.toLowerCase() == "ano" || v.toLowerCase() == "yes") ? "1" : "0";
+                        default:
+                            return v;
+                    }
+                }
+            }
+            return "";
+        },
+        GetDisplayValue: function (callBackFunction) {
+            if (callBackFunction)
+                updateFieldControl(this, function () {
+                    var v = this.GetDisplayValue();
+                    callBackFunction.call(this, v);
+                });
+
+            var v = this.GetValue();
+            if (!v)
+                v = "";
+            switch (this.FieldType) {
+                case "SPFieldUser":
+                    var input = this.GetInput();
+                    if (input != null) {
+                        var uu = input.GetAllUserInfo();
+                        var r = [];
+                        for (var i = 0; i < uu.length; i++)
+                            if (uu[i].DisplayText)
+                                r.push(uu[i].DisplayText);
+                        return r.join(", ");
+                    }
+                    else {
+                        this.GetInput(function (input) {
+                            if (input != null && callBackFunction) {
+                                var uu = input.GetAllUserInfo();
+                                var r = [];
+                                for (var i = 0; i < uu.length; i++)
+                                    if (uu[i].DisplayText)
+                                        r.push(uu[i].DisplayText);
+                                callBackFunction(r.join(", "));
+                            }
+                        });
+                        return null;
+                    }
+                    break;
+                case "SPFieldTaxonomyFieldType":
+                    return v.split("|")[0];
+                case "SPFieldTaxonomyFieldTypeMulti":
+                    var arr = v.split(";");
+                    var arr2 = [];
+                    for (var i = 0; i < arr.length; i++)
+                        arr2.push(arr[i].split('|')[0]);
+                    return arr2.join('; ');
+            }
+            return v;
+        },
+        GetInput: function (callBackFunction) {
+            updateFieldControl(this);
+
+            var hi = $("input[id^=tisa_controlvalue_]", this.TableCell);
+
+            if (hi.length > 0) {
+                return hi;
+            }
+            else {
+                if (this.Editable) {
+                    switch (this.FieldType) {
+                        case 'SPFieldURL':
+                        case 'SPFieldCurrency':
+                        case 'SPFieldInteger':
+                        case 'SPFieldNumber':
+                        case 'SPFieldText':
+                        case 'SPFieldBoolean':
+                        case 'SPFieldDateTime':
+                        case 'SPFieldFile':
+                            return $("input[type!=hidden]:first", this.TableCell);
+                        case 'SPFieldChoice':
+                        case 'SPFieldLookup':
+                            var input = $("select:first", this.TableCell);
+                            if (input.length > 0) {
+                                // select;
+                                return input;
+                            }
+                            else {
+                                input = $("input[type=radio]", this.TableCell);
+                            }
+                            if (callBackFunction)
+                                callBackFunction.call(this, input);
+                            return input;
+                            break;
+                        case 'SPFieldMultiChoice':
+                            var input = $("input[type=checkbox]", this.TableCell);
+                            if (callBackFunction)
+                                callBackFunction.call(this, input);
+                            return input;
+                        case 'SPFieldNote':
+                            var input = $("textarea:first", this.TableCell);
+
+                            if (input.length === 0) {
+                                //html
+                                input = $(".ms-rtestate-field:first", this.TableCell);
+                                var editor = $(".ms-rtestate-field", input);
+                                if (editor.length > 0) {
+                                    input = editor;
+                                }
+                            }
+
+                            if (callBackFunction)
+                                callBackFunction.call(this, input);
+                            return input;
+                        case 'SPFieldUser':
+                        case 'SPFieldUserMulti':
+                            var ct = $("div.sp-peoplepicker-topLevel", this.TableCell);
+                            var ppid = ct.attr("id");
+                            if (window.SPClientPeoplePicker) {
+                                var ii = SPClientPeoplePicker.SPClientPeoplePickerDict[ppid];
+                                if (callBackFunction)
+                                    callBackFunction(ii);
+                                return ii;
+                            }
+                            else {
+                                /*
+                                var me = this;
+                                setTimeout(function () {
+                                    if (window.SPClientPeoplePicker)
+                                        me.GetInput(callBackFunction);
+                                }, 200);
+                                return null;
+                                */
+
+                                var me = this;
+                                setTimeout(function () {
+                                    TiSa.Console.Log("wait for SPClientPeoplePicker...");
+                                    if (!window.__SPClientPeoplePickerCounter)
+                                        window.__SPClientPeoplePickerCounter = 1;
+                                    else
+                                        window.__SPClientPeoplePickerCounter++;
+                                    if (window.__SPClientPeoplePickerCounter >= 100) {
+                                        TiSa.Console.Log("wait for SPClientPeoplePicker limit exceeded");
+                                        delete window.__SPClientPeoplePickerCounter;
+                                        return;
+                                    }
+                                    me.GetInput(callBackFunction);
+                                }, 100);
+                                return null;
+                            }
+                        case "SPFieldTaxonomyFieldType":
+                        case "SPFieldTaxonomyFieldTypeMulti":
+                            var ct = $("div[id$='$container']", this.TableCell);
+                            if (callBackFunction)
+                                callBackFunction.call(this, ct);
+                            return ct;
+                        default:
+                            var input = $("input:first", this.TableCell);
+                            if (callBackFunction)
+                                callBackFunction.call(this, input);
+                            return input;
+                    }
+                }
+            }
+            return null;
+        },
+        OnChange: function (ev, init) {
+            if (!this.Editable)
+                return;
+
+            var _this = this;
+
+            updateFieldControl(this, function () {
+                if (_this.TiSaControl != null) {
+                    if (_this.TiSaControl.Control.OnChanged)
+                        _this.TiSaControl.Control.OnChanged(function () {
+                            ev.call(_this, _this.TiSaControl.Control);
+                        });
+                    if (init)
+                        ev.call(_this, _this.TiSaControl.Control);
+                    return;
+                }
+
+                switch (this.FieldType) {
+                    case "SPFieldTaxonomyFieldType":
+                    case "SPFieldTaxonomyFieldTypeMulti":
+                        var input = this.GetInput();
+                        if (!input)
+                            return;
+                        // TODO nefunguje přes picker
+                        RTE.CanvasEvents.registerListener(RTE.CanvasEvents.editableRegionChangedEvent, function TiSa_SPFieldTaxonomyField_Evt(sender, args) {
+                            var er = args.editableRegion;
+                            ev.call(_this, input, er);
+                        });
+                        if (init)
+                            ev.call(_this, input, null);
+                        break;
+                    case "SPFieldUser":
+                    case "SPFieldUserMulti":
+                        this.GetInput(function (input) {
+                            if (!input)
+                                return;
+
+                            var fn = function (element, users) {
+                                ev.call(_this, input, users);
+                            };
+                            if (!input.OnValueChangedClientScript)
+                                input.OnValueChangedClientScript = fn;
+                            else {
+                                var fnPrev = input.OnValueChangedClientScript;
+                                input.OnValueChangedClientScript = function (element, users) {
+                                    fn(element, users);
+                                    fnPrev(element, users);
+                                };
+                            }
+                            if (init)
+                                ev.call(_this, input, input.GetAllUserInfo());
+                        });
+                        break;
+                    case "SPFieldBoolean":
+                        var input = this.GetInput();
+                        if (!input)
+                            return;
+                        input.on("change", function () {
+                            ev.call(_this, input, this);
+                        });
+                        if (init)
+                            ev.call(_this, input, null);
+                        break;
+                    case "SPFieldChoice":
+                        var input = this.GetInput();
+                        if (!input || input.length === 0)
+                            return
+                        if (input.length && input[0].localName.toLowerCase() === "select") {
+                            input.on("change", function () {
+                                ev.call(_this, input, this);
+                            });
+                        }
+                        else {
+                            input.on("change keyup input", function () {
+                                ev.call(_this, input, this);
+                            });
+                        }
+                        if (init)
+                            ev.call(_this, input, null);
+                        break;
+                    default:
+                        var input = this.GetInput();
+                        if (!input || input.length === 0)
+                            return
+                        input.on("change keyup input", function () {
+                            ev.call(_this, input, this);
+                        });
+                        if (init)
+                            ev.call(_this, input, null);
+                        break;
+                }
+            });
+        },
+        OnInitialAsyncLoadComplete: function (callBackFunction) {
+            var r = this.GetControlInstance(function (inst) {
+                if (inst && inst.HasAsyncLoad && inst.HasAsyncLoad()) {
+                    inst.OnInitialAsyncLoadComplete.push(callBackFunction);
+                    return;
+                }
+                callBackFunction.call(inst);
+            });
+            if (!r)
+                callBackFunction.call(null);
+        },
+        GetReadOnly: function () {
+            return this.ReadOnly;
+        },
+        SetReadOnly: function (state) {
+            if (typeof (state) === 'undefined') {
+                state = false;
+                return;
+            }
+            this.ReadOnly = state;
+            updateFieldControl(this, function () {
+
+                var fieldType = this.FieldType;
+                var frmContext = this.FormControlContext;
+
+                function toogleState(el, st) {
+
+                    el.toggleClass("tisa-readonly", st);
+                    var parent = el.parent();
+                    var t = parent.find("span.tisa-readonly-text");
+
+
+
+                    function onInputChange() {
+                        t.text($(this).val());
+                    }
+
+                    function onDateTimeChange() {
+                        var parent = $(this).closest("table");
+                        var i = $("input[type!=hidden]:first", parent);
+                        var text = i.val();
+                        var timeInputs = $(".ms-dttimeinput select", parent);
+                        if (timeInputs.length == 2) {
+                            var h = $(timeInputs[0]).val();
+                            var m = $(timeInputs[1]).val();
+                            var m2 = m.toString();
+                            if (m2.length === 1)
+                                m2 = '0' + m2;
+                            text += ' ' + parseInt(h).toString() + ":" + m2;
+                        }
+                        t.text(text);
+                    }
+
+                    function onSelectChange() {
+                        var opt = $("option:selected", this);
+                        t.text(opt.text());
+                    }
+
+                    //function onSelectMultiChange() {
+                    //    var opt = $("option:selected", this);
+                    //    t.text(opt.text());
+                    //}
+
+                    if (st && t.length == 0) {
+                        t = $("<span>", { "class": "tisa-readonly-text" });
+                        t.insertAfter(el);
+
+                        switch (fieldType) {
+                            case "SPFieldURL":
+                                //el.on("change", null, onInputChange);
+                                var el2 = el.parent().find("input:eq(1)");
+                                var link = $("<a>");
+                                link.text(el.val());
+                                if (el2.length > 0 && el.val().length > 0)
+                                    link.text(el2.val());
+                                link.attr("href", el.val());
+                                link.attr("target", "_self");
+                                t.append(link);
+                                t.addClass("inline");
+                                break;
+                            case "SPFieldDateTime":
+                                var i = $("input[type!=hidden]:first", el);
+                                i.on("change", null, onDateTimeChange);
+                                var text = i.val();
+                                var timeInputs = $(".ms-dttimeinput select", el);
+                                if (text.length > 0 && timeInputs.length == 2) {
+                                    timeInputs.on("change", onDateTimeChange);
+                                    var h = $(timeInputs[0]).val();
+                                    var m = $(timeInputs[1]).val();
+                                    var m2 = m.toString();
+                                    if (m2.length === 1)
+                                        m2 = '0' + m2;
+                                    text += ' ' + parseInt(h).toString() + ":" + m2;
+                                }
+                                t.text(text);
+                                break;
+                            case "SPFieldFile":
+                                var link = $("<a>");
+                                link.text(frmContext.Context.ListData.FileLeafRef);
+                                link.attr("href", frmContext.Context.ItemAttributes.Url);
+                                t.append(link);
+                                t.addClass("inline");
+                                break;
+                            case 'SPFieldChoice':
+                            case 'SPFieldLookup':
+                                var opt = $("option:selected", el);
+                                el.on("change", null, onSelectChange);
+                                t.text(opt.text());
+                                break;
+                            case 'SPFieldLookupMulti':
+                                parent = el.closest("table");
+                                t.insertAfter(parent);
+                                var opts = $("option", el);
+                                var vals = "";
+                                for (var i = 0; i < opts.length; i++) {
+                                    if (i > 0)
+                                        vals += "; ";
+                                    vals += opts[i].innerHTML;
+                                }
+                                //el.on("change", null, onSelectMultiChange);
+                                t.text(vals);
+                                break;
+                            case 'SPFieldNote':
+                                if (el.is("textarea")) {
+                                    t.css("white-space", "pre-wrap");
+                                    el.on("change", null, onInputChange);
+                                    t.text(el.val());
+                                }
+                                else {
+                                    var editor = $(".ms-rtestate-field", el);
+                                    editor.on("change", function () {
+                                        t.html(elInner.html());
+                                    });
+                                    var elInner = $("div", editor);
+                                    var tmp = $('<div class="ms-rtestate-field"><div class="' + elInner.attr("class") + '">' + elInner.html() + '</div></div> ');
+                                    t.html(tmp);
+                                    //                                    t.parent().parent().prepend(t);
+                                }
+                                break;
+                            default:
+                                el.on("change", null, onInputChange);
+                                t.text(el.val());
+                                break;
+                        }
+                    }
+
+
+                    parent.children().toggleClass("tisa-hidden", st);
+                    t.toggleClass("tisa-hidden", !st);
+
+                }
+
+                // disable/enable validators
+                if (this.Validators) {
+                    for (var i = 0; i < this.Validators.length; i++) {
+                        var validator = this.Validators[i];
+                        if (validator.SetDisabled)
+                            validator.SetDisabled(state);
+                    }
+                }
+
+                if (this.TiSaControl != null) {
+                    if (this.TiSaControl.Control.SetReadOnly)
+                        this.TiSaControl.Control.SetReadOnly(state);
+                    else
+                        warnMethodMissing(this.TiSaControl, "SetReadOnly");
+                }
+                else {
+                    if (this.Editable) {
+                        switch (this.FieldType) {
+                            case 'SPFieldURL':
+                            case 'SPFieldCurrency':
+                            case 'SPFieldInteger':
+                            case 'SPFieldNumber':
+                            case 'SPFieldText':
+                                var input = $("input[type!=hidden]:first", this.TableCell);
+                                toogleState(input, state);
+                                break;
+                            case 'SPFieldDateTime':
+                                var input = $("table", this.TableCell);
+                                toogleState(input, state);
+                                break;
+                            case 'SPFieldNote':
+                                var input = $("textarea:first", this.TableCell);
+                                if (input.length > 0)
+                                    toogleState(input, state);
+                                else {
+                                    input = $(".ms-rtestate-field:first", this.TableCell);
+                                    toogleState(input, state);
+                                    //html
+                                    /*input = $(".ms-rtestate-field:first", this.TableCell);
+                                    var editor = $(".ms-rtestate-field", input);
+
+                                    if (editor.length > 0) {
+                                        input.toggleClass("ms-inputBox", !state);
+                                        editor.toggleClass("ms-rtestate-write", !state);
+                                        editor.attr("contenteditable", state ? "false" : "true");
+                                    }*/
+                                }
+                                break;
+                            case 'SPFieldChoice':
+                            case 'SPFieldLookup':
+                                var input = $("select:first", this.TableCell);
+                                if (input.length > 0) {
+                                    // select
+                                    toogleState(input, state);
+                                }
+                                else {
+                                    // radio
+                                    var radios = $("input[type=radio]", this.TableCell);
+                                    //radios.attr("disabled", state);
+                                    for (var i = 0; i < radios.length; i++) {
+                                        var radio = radios[i];
+                                        $(radio).closest("tr").toggleClass("tisa-hidden", state && !radio.checked);
+                                        $(radio).toggleClass("tisa-hidden", state);
+                                    }
+                                }
+                                break;
+                            case 'SPFieldMultiChoice':
+                                var checkboxes = $("input[type=checkbox]", this.TableCell);
+                                for (var i = 0; i < checkboxes.length; i++) {
+                                    var checkbox = checkboxes[i];
+                                    $(checkbox).closest("tr").toggleClass("tisa-hidden", state && !checkbox.checked);
+                                    $(checkbox).toggleClass("tisa-hidden", state);
+                                }
+                                break;
+                            case 'SPFieldLookupMulti':
+                                var input = $("select[id$=SelectResult]", this.TableCell);
+                                toogleState(input, state);
+                                break;
+                            case 'SPFieldFile':
+                                var input = $("input:first", this.TableCell);
+                                toogleState(input, state);
+                                break;
+                            case 'SPFieldBoolean':
+                                var input = $("input:first", this.TableCell);
+                                if (state)
+                                    input.attr("disabled", "disabled");
+                                else
+                                    input.removeAttr("disabled");
+                                break;
+                            case 'SPFieldUser':
+                            case 'SPFieldUserMulti':
+                                var input = $("select:first", this.TableCell);
+                                if (input.length > 0) {
+                                    if (state)
+                                        input.attr("disabled", "disabled");
+                                    else
+                                        input.removeAttr("disabled");
+                                }
+                                else {
+                                    var id = $(".sp-peoplepicker-topLevel", this.TableCell).attr('id');
+                                    var idEscaped = id.replace(/\$/, '\\$');
+                                    var ss = '#' + idEscaped + ' .sp-peoplepicker-delImage, #'
+                                        + idEscaped + ' .sp-peoplepicker-editorInput, #' + idEscaped + ' .sp-peoplepicker-initialHelpText { display:none; }';
+                                    ss += '#' + idEscaped + ' { border:none; background:none; }';
+
+                                    if (state) {
+                                        $('head').append('<style type="text/css" id="css-' + this.InternalName + '-tisa-readonly" > ' + ss + '</style>');
+                                    }
+                                    else {
+                                        $("style#css-" + this.InternalName + "-tisa-readonly").remove();
+                                    }
+                                }
+                                break;
+                            case "SPFieldTaxonomyFieldType":
+                            case "SPFieldTaxonomyFieldTypeMulti":
+                                var id = $(".ms-taxonomy", this.TableCell).attr('id');
+                                var idEscaped = id.replace(/\$/, '\\$');
+                                var textColor = $(".ms-taxonomy .valid-text", this.TableCell).css("color");
+
+                                var ss = '#' + idEscaped + ' .ms-taxonomy-browser-button { display:none; }';
+                                ss += '#' + idEscaped + ' .ms-taxonomy-writeableregion { border:none; background:none; color:inherit; }';
+                                ss += '#' + idEscaped + ' .ms-taxonomy-writeableregion .valid-text { color:' + textColor + '; text-decoration: initial; }';
+
+                                if (state) {
+                                    $(".ms-taxonomy-writeableregion").attr("contenteditable", "false");
+                                    $('head').append('<style type="text/css" id="css-' + this.InternalName + '-tisa-readonly" > ' + ss + '</style>');
+                                }
+                                else {
+                                    $(".ms-taxonomy-writeableregion").attr("contenteditable", "true");
+                                    $("#css-" + this.InternalName + "-tisa-readonly").remove();
+                                }
+                                break
+                            default:
+                                warnNotImplemented("SetReadOnly", "FieldType " + this.FieldType + " not implemented");
+                                break;
+                        }
+                    }
+                }
+            });
+        },
+        SetHidden: function (state) {
+            if (typeof (state) === 'undefined') {
+                state = false;
+                return;
+            }
+            if (state)
+                this.Hide();
+            else
+                this.Show();
+        },
+        IsHidden: function () {
+            return !$(this.TableRow).is(":visible");
+        },
+        SetVisible: function (state) {
+            this.SetHidden(!state);
+        },
+        IsVisible: function (state) {
+            !this.GetHidden();
+        },
+        SetRequired: function (state) {
+            updateFieldControl(this, function () {
+                if (TiSa.Forms.CurrentForm.IsEditableForm) {
+                    var requiredValidator = TiSa.Forms.Utils.GetValidatorByType(this.Validators, "required");
+                    if (requiredValidator != null) {
+                        // pokud validator existuje tak se zapne
+                        var cellFieldLabel = $("td:first", this.TableRow);
+                        if (!state || this.ReadOnly) {
+                            requiredValidator.SetDisabled(true);
+                            $(".ms-accentText", cellFieldLabel).remove();
+                        }
+                        if (state) {
+                            requiredValidator.SetDisabled(false);
+                            $(".ms-accentText", cellFieldLabel).remove();
+                            $("nobr", cellFieldLabel).append($("<span>", { "class": "ms-accentText", "text": " * ", "title": Strings.STS.L_RequiredField_Tooltip }));
+                        }
+                        return;
+                    }
+                    if (state && !this.ReadOnly) {
+                        // pokud validator neexistuje tak se vytvori
+                        if (!this.Validators)
+                            this.Validators = [];
+                        requiredValidator = new TiSa.Forms.ClientValidation.RequiredValidator();
+                        requiredValidator.CheckForEmptyArray = this.FieldType.indexOf("SPFieldUser") == 0;
+                        requiredValidator.Control = this;
+                        var valSet = new SPClientForms.ClientValidation.ValidatorSet();
+                        valSet.RegisterValidator(requiredValidator);
+                        this.FormControlContext.Form.NotifyControlEvent(SPClientForms.FormManagerEvents.Event_RegisterControlValidator, this.InternalName, valSet);
+                        var cellFieldLabel = $("td:first", this.TableRow);
+                        $(".ms-accentText", cellFieldLabel).remove();
+                        $("nobr", cellFieldLabel).append($("<span>", { "class": "ms-accentText", "text": " * ", "title": Strings.STS.L_RequiredField_Tooltip }));
+                        this.Validators.push(requiredValidator);
+                    }
+                }
+            });
+        },
+        GetRequired: function (state) {
+            if (TiSa.Forms.CurrentForm.IsEditableForm) {
+                var requiredValidator = TiSa.Forms.Utils.GetValidatorByType(this.Validators, "required");
+                if (requiredValidator != null)
+                    return !requiredValidator.GetDisabled();
+            }
+            return false;
+        },
+        IsRequired: function (state) {
+            return this.GetRequired();
+        },
+        // override field title on form
+        SetTitle: function (title) {
+            var h3 = $(".ms-standardheader", this.TableRow);
+            var req = $(".ms-accentText", h3);
+            var nbr = h3.find("nobr");
+
+            if (nbr.length > 0)
+                nbr.text(title);
+            else
+                h3.text(title);
+
+            if (req.length > 0)
+                h3.append(req);
+        },
+        Hide: function () {
+            $(this.TableRow).hide();
+        },
+        Show: function () {
+            $(this.TableRow).show();
+        },
+        GetControlInstance: function (callbackFunction) {
+            if (!this._fieldControlUpdated) {
+                updateFieldControl(this, function () {
+                    if (callbackFunction) {
+                        if (this.TiSaControl && this.TiSaControl.Control)
+                            callbackFunction(this.TiSaControl.Control);
+                        else
+                            callbackFunction(null);
+                    }
+                });
+                return null;
+            }
+            if (this.TiSaControl != null) {
+                if (callbackFunction)
+                    callbackFunction(this.TiSaControl.Control);
+                return this.TiSaControl.Control;
+            }
+            return null;
+        },
+        Blink: function () {
+            $(this.TableCell).effect("highlight", {}, 500);
+        }
+    };
+
+    $("td.ms-formbody", formControlContext.Table).contents().each(function (i, e) {
+        if (e.nodeType == 8 && e.nodeValue != null && e.nodeValue.indexOf("FieldName") > 0) {
+            var m = e.nodeValue.match(/FieldName="(.+)"\s+FieldInternalName="(.+)"\s+FieldType="(.+)"\s+/);
+            var internalName = m[2];
+            var controlMode = formControlContext.Context.FieldControlModes[internalName];
+            var o = {
+                Name: m[1],
+                InternalName: internalName,
+                FieldType: m[3],
+                TableCell: e.parentNode,
+                TableRow: e.parentNode.parentNode,
+                TiSaControl: null,
+                FormControlContext: formControlContext,
+                Editable: controlMode === SPClientTemplates.ClientControlMode.EditForm || controlMode === SPClientTemplates.ClientControlMode.NewForm
+            }
+            if (o.TableRow.className)
+                o.TableRow.className += " tisa-form-row tisa-form-row " + internalName;
+            else
+                o.TableRow.className = "tisa-form-row tisa-form-row" + internalName;
+            o.ReadOnly = !o.Editable;
+
+
+            $.extend(o, fieldControlEvents);
+            formControlContext.Fields.push(o);
+            formControlContext.FieldsByName[internalName] = o;
+        }
+    });
+
+
+    formControlContext.FindFieldControl = function (internalName) {
+        for (var i = 0; i < this.Fields.length; i++) {
+            var f = this.Fields[i];
+            if (f.InternalName == internalName)
+                return this.Fields[i];
+        }
+        return null;
+    };
+
+    var _rootFolder = null;
+    formControlContext.ResolveRootFolder = function () {
+        if (_rootFolder == null) {
+            if (this.Context.FormControlMode == SPClientTemplates.ClientControlMode.NewForm && this.Context.NewItemRootFolder)
+                _rootFolder = this.Context.NewItemRootFolder;
+            else if (this.Context.ItemAttributes.Url)
+                _rootFolder = this.Context.ItemAttributes.Url.substring(0, this.Context.ItemAttributes.Url.lastIndexOf('/'));
+            else {
+                var uri = parseUri(location.href);
+                if (uri.queryKey.RootFolder)
+                    _rootFolder = decodeURIComponent(uri.queryKey.RootFolder);
+            }
+            /*
+            var uri = parseUri(location.href);
+            //by query param
+            if (uri.queryKey.RootFolder)                
+                _rootFolder = decodeURIComponent(uri.queryKey.RootFolder);            
+            //by attribute
+            else if (this.Context.ItemAttributes.Url)
+                _rootFolder = this.Context.ItemAttributes.Url.substring(0, this.Context.ItemAttributes.Url.lastIndexOf('/'));
+            // for new
+            else if (this.Context.FormControlMode == SPClientTemplates.ClientControlMode.NewForm){
+                // by query source param (redirect ?)
+                if (uri.queryKey.Source){
+                    var source = decodeURIComponent(uri.queryKey.Source);
+                    var uriSource = parseUri(source);
+                    if (uriSource.queryKey.RootFolder){
+                        _rootFolder = decodeURIComponent(uriSource.queryKey.RootFolder);
+                        //window.location
+                    }
+
+                }
+                // otherwise by context
+                if (!_rootFolder && this.Context.NewItemRootFolder)
+                    _rootFolder = this.Context.NewItemRootFolder;
+            }*/
+        }
+        return _rootFolder;
+    };
+
+    formControlContext.SubmitForm = function () {
+        $('input[name$="diidIOSaveItem"]:first').trigger("click"); //spitem
+        $('input[name$="btnOK"]').trigger("click"); //nintex, ds
+    };
+
+    formControlContext.CloseForm = function () {
+        $('input[name$="diidIOGoBack"]:first').trigger("click"); //spitem
+        $('input[name$="btnClose"]').trigger("click"); // nintex
+        $('input[name$="BtnCancel"]').trigger("click"); //ds
+    };
+
+    formControlContext.ResizeDialogByContent = function () {
+        if (window.location.search.match("[?&]IsDlg=1"))
+            try {
+                var dlg = SP.UI.ModalDialog.get_childDialog();
+                if (dlg) {
+                    {
+                        var s4ws = document.getElementById("s4-workspace");
+                        var offset = s4ws.scrollTop;
+                        dlg.autoSize();
+                        s4ws.scrollTop = offset;
+                    }
+                }
+            }
+            catch (e) {
+            }
+    };
+
+
+    TiSa.Forms._CurrentFormContext = formControlContext;
+    return formControlContext;
+};
+
+
+
+
+function Ensure_TiSaForm_Customize() {
+    if (!window.TiSaForm_Customize)
+        window.TiSaForm_Customize = function (cfg) {
+            this.OnFormInit = function (form) {
+                window.TiSaForm_Customize._OnFormInit.call(this, form);
+            };
+            this.OnFormInitComplete = function (form) {
+                window.TiSaForm_Customize._OnFormInitComplete.call(this, form);
+            };
+        };
+}
+
+TiSa.Forms.OnFormInit = function (callBackFunction) {
+    Ensure_TiSaForm_Customize();
+    window.TiSaForm_Customize._OnFormInit = callBackFunction;
+};
+TiSa.Forms.OnFormInitComplete = function (callBackFunction) {
+    Ensure_TiSaForm_Customize();
+    window.TiSaForm_Customize._OnFormInitComplete = callBackFunction;
+};
+
+
+// override set date
+TiSa.Forms.OverrideOnSelectDate = TiSa.Forms.OverrideOnSelectDate || function () {
+    var l = window.OnSelectDate;
+    var ext = false;
+    if (l && !ext) {
+        var _OnSelectDateExtension = function (resultfield, date, targetAttribute) {
+            l.call(window, resultfield, date, targetAttribute);
+            if ($)
+                $(resultfield).trigger("change");
+        };
+        window.OnSelectDate = _OnSelectDateExtension;
+        ext = true;
+    }
+};
+TiSa.Forms.OverrideOnSelectDate();
+
+
+// override focus date
+TiSa.Forms.OverrideOnIframeLoadFinish = TiSa.Forms.OverrideOnIframeLoadFinish || function () {
+    var l = window.OnIframeLoadFinish;
+    var _OverrideOnSetFocusDatepicker = false;
+    var ext = false;
+    if (l && !ext) {
+        var _iframeLoadFinishExtension = function (resultfield) {
+            l.call(this, resultfield);
+            setTimeout(function () {
+                $("#s4-workspace").scrollTop(TiSa.Forms._scrollTop);
+                setTimeout(function () {
+                    if ($("#s4-workspace").scrollTop() != TiSa.Forms._scrollTop)
+                        $("#s4-workspace").scrollTop(TiSa.Forms._scrollTop);
+                }, 150);
+            }, 10);
+        };
+        window.OnIframeLoadFinish = _iframeLoadFinishExtension;
+        ext = true;
+    }
+};
+TiSa.Forms.OverrideOnIframeLoadFinish();
+
+
+// override click date
+TiSa.Forms.OverrideOnClickDate = TiSa.Forms.OverrideOnClickDate || function () {
+    var l = window.clickDatePicker;
+    var ext = false;
+    if (l && !ext) {
+        var _clickDatePickerExtension = function (a, b, c, d) {
+            TiSa.Forms._scrollTop = $("#s4-workspace").scrollTop();
+            l.call(this, a, b, c, d);
+        };
+        window.clickDatePicker = _clickDatePickerExtension;
+        ext = true;
+    }
+};
+TiSa.Forms.OverrideOnClickDate();
+
+
+
+// override clientform
+// inject custom functions
+TiSa.Forms.OverrideClientForm = function () {
+
+    var formExtension = function () {
+        this.IsFormValidExceptFields = function (fields) {
+            if (_invalidForm || _mode == SPClientTemplates.ClientControlMode.DisplayForm)
+                return false;
+            var err = 0;
+            for (var getFld in _registeredCallbacks.GetValue) {
+                if (fields) {
+                    var found = false;
+                    for (var i = 0; i < fields.length; i++)
+                        if (getFld == fields[i]) {
+                            found = true;
+                            break;
+                        }
+                    if (found)
+                        continue;
+                }
+                if (_editFields.ValidationErrors[getFld])
+                    err++;
+            }
+            return err == 0;
+        };
+        this.Validate = function (suppressValidationProgress) {
+            if (_invalidForm || _mode == SPClientTemplates.ClientControlMode.DisplayForm)
+                return false;
+            var fieldFocusValidationError = '';
+
+            var frm = TiSa.Forms.GetFormControlContext();
+            if (!suppressValidationProgress)
+                frm.ValidationProgress = true;
+
+            var countedColumns = 0;
+            for (var getFld in _registeredCallbacks.GetValue) {
+                UpdateAndValidateControlValue(getFld, _registeredCallbacks.GetValue[getFld](), true);
+                if (!suppressValidationProgress) {
+                    var ct = TiSa.Templates.Controls[getFld];
+                    if (ct && ct.FieldInfo.FieldType.FieldType === "CountedColumn" && _editFields.ValidationErrors[getFld])
+                        countedColumns++;
+                }
+
+                if (fieldFocusValidationError == '' && _editFields.ValidationErrors[getFld] && HasCallbackRegistered('Focus', getFld))
+                    fieldFocusValidationError = getFld;
+
+            }
+
+            if (!suppressValidationProgress)
+                frm.ValidationProgress = false;
+
+            if ((_validationErrorCount - countedColumns) > 0) {
+                if (window.frameElement != null && typeof window.frameElement.autoSize == "function")
+                    window.frameElement.autoSize();
+                if (fieldFocusValidationError != '')
+                    if (_registeredCallbacks.Focus[fieldFocusValidationError])
+                        _registeredCallbacks.Focus[fieldFocusValidationError]();
+                return true;
+            }
+            return false;
+        };
+
+
+
+        this.GetEditFields = function () {
+            return _editFields;
+        };
+
+        var _OnRequestSucceededCallBack = [];
+        this.OnRequestSucceededCallBack = _OnRequestSucceededCallBack;
+
+        var _OnRequestExceptionCallBack = [];
+        this.OnRequestExceptionCallBack = _OnRequestExceptionCallBack;
+
+        function _onSubmit(formContext, context) {
+
+            //var t = that;
+            //var f = formContext;
+
+
+            context.context.remove_requestSucceeded(function (source, eventArgs) { });
+            context.context.add_requestSucceeded(function (source, eventArgs) {
+                if (_OnRequestSucceededCallBack)
+                    for (var i = 0; i < _OnRequestSucceededCallBack.length; i++)
+                        _OnRequestSucceededCallBack[i](formContext, context);
+            });
+            context.context.remove_beginningRequest(function (source, eventArgs) { });
+            context.context.add_beginningRequest(function (source, eventArgs) {
+                eventArgs.get_request().get_webRequest().add_completed(function (xhr, ea) {
+                    if (xhr.get_responseAvailable()) {
+                        try {
+                            var response = xhr.get_responseData();
+                            if (!response)
+                                return;
+                            var arr = JSON.parse(response);
+                            if (!arr.length)
+                                return;
+                            var hasException = false;
+                            for (var i = 0; i < arr.length; ++i) {
+                                if (!!arr[i].HasException) {
+                                    hasException = true;
+                                    break;
+                                }
+                            }
+                            if (hasException) {
+                                var request = xhr.get_webRequest().get_body();
+                                if (_OnRequestExceptionCallBack)
+                                    for (var i = 0; i < _OnRequestExceptionCallBack.length; i++)
+                                        _OnRequestExceptionCallBack[i](formContext, context, request, response);
+                            }
+                        }
+                        catch (ex) { }
+                    }
+                });
+            });
+
+        };
+    };
+
+    var fn = SPClientForms.ClientForm.toString();
+    if (TiSa.Forms.ClientForm)
+        return;
+
+    SPClientForms.ClientForm = null;
+    var idx = fn.lastIndexOf("this.SubmitClientForm");
+    var output = fn;
+    if (idx > 0) {
+        var fnBodyExtension = formExtension.toString().match(/function[^{]+\{([\s\S]*)\}$/)[1] + "\r\n\r\n";
+        var m1 = fn.match(/if\s*\(\s*(\w+)\s*\|\|\s*(\w+)\s*==\s*SPClientTemplates\.ClientControlMode\.DisplayForm\)/);//_invalidForm, _mode
+        var m2 = fn.match(/(\w+)\s*\(\w+,\s*(\w+)\.GetValue\[/); //UpdateAndValidateControlValue, _registeredCallbacks
+        var m3 = fn.match(/\&\&\s*(\w+)\.ValidationErrors\[\w+\]\s*\&\&\s*(\w+)\(/); //_editFields, HasCallbackRegistered
+        var m4 = fn.match(/if\s*\((\w+)\s*>\s*0\)/); //_validationErrorCount
+        //var m5 = fn.match(/if\s*\(!([\w]+)\.PostBackRequired\)(?:.*\s*){1,2}\{\s*(\w+)\s*=\s*(\w+)\(\);/);
+
+        // změna pro ipad
+        var ix1 = fn.indexOf("SPClientForms.FormManagerEvents.Event_GetHasValueChangedCallback:");
+        var fn1 = fn.substring(ix1);
+        var fn2 = fn1.substring(0, fn1.indexOf("SP.ListItemFormUpdateValue"));
+        var m5 = fn2.match(/if\s*\(!([\w]+)\.PostBackRequired\)(?:.*\s*){1,2}\{\s*(\w+)\s*=\s*(\w+)\(\);/);
+
+        fnBodyExtension = fnBodyExtension.replace(/\_invalidForm/g, m1[1]).replace(/\_mode/g, m1[2])
+            .replace(/\UpdateAndValidateControlValue/g, m2[1]).replace(/\_registeredCallbacks/g, m2[2])
+            .replace(/\_editFields/g, m3[1]).replace(/\HasCallbackRegistered/g, m3[2])
+            .replace(/\_validationErrorCount/g, m4[1]);
+
+        // změna pro ipad
+        //var p = m5.index + m5[0].length; 
+        var p = m5.index + m5[0].length + ix1;
+
+        fn = [fn.slice(0, p), " _onSubmit(" + m5[1] + ", " + m5[2] + "); ", fn.slice(p)].join('');
+        output = [fn.slice(0, idx), fnBodyExtension, fn.slice(idx)].join('');
+
+        // replace obfuscated variables
+        // this.SubmitClientForm=function(){if(k||g==SPClientTemplates.ClientControlMode.DisplayForm)return false;if(d!=null&&d.disabled==true)return true;var n="";for(var l in c.GetValue){o(l,c.GetValue[l](),true);if(n==""&&b.ValidationErrors[l]&&e("Focus",l))n=l}if(i>0){window.frameElement!=null&&typeof window.frameElement.autoSize=="function"&&window.frameElement.autoSize();n!=""&&c.Focus[n]();return true}if(!a.PostBackRequired&&j!="")if(e("HasValueChanged",j)&&c.HasValueChanged[j]())a.PostBackRequired=true;var f;if(!a.PostBackRequired){f=w();for(var u in b.CurrentValue){var q=new SP.ListItemFormUpdateValue;q.set_fieldName(u);q.set_fieldValue(b.CurrentValue[u]);f.allFormValues.push(q)}if(!a.ItemAttributes.ExternalListItem){if(typeof a.ItemContentTypeName!="undefined"&&a.
+        //if\s*\(\s*(?<_invalidForm>[A-Za-z0-9_]+)\s*\|\|(?<_mode>[A-Za-z0-9_]+)\s*==\s*SPClientTemplates\.ClientControlMode\.DisplayForm\).*\{(?<UpdateAndValidateControlValue>[A-Za-z0-9_]+)\s*\([A-Za-z0-9_]+\s*,(?<_registeredCallbacks>[A-Za-z0-9_]+)\.GetValue\[.*(?<_editFields>[A-Za-z0-9_]+)\.ValidationErrors\[[A-Za-z0-9_]+\]\s*\&\&\s*(?<HasCallbackRegistered>[A-Za-z0-9_]+)
+        // gg: if\s*\(\s*(?<_invalidForm>[A-Za-z0-9_]+)\s*\|\|(?<_mode>[A-Za-z0-9_]+)\s*==\s*SPClientTemplates\.ClientControlMode\.DisplayForm\).*\{(?<UpdateAndValidateControlValue>[A-Za-z0-9_]+)\s*\([A-Za-z0-9_]+\s*,(?<_registeredCallbacks>[A-Za-z0-9_]+)\.GetValue\[.*(?<_editFields>[A-Za-z0-9_]+)\.ValidationErrors\[[A-Za-z0-9_]+\]\s*\&\&\s*(?<HasCallbackRegistered>[A-Za-z0-9_]+)[^\}]+\}\s*if\s*\(\s*(?<_validationErrorCount>[A-Za-z0-9_]+)\s*\>\s*0\)
+        //var m = fn.match(/if\s*\(\s*([A-Za-z0-9_]+)\s*\|\|([A-Za-z0-9_]+)\s*==\s*SPClientTemplates\.ClientControlMode\.DisplayForm\).*\{([A-Za-z0-9_]+)\s*\([A-Za-z0-9_]+\s*,([A-Za-z0-9_]+)\.GetValue\[.*([A-Za-z0-9_]+)\.ValidationErrors\[[A-Za-z0-9_]+\]\s*\&\&\s*([A-Za-z0-9_]+)[^\}]+\}\s*if\s*\(\s*([A-Za-z0-9_]+)\s*\>\s*0\)/);
+        //var m = fn.match(/if\s*\(\s*([A-Za-z0-9_]+)\s*\|\|\s*([A-Za-z0-9_]+)\s*==\s*SPClientTemplates\.ClientControlMode\.DisplayForm\).*\{([A-Za-z0-9_]+)\s*\([A-Za-z0-9_]+\s*,([A-Za-z0-9_]+)\.GetValue\[.*([A-Za-z0-9_]+)\.ValidationErrors\[[A-Za-z0-9_]+\]\s*\&\&\s*([A-Za-z0-9_]+)[^\}]+\}\s*if\s*\(\s*([A-Za-z0-9_]+)\s*\>\s*0\).*if\(!([A-Za-z0-9_]+).PostBackRequired\)\{([A-Za-z0-9_]+)=[A-Za-z0-9_]+\(\);/);
+        //if (m != null && m.length == 10 && m[m.length - 3] != "_validationErrorCount") {
+        //	fnBodyExtension = fnBodyExtension.replace(/\_invalidForm/g, m[1]).replace(/\_mode/g, m[2]).replace(/\UpdateAndValidateControlValue/g, m[3]).replace(/\_registeredCallbacks/g, m[4]).replace(/\_editFields/g, m[5]).replace(/\HasCallbackRegistered/g, m[6]).replace(/\_validationErrorCount/g, m[7]);
+        //	var p = m.index + m[0].length;
+        //	fn = [fn.slice(0, p), " _onSubmit(this, " + m[8] + ", " + m[9] + ");", fn.slice(p)].join('');
+        //}		
+    }
+    eval("TiSa.Forms.ClientForm = " + output);
+    SPClientForms.ClientForm = TiSa.Forms.ClientForm;
+};
+if (typeof (SPClientForms) !== "undefined")
+    TiSa.Forms.OverrideClientForm();
+
+// -- override end
+
+
+if (SP && SP.SOD)
+    SP.SOD.notifyScriptLoadedAndExecuteWaitingJobs("tisa.formcontext.js");
+

@@ -1,0 +1,23 @@
+"use strict";
+(function () {
+    var FIELD_INFO_OBJECT = {"Id":"31d2e4be-fc84-4609-b66b-2a42a0c26445","FieldOnWeb":true,"FieldOnList":false,"ScriptToken":43326845,"FieldType":{"FieldType":"Attachment","ComponentPath":"Attachment","ComponentAppUrlEncoded":"https:://dms.pvs.cz/tisa","ComponentAppUrl":"https://dms.pvs.cz/tisa","ApplicationName":"TiSa.BaseWeb"},"Data":{"ViewFileIcon":true,"EnableItemSelection":true,"EnableDownload":true,"EnableLinkDownload":true,"EnableAppendAndRemove":true,"MaxItemsOnPage":10,"FolderDateFormat":"yyyy_MM","LibraryUrl":"{WebUrl}/{ListName}_Prilohy"},"StaticName":"Rq_All_Attachments","DisplayName":"Přílohy","InternalName":"Rq_All_Attachments","FieldPath":""};
+    var __tisa_InitField = function () {
+        var componentRootUrlApp = TiSa.Environment.GetComponentAppUrl(FIELD_INFO_OBJECT.FieldType);
+        TiSa.RegisterScript("Attachment.js", componentRootUrlApp + '/Attachment.js', ["jquery.js", "jquery-ui.js", "moment.js", "AutoNumeric.js"], [1033, 1029, 1045, 1031]);
+        TiSa.RegisterStyle(componentRootUrlApp + "/AttachmentControl.css", ["jQuery_UI", "Templates"]);
+        var templateFunction = TiSa.Templates.CreateDefaultTemplateFunction(FIELD_INFO_OBJECT, {
+            ControlScript: "Attachment.js"
+        });
+        SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+            TiSa.Templates.RegisterFieldTemplate(FIELD_INFO_OBJECT, templateFunction, TiSa.Templates.RegisterFieldFlags.All);
+        }, 'clienttemplates.js');
+    };
+    var __tisa_StartField = function __tisa_StartField_() {
+        if (!TiSa || !TiSa.Environment || !TiSa.Templates)
+            setTimeout(__tisa_StartField, 20);
+        else {
+            __tisa_InitField();
+        }
+    };
+    __tisa_StartField();
+})();

@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-09-02T13:38:08.372747",
+  "category": "HOMEOFFICE",
+  "events": [
+    {
+      "subject": "Home office",
+      "start": "2026-09-02T08:00:00",
+      "end": "2026-09-02T16:00:00",
+      "all_day": false,
+      "categories": [
+        "HOMEOFFICE"
+      ],
+      "is_recurring": true,
+      "entry_id": "00000000825114477C84404DB5CD3BB3BB754BF207005AA267A23581234097FDB0C576A6AF0900000000010D0000BA800BDA327A604D9FD19EC893B00E7A000000004B040000",
+      "global_appointment_id": "040000008200E00074C5B7101A82E0080000000010585D94891ADD01000000000000000010000000B34CA9AC9E95894F95BD6ADC3CE602CE",
+      "is_homeoffice": true
+    },
+    {
+      "subject": "Home office",
+      "start": "2026-09-04T08:00:00",
+      "end": "2026-09-04T16:00:00",
+      "all_day": false,
+      "categories": [
+        "HOMEOFFICE"
+      ],
+      "is_recurring": true,
+      "entry_id": "00000000825114477C84404DB5CD3BB3BB754BF207005AA267A23581234097FDB0C576A6AF0900000000010D0000BA800BDA327A604D9FD19EC893B00E7A000000004B040000",
+      "global_appointment_id": "040000008200E00074C5B7101A82E0080000000010585D94891ADD01000000000000000010000000B34CA9AC9E95894F95BD6ADC3CE602CE",
+      "is_homeoffice": true
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+"use strict";
+
+(function () {
+	var FIELD_INFO_OBJECT = {"Id":"fa564e0f-0c70-4ab9-b863-0177e6ddd247","FieldOnWeb":false,"FieldOnList":true,"ScriptToken":43326844,"FieldType":{"FieldType":"CountedColumn","ComponentPath":"CountedColumn","ComponentAppUrlEncoded":"https:://dms.pvs.cz/tisa","ComponentAppUrl":"https://dms.pvs.cz/tisa","ApplicationName":"TiSa.BaseWeb"},"Data":{"Counters":[{"Name":"HDC","Variable":"Counter_{ListUrl}","Padding":6,"PaddingCharacter":"0"}],"Expression":"Pracovní nepřítomnost - PV/{Rq_H_Department}/{$HDC}"},"StaticName":"Title","DisplayName":"Nadpis","InternalName":"Title","FieldPath":"/HolidayRequest"};
+	var __tisa_InitField = function () {
+		var componentRootUrlApp = TiSa.Environment.GetComponentAppUrl(FIELD_INFO_OBJECT.FieldType);
+		TiSa.RegisterScript("CountedColumn.js", componentRootUrlApp + '/CountedColumn.js', ["jquery.js", "jquery-ui.js"], [1033, 1029, 1045, 1031]);
+        TiSa.RegisterStyle(componentRootUrlApp + "/CountedColumn.css", ["jQuery_UI", "Templates"]);
+
+        TiSa.AddExternalScripts("CountedColumn.js", FIELD_INFO_OBJECT.Data.ExternalScripts);
+        TiSa.AddExternalStyles(FIELD_INFO_OBJECT.Data.ExternalStyles);
+		
+		var templateFunction = TiSa.Templates.CreateDefaultTemplateFunction(FIELD_INFO_OBJECT, {
+			ControlScript: "CountedColumn.js"
+		});
+
+		var templateFunctionView = function (ctx, field, listItem, listSchema) {
+			if (ctx == null || field == null)
+				return "";
+			if (!listItem[field.Name])
+				return "";
+			return listItem[field.Name];
+		};
+		var templateFunctionDisplayForm = function (ctx, field) {
+			if (ctx == null || ctx.CurrentFieldValue == null)
+				return "";
+			return ctx.CurrentFieldValue;
+		};
+
+		SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+			if (FIELD_INFO_OBJECT.Data.Template)
+				TiSa.Templates.RegisterFieldTemplate(FIELD_INFO_OBJECT, templateFunction, TiSa.Templates.RegisterFieldFlags.All);
+			else
+				TiSa.Templates.RegisterFieldTemplate(FIELD_INFO_OBJECT, templateFunction, TiSa.Templates.RegisterFieldFlags.Editable, function (ctx) {
+					ctx.Templates.Fields[FIELD_INFO_OBJECT.InternalName]["View"] = templateFunctionView;
+					ctx.Templates.Fields[FIELD_INFO_OBJECT.InternalName]["DisplayForm"] = templateFunctionDisplayForm;
+				});
+		}, 'clienttemplates.js');
+
+	};
+
+	var __tisa_StartField = function __tisa_StartField_() {
+		if (!TiSa || !TiSa.Environment || !TiSa.Templates)
+			setTimeout(__tisa_StartField, 20);
+		else {
+			__tisa_InitField();
+		}
+	};
+	__tisa_StartField();
+
+})();

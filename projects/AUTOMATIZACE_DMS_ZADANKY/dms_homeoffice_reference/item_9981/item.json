@@ -1,0 +1,37 @@
+{
+  "__metadata": {
+    "id": "831a9467-a564-4c1d-8cf9-50edfc5686f4",
+    "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Items(9981)",
+    "etag": "\"8\"",
+    "type": "SP.Data.HolidayRequestItem"
+  },
+  "Rq_All_Applicant": {
+    "__metadata": {
+      "id": "60ce1f18-3b9e-425a-a095-91d8ecd009f5",
+      "type": "SP.Data.UserInfoItem"
+    },
+    "Id": 192,
+    "Title": "Gerčák Daniel",
+    "EMail": "GercakD@pvs.cz"
+  },
+  "Rq_All_ApplicantManager": {
+    "__deferred": {
+      "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Items(9981)/Rq_All_ApplicantManager"
+    }
+  },
+  "Id": 9981,
+  "Title": "Pracovní nepřítomnost - PV/D4/009985 - Placené volno (5. 9. 2025 - 5. 9. 2025)",
+  "Rq_H_TypeOfHoliday": "Placené volno",
+  "Rq_H_PaidHoliday": "Jiné",
+  "Rq_H_SpecifyOther": null,
+  "Rq_H_ValidSince": "2025-09-04T22:00:00Z",
+  "Rq_H_ValidTo": "2025-09-04T22:00:00Z",
+  "Rq_H_WorkingDay": 1,
+  "Rq_All_RequestNumber": null,
+  "Rq_All_StatusChoice": "Approved",
+  "Rq_All_type": "Absence",
+  "Rq_All_RelatedLink": "[{\"Cells\":[\"\",\"Home office\"]}]",
+  "ID": 9981,
+  "Modified": "2025-09-03T06:12:09Z",
+  "Created": "2025-09-03T06:11:21Z"
+}

@@ -1,0 +1,11 @@
+POST /sites/Zadanky/_api/web/lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/items HTTP/1.1
+Host: dms.pvs.cz
+User-Agent: PVS-HomeOffice-Payload-Generator/2.0
+Accept-Encoding: gzip, deflate
+Accept: application/json;odata=verbose
+Connection: Keep-Alive
+Content-Type: application/json;odata=verbose
+X-RequestDigest: 0x3329987BD92DB4F1AA47EBF52B597DC8B9CA84BA4EE8EE699A81FC6117C23D4EC3B75B9BD2CF6CBF6A7D7793A2685C9AFEC36F4C950048212986DD5409396402,02 Sep 2026 11:37:57 -0000
+Content-Length: 647
+
+{"__metadata": {"type": "SP.Data.HolidayRequestItem"}, "Rq_All_type": "Absence", "Rq_All_ApplicantId": 192, "Rq_H_TypeOfHoliday": "Placen\u00e9 volno", "Rq_H_PaidHoliday": "Jin\u00e9", "Rq_All_RelatedLink": "[{\"Cells\":[\"\",\"Home office\"]}]", "Rq_H_ValidSince": "2026-09-01T22:00:00Z", "Rq_H_ValidTo": "2026-09-01T22:00:00Z", "Rq_H_ValidToHalfDay": false, "Rq_H_WorkingDay": 1, "Rq_All_StartDate": "2026-09-01T22:00:00Z", "Rq_All_EndDate": "2026-09-01T22:00:00Z", "Rq_H_Approver1Id": 260, "Rq_H_Approver2Id": 58, "Rq_All_ApproversId": {"results": [260, 58]}, "Rq_H_ClaimAndRemains": "1", "Rq_H_Department": "D4", "Rq_All_division": "stavebni"}

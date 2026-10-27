@@ -1,0 +1,6 @@
+﻿.tisa-CountedColumn .countedValue {
+}
+
+.tisa-CountedColumn .countedValue.notFilled {
+	color: red;
+}

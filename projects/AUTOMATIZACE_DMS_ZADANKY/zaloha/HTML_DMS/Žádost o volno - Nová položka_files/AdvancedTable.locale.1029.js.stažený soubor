@@ -1,0 +1,75 @@
+﻿"use strict";
+
+var TiSa = TiSa || {};
+TiSa.ComponentResource = TiSa.ComponentResource || {};
+TiSa.ComponentResource["AdvancedTable"] = {
+	ExpandTable: "Celkem: {0}",
+	ExpandTableTooltip: "Zobrazit tabulku",
+	CollapseTable: "Skrýt",
+	CollapseTableTooltip: "Zabalit tabulku zpět",
+	MaximumRowsAchived: "Bylo dosaženo maximálního počtu řádků.",
+	RequiredColumnMessage: 'Sloupec {0} musí být vyplněn.',
+	RegexValidatorColumnMessage: 'Hodnoty ve sloupci {0} neodpovídají definované podmínce regulárního výrazu.',
+
+	Pager_First: "Přejít na první stránku",
+	Pager_Last: "Přejít na poslední stránku",
+	Pager_Next: "Přejít na další stránku",
+	Pager_Previous: "Přejít na přechozí stránku",
+	Pager_Total: "Celkem",
+	Pager_TotalTooltip: "Celkem položek",
+	Pager_CurrentPageTooltip: "Aktuální stránka",
+
+    Table_CommandAddTooltip: "Přidat nový řádek (stiskněte klávesu SHIFT pro zkopírování řádku)",
+    Table_CommandCopyTooltip: "Kopírovat řádek",
+	Table_CommandRemoveTooltip: "Smazat tento řádek",
+	Table_CommandRemoveConfirm: "Opravdu chcete smazat tento řádek?",
+	Table_CommandRemoveSelected: "Smazat vybrané řádky",
+	Table_CommandRemoveSelectedConfirm: "Opravdu chcete smazat tyto vybrané řádky?",
+	Table_Search: "Vyhledávání",
+
+	Acquaints_ColumnRequestor: "Žadatel",
+	Acquaints_ColumnRequestDate: "Datum žádosti",
+	Acquaints_ColumnUser: "Uživatel",
+	Acquaints_ColumnAcquaintingDate: "Datum seznámení",
+	Acquaints_Dialog_StartOrAppend_Title: "Přidat uživatele pro seznamení s...",
+	Acquaints_Dialog_StartOrAppend_Description: "Přidejte uživatele, nebo uživatelské skupiny, kteří se mají s aktuálním obsahem seznámit:",
+    Acquaints_Dialog_StartOrAppend_SubmitButton: "Vytvořit a spustit úlohu",
+
+    CheckBoxList_Column: "Volba",
+
+	Ribbon_Acquaints_GroupTitle: "Seznamení",
+	Ribbon_Acquaints_Start: "Vytvořit",
+	Ribbon_Acquaints_StartToolTip: "Vytvořit úlohu a přidat uživatele",
+	Ribbon_Acquaints_StartToolTipDescription: "Otevře dialog pro vytvoření úlohy pro seznámení s obsahem.",
+	Ribbon_Acquaints_Append: "Přidat",
+	Ribbon_Acquaints_AppendToolTip: "Přidat uživatele",
+	Ribbon_Acquaints_AppendToolTipDescription: "Přidá další uživatele do vytvořené úlohy.",
+	Ribbon_Acquaints_PreparingTaskProgress: "Zpracovávám úlohu...",
+	Ribbon_Acquaints_ProcessProgress: "Seznámeno:",
+
+	Comments_ColumnDate: "Datum",
+	Comments_ColumnUser: "Uživatel",
+	Comments_ColumnComment: "Komentář",
+	Comments_AddComment: "Přidat komentář",
+	Comments_AddCommentReply: "Přidat odpověď",
+	Comments_ColumnReply: "Odpověďět",
+	Comments_From: "Od:",
+	Comments_ReplyTo: "Odpovídáte na:",
+	Comments_BtnAdd: "Přidat",
+	Comments_BtnCancel: "Zavřít",
+
+	
+
+	References_AddReference: "Přidat odkaz",
+	References_CommandRemoveTooltip: "Odebrat tento odkaz",
+	References_CommandRemoveConfirm: "Chcete opravdu odebrat tento odkaz?",
+	References_CommandRemoveSelected: "Odebrat vybrané odkazy",
+	References_CommandRemoveSelectedConfirm: "Chcete opravdu odebrat vybrané odkazy?",
+
+	Url_Edit: "Na první řádek textového pole zadejte URL adresu,\nna druhý volitelně zástupný název",
+	Url_Placeholder: "URL",
+	Url_Error: "Neplatný formát URL adresy",
+	Url_Invalid: "URL musí začínat na <b>http://</b>, <b>https://</b>, <b>ftp://</b>, <b>file://</b>, <b>mailto:</b>, <b>#</b> nebo <b>\\\\</b>.",
+};
+
+

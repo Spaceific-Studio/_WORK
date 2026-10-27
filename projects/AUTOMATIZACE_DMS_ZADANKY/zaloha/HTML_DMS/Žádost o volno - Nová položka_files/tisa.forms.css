@@ -1,0 +1,643 @@
+﻿
+.ui-widget {
+    font-family: inherit !important;
+    font-size: inherit !important;
+}
+
+    .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+        font-family: inherit !important;
+        font-size: inherit !important;
+    }
+
+.ui-widget-content {
+    color: inherit !important;
+    background: inherit !important;
+}
+
+    .ui-widget-content a {
+        color: inherit !important;
+    }
+
+.tisa-group-link td {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background: none;
+    padding: 4px;
+}
+
+
+.tisa-group-link a {
+    cursor: pointer;
+    margin-left: 10px;
+    color: black;
+}
+
+    .tisa-group-link a:hover {
+        text-decoration: none;
+    }
+
+.tisa-group-link .groupIcon {
+    float: left;
+}
+
+.clear {
+    clear: both;
+}
+
+.tisa-group-space td {
+    height: 4px;
+}
+
+.tisa-form {
+    margin: 0 !important;
+}
+
+.tisa-bulkapprovalfield {
+    background-color: #a3e8f5;
+}
+
+    .tisa-bulkapprovalfield .ms-formlabel {
+        padding: 6px;
+    }
+
+    .tisa-bulkapprovalfield .ms-standardheader {
+        font-weight: bold;
+    }
+/*.tisa-group-body > tr {
+	display: table
+}*/
+.tisa-group-body .ms-formbody {
+    width: 100% !important;
+}
+
+.tabs .tisa-group-body.columnSpan, .tabs .tisa-group-body.columnSpan > tr, .tabs .tisa-group-body.columnSpan > tr > td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tisa-form select, .tisa-form input, .tisa-form textarea {
+    margin: 2px 0;
+}
+
+.tisa-readonly {
+    background: #eee;
+}
+
+.tisa-hidden, .tisa-hidden-body {
+    display: none !important;
+}
+
+.tisa-readonly-text {
+    display: block;
+}
+
+    .tisa-readonly-text.inline {
+        display: inline;
+    }
+
+.tisa-form-loadingpanel {
+    min-width: 500px;
+}
+
+    .tisa-form-loadingpanel table {
+        width: 100%;
+        height: 100%;
+    }
+
+    .tisa-form-loadingpanel td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .tisa-form-loadingpanel img {
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+
+    .tisa-form-loadingpanel .ms-descriptiontext {
+        vertical-align: middle;
+        padding-left: 4px;
+        color: #AAA;
+        font-size: 150%;
+    }
+
+    .tisa-form-loadingpanel .tisa-form-dynamictext {
+        font-size: 11px;
+        display: inline-block;
+        margin-top: 20px;
+    }
+
+.tisa-form-division {
+    border-spacing: 4px;
+    border-collapse: separate;
+}
+
+.tisa-form-columns {
+    border-collapse: collapse;
+}
+
+    .tisa-form-columns th.tisa-form-groupcolumn {
+        padding: 4px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .tisa-form-columns td.tisa-form-groupcolumn {
+        padding: 2px 8px;
+        vertical-align: top;
+        border-right: 1px solid #ccc;
+    }
+
+        .tisa-form-columns td.tisa-form-groupcolumn.last {
+            padding: 2px 8px;
+            vertical-align: top;
+            border-right: none;
+        }
+/*---------------------------------------------------*/
+#previewContainer {
+    width: 100%;
+    min-width: 360px;
+}
+
+
+
+    #previewContainer .preview-icon {
+        background-image: url(document-preview-icon.png);
+        background-position: -48px 0;
+        height: 16px;
+        width: 16px;
+        display: inline-block;
+        float: left;
+    }
+
+    #previewContainer .tisa-group-link a {
+        cursor: default;
+    }
+
+    #previewContainer.collapsed .preview-icon {
+        background-position: 0 0;
+        height: 48px;
+        width: 48px;
+        float: none;
+    }
+
+    #previewContainer.collapsed .title, #previewContainer.collapsed .preview-buttons, #previewContainer.collapsed .preview-content {
+        display: none;
+    }
+
+/*#previewContent {
+    min-width: 420px;
+}
+
+#previewContent.previewContentExpanded {
+    min-width: 720px;
+}*/
+
+#previewContent, #previewContent iframe {
+    width: 100%;
+}
+
+#previewContainer .preview-buttons {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+}
+
+
+    #previewContainer .preview-buttons li {
+        float: right;
+        display: inline-block;
+        margin: 3px;
+        padding: 0;
+    }
+
+        #previewContainer .preview-buttons li a {
+            height: 16px;
+            width: 16px;
+            display: inline-block;
+        }
+
+#previewContainer .preview-selectors {
+    list-style-type: disc;
+}
+
+    #previewContainer .preview-selectors li.preview-choice {
+        margin-right: 16px;
+        margin-left: 10px;
+        cursor: pointer;
+        float: left;
+    }
+
+        #previewContainer .preview-selectors li.preview-choice:hover {
+            color: yellow;
+            text-decoration: underline;
+        }
+
+        #previewContainer .preview-selectors li.preview-choice.selected {
+            color: yellow;
+        }
+
+#tisaFormDivision.display-state-form .tisa-form-left {
+}
+
+#tisaFormDivision.display-state-form .tisa-form-right {
+    display: none;
+}
+
+#tisaFormDivision.display-state-document .tisa-form-left {
+    display: none;
+}
+
+#tisaFormDivision.display-state-document .tisa-form-right {
+}
+
+#tisaFormDivision.display-state-division .tisa-form-left {
+}
+
+#tisaFormDivision.display-state-division .tisa-form-right {
+}
+
+
+/*---------------------------------------------------*/
+.ui-widget-header {
+    margin: 2px;
+    padding: 2px;
+}
+
+    .ui-widget-header .ui-header-text {
+        padding: 0.5em;
+        display: inline-block;
+    }
+
+.ui-tabs .ui-tabs-nav li a {
+    padding: 0.35em 1em;
+}
+
+
+
+.tisa-form-left, .tisa-form-right {
+    width: 50%;
+    vertical-align: top;
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+
+.tisa-form-left-collapsed {
+    width: auto !important;
+}
+
+.tisa-form-right-collapsed {
+    width: 1% !important;
+}
+
+
+#onetIDListForm {
+    width: 100%;
+}
+
+.tisa-custom-buttons input {
+    float: right;
+    margin-left: 4px;
+    margin-bottom: 18px;
+}
+
+/*------------------------------------------------------------*/
+
+.tisa-validationErrors {
+    margin: 10px 0;
+    background-color: #fff3f3;
+    border: 1px solid #d33;
+}
+
+    .tisa-validationErrors .title {
+        background-color: #fee;
+        margin: 4px 10px;
+        display: block;
+        font-style: italic;
+        color: #d33;
+        font-size: 90%;
+    }
+
+    .tisa-validationErrors b {
+        cursor: pointer;
+        font-weight: inherit;
+        padding-right: 6px;
+    }
+
+
+
+
+/*------------------------------------------------------------*/
+
+
+#tisa-group-fileset ul {
+    list-style: none;
+    padding: 0;
+}
+
+#tisa-group-fileset li {
+    margin: 6px 0;
+}
+
+#tisa-group-fileset label {
+    margin-left: 4px;
+}
+
+#tisa-group-fileset .templateFileUrl {
+    color: blue;
+    margin-left: 4px;
+    font-style: italic;
+}
+
+
+.tisa-callout-button-right {
+    float: right;
+}
+
+.tisa-callout-button-left {
+    float: left;
+}
+
+.ms-formlabel .tisa-callout-button-left,
+.ms-formlabel .tisa-callout-button-right {
+    margin-top: 2px;
+}
+
+
+
+/*------------------------------------------------------------*/
+
+
+.invisible {
+    visibility: hidden;
+}
+
+.clear {
+    clear: both;
+}
+
+.tisa-taskform {
+    margin-top: 10px;
+}
+
+    .tisa-taskform .ui-widget-header, .ti-bulkPanel .ui-widget-header {
+        margin: 2px;
+    }
+
+        .tisa-taskform .ui-widget-header .text, .ti-bulkPanel .ui-widget-header .text {
+            margin: 6px;
+            display: inline-block;
+        }
+
+
+    .tisa-taskform .ms-inputformcontrols, .tisa-taskform .ms-formdescriptioncolumn-wide {
+        padding: 12px;
+        width: auto;
+    }
+
+    .tisa-taskform .ms-formdescriptioncolumn-wide {
+        width: 230px;
+    }
+
+    .tisa-taskform .ms-inputformdescription {
+        width: 200px;
+        padding-left: 20px;
+        padding-right: 10px;
+        display: inline-block;
+    }
+
+    .tisa-taskform .form-buttons {
+        border-top: 1px solid #a6c9e2;
+        margin: 0 16px;
+    }
+
+        .tisa-taskform .form-buttons .btnSubmitTask {
+            background: #90ee90;
+        }
+
+            .tisa-taskform .form-buttons .btnSubmitTask:hover {
+                background: #88e388;
+            }
+
+
+
+    .tisa-taskform .header-buttons {
+        float: right;
+        margin: 0;
+        padding: 0;
+    }
+
+
+        .tisa-taskform .header-buttons li {
+            float: left;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            margin-right: 20px;
+            margin-top: 2px;
+            margin-bottom: 15px;
+        }
+
+            .tisa-taskform .header-buttons li .label {
+                width: auto !important;
+            }
+
+        .tisa-taskform .header-buttons a .ui-button {
+            background-image: url('icons.png?rev=3');
+            height: 32px;
+            width: 32px;
+            display: inline-block;
+            margin: 2px;
+            margin-right: 8px;
+        }
+
+        .tisa-taskform .header-buttons a.folderLink .ui-button {
+            background-position: -128px 0;
+        }
+
+        .tisa-taskform .header-buttons a.docLink .ui-button {
+            background-position: -96px 0;
+        }
+
+        .tisa-taskform .header-buttons a.noDocLink .ui-button {
+            background-position: -96px 0;
+            display: none;
+        }
+
+        .tisa-taskform .header-buttons a.wf .ui-button {
+            background-position: -64px 0;
+        }
+
+        .tisa-taskform .header-buttons a.item .ui-button {
+            background-position: -32px 0;
+        }
+
+        .tisa-taskform .header-buttons a.question .ui-button {
+            background-position: 0 0;
+        }
+
+        .tisa-taskform .header-buttons a {
+            font-size: 16px;
+            text-wrap: none;
+            white-space: nowrap;
+        }
+
+.taskForm-outcomeItem {
+    margin-bottom: 5px;
+}
+
+#TaskForm, #TaskLessForm {
+    margin-bottom: 15px;
+    min-width: 800px;
+}
+
+#TaskContentEnvelope {
+    margin-bottom: 15px;
+}
+
+#TaskRelatedItemContent {
+    margin: 1px;
+}
+
+/*---- Acquaint ----*/
+
+.acquaintPerex {
+    padding: 10px;
+    clear: both;
+}
+
+    .acquaintPerex .msg {
+        margin: 6px 0;
+        color: red;
+        font-weight: bold;
+    }
+
+    .acquaintPerex .icon {
+        display: block;
+        width: 32px;
+        height: 32px;
+        float: left;
+        margin-right: 8px;
+    }
+
+    .acquaintPerex .iconOpenFolder {
+        background-position: -409px -205px;
+    }
+
+    .acquaintPerex .iconOpenItem {
+        background-position: -172px -1px;
+    }
+
+.openLinks {
+    margin: 4px;
+}
+
+.openLink {
+    line-height: 32px;
+    display: block;
+    font-size: 16px;
+    margin: 8px;
+}
+
+.taskInfo {
+    float: right;
+    border-collapse: collapse;
+    margin-left: 20px;
+}
+
+    .taskInfo td {
+        /* IE8 */
+        border: 1px solid #DBDBDB;
+        /* others */
+        border: 1px solid rgba(213, 213, 213, 0.50);
+        padding: 4px 10px;
+    }
+
+        .taskInfo td.taskInfoHeader {
+            font-weight: bold;
+        }
+
+#lblTaskBody {
+    display: block;
+    margin: 18px;
+    padding-bottom: 6px;
+    clear: both;
+    white-space: normal;
+    border-bottom: 1px solid #a6c9e2;
+}
+
+
+
+.tisa-adminconsole {
+    margin-bottom: 20px;
+    background: yellow;
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 10px;
+    position: fixed;
+    z-index: 99999;
+    box-shadow: 3px 3px 12px #666;
+}
+
+
+    .tisa-adminconsole button {
+        height: 26px;
+        line-height: 0;
+        background: #8ce5f8;
+    }
+
+        .tisa-adminconsole button:hover {
+            background: #9cf5ff;
+        }
+
+    .tisa-adminconsole .title {
+        font-weight: bold;
+        font-size: 120%;
+        display: block;
+        border-bottom: 1px solid gray;
+    }
+
+    .tisa-adminconsole .links {
+        padding: 4px;
+        margin-bottom: 4px;
+    }
+
+    .tisa-adminconsole .running-workflows {
+        background: white;
+        border: 1px solid gray;
+        padding: 4px;
+        overflow: scroll;
+        max-height: 400px;
+    }
+
+        .tisa-adminconsole .running-workflows table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tisa-adminconsole .running-workflows .task.completed td{
+            background: #ccc;
+        }
+
+        .tisa-adminconsole .running-workflows .task.notrequired td {
+            background: #acd;
+        }
+
+        .tisa-adminconsole .running-workflows a, .tisa-adminconsole .running-workflows a:visited {
+            color: inherit;
+        }
+
+        .tisa-adminconsole .running-workflows th {
+            text-align: left;
+            padding: 4px;
+            margin-bottom: 4px;
+        }
+
+        .tisa-adminconsole .running-workflows td {
+            padding: 1px 4px;
+            border: 1px solid gray;
+        }

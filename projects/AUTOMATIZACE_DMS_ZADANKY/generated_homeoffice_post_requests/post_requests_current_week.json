@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-08-12T15:22:10.467386",
+  "post_was_executed": false,
+  "prepared_only": true,
+  "applicant": {
+    "id": 192,
+    "title": "Gerčák Daniel",
+    "login": "i:0#.w|pvs\\gercakd",
+    "email": "GercakD@pvs.cz"
+  },
+  "approver_reference": {
+    "source_item_id": 14456,
+    "source_item_title": "Pracovní nepřítomnost - PV/D4/014476 - Dovolená (8. 9. 2026 - 18. 9. 2026)",
+    "source_item_created": "2026-08-11T19:05:01Z",
+    "source_item_modified": "2026-08-12T04:53:32Z",
+    "source_item_status": "Approved",
+    "source_content_type_id": "0x01007DB943C40B3C3B40B251CC0B9B3AF7D8006C0F3ADA5430B84BB19163A3AE860CAA",
+    "applicant_id": 192,
+    "department": "D4",
+    "division": "stavebni",
+    "approver_1_id": 260,
+    "approver_1": {
+      "__metadata": {
+        "id": "39f776c7-d1bc-47f5-9f35-bf0f4dc2b20a",
+        "type": "SP.Data.UserInfoItem"
+      },
+      "Id": 260,
+      "Title": "Kortus Marek",
+      "EMail": "kortusm@pvs.cz"
+    },
+    "approver_2_id": 58,
+    "approver_2": {
+      "__metadata": {
+        "id": "d7b5ee7f-9124-41e4-8f4f-b5cfc698a354",
+        "type": "SP.Data.UserInfoItem"
+      },
+      "Id": 58,
+      "Title": "Miškovský Jiří",
+      "EMail": "miskovskyj@pvs.cz"
+    },
+    "loaded_by_get_only": true
+  },
+  "context_info": {
+    "digest_retrieved_at": "2026-08-12T13:22:10.446843+00:00",
+    "digest_timeout_seconds": 1800,
+    "digest_sha256": "57c0837a0a737a029f6b542a5d4cf918b0d8578b31a3413254a9ce60fac94b82"
+  },
+  "request_count": 0,
+  "requests": []
+}

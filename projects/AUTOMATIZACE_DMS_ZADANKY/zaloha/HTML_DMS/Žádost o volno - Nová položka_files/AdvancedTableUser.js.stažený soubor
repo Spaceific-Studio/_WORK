@@ -1,0 +1,806 @@
+"use strict";
+var TiSa;
+(function (TiSa) {
+    var Components;
+    (function (Components) {
+        var AdvancedTable;
+        (function (AdvancedTable) {
+            function merge() {
+                var a = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    a[_i] = arguments[_i];
+                }
+                var args = arguments;
+                var hash = {};
+                var arr = [];
+                for (var i = 0; i < args.length; i++) {
+                    for (var j = 0; j < args[i].length; j++) {
+                        if (hash[args[i][j]] !== true) {
+                            arr[arr.length] = args[i][j];
+                            hash[args[i][j]] = true;
+                        }
+                    }
+                }
+                return arr;
+            }
+            AdvancedTable.merge = merge;
+            var PeoplePicker = (function () {
+                function PeoplePicker(ctxControl, value) {
+                    this._value = '';
+                    this._originValue = '';
+                    this._picker = null;
+                    this._initialized = false;
+                    this._unloaded = false;
+                    this.OnValueChanged = [];
+                    this._controlId = ctxControl.ControlId;
+                    this._fieldInfo = ctxControl.FieldInfo;
+                    this._config = ctxControl.FieldInfo.Data;
+                    this._formContext = ctxControl.FormContext;
+                    this._originValue = value;
+                    this._topSpanId = this._controlId + '_$ClientPeoplePicker';
+                    this._editorId = this._topSpanId + '_EditorInput';
+                    this._autoFillDivId = this._topSpanId + '_AutoFillDiv';
+                    this._resolveListId = this._topSpanId + '_ResolvedList';
+                    this._waitImageId = this._topSpanId + '_WaitImage';
+                    this._initialHelpTextId = this._topSpanId + '_InitialHelpText';
+                    this._hiddenInputId = this._topSpanId + '_HiddenInput';
+                    PeoplePicker._instances[this._topSpanId] = this;
+                }
+                PeoplePicker.prototype.Unload = function () {
+                    this._unloaded = true;
+                };
+                PeoplePicker.prototype.GetPickerId = function () {
+                    return this._topSpanId;
+                };
+                PeoplePicker.prototype.GetSystemEntity = function () {
+                    return {
+                        DisplayText: "System",
+                        EntityType: '',
+                        Key: "sharepoint\\system",
+                        MultipleMatches: [],
+                        IsResolved: true,
+                        DomainText: "sharepoint",
+                        Description: '',
+                        EntityData: {
+                            Department: '',
+                            Email: '',
+                            MobilePhone: '',
+                            Title: "System"
+                        },
+                        ProviderName: "local",
+                        ProviderDisplayName: "local"
+                    };
+                };
+                PeoplePicker.prototype.WaitForRle = function (onReady) {
+                    if (this._unloaded) {
+                        console.log("PeoplePicker instance is unloaded (rle)");
+                        return;
+                    }
+                    var that = this;
+                    var rleTimerTicks = 0;
+                    var topSpan = document.getElementById(that._topSpanId);
+                    if (!topSpan) {
+                        console.log("rle: is not exists " + that._topSpanId);
+                        return;
+                    }
+                    var rle = document.getElementById(that._picker.ResolvedListElementId);
+                    if (rle) {
+                        onReady.call(that);
+                        return;
+                    }
+                    var rleTimer = setInterval(function () {
+                        rleTimerTicks++;
+                        if (that._unloaded) {
+                            clearInterval(rleTimer);
+                            console.log("PeoplePicker instance is unloaded (rle)");
+                            return;
+                        }
+                        console.log("rle: start timer " + that._topSpanId);
+                        var rle = document.getElementById(that._picker.ResolvedListElementId);
+                        if (rle) {
+                            clearInterval(rleTimer);
+                            console.log("rle: stop timer (found) " + that._topSpanId);
+                            onReady.call(that);
+                        }
+                        var topSpan = document.getElementById(that._topSpanId);
+                        if (!topSpan) {
+                            clearInterval(rleTimer);
+                            console.log("rle: stop timer (is not exists " + rleTimerTicks + ") " + that._topSpanId);
+                            return;
+                        }
+                        if (rleTimerTicks > 15) {
+                            clearInterval(rleTimer);
+                            console.log("rle: stop timer (not found " + rleTimerTicks + ") " + that._topSpanId);
+                        }
+                    }, 100);
+                };
+                PeoplePicker.prototype.SetValue = function (value) {
+                    if (this._value != value) {
+                        console.log("změna: " + this._value + " => " + value);
+                        this._value = value;
+                        this.WaitForRle(function () {
+                            this._setValueInternal(value);
+                        });
+                    }
+                    else {
+                        console.log("stejná hodnota: " + value);
+                    }
+                };
+                PeoplePicker.prototype._getResolvedSIDs = function () {
+                    var sids = [];
+                    var resolvedList = document.getElementById(this._resolveListId);
+                    if (resolvedList) {
+                        for (var i = resolvedList.children.length - 1; i >= 0; i--) {
+                            var sid = resolvedList.children[i].getAttribute("sid");
+                            sids.push(sid);
+                        }
+                    }
+                    else {
+                        console.warn("nenalezen resolvedList");
+                    }
+                    return sids;
+                };
+                PeoplePicker.prototype._clearUsers = function () {
+                    var resolvedList = document.getElementById(this._resolveListId);
+                    if (resolvedList) {
+                        for (var i = resolvedList.children.length - 1; i >= 0; i--) {
+                            this._picker.DeleteProcessedUser(resolvedList.children[i]);
+                        }
+                    }
+                };
+                PeoplePicker.prototype._setValueInternal = function (value) {
+                    if (this._unloaded) {
+                        console.log("PeoplePicker instance is unloaded (set)");
+                        return;
+                    }
+                    this._clearUsers();
+                    if (!value || value.length == 0)
+                        return;
+                    var that = this;
+                    PeoplePicker.ParseUsers(value, function (users) {
+                        that.WaitForRle(function () {
+                            for (var i = 0; i < users.length; i++) {
+                                var item = users[i];
+                                if (!item)
+                                    continue;
+                                if (item.Key.toLowerCase() === "sharepoint\\system") {
+                                    this._picker.AddProcessedUser(this.GetSystemEntity(), true);
+                                    continue;
+                                }
+                                var e = that._GetEntityFromCache(item);
+                                if (e != null) {
+                                    if (e.Entity.Resolved) {
+                                        console.log("UserPicker: add resolved " + JSON.stringify(item) + " " + this._topSpanId);
+                                        this._picker.AddProcessedUser(e.Entity, true);
+                                    }
+                                    else {
+                                        console.log("UserPicker: add unresolved 1 " + JSON.stringify(item) + " " + this._topSpanId);
+                                        this._picker.AddUnresolvedUser(item, true);
+                                    }
+                                }
+                                else {
+                                    console.log("UserPicker: add unresolved 2 " + JSON.stringify(item) + " " + this._topSpanId);
+                                    this._picker.AddUnresolvedUser(item, true);
+                                }
+                            }
+                        });
+                    }, function (unresolvedUsers) {
+                        that.WaitForRle(function () {
+                            for (var i = 0; i < unresolvedUsers.length; i++) {
+                                var loginName = unresolvedUsers[i];
+                                if (loginName.toLowerCase() === "sharepoint\\system") {
+                                    that._picker.AddProcessedUser(that.GetSystemEntity(), true);
+                                    continue;
+                                }
+                                var unresolvedUserInfo = SPClientPeoplePicker.BuildUnresolvedEntity(loginName, loginName);
+                                console.log("UserPicker: add unresolved 3" + JSON.stringify(unresolvedUserInfo) + " " + that._topSpanId);
+                                that._picker.AddUnresolvedUser(unresolvedUserInfo, true);
+                            }
+                        });
+                    });
+                };
+                PeoplePicker.prototype.completeUnResolvedEntities = function (pp, resolvedEntity) {
+                    var sids = pp._getResolvedSIDs();
+                    if (sids.indexOf(resolvedEntity.Key) >= 0) {
+                        console.log("UserPicker: ignore duplicate " + JSON.stringify(resolvedEntity) + " " + pp._topSpanId);
+                        return;
+                    }
+                    console.log("UserPicker: add resolved2 " + JSON.stringify(resolvedEntity) + " " + pp._topSpanId);
+                    pp._picker.AddProcessedUser(resolvedEntity, true);
+                };
+                PeoplePicker.prototype.Init = function () {
+                    if (this._initialized)
+                        return;
+                    this._initialized = true;
+                    var topSpanElt = document.getElementById(this._topSpanId);
+                    if (topSpanElt != null)
+                        AddEvtHandler(topSpanElt, "onclick", SPClientPeoplePicker_OnClick);
+                    var editorElt = document.getElementById(this._editorId);
+                    if (editorElt != null) {
+                        AddEvtHandler(editorElt, "onblur", SPClientPeoplePicker_OnEditorBlur);
+                        AddEvtHandler(editorElt, "oncopy", SPClientPeoplePicker_OnEditorCopy);
+                        AddEvtHandler(editorElt, "onpaste", SPClientPeoplePicker_OnEditorPaste);
+                        AddEvtHandler(editorElt, "onfocus", SPClientPeoplePicker_OnEditorFocus);
+                        AddEvtHandler(editorElt, "onkeyup", SPClientPeoplePicker_OnEditorKeyUp);
+                        AddEvtHandler(editorElt, "onkeydown", SPClientPeoplePicker_OnEditorKeyDown);
+                        AddEvtHandler(editorElt, "onkeypress", SPClientPeoplePicker_OnEditorKeyPress);
+                    }
+                    var fieldSchema = {
+                        TopLevelElementId: this._topSpanId,
+                        EditorElementId: this._editorId,
+                        AutoFillElementId: this._autoFillDivId,
+                        ResolvedListElementId: this._resolveListId,
+                        InitialHelpTextElementId: this._initialHelpTextId,
+                        WaitImageId: this._waitImageId,
+                        HiddenInputId: this._hiddenInputId,
+                        OnValueChangedClientScript: this._OnValueChangedHandler,
+                        AllowMultipleValues: this._config.AllowMultipleValues ? true : false,
+                        PrincipalAccountType: this._config.PrincipalAccountType ? this._config.PrincipalAccountType : "User,SecGroup",
+                        ResolvePrincipalSource: 15,
+                        SearchPrincipalSource: 15
+                    };
+                    this._picker = (new window["SPClientPeoplePicker"](fieldSchema));
+                    this._picker["refInstance"] = this;
+                    this._picker["_AddResolvedUserToLocalCache"] = this._picker.AddResolvedUserToLocalCache;
+                    this._picker.AddResolvedUserToLocalCache = function (resolvedEntity, resolveText) {
+                        this["refInstance"]._AddResolvedEntityToCache(resolvedEntity);
+                        this._AddResolvedUserToLocalCache(resolvedEntity, resolveText);
+                    };
+                    if (!SPClientPeoplePickerProcessedUser.prototype.UpdateResolvedUserFn) {
+                        SPClientPeoplePickerProcessedUser.prototype.UpdateResolvedUserFn = SPClientPeoplePickerProcessedUser.prototype.UpdateResolvedUser;
+                        SPClientPeoplePickerProcessedUser.prototype.UpdateResolvedUser = function (a, c) {
+                            var d = document.getElementById(this.UserContainerElementId);
+                            if (d) {
+                                SPClientPeoplePickerProcessedUser.prototype.UpdateResolvedUserFn.call(this, a, c);
+                            }
+                            else {
+                                var pickerId = this.UserContainerElementId.split("_$ClientPeoplePicker")[0] + "_$ClientPeoplePicker";
+                                var pickerElement = document.getElementById(pickerId);
+                                if (pickerElement) {
+                                    var picker = PeoplePicker._instances[pickerId];
+                                    if (picker && picker._picker && !picker._unloaded) {
+                                        picker._picker.AddProcessedUser(a, true);
+                                    }
+                                }
+                            }
+                        };
+                    }
+                    if (this._originValue) {
+                        console.log("set origin value: " + this._value + " => " + this._originValue);
+                        this._value = this._originValue;
+                        this.WaitForRle(function () {
+                            this._setValueInternal(this._originValue);
+                        });
+                    }
+                };
+                PeoplePicker.prototype._AddResolvedEntityToCache = function (entity) {
+                    var e = this._GetEntityFromCache(entity);
+                    if (!e) {
+                        if (entity.Resolved) {
+                            e = { Entity: entity, fn: [], o: [] };
+                            PeoplePicker.EntityCache[entity.Key] = e;
+                        }
+                    }
+                    else {
+                        var fn = e.fn;
+                        e.Entity = entity;
+                        for (var i = 0; i < e.fn.length; i++)
+                            e.fn[i](e.o[i], e.Entity);
+                        e.fn = [];
+                        e.o = [];
+                    }
+                };
+                ;
+                PeoplePicker.prototype._AddUnResolvedEntityToCache = function (entity, picker, callbackFunction) {
+                    var e = this._GetEntityFromCache(entity);
+                    if (!e) {
+                        e = { Entity: entity, fn: [], o: [] };
+                        PeoplePicker.EntityCache[entity.Key] = e;
+                    }
+                    if (picker && callbackFunction) {
+                        e.fn.push(callbackFunction);
+                        e.o.push(picker);
+                    }
+                };
+                ;
+                PeoplePicker.prototype._GetEntityFromCache = function (entity) {
+                    var re = PeoplePicker.EntityCache[entity.Key];
+                    return re ? re : null;
+                };
+                ;
+                PeoplePicker.prototype._CallEvent = function (eventName, eventDelegate) {
+                    var evArray = this[eventName];
+                    if (evArray.length > 0)
+                        for (var i = 0; i < evArray.length; i++) {
+                            var ev = evArray[i];
+                            if (ev)
+                                eventDelegate.call(this, ev);
+                        }
+                };
+                PeoplePicker.prototype._OnValueChangedHandler = function (senderElementId, resolvedUsers) {
+                    var that = this["refInstance"];
+                    that._CallEvent("OnValueChanged", function (ev) {
+                        if (that._unloaded) {
+                            console.log("PeoplePicker instance is unloaded (event)");
+                            return;
+                        }
+                        var sids = that._getResolvedSIDs();
+                        var allowSids = [];
+                        if (!that._config.AllowMultipleValues) {
+                            allowSids.push(sids[sids.length - 1]);
+                        }
+                        else {
+                            allowSids = $.unique(sids);
+                        }
+                        if (allowSids.length != sids.length) {
+                            var resolvedList = document.getElementById(that._resolveListId);
+                            var acceptSids = [];
+                            for (var i = resolvedList.children.length - 1; i >= 0; i--) {
+                                var sid = $(resolvedList.children[i]).attr("sid");
+                                if (acceptSids.indexOf(sid) >= 0) {
+                                    that._picker.DeleteProcessedUser(resolvedList.children[i]);
+                                    console.log("remove duplicity " + sid);
+                                }
+                                acceptSids.push(sid);
+                            }
+                        }
+                        var arr = [];
+                        for (var i = 0; i < allowSids.length; i++) {
+                            var s = allowSids[i];
+                            var ru = resolvedUsers.find(function (o) { return o.Key == s; });
+                            if (ru)
+                                arr.push({ Key: ru.Key, DisplayText: ru.DisplayText });
+                        }
+                        var value = JSON.stringify(arr);
+                        if (arr.length === 0)
+                            value = '';
+                        ev.call(this, value, senderElementId, resolvedUsers);
+                    });
+                };
+                PeoplePicker.prototype.GetTemplate = function () {
+                    PeoplePicker.TemplateCache = PeoplePicker.TemplateCache || {};
+                    if (PeoplePicker.TemplateCache[this._controlId])
+                        return PeoplePicker.TemplateCache[this._controlId];
+                    if (!PeoplePicker.T) {
+                        PeoplePicker.T = true;
+                        PeoplePicker.L_SPClientPeoplePickerDefaultHelpText = Strings.STS.L_SPClientPeoplePickerDefaultHelpText;
+                        PeoplePicker.L_SPClientPeoplePickerMultiUserDefaultHelpText = Strings.STS.L_SPClientPeoplePickerMultiUserDefaultHelpText;
+                        PeoplePicker.EL_SPClientPeoplePickerDefaultHelpText = STSHtmlEncode(Strings.STS.L_SPClientPeoplePickerDefaultHelpText);
+                        PeoplePicker.EL_SPClientPeoplePickerMultiUserDefaultHelpText = STSHtmlEncode(Strings.STS.L_SPClientPeoplePickerMultiUserDefaultHelpText);
+                        PeoplePicker.EL_SPClientPeoplePickerWaitImgAlt = STSHtmlEncode(Strings.STS.L_SPClientPeoplePickerWaitImgAlt);
+                    }
+                    var initialHelpText = this._config.AllowMultipleValues
+                        ? PeoplePicker.L_SPClientPeoplePickerMultiUserDefaultHelpText
+                        : PeoplePicker.L_SPClientPeoplePickerDefaultHelpText;
+                    initialHelpText = '';
+                    var titleAttr = this._config.AllowMultipleValues
+                        ? PeoplePicker.EL_SPClientPeoplePickerMultiUserDefaultHelpText
+                        : PeoplePicker.EL_SPClientPeoplePickerDefaultHelpText;
+                    var result = [];
+                    var i = 0;
+                    result[i++] = '<div class="sp-peoplepicker-topLevel" id="' + this._topSpanId + '" title="' + titleAttr + '">';
+                    result[i++] = '<input id="' + this._hiddenInputId + '" name="' + this._hiddenInputId + '" type="hidden" />';
+                    result[i++] = '<div id="' + this._autoFillDivId + '" class="sp-peoplepicker-autoFillContainer"></div>';
+                    result[i++] = '<span id="' + this._initialHelpTextId + '" class="sp-peoplepicker-initialHelpText ';
+                    result[i++] = 'ms-helperText">' + initialHelpText + '</span>';
+                    result[i++] = '<img class="sp-peoplepicker-waitImg" id="' + this._waitImageId + '" alt="';
+                    result[i++] = PeoplePicker.EL_SPClientPeoplePickerWaitImgAlt + '" src=';
+                    result[i++] = '"/_layouts/15/images/gears_anv4.gif?rev=23"' + '/>';
+                    result[i++] = '<span id="' + this._resolveListId + '" class="sp-peoplepicker-resolveList"></span>';
+                    result[i++] = '<input type="text" class="sp-peoplepicker-editorInput" size="1" autocomplete="off" value="" ';
+                    result[i++] = 'id="' + this._editorId + '" title="' + titleAttr + '" autocorrect="off" autocapitalize="off" /></div>';
+                    result[i++] = '</div>';
+                    var s = result.join('');
+                    PeoplePicker.TemplateCache[this._controlId] = s;
+                    return s;
+                };
+                PeoplePicker.ParseUsers = function (cellValue, fnResolvedUsers, fnUnresolvedUsers) {
+                    var allResolved = false;
+                    var users = [];
+                    var unresolvedUsers = [];
+                    cellValue = cellValue.replace(/&nbsp;/, " ");
+                    if (cellValue.indexOf("<SPDataPrincipals>") >= 0) {
+                        var xml = $.parseXML(cellValue);
+                        $("SPDataPrincipal", xml).each(function () {
+                            var t = $(this);
+                            users.push({
+                                Id: t.attr("Id"),
+                                Key: t.attr("LoginName"),
+                                DisplayText: t.attr("Name")
+                            });
+                        });
+                        fnResolvedUsers(users);
+                        allResolved = true;
+                    }
+                    else if (cellValue.indexOf("[") == 0 || cellValue.indexOf("{") == 0) {
+                        if (cellValue.indexOf("[") == 0) {
+                            users = JSON.parse(cellValue);
+                        }
+                        else {
+                            var item = JSON.parse(cellValue);
+                            users.push(item);
+                        }
+                        allResolved = true;
+                        var resolvedUsers = [];
+                        for (var i = 0; i < users.length; i++) {
+                            var u = users[i];
+                            if (u.DisplayText.indexOf("\\") > 0 && u.Key.indexOf("c:0+.w|") < 0) {
+                                allResolved = false;
+                                var loginName = u.Key;
+                                if (loginName.indexOf("|") > 0)
+                                    loginName = loginName.split("|").pop();
+                                unresolvedUsers.push(loginName);
+                            }
+                            else
+                                resolvedUsers.push(u);
+                        }
+                        if (allResolved && fnResolvedUsers)
+                            fnResolvedUsers(resolvedUsers);
+                        if (!allResolved && fnUnresolvedUsers)
+                            fnUnresolvedUsers(unresolvedUsers);
+                    }
+                    else {
+                        var arr = cellValue.split(';');
+                        for (var i = 0; i < arr.length; i++) {
+                            var a = arr[i];
+                            if (a.indexOf("|") > 0)
+                                a = a.split("|").pop();
+                            unresolvedUsers.push(a);
+                        }
+                        if (fnUnresolvedUsers)
+                            fnUnresolvedUsers(unresolvedUsers);
+                    }
+                    return allResolved;
+                };
+                PeoplePicker.RenderDisplayValue = function (columnConfiguration, resolvedUsers) {
+                    var users = [];
+                    for (var i = 0; i < resolvedUsers.length; i++) {
+                        var item = resolvedUsers[i];
+                        var s = item.DisplayText;
+                        users.push("<span title=\"" + item.Key.split('|').pop() + "\">" + s + "</span>");
+                    }
+                    return users.join(", ");
+                };
+                PeoplePicker.RenderDisplayValueWithSeparator = function (columnConfiguration, resolvedUsers, separator) {
+                    var users = [];
+                    for (var i = 0; i < resolvedUsers.length; i++) {
+                        var item = resolvedUsers[i];
+                        var s = item.DisplayText;
+                        users.push(s);
+                    }
+                    return users.join(separator);
+                };
+                PeoplePicker.ResolveUser = function (loginName, completeCallbackFunction) {
+                    var staticContext = TiSa.Components.AdvancedTable.AdvancedTableStatic.StaticContext;
+                    staticContext.EnsureClientContext(function () {
+                        var result = null;
+                        if (_spPageContextInfo.isSPO) {
+                            result = staticContext.__Web.ensureUser(loginName);
+                            staticContext.__ClientContext.load(result, 'Title', 'LoginName');
+                        }
+                        else
+                            result = SP.Utilities.Utility.resolvePrincipal(staticContext.__ClientContext, staticContext.__Web, loginName, SP.Utilities.PrincipalType.all, null, null, false);
+                        staticContext.__ClientContext.executeQueryAsync(function () {
+                            completeCallbackFunction(result);
+                        }, function () { });
+                    });
+                };
+                PeoplePicker.ResolveUsers = function (staticContext, unresolvedUsers, completeCallbackFunction, renderUserFunction) {
+                    if (staticContext == null)
+                        staticContext = TiSa.Components.AdvancedTable.AdvancedTableStatic.StaticContext;
+                    var _completeCallbackFunction = completeCallbackFunction;
+                    var _renderUserFunction = renderUserFunction;
+                    var logins = [];
+                    for (var i = 0; i < unresolvedUsers.length; i++) {
+                        var loginName = unresolvedUsers[i].LoginName;
+                        var targetObject = unresolvedUsers[i].TargetObject;
+                        var fLogin = null;
+                        for (var j = 0; j < PeoplePicker.ResolvedUsers.length; j++) {
+                            var login = PeoplePicker.ResolvedUsers[j];
+                            if (login.LoginName == loginName) {
+                                fLogin = login;
+                                break;
+                            }
+                        }
+                        if (!fLogin && loginName.indexOf('app@') == 0) {
+                            fLogin = {
+                                LoginName: loginName,
+                                DisplayName: "APP",
+                                Resolved: true
+                            };
+                        }
+                        if (!fLogin && loginName.toLowerCase().indexOf('sharepoint\\system') == 0) {
+                            fLogin = {
+                                LoginName: loginName,
+                                DisplayName: "SYSTEM",
+                                Resolved: true
+                            };
+                        }
+                        if (fLogin) {
+                            if (targetObject)
+                                _renderUserFunction(targetObject, fLogin);
+                            continue;
+                        }
+                        for (var j = 0; j < logins.length; j++) {
+                            var login = logins[j];
+                            if (login.LoginName == loginName) {
+                                fLogin = login;
+                                break;
+                            }
+                        }
+                        if (fLogin) {
+                            fLogin.TargetObjects.push(targetObject);
+                        }
+                        else {
+                            logins.push({
+                                LoginName: loginName,
+                                TargetObjects: [targetObject]
+                            });
+                        }
+                    }
+                    staticContext.EnsureClientContext(function () {
+                        for (var i = 0; i < logins.length; i++) {
+                            var u = logins[i];
+                            if (_spPageContextInfo.isSPO) {
+                                u.Result = staticContext.__Web.ensureUser(u.LoginName);
+                                staticContext.__ClientContext.load(u.Result, 'Title', 'LoginName');
+                            }
+                            else
+                                u.Result = SP.Utilities.Utility.resolvePrincipal(staticContext.__ClientContext, staticContext.__Web, u.LoginName, SP.Utilities.PrincipalType.all, null, null, false);
+                        }
+                        staticContext.__ClientContext.executeQueryAsync(function () {
+                            var unresolved = false;
+                            for (var i = 0; i < logins.length; i++) {
+                                var u = logins[i];
+                                u.DisplayName = _spPageContextInfo.isSPO ? u.Result.get_title() : u.Result.get_displayName();
+                                if (!u.DisplayName || u.DisplayName.length == 0) {
+                                    u.Resolved = false;
+                                    unresolved = true;
+                                    continue;
+                                }
+                                u.Resolved = true;
+                                u.LoginNameResolved = u.Result.get_loginName();
+                                PeoplePicker.ResolvedUsers.push({
+                                    LoginName: u.LoginName,
+                                    LoginNameResolved: u.LoginNameResolved,
+                                    DisplayName: u.DisplayName
+                                });
+                            }
+                            var unresolvedLogins = [];
+                            for (var i = 0; i < logins.length; i++) {
+                                var u = logins[i];
+                                if (u.Resolved) {
+                                    for (var j = 0; j < u.TargetObjects.length; j++)
+                                        _renderUserFunction(u.TargetObjects[j], u);
+                                }
+                                else
+                                    unresolvedLogins.push(u);
+                            }
+                            if (unresolvedLogins.length == 0) {
+                                if (_completeCallbackFunction)
+                                    _completeCallbackFunction(logins);
+                            }
+                            else {
+                                var ss = [];
+                                var ht = {};
+                                for (var i = 0; i < unresolvedLogins.length; i++) {
+                                    var u = unresolvedLogins[i];
+                                    ss.push("<Value Type='Text'>i:0#.w|" + u.LoginName + "</Value>");
+                                    ss.push("<Value Type='Text'>" + u.LoginName + "</Value>");
+                                    ht[u.LoginName] = u;
+                                }
+                                var list = staticContext.__Web.get_siteUserInfoList();
+                                var query = new SP.CamlQuery();
+                                query.set_viewXml("<View Scope='RecursiveAll'><Query><Where><In><FieldRef Name='Name' /><Values>" + ss.join('') + "</Values></In></Where></Query></View>");
+                                var userItems = list.getItems(query);
+                                staticContext.__ClientContext.load(userItems);
+                                staticContext.__ClientContext.executeQueryAsync(function () {
+                                    var itemsCollection = userItems.getEnumerator();
+                                    while (itemsCollection.moveNext()) {
+                                        var item = itemsCollection.get_current();
+                                        var name = item.get_item("Name");
+                                        var u = ht[name.split('|').pop()];
+                                        if (!u)
+                                            u = ht[name];
+                                        if (u) {
+                                            u.Resolved = true;
+                                            u.LoginNameResolved = name;
+                                            u.DisplayName = item.get_item("Title");
+                                        }
+                                    }
+                                    for (var i = 0; i < logins.length; i++) {
+                                        var u = logins[i];
+                                        if (!u.Resolved)
+                                            u.DisplayName = u.LoginName;
+                                        for (var j = 0; j < u.TargetObjects.length; j++)
+                                            _renderUserFunction(u.TargetObjects[j], u);
+                                    }
+                                    if (_completeCallbackFunction)
+                                        _completeCallbackFunction(logins);
+                                }, function (sender, e) {
+                                    TiSa.Console.Error("user query failed. " + e.get_message() + " " + e.get_stackTrace());
+                                });
+                            }
+                        }, function (sender, e) {
+                            TiSa.Console.Error("user query failed. " + e.get_message() + " " + e.get_stackTrace());
+                        });
+                    });
+                };
+                PeoplePicker.ResolveUserData = function (instance, staticContext, config, unresolvedUserData, resources) {
+                    var _config = config;
+                    var _instance = instance;
+                    var RESX = resources;
+                    var logins = [];
+                    var _renderCell = function (cell, v) {
+                        cell.html('<span class="text">' + v + '</span>');
+                    };
+                    var _onValueChanged = function (uds, loginName) {
+                        for (var i = 0; i < uds.length; i++) {
+                            var ud = uds[i];
+                            var props = ud.Column.UserQuery.Properties;
+                            var fLogin = null;
+                            for (var j = 0; j < logins.length; j++) {
+                                var login = logins[j];
+                                if (login.LoginName == loginName) {
+                                    fLogin = login;
+                                    break;
+                                }
+                            }
+                            if (fLogin) {
+                                fLogin.UserData.push(ud);
+                                fLogin.Properties = merge(fLogin.Properties, props);
+                            }
+                            else {
+                                logins.push({
+                                    LoginName: loginName,
+                                    UserData: [ud],
+                                    Properties: props
+                                });
+                            }
+                        }
+                        _LoadUserProfile();
+                    };
+                    for (var i = 0; i < unresolvedUserData.length; i++) {
+                        var ud = unresolvedUserData[i];
+                        var aUser = ud.RowInfo.AssociatedUser;
+                        var loginName = null;
+                        if (aUser.UnresolvedUser) {
+                            for (var j = 0; j < PeoplePicker.ResolvedUsers.length; j++) {
+                                var login = PeoplePicker.ResolvedUsers[j];
+                                if (login.LoginName == aUser.UnresolvedUser.LoginName) {
+                                    loginName = login.LoginNameResolved;
+                                    break;
+                                }
+                            }
+                        }
+                        if (aUser.ResolvedUser) {
+                            loginName = aUser.ResolvedUser.Key;
+                        }
+                        if (aUser.Picker) {
+                            if (!aUser.UserData)
+                                aUser.UserData = [ud];
+                            else
+                                aUser.UserData.push(ud);
+                            aUser.OnValueChanged = function (users) {
+                                if (users.length > 0)
+                                    _onValueChanged(this.UserData, users[0].Key);
+                                else
+                                    for (var k = 0; k < this.UserData.length; k++)
+                                        _renderCell(this.UserData[k].Cell, "");
+                            };
+                        }
+                        if (!loginName) {
+                            _renderCell(ud.Cell, "");
+                            continue;
+                        }
+                        var props = ud.Column.UserQuery.Properties;
+                        var fLogin = null;
+                        for (var j = 0; j < logins.length; j++) {
+                            var login = logins[j];
+                            if (login.LoginName == loginName) {
+                                fLogin = login;
+                                break;
+                            }
+                        }
+                        if (fLogin) {
+                            fLogin.UserData.push(ud);
+                            fLogin.Properties = merge(fLogin.Properties, props);
+                        }
+                        else {
+                            logins.push({
+                                LoginName: loginName,
+                                UserData: [ud],
+                                Properties: props
+                            });
+                        }
+                    }
+                    var _LoadUserProfileComplete = function () {
+                        for (var x = 0; x < logins.length; x++) {
+                            var u = logins[x];
+                            u.Complete = true;
+                            u.Values = {};
+                            for (var j = 0; j < u.Properties.length; j++)
+                                u.Values[u.Properties[j]] = u.UserProfileProperties[j];
+                            for (var j = 0; j < u.UserData.length; j++) {
+                                var ud = u.UserData[j];
+                                var formula = ud.Column.Expression.Formula;
+                                var formulaResult = "";
+                                var ctx = {
+                                    Config: _config,
+                                    StaticContext: staticContext,
+                                    Instance: _instance,
+                                    Columns: _config.Columns,
+                                    ColumnsById: _config.ColumnsById,
+                                    Column: ud.Column,
+                                    RowIndex: ud.RowIndex,
+                                    ColumnIndex: ud.ColumnIndex,
+                                    Resources: RESX
+                                };
+                                var v = "";
+                                var m = formula.match(/\{([A-Za-z0-9:_-]+)\}/g);
+                                if (m)
+                                    for (var i = 0; i < m.length; i++) {
+                                        var token = m[i];
+                                        var innerTextToken = token.substring(1, token.length - 1);
+                                        v = "";
+                                        var tokenParts = innerTextToken.split(':');
+                                        if (tokenParts.length == 2) {
+                                            if (tokenParts[0] == "user") {
+                                                var key = tokenParts[1];
+                                                var fieldValue = u.Values[key];
+                                                if (fieldValue)
+                                                    v = fieldValue.toString();
+                                            }
+                                        }
+                                        else {
+                                            var column = _config.ColumnsById[innerTextToken];
+                                            if (column)
+                                                v = this.Reference.Cells[column.DataIndex];
+                                        }
+                                        var re = token.replace(/{/, "\\{").replace(/}/, "\\}");
+                                        formula = formula.replace(new RegExp(token, "g"), v);
+                                    }
+                                var fnName = '__evaluateExpression_' + _instance.GetFieldInfo().InternalName + '_' + ctx.RowIndex + '_' + ctx.ColumnIndex;
+                                eval('TiSa.Components.AdvancedTable.PeoplePicker.' + fnName + ' = ' + 'function (ctx){\r\n\treturn ' + formula + '; \r\n};');
+                                var fn = TiSa.Components.AdvancedTable.PeoplePicker[fnName];
+                                if (fn) {
+                                    var fnResult = fn(ctx);
+                                    if (fnResult)
+                                        formulaResult = fnResult.toString();
+                                    delete TiSa.Components.AdvancedTable.PeoplePicker[fnName];
+                                }
+                                _renderCell(ud.Cell, formulaResult);
+                            }
+                        }
+                    };
+                    var _LoadUserProfile = function () {
+                        for (var i = 0; i < logins.length; i++) {
+                            var u = logins[i];
+                            if (u.Complete)
+                                continue;
+                            var targetUser = u.LoginName.split('|').pop();
+                            var peopleManager = new SP.UserProfiles.PeopleManager(staticContext.__ClientContext);
+                            var userProfilePropertiesForUser = new SP.UserProfiles.UserProfilePropertiesForUser(staticContext.__ClientContext, targetUser, u.Properties);
+                            u.UserProfileProperties = peopleManager.getUserProfilePropertiesFor(userProfilePropertiesForUser);
+                            staticContext.__ClientContext.load(userProfilePropertiesForUser);
+                        }
+                        staticContext.__ClientContext.executeQueryAsync(_LoadUserProfileComplete, function (sender, args) {
+                            alert("Problem in async request. Receive this error '" + args.get_message() + "'");
+                        });
+                    };
+                    staticContext.EnsureClientContext(function () {
+                        _LoadUserProfile();
+                    });
+                };
+                PeoplePicker.EntityCache = {};
+                PeoplePicker.ResolvedUsers = [];
+                PeoplePicker._instances = {};
+                return PeoplePicker;
+            }());
+            AdvancedTable.PeoplePicker = PeoplePicker;
+            window["AdvancedTableControlUser"] = { PeoplePicker: PeoplePicker };
+        })(AdvancedTable = Components.AdvancedTable || (Components.AdvancedTable = {}));
+    })(Components = TiSa.Components || (TiSa.Components = {}));
+})(TiSa || (TiSa = {}));
+if (SP && SP.SOD)
+    SP.SOD.notifyScriptLoadedAndExecuteWaitingJobs("AdvancedTableUser.js");

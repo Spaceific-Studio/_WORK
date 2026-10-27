@@ -1,0 +1,745 @@
+/* eslint-disable */
+var WFEngine;
+(function (WFEngine) {
+    var Manager = /** @class */ (function () {
+        function Manager() {
+        }
+        Manager.GetProxy = function () { return Manager.proxy; };
+        Manager.EnsureProxy = function (callback) {
+            var _this = this;
+            if (this.proxy) {
+                if (callback)
+                    callback();
+                return;
+            }
+            var initProxy = function () {
+                if (_spPageContextInfo.isSPO || _spPageContextInfo.webServerRelativeUrl == "/sites/wfengine_online") {
+                    _this.proxy = new WFProxyOnline();
+                }
+                else {
+                    _this.proxy = new WFProxyOnprem();
+                }
+                WriteLog("WFProxy created");
+                _this.proxy.Initialize(callback);
+            };
+            if (window._spPageContextInfo && window._spFormDigestRefreshInterval)
+                initProxy.call(this);
+            else {
+                WriteLog("start async wait for _spPageContextInfo");
+                // nekdy se stal pripad, kdy se volala tato funkce a jeste nebyl loadnuty _spPageContextInfo
+                var asyncWait = function (c) {
+                    if (window._spPageContextInfo && window._spFormDigestRefreshInterval) {
+                        c();
+                        return;
+                    }
+                    setTimeout(function () {
+                        asyncWait(c);
+                    }, 100);
+                };
+                asyncWait(initProxy.bind(this));
+            }
+        };
+        Manager.ShowStartingDialog = function () {
+            if (this.DisableDialogs)
+                return null;
+            var dialog = SP.UI.ModalDialog.showWaitScreenWithNoClose(WFEngine.RESX.Engine_StartingWorkflow ? WFEngine.RESX.Engine_StartingWorkflow : "Starting workflow...", null, 90, 550);
+            dialog.autoSize();
+            return dialog;
+        };
+        Manager.ShowStoppingDialog = function () {
+            if (this.DisableDialogs)
+                return null;
+            var dialog = SP.UI.ModalDialog.showWaitScreenWithNoClose(WFEngine.RESX.Engine_StoppingWorkflow ? WFEngine.RESX.Engine_StoppingWorkflow : "Terminating workflow...", null, 90, 550);
+            dialog.autoSize();
+            return dialog;
+        };
+        /// Starts new instance of workflow
+        Manager.StartWorkflowOnSelectedItems = function (workflow, callback, data) {
+            if (data === void 0) { data = null; }
+            var list = SP.ListOperation.Selection.getSelectedList();
+            var items = SP.ListOperation.Selection.getSelectedItems();
+            var dialog = Manager.ShowStartingDialog();
+            var strId = "";
+            var ids = [];
+            for (var i = 0; i < items.length; i++) {
+                ids.push(items[i].id);
+            }
+            Manager.WorkflowActionInternal(workflow, ids.join(';'), list, "", "start_multiple", function (resp) {
+                if (dialog)
+                    dialog.close(SP.UI.DialogResult.OK);
+                Manager.HandleResponseWithNotification(resp, "start", WFEngine.RESX.Engine_WorkflowStarted + " Id = " + ids.join(';'), WFEngine.RESX.Engine_UnableToStartWorkflow + " Id = " + ids.join(';'));
+                if (callback != null) {
+                    callback(resp);
+                }
+            }, data);
+        };
+        /// Starts new instance of workflow
+        Manager.StopWorkflowOnSelectedItems = function (workflow, callback, data) {
+            if (data === void 0) { data = null; }
+            var list = SP.ListOperation.Selection.getSelectedList();
+            var items = SP.ListOperation.Selection.getSelectedItems();
+            var dialog = SP.UI.ModalDialog.showWaitScreenWithNoClose(WFEngine.RESX.Engine_StoppingWorkflow, null, 90, 500);
+            dialog.autoSize();
+            var strId = "";
+            var ids = [];
+            for (var i = 0; i < items.length; i++) {
+                ids.push(items[i].id);
+            }
+            Manager.WorkflowActionInternal(workflow, ids.join(';'), list, "", "stop_multiple", function (resp) {
+                if (dialog)
+                    dialog.close(SP.UI.DialogResult.OK);
+                Manager.HandleResponseWithNotification(resp, "start", WFEngine.RESX.Engine_WorkflowStopped + " Id = " + ids.join(';'), WFEngine.RESX.Engine_UnableToStopWorkflow + " Id = " + ids.join(';'));
+                if (callback != null) {
+                    callback(resp);
+                }
+            }, data);
+        };
+        Manager.StartWorkflowOnItem = function (workflow, itemId, list, data, callback, parentId, onExecuted) {
+            if (list === void 0) { list = null; }
+            if (data === void 0) { data = null; }
+            if (callback === void 0) { callback = null; }
+            if (parentId === void 0) { parentId = null; }
+            if (onExecuted === void 0) { onExecuted = null; }
+            if (!list)
+                list = SP.PageContextInfo.get_pageListId();
+            if (!itemId)
+                itemId = this.GetItemId();
+            if (!itemId) {
+                WriteLog("itemId is not defined");
+                return false;
+            }
+            var dialog = Manager.ShowStartingDialog();
+            var action = "start";
+            if (itemId.toString().indexOf(";") > 0)
+                action = "start_multiple";
+            Manager.WorkflowActionInternal(workflow, itemId.toString(), list, parentId, action, function (resp) {
+                if (dialog)
+                    dialog.close(SP.UI.DialogResult.OK);
+                Manager.HandleResponseWithNotification(resp, action, WFEngine.RESX.Engine_WorkflowStarted + " Id = " + itemId, WFEngine.RESX.Engine_UnableToStartWorkflow + " Id = " + itemId);
+                if (callback != null) {
+                    callback(resp);
+                }
+            }, data, function () {
+                // for async execution
+                if (onExecuted != null) {
+                    if (dialog)
+                        dialog.close(SP.UI.DialogResult.OK);
+                    onExecuted();
+                }
+            });
+        };
+        Manager.StopWorkflowOnItem = function (workflow, itemId, list, data, callback, parentId, onExecuted) {
+            if (list === void 0) { list = null; }
+            if (data === void 0) { data = null; }
+            if (callback === void 0) { callback = null; }
+            if (parentId === void 0) { parentId = null; }
+            if (onExecuted === void 0) { onExecuted = null; }
+            if (!list)
+                list = SP.PageContextInfo.get_pageListId();
+            if (!itemId)
+                itemId = this.GetItemId();
+            if (!itemId) {
+                WriteLog("itemId is not defined");
+                return;
+            }
+            var dialog = Manager.ShowStoppingDialog();
+            Manager.WorkflowActionInternal(workflow, itemId.toString(), list, parentId, "stop", function (resp) {
+                if (dialog)
+                    dialog.close(SP.UI.DialogResult.OK);
+                Manager.HandleResponseWithNotification(resp, "start", WFEngine.RESX.Engine_WorkflowStarted + " Id = " + itemId, WFEngine.RESX.Engine_UnableToStartWorkflow + " Id = " + itemId);
+                if (callback != null) {
+                    callback(resp);
+                }
+            }, data, function () {
+                // for async execution
+                if (onExecuted != null) {
+                    if (dialog)
+                        dialog.close(SP.UI.DialogResult.OK);
+                    onExecuted();
+                }
+            });
+        };
+        Manager.RestartWorkflowOnItem = function (workflow, itemId, list, data, callback, parentId) {
+            if (list === void 0) { list = null; }
+            if (data === void 0) { data = null; }
+            if (callback === void 0) { callback = null; }
+            if (parentId === void 0) { parentId = null; }
+            if (!list)
+                list = SP.PageContextInfo.get_pageListId();
+            if (!itemId)
+                itemId = this.GetItemId();
+            if (!itemId) {
+                WriteLog("itemId is not defined");
+                return;
+            }
+            this.StopWorkflowOnItem(workflow, itemId, list, data, Function.createDelegate(this, function (r) {
+                this.StartWorkflowOnItem(workflow, itemId, list, data, function (resp) {
+                    if (callback != null) {
+                        callback(resp);
+                    }
+                }, parentId);
+            }), parentId);
+        };
+        /// Starts new instance of workflow
+        Manager.IsRunningWorkflowOnSelectedItems = function (workflow, callback) {
+            var list = SP.ListOperation.Selection.getSelectedList();
+            var items = SP.ListOperation.Selection.getSelectedItems();
+            var ctx = SP.ClientContext.get_current();
+            var web = ctx.get_web();
+            var listId = list.toString().replace(/^\{|\}$/g, "");
+            var listInstances = web.getList(_spPageContextInfo.webServerRelativeUrl.replace(/\/$/, "") + "/Wf_Instances");
+            for (var i = 0; i < items.length; i++) {
+                var itemId = items[i].id;
+                var camlQuery = new SP.CamlQuery();
+                camlQuery.set_viewXml("<View><ViewFields><FieldRef Name=\"ID\" /></ViewFields><Query><Where><And><And><Eq><FieldRef Name='Wf_ListId' /><Value Type='Text'>" + listId + "</Value></Eq><Eq><FieldRef Name='Wf_ItemId' /><Value Type='Integer'>" + itemId.toString() + "</Value></Eq></And><Eq><FieldRef Name='Wf_InternalName' /><Value Type='Text'>" + workflow + "</Value></Eq></And></Where></Query></View>");
+                var items2 = listInstances.getItems(camlQuery);
+                ctx.load(items2);
+                var c = {
+                    Items: items2
+                };
+                ctx.executeQueryAsync(Function.createDelegate(c, function (a, b) {
+                    var itemEnumerator = this.Items.getEnumerator();
+                    var cnt = 0;
+                    while (itemEnumerator.moveNext()) {
+                        var item = itemEnumerator.get_current();
+                        if (item)
+                            cnt++;
+                    }
+                    callback(cnt > 0);
+                }), Function.createDelegate(c, function (a, b) {
+                    callback(false);
+                }));
+            }
+            /*
+            for (var i = 0; i < items.length; i++) {
+                Manager.WorkflowActionInternal(workflow,
+                    items[i].id,
+                    list,
+                    "",
+                    "isrunningworkflow",
+                    function (resp) {
+                        if (callback != null) {
+                            callback(resp.Inst == "true");
+                        }
+                    });
+            }
+            */
+        };
+        Manager.IsRunningWorkflowOnItem = function (workflow, itemId, list, callback) {
+            if (list === void 0) { list = null; }
+            if (callback === void 0) { callback = null; }
+            if (!list)
+                list = SP.PageContextInfo.get_pageListId();
+            if (!itemId)
+                itemId = this.GetItemId();
+            if (!itemId) {
+                WriteLog("itemId is not defined");
+                return false;
+            }
+            var ctx = SP.ClientContext.get_current();
+            var web = ctx.get_web();
+            var listId = list.toString().replace(/^\{|\}$/g, "");
+            var listInstances = web.getList(_spPageContextInfo.webServerRelativeUrl.replace(/\/$/, "") + "/Wf_Instances");
+            var camlQuery = new SP.CamlQuery();
+            camlQuery.set_viewXml("<View><ViewFields><FieldRef Name=\"ID\" /></ViewFields><Query><Where><And><And><Eq><FieldRef Name='Wf_ListId' /><Value Type='Text'>" + listId + "</Value></Eq><Eq><FieldRef Name='Wf_ItemId' /><Value Type='Integer'>" + itemId.toString() + "</Value></Eq></And><Eq><FieldRef Name='Wf_InternalName' /><Value Type='Text'>" + workflow + "</Value></Eq></And></Where></Query></View>");
+            var items = listInstances.getItems(camlQuery);
+            ctx.load(items);
+            var c = {
+                Items: items
+            };
+            ctx.executeQueryAsync(Function.createDelegate(c, function (a, b) {
+                var itemEnumerator = this.Items.getEnumerator();
+                var cnt = 0;
+                while (itemEnumerator.moveNext()) {
+                    var item = itemEnumerator.get_current();
+                    if (item)
+                        cnt++;
+                }
+                callback(cnt > 0);
+            }), Function.createDelegate(c, function (a, b) {
+                callback(false);
+            }));
+            /*
+
+            Manager.WorkflowActionInternal(workflow,
+                itemId,
+                list,
+                "",
+                "isrunningworkflow",
+                function (resp) {
+                    if (callback != null) {
+                        callback(resp.Inst == "true");
+                    }
+                });
+                */
+        };
+        Manager.GetRunningWorkflowsOnItem = function (itemId, list, callback, inludeCompletedTasks) {
+            var _this = this;
+            if (list === void 0) { list = null; }
+            if (callback === void 0) { callback = null; }
+            if (inludeCompletedTasks === void 0) { inludeCompletedTasks = false; }
+            if (!list)
+                list = SP.PageContextInfo.get_pageListId();
+            if (!itemId)
+                itemId = this.GetItemId();
+            if (!itemId) {
+                WriteLog("itemId is not defined");
+                return;
+            }
+            this.EnsureProxy(function () {
+                _this.proxy.ExecuteAction("a=getactivetasksonitem&id=" + itemId + "&l=" + window.encodeURIComponent(list) + "&inludeCompletedTasks=" + (inludeCompletedTasks ? "yes" : "no"), function (r) {
+                    if (r.Res == "ok") {
+                        if (callback)
+                            callback(r.Instances);
+                        else
+                            console.log(r.Instances);
+                    }
+                    else if (callback)
+                        callback([]);
+                });
+            });
+        };
+        //public static GetRunningWorkflowsOnItem(itemId?: number, list: string = null, callback: Function = null, inludeCompletedTasks: boolean = false) {
+        //    if (!_spPageContextInfo.isSiteAdmin) {
+        //        console.warn("GetRunningWorkflowsOnItem function require site admin permissions!");
+        //        return;
+        //    }
+        //    if (!list)
+        //        list = SP.PageContextInfo.get_pageListId();
+        //    if (!itemId)
+        //        itemId = this.GetItemId();
+        //    if (!itemId) {
+        //        WriteLog("itemId is not defined");
+        //        return;
+        //    }
+        //    var ctx = SP.ClientContext.get_current();
+        //    var web = ctx.get_web();
+        //    var me = this;
+        //    var listId = list.toString().replace(/^\{|\}$/g, "");
+        //    var listInstances = web.getList(_spPageContextInfo.webServerRelativeUrl.replace(/\/$/, "") + "/Wf_Instances");
+        //    var listTasks = web.getList(_spPageContextInfo.webServerRelativeUrl.replace(/\/$/, "") + "/Wf_Tasks");
+        //    var camlQuery = new SP.CamlQuery();
+        //    camlQuery.set_viewXml("<View><ViewFields><FieldRef Name=\"ID\" /><FieldRef Name=\"Wf_InternalName\" /><FieldRef Name=\"Wf_ParentInstanceId\" /><FieldRef Name=\"Wf_InstanceId\" /><FieldRef Name=\"Wf_StateCurrent\" /><FieldRef Name=\"Wf_StateNext\" /><FieldRef Name=\"Wf_LastStateChange\" /><FieldRef Name=\"Created\" /><FieldRef Name=\"Modified\" /></ViewFields><Query><Where><And><Eq><FieldRef Name='Wf_ListId' /><Value Type='Text'>" + listId + "</Value></Eq><Eq><FieldRef Name='Wf_ItemId' /><Value Type='Integer'>" + itemId.toString() + "</Value></Eq></And></Where></Query></View>");
+        //    var items = listInstances.getItems(camlQuery);
+        //    ctx.load(items);
+        //    var c = {
+        //        Items: items
+        //    };
+        //    ctx.executeQueryAsync(
+        //        <any>Function.createDelegate(c, function (a, b) {
+        //            var itemEnumerator = this.Items.getEnumerator();
+        //            var result = [];
+        //            while (itemEnumerator.moveNext()) {
+        //                var item = itemEnumerator.get_current();
+        //                var instanceId = item.get_item("Wf_InstanceId");
+        //                result.push({
+        //                    Id: item.get_item("ID"),
+        //                    InstanceId: instanceId,
+        //                    WorkFlow: item.get_item("Wf_InternalName"),
+        //                    ParentInstanceId: item.get_item("Wf_ParentInstanceId"),
+        //                    CurrentState: item.get_item("Wf_StateCurrent"),
+        //                    NextState: item.get_item("Wf_StateNext"),
+        //                    LastStateChange: item.get_item("Wf_LastStateChange"),
+        //                    Created: item.get_item("Created"),
+        //                    Modified: item.get_item("Modified"),
+        //                    Tasks: []
+        //                });
+        //            }
+        //            // query for tasks
+        //            var instancesForQuery = [];
+        //            for (var i = 0; i < result.length; i++) {
+        //                instancesForQuery.push("<Value Type=\"Text\">" + result[i].InstanceId + "</Value>");
+        //            }
+        //            var camlQueryRelatedTasks = new SP.CamlQuery();
+        //            if (inludeCompletedTasks)
+        //                camlQueryRelatedTasks.set_viewXml("<View><Query><Where><In><FieldRef Name='Wf_InstanceId' /><Values>" + instancesForQuery.join('') + "</Values></In></Where></Query></View>");
+        //            else
+        //                camlQueryRelatedTasks.set_viewXml("<View><Query><Where><And><IsNull><FieldRef Name='Wf_Outcome' /></IsNull><In><FieldRef Name='Wf_InstanceId' /><Values>" + instancesForQuery.join('') + "</Values></In></And></Where></Query></View>");
+        //            var tasks = listTasks.getItems(camlQueryRelatedTasks);
+        //            ctx.load(tasks);
+        //            var c = {
+        //                Instances: result,
+        //                Tasks: tasks
+        //            };
+        //            ctx.executeQueryAsync(
+        //                <any>Function.createDelegate(c, function (a, b) {
+        //                    var taskEnumerator = this.Tasks.getEnumerator();
+        //                    while (taskEnumerator.moveNext()) {
+        //                        var item = taskEnumerator.get_current();
+        //                        var instanceId = item.get_item("Wf_InstanceId");
+        //                        for (var i = 0; i < this.Instances.length; i++) {
+        //                            if (this.Instances[i].InstanceId = instanceId) {
+        //                                var instance = this.Instances[i];
+        //                                instance.Tasks.push({
+        //                                    Id: item.get_item("ID"),
+        //                                    WorkFlow: item.get_item("Wf_InternalName"),
+        //                                    Title: item.get_item("Title"),
+        //                                    AssignedTo: item.get_item("AssignedTo"),
+        //                                    DelegatedFrom: item.get_item("Wf_DelegatedFrom"),
+        //                                    AutoDelegatedFrom: item.get_item("Wf_AutoDelegatedFrom"),
+        //                                    Outcome: item.get_item("Wf_Outcome"),
+        //                                    Status: item.get_item("Status"),
+        //                                    DueDate: item.get_item("DueDate"),
+        //                                    Created: item.get_item("Created"),
+        //                                    Modified: item.get_item("Modified"),
+        //                                    Url: _spPageContextInfo.webAbsoluteUrl + "/wf_tasks/DispForm.aspx?ID=" + item.get_item("ID")
+        //                                });
+        //                                break;
+        //                            }
+        //                        }
+        //                    }
+        //                    var instIds = [];
+        //                    for (var i = 0; i < this.Instances.length; i++) {
+        //                        instIds.push(this.Instances[i].InstanceId);
+        //                    }
+        //                    var that = this;
+        //                    // get sql tasks
+        //                    me.EnsureProxy(function () {
+        //                        me.proxy.ExecuteAction("a=getsqltasks&inst=" + instIds.join('|'), <any>Function.createDelegate(that, function (r) {
+        //                            if (r.Res == "ok") {
+        //                                for (var j = 0; j < r.Data.length; j++) {
+        //                                    var item = r.Data[j];
+        //                                    var instanceId = item.InstanceId;
+        //                                    for (var i = 0; i < this.Instances.length; i++) {
+        //                                        if (this.Instances[i].InstanceId = instanceId) {
+        //                                            var instance = this.Instances[i];
+        //                                            instance.Tasks.push({
+        //                                                Id: item.Id,
+        //                                                WorkFlow: item.WorkFlow,
+        //                                                Title: item.Title,
+        //                                                AssignedTo: item.AssignedTo,
+        //                                                DelegatedFrom: item.DelegatedFrom,
+        //                                                Outcome: item.Outcome,
+        //                                                Status: item.Status,
+        //                                                DueDate: item.DueDate,
+        //                                                Created: item.Created,
+        //                                                Modified: item.Modified,
+        //                                                Url: window.location.href.split('?')[0] + "?ID=" + itemId + "&IsTaskForm=1&TaskListId=00000000-0000-0000-0000-000000000000&TaskId=" + item.Id + "&IsSQL=1"
+        //                                                // /ISOValidDocuments/Forms/DispForm.aspx?ID=11&IsTaskForm=1&TaskListId=00000000-0000-0000-0000-000000000000&TaskId=1066&IsSQL=1&jsOpen=1
+        //                                            });
+        //                                            break;
+        //                                        }
+        //                                    }
+        //                                }
+        //                            }
+        //                            if (callback)
+        //                                callback(this.Instances);
+        //                            else
+        //                                console.log(this.Instances);
+        //                        }));
+        //                    });
+        //                }),
+        //                <any>Function.createDelegate(c, function (a, b) {
+        //                    if (callback)
+        //                        callback([]);
+        //                })
+        //            );
+        //        }),
+        //        <any>Function.createDelegate(c, function (a, b) {
+        //            if (callback)
+        //                callback([]);
+        //        })
+        //    );
+        //}
+        Manager.SubmitCustomForm = function (workflow, itemId, list, data, callback) {
+            if (callback === void 0) { callback = null; }
+            if (list == null) {
+                list = SP.PageContextInfo.get_pageListId();
+            }
+            var dialog = Manager.ShowStartingDialog();
+            Manager.WorkflowActionInternal(workflow, itemId.toString(), list, null, "customform", function (resp) {
+                if (dialog)
+                    dialog.close(SP.UI.DialogResult.OK);
+                Manager.HandleResponseWithNotification(resp, "customform", WFEngine.RESX.Engine_WorkflowStarted, WFEngine.RESX.Engine_UnableToStartWorkflow);
+                if (callback != null) {
+                    callback(resp);
+                }
+            }, data);
+        };
+        /// check if wf can be started
+        Manager.CanStartWorkflowOnSelectedItems = function (workflow) {
+            var result = true;
+            ///TODO: vyresit asynchronní volání
+            return result;
+        };
+        Manager.GetItemId = function () {
+            var m = window.location.href.match(/[?&]id=(\d+)/i);
+            if (m && m.length == 2)
+                return parseInt(m[1]);
+            else if (SP.ListOperation && SP.ListOperation.Selection && SP.ListOperation.Selection.getSelectedItems && SP.ListOperation.Selection.getSelectedItems().length > 0)
+                return SP.ListOperation.Selection.getSelectedItems()[0].id;
+            return null;
+        };
+        /// handle response and show result in notification window
+        Manager.HandleResponseWithNotification = function (resp, action, notifySuccess, notifyError, optionalRedirectArgs) {
+            if (resp.Res == "ok") {
+                SP.UI.Notify.addNotification(notifySuccess, false);
+            }
+            else if (resp.Res == "redirect") {
+                window.location.assign(resp.Url + (optionalRedirectArgs ? "&" + optionalRedirectArgs : "") + "&source=" + encodeURIComponent(window.location.toString()));
+            }
+            else {
+                WriteError("Workflow action '" + action + "' error:");
+                WriteError(JSON.stringify(resp));
+                SP.UI.Notify.addNotification(notifyError + (resp.UserMessage ? " (" + resp.UserMessage + ")" : ""), false);
+            }
+        };
+        Manager.WorkflowActionInternal = function (workflow, id, list, parentId, action, success, data, onExecuted) {
+            if (data === void 0) { data = null; }
+            if (onExecuted === void 0) { onExecuted = null; }
+            var me = this;
+            this.EnsureProxy(function () {
+                if (_spPageContextInfo.webId && _spPageContextInfo.siteId) {
+                    // SPO obsahuje vlastnosti v _spPageContextInfo, zbytečně dělat dotaz navíc
+                    me._webId = _spPageContextInfo.webId;
+                    me._siteId = _spPageContextInfo.siteId;
+                }
+                if (me._webId && me._siteId) {
+                    var param = "a=" + action + "&l=" + list + "&wfitemid=" + id + "&wf=" + workflow + "&w=" + me._webId + "&s=" + me._siteId + "&parentid=" + (parentId == null ? "" : parentId) + (data != null ? "&" + data : "");
+                    me.proxy.ExecuteAction(param, function (resp) {
+                        success(resp);
+                    }, onExecuted);
+                }
+                else {
+                    var ctx = SP.ClientContext.get_current();
+                    var web = ctx.get_web();
+                    var site = ctx.get_site();
+                    ctx.load(site, 'Id');
+                    ctx.load(web, 'Id');
+                    ctx.executeQueryAsync(function (a, b) {
+                        me._webId = web.get_id().toString();
+                        me._siteId = site.get_id().toString();
+                        var param = "a=" + action + "&l=" + list + "&wfitemid=" + id + "&wf=" + workflow + "&w=" + web.get_id().toString() + "&s=" + site.get_id() + "&parentid=" + (parentId == null ? "" : parentId) + (data != null ? "&" + data : "");
+                        me.proxy.ExecuteAction(param, function (resp) {
+                            success(resp);
+                        }, onExecuted);
+                    });
+                }
+            });
+        };
+        Manager._webId = null;
+        Manager._siteId = null;
+        Manager.DisableDialogs = false;
+        return Manager;
+    }());
+    WFEngine.Manager = Manager;
+    var WFProxyOnprem = /** @class */ (function () {
+        function WFProxyOnprem() {
+        }
+        WFProxyOnprem.prototype.Initialize = function (callback) {
+            if (callback) {
+                callback();
+            }
+        };
+        WFProxyOnprem.prototype.ExecuteAction = function (data, completed, onExecuted) {
+            if (!window._spFormDigestRefreshInterval) {
+                WriteError("Workflow action ERROR:' _spFormDigestRefreshInterval is not defined");
+                return;
+            }
+            UpdateFormDigest(_spPageContextInfo.webServerRelativeUrl, _spFormDigestRefreshInterval);
+            if (data == null)
+                data = "";
+            if (data.length > 0)
+                data += "&";
+            data += "lng=" + _spPageContextInfo.currentLanguage;
+            WriteLog("Workflow action START: " + data);
+            $j.ajax({
+                url: _spPageContextInfo.webAbsoluteUrl + "/_layouts/15/WFEngine/Service.aspx",
+                data: data,
+                method: "post",
+                cache: false,
+                headers: {
+                    "X-RequestDigest": $j('#__REQUESTDIGEST').val(),
+                    "cache-control": "no-cache"
+                },
+                success: function (c) {
+                    WriteLog("Workflow action SUCCESS: " + data);
+                    completed(c);
+                },
+                error: function (e) {
+                    WriteError("Workflow action ERROR: " + data);
+                    WriteError(e);
+                }
+            });
+            if (onExecuted)
+                setTimeout(onExecuted, 100);
+        };
+        return WFProxyOnprem;
+    }());
+    var WFProxyOnline = /** @class */ (function () {
+        function WFProxyOnline() {
+            this.initialized = false;
+            this.execRetries = 0;
+            this.proxyReloads = 0;
+            this.callbacks = [];
+            this.callData = [];
+            this.reloadsIframe = 1;
+            this.reloadingIframe = false;
+        }
+        WFProxyOnline.prototype.Initialize = function (callback) {
+            if (!this.appHostUrl) {
+                this.appHostUrl = WFEngineInfo.AppUrl;
+            }
+            WriteLog("Creating WFE proxy on " + this.appHostUrl);
+            this.iframe = $("<iframe></iframe>");
+            this.iframe.attr("src", this.appHostUrl +
+                "/Services/Proxy.aspx?SPHostUrl=" +
+                encodeURIComponent(_spPageContextInfo.webAbsoluteUrl));
+            this.iframe.attr("style", "display:none;");
+            if (callback) {
+                this.callbacks.push(callback);
+                this.callData.push("");
+            }
+            var me = this;
+            $j(window).on("message", function (e) {
+                var oe = e.originalEvent;
+                var data;
+                if (!oe.data)
+                    return;
+                if (typeof (oe.data) == "string") {
+                    if (oe.data.startsWith("TiSaMessage:")) {
+                        return;
+                    }
+                    try {
+                        data = JSON.parse(oe.data);
+                    }
+                    catch (ex) {
+                        console.log("An unexpected response data: " + oe.data);
+                    }
+                }
+                else
+                    data = oe.data;
+                me.ReceivedData(oe, data);
+            });
+            $j("body").append(this.iframe);
+        };
+        WFProxyOnline.prototype.RefreshProxy = function (callback) {
+            if (callback) {
+                if (this.callbacks.length > 0) {
+                    this.callbacks[0] = callback;
+                }
+                else {
+                    this.callbacks.push(callback);
+                    this.callData.push("");
+                }
+            }
+            if (this.iframe) {
+                WriteLog("Refreshing WFE proxy on " + this.appHostUrl);
+                this.iframe.attr("src", this.iframe.attr("src"));
+            }
+        };
+        WFProxyOnline.prototype.ReceivedData = function (e, data) {
+            if (data != undefined && data.Res != undefined) {
+                if (data.Res == "ready" && data.SourceApp == "WFE") {
+                    this.appHostWindow = e.source;
+                    if (!this.appHostWindow) {
+                        if (typeof (console) != "undefined")
+                            WriteLog("Invalid WFE proxy ready");
+                    }
+                    else {
+                        this.initialized = true;
+                        this.context = data.Data;
+                        if (this.callbacks[0]) {
+                            data.CallIndex = 0;
+                        }
+                        this.proxyReloads = 0;
+                    }
+                }
+                else if (data.Res == "redirect" && data.SourceApp == "WFE") {
+                    if (this.reloadingIframe)
+                        return;
+                    this.reloadingIframe = true;
+                    if (this.reloadsIframe >= 10) {
+                        if (typeof (console) != "undefined")
+                            WriteLog("wnd wfe: proxy not loaded!");
+                        return;
+                    }
+                    var me = this;
+                    setTimeout(function () {
+                        if (!me.initialized) {
+                            me.iframe.attr("src", "");
+                            setTimeout(function () {
+                                if (typeof (console) != "undefined")
+                                    WriteLog("wnd wfe: reload frame " + me.reloadsIframe);
+                                var url = me.appHostUrl +
+                                    "/Services/Proxy.aspx?SPHostUrl=" +
+                                    encodeURIComponent(_spPageContextInfo.webAbsoluteUrl) + "&r=" + me.reloadsIframe;
+                                me.iframe.attr("src", url);
+                                me.reloadsIframe++;
+                                me.reloadingIframe = false;
+                            }, 0);
+                        }
+                    }, 1500 + me.reloadsIframe * 1500);
+                    return;
+                }
+                else if (data.Res == "err") {
+                    if (data.ErrorMessage == "AuthenticationError" && this.proxyReloads <= 3) {
+                        // session migth be expired, reinitialize proxi and try again
+                        WriteLog("Authrentication error, reloading proxy");
+                        this.proxyReloads++;
+                        var me = this;
+                        var callback = null;
+                        var callData = null;
+                        if (me.callbacks[data.CallIndex]) {
+                            callback = me.callbacks[data.CallIndex];
+                        }
+                        if (me.callData[data.CallIndex]) {
+                            callData = me.callData[data.CallIndex];
+                        }
+                        this.RefreshProxy(function () {
+                            me.ExecuteAction(callData, callback);
+                        });
+                        return;
+                    }
+                    WriteLog("An error response: " + data.ErrorMessage);
+                }
+                if (this.callbacks[data.CallIndex]) {
+                    this.callbacks[data.CallIndex](data);
+                }
+            }
+        };
+        WFProxyOnline.prototype.ExecuteAction = function (data, completed, onExecuted) {
+            if (onExecuted === void 0) { onExecuted = null; }
+            if (!this.initialized) {
+                WriteLog("Proxy not initialized. Repeat exec...");
+                var me = this;
+                this.execRetries++;
+                if (this.execRetries < 20)
+                    setTimeout(function () {
+                        me.ExecuteAction(data, completed, onExecuted);
+                    }, 1000);
+                else
+                    WriteLog("Stop repeat ExecuteAction.");
+                return;
+            }
+            if (this.appHostWindow) {
+                this.callbacks.push(completed);
+                this.callData.push(data);
+                if (data == null)
+                    data = "";
+                if (data.length > 0)
+                    data += "&";
+                data += "lng=" + _spPageContextInfo.currentLanguage;
+                this.appHostWindow.postMessage(JSON.stringify({ "RequestData": data, "CallIndex": this.callbacks.length - 1 }), this.appHostUrl);
+            }
+        };
+        return WFProxyOnline;
+    }());
+    function WriteLog(msg) {
+        if (window.TiSa && TiSa.Console)
+            TiSa.Console.Log("WFE: " + msg);
+        else if (console && console.log)
+            console.log("WFE: " + msg);
+    }
+    WFEngine.WriteLog = WriteLog;
+    function WriteError(msg) {
+        if (window.TiSa && TiSa.Console)
+            TiSa.Console.Error("WFE: " + msg);
+        else if (console && console.log)
+            console.error("WFE: " + msg);
+    }
+    WFEngine.WriteError = WriteError;
+})(WFEngine || (WFEngine = {}));
+if (SP && SP.SOD)
+    SP.SOD.notifyScriptLoadedAndExecuteWaitingJobs("WFEngine.js");
+//# sourceMappingURL=WFEngine.js.map

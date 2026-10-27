@@ -1,0 +1,55 @@
+{
+  "safety": {
+    "post_was_executed": false,
+    "prepared_only": true,
+    "session_send_called": false,
+    "allow_post": false
+  },
+  "request_digest": {
+    "retrieved_at": "2026-08-12T13:59:12.448886+00:00",
+    "timeout_seconds": 1800,
+    "note": "Digest je dočasný. Pro ostrý POST je nutné načíst nový bezprostředně před odesláním."
+  },
+  "request": {
+    "method": "POST",
+    "url": "https://dms.pvs.cz/sites/Zadanky/_api/web/lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/items",
+    "headers": {
+      "User-Agent": "PVS-HomeOffice-Payload-Generator/2.0",
+      "Accept-Encoding": "gzip, deflate",
+      "Accept": "application/json;odata=verbose",
+      "Connection": "Keep-Alive",
+      "Content-Type": "application/json;odata=verbose",
+      "X-RequestDigest": "0xBF3419BC03B2C60842913A63C5A25463D3403908CD356EB9AB1ED9CB3920AE4D8AE3B20CBBC9C23360DDC496D522E104EFEB08B1B4B670BDF20E1E2F66CE89F7,12 Aug 2026 13:59:12 -0000",
+      "Content-Length": "647"
+    },
+    "body_text": "{\"__metadata\": {\"type\": \"SP.Data.HolidayRequestItem\"}, \"Rq_All_type\": \"Absence\", \"Rq_All_ApplicantId\": 192, \"Rq_H_TypeOfHoliday\": \"Placen\\u00e9 volno\", \"Rq_H_PaidHoliday\": \"Jin\\u00e9\", \"Rq_All_RelatedLink\": \"[{\\\"Cells\\\":[\\\"\\\",\\\"Home office\\\"]}]\", \"Rq_H_ValidSince\": \"2026-08-18T22:00:00Z\", \"Rq_H_ValidTo\": \"2026-08-18T22:00:00Z\", \"Rq_H_ValidToHalfDay\": false, \"Rq_H_WorkingDay\": 1, \"Rq_All_StartDate\": \"2026-08-18T22:00:00Z\", \"Rq_All_EndDate\": \"2026-08-18T22:00:00Z\", \"Rq_H_Approver1Id\": 260, \"Rq_H_Approver2Id\": 58, \"Rq_All_ApproversId\": {\"results\": [260, 58]}, \"Rq_H_ClaimAndRemains\": \"1\", \"Rq_H_Department\": \"D4\", \"Rq_All_division\": \"stavebni\"}",
+    "body_json": {
+      "__metadata": {
+        "type": "SP.Data.HolidayRequestItem"
+      },
+      "Rq_All_type": "Absence",
+      "Rq_All_ApplicantId": 192,
+      "Rq_H_TypeOfHoliday": "Placené volno",
+      "Rq_H_PaidHoliday": "Jiné",
+      "Rq_All_RelatedLink": "[{\"Cells\":[\"\",\"Home office\"]}]",
+      "Rq_H_ValidSince": "2026-08-18T22:00:00Z",
+      "Rq_H_ValidTo": "2026-08-18T22:00:00Z",
+      "Rq_H_ValidToHalfDay": false,
+      "Rq_H_WorkingDay": 1,
+      "Rq_All_StartDate": "2026-08-18T22:00:00Z",
+      "Rq_All_EndDate": "2026-08-18T22:00:00Z",
+      "Rq_H_Approver1Id": 260,
+      "Rq_H_Approver2Id": 58,
+      "Rq_All_ApproversId": {
+        "results": [
+          260,
+          58
+        ]
+      },
+      "Rq_H_ClaimAndRemains": "1",
+      "Rq_H_Department": "D4",
+      "Rq_All_division": "stavebni"
+    }
+  },
+  "authentication_note": "Authorization není v náhledu, protože Negotiate/NTLM ji vytvoří až při skutečné challenge-response komunikaci se serverem."
+}

@@ -1,0 +1,146 @@
+{
+  "safety": {
+    "selection_mode": "first_unsent",
+    "selected_event_date": "2026-09-23",
+    "send_to_dms": false,
+    "confirmation_matches": false,
+    "maximum_items_to_create": 1
+  },
+  "selected_outlook_event": {
+    "subject": "Home office",
+    "start": "2026-09-23T08:00:00",
+    "end": "2026-09-23T16:00:00",
+    "all_day": false,
+    "categories": [
+      "HOMEOFFICE"
+    ],
+    "is_recurring": true,
+    "entry_id": "00000000825114477C84404DB5CD3BB3BB754BF207005AA267A23581234097FDB0C576A6AF0900000000010D0000BA800BDA327A604D9FD19EC893B00E7A000000004B040000",
+    "global_appointment_id": "040000008200E00074C5B7101A82E0080000000010585D94891ADD01000000000000000010000000B34CA9AC9E95894F95BD6ADC3CE602CE",
+    "is_homeoffice": true
+  },
+  "selection_diagnostics": [
+    {
+      "subject": "Home office",
+      "start": "2026-09-02T08:00:00",
+      "end": "2026-09-02T16:00:00",
+      "request_start_date": "2026-09-02",
+      "request_end_date": "2026-09-02",
+      "result": "duplicate_exists",
+      "duplicate_count": 1,
+      "duplicate_item_ids": [
+        14734
+      ]
+    },
+    {
+      "subject": "Home office",
+      "start": "2026-09-04T08:00:00",
+      "end": "2026-09-04T16:00:00",
+      "request_start_date": "2026-09-04",
+      "request_end_date": "2026-09-04",
+      "result": "duplicate_exists",
+      "duplicate_count": 1,
+      "duplicate_item_ids": [
+        14735
+      ]
+    },
+    {
+      "subject": "Home office",
+      "start": "2026-09-23T08:00:00",
+      "end": "2026-09-23T16:00:00",
+      "request_start_date": "2026-09-23",
+      "request_end_date": "2026-09-23",
+      "result": "selected_first_unsent",
+      "duplicate_count": 0,
+      "duplicate_item_ids": []
+    }
+  ],
+  "approver_reference": {
+    "source_item_id": 14735,
+    "source_item_title": "Pracovní nepřítomnost - PV/D4/014756 - Placené volno (4. 9. 2026 - 4. 9. 2026)",
+    "source_item_created": "2026-09-01T15:05:55Z",
+    "source_item_modified": "2026-09-02T10:17:22Z",
+    "source_item_status": "Approved",
+    "source_item_type_of_holiday": "Placené volno",
+    "source_content_type_id": "0x01007DB943C40B3C3B40B251CC0B9B3AF7D8006C0F3ADA5430B84BB19163A3AE860CAA",
+    "applicant_id": 192,
+    "department": "D4",
+    "division": "stavebni",
+    "approver_1_id": 260,
+    "approver_1": {
+      "__metadata": {
+        "id": "32ea24ba-405f-49db-88e1-dbaa380d662d",
+        "type": "SP.Data.UserInfoItem"
+      },
+      "Id": 260,
+      "Title": "Kortus Marek",
+      "EMail": "kortusm@pvs.cz"
+    },
+    "approver_2_id": 58,
+    "approver_2": {
+      "__metadata": {
+        "id": "7dd804fa-f6f5-4eeb-8971-8986caa8e4eb",
+        "type": "SP.Data.UserInfoItem"
+      },
+      "Id": 58,
+      "Title": "Miškovský Jiří",
+      "EMail": "miskovskyj@pvs.cz"
+    },
+    "loaded_by_get_only": true
+  },
+  "request": {
+    "safety": {
+      "post_was_executed": false,
+      "prepared_only": true,
+      "session_send_called": false,
+      "allow_post": false
+    },
+    "request_digest": {
+      "retrieved_at": "2026-09-02T15:44:10.888936+00:00",
+      "timeout_seconds": 1800,
+      "note": "Digest je dočasný. Pro ostrý POST je nutné načíst nový bezprostředně před odesláním."
+    },
+    "request": {
+      "method": "POST",
+      "url": "https://dms.pvs.cz/sites/Zadanky/_api/web/lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/items",
+      "headers": {
+        "User-Agent": "PVS-HomeOffice-Payload-Generator/2.0",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "application/json;odata=verbose",
+        "Connection": "Keep-Alive",
+        "Content-Type": "application/json;odata=verbose",
+        "X-RequestDigest": "0xF34283E1299B658650CDCFC6C747C1E86E321D0D57FA910EFE36B8A0D5ED0C9FBBF1BED742F519F5347C1966A80EF2C08B07C6256C271802956DB3F310C87E24,02 Sep 2026 15:44:10 -0000",
+        "Content-Length": "647"
+      },
+      "body_text": "{\"__metadata\": {\"type\": \"SP.Data.HolidayRequestItem\"}, \"Rq_All_type\": \"Absence\", \"Rq_All_ApplicantId\": 192, \"Rq_H_TypeOfHoliday\": \"Placen\\u00e9 volno\", \"Rq_H_PaidHoliday\": \"Jin\\u00e9\", \"Rq_All_RelatedLink\": \"[{\\\"Cells\\\":[\\\"\\\",\\\"Home office\\\"]}]\", \"Rq_H_ValidSince\": \"2026-09-22T22:00:00Z\", \"Rq_H_ValidTo\": \"2026-09-22T22:00:00Z\", \"Rq_H_ValidToHalfDay\": false, \"Rq_H_WorkingDay\": 1, \"Rq_All_StartDate\": \"2026-09-22T22:00:00Z\", \"Rq_All_EndDate\": \"2026-09-22T22:00:00Z\", \"Rq_H_Approver1Id\": 260, \"Rq_H_Approver2Id\": 58, \"Rq_All_ApproversId\": {\"results\": [260, 58]}, \"Rq_H_ClaimAndRemains\": \"1\", \"Rq_H_Department\": \"D4\", \"Rq_All_division\": \"stavebni\"}",
+      "body_json": {
+        "__metadata": {
+          "type": "SP.Data.HolidayRequestItem"
+        },
+        "Rq_All_type": "Absence",
+        "Rq_All_ApplicantId": 192,
+        "Rq_H_TypeOfHoliday": "Placené volno",
+        "Rq_H_PaidHoliday": "Jiné",
+        "Rq_All_RelatedLink": "[{\"Cells\":[\"\",\"Home office\"]}]",
+        "Rq_H_ValidSince": "2026-09-22T22:00:00Z",
+        "Rq_H_ValidTo": "2026-09-22T22:00:00Z",
+        "Rq_H_ValidToHalfDay": false,
+        "Rq_H_WorkingDay": 1,
+        "Rq_All_StartDate": "2026-09-22T22:00:00Z",
+        "Rq_All_EndDate": "2026-09-22T22:00:00Z",
+        "Rq_H_Approver1Id": 260,
+        "Rq_H_Approver2Id": 58,
+        "Rq_All_ApproversId": {
+          "results": [
+            260,
+            58
+          ]
+        },
+        "Rq_H_ClaimAndRemains": "1",
+        "Rq_H_Department": "D4",
+        "Rq_All_division": "stavebni"
+      }
+    },
+    "authentication_note": "Authorization není v náhledu, protože Negotiate/NTLM ji vytvoří až při skutečné challenge-response komunikaci se serverem."
+  }
+}

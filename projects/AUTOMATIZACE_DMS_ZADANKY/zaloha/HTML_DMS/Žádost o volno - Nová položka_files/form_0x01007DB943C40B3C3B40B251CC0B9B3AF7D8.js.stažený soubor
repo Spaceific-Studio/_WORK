@@ -1,0 +1,331 @@
+"use strict";
+var FORM_INFO_OBJECT = {"AllowCustomStyle":true,"AllowCustomScript":true,"ScriptToken":44483300626,"Data":{"RibbonButtons":[{"Title":"Zrušení žádosti","ToolTipDescription":"Zrušení žádosti","Icon":"{SiteCollectionUrl}/SiteAssets/Approval_serial.png","GroupId":"workflow","GroupTitle":"Pracovní postupy","EnabledFunction":"BtnCancelEnabled","CommandFunction":"BtnCancelCommand","VisibleFunction":"BtnCancelVisible"},{"Title":"Zrušení žádosti","ToolTipDescription":"Zrušení žádosti","Icon":"{SiteCollectionUrl}/SiteAssets/Approval_serial.png","GroupId":"workflow","GroupTitle":"Pracovní postupy","EnabledFunction":"BtnCancel2Enabled","CommandFunction":"BtnCancelCommand","VisibleFunction":"BtnCancel2Visible"}],"AutoFormatDateFields":true,"Groups":[{"Name":"Pracovní nepřítomnost","Collapsed":false,"Fields":[{"InternalName":"Title","Hidden":false}]},{"Name":"Žádost o volno","Fields":[{"InternalName":"Rq_All_Applicant","ReadOnly":true},{"InternalName":"Rq_H_Approver1","ReadOnly":true},{"InternalName":"Rq_H_Approver2","ReadOnly":true},{"InternalName":"Rq_H_Department","ReadOnly":true,"Hidden":true}]},{"Name":"Informace o volnu","Fields":[{"InternalName":"Rq_H_TypeOfHoliday"},{"InternalName":"Rq_H_PaidHoliday"},{"InternalName":"Rq_H_SpecifyOther"},{"InternalName":"Rq_H_ValidSince","Required":true},{"InternalName":"Rq_H_ValidTo","Required":true},{"InternalName":"Rq_H_ValidToHalfDay"},{"InternalName":"Rq_H_WorkingDay","Required":true,"_ReadOnly":true,"Validation":{"Validator":"number","ValidateOnlyChanges":true,"Disabled":true,"Expression":"0|0","ErrorMessage":"Dovolenou nelze naplánovat"}},{"InternalName":"Rq_H_EmployeeContact","Required":true,"ReadOnly":true},{"InternalName":"Rq_All_Attachments"},{"InternalName":"Rq_All_RelatedLink","ReadOnly":true}]},{"Name":"Systémové informace","Fields":[{"Title":"Stav","InternalName":"Rq_All_StatusChoice","ReadOnly":true},{"Title":"Historie Workflow","InternalName":"Rq_All_ApprovalHistory","ReadOnly":true}]}]},"ComponentInfo":{"HighTrustApp":true,"AppVersion":"1.13.2506.4001","CoreVersion":"1.13.2506.4001","ComponentPath":"Forms","ComponentAppUrlEncoded":"https:://dms.pvs.cz/tisa","ComponentAppUrl":"https://dms.pvs.cz/tisa","ApplicationName":"TiSa.BaseWeb"},"GlobalVariables":{"PVSConnectionString":"Server=SPSQL;Database=IOI_PROD;Trusted_Connection=True;\t","SystemUserName":"PVS\\TR_Admin_P","SystemUserPassword":".bs&WMr5|bBir1;4!`E8l5Ia6Y;ggk@K"},"AppBuildVersion_CTAG":"6507","CoreBuildVersion_CTAG":"6507.1968367941.2013609164","Name":"HolidayRequest","Id":"0x01007DB943C40B3C3B40B251CC0B9B3AF7D8"};
+var $GlobalVariable = FORM_INFO_OBJECT.GlobalVariables;
+var __tisa_CheckHistory = function () {
+    if (!FORM_INFO_OBJECT.ComponentInfo.HighTrustApp)
+        return;
+    if (window.location.href.toLowerCase().indexOf("isdlg") > 0)
+        return;
+    if (window.location.href.toLowerCase().indexOf("local.int") > 0)
+        return;
+    if (window.location.href.indexOf("NewForm") > 0 || window.location.href.indexOf("EditForm") > 0 || window.location.href.indexOf("FlexiForm") > 0)
+        if (window.history && window.history.replaceState) {
+            var stateObject = null;
+            if (window.history.state && (typeof window.history.state === 'string' || window.history.state instanceof String) && window.history.state.indexOf("{") == 0) {
+                var stateObject = JSON.parse(history.state);
+                if (stateObject.stateType == "TreeINFOstate") {
+                    var dt = new Date().getTime();
+                    var r = dt - stateObject.initialized;
+                    if (stateObject.refreshCount < 2 && r > 30000) {
+                        stateObject.refreshCount++;
+                        stateObject.initialized = dt;
+                        window.history.replaceState(JSON.stringify(stateObject), null, location.href);
+                        if (window.console && window.console.log)
+                            window.console.log("ReloadPage: " + stateObject.refreshCount);
+                        window["__tisa_AbortLoad"] = true;
+                        setTimeout(function () {
+                            window.location.reload(true);
+                        }, 100);
+                        return;
+                    }
+                }
+            }
+            var newStateObject = {
+                stateType: "TreeINFOstate",
+                initialized: new Date().getTime(),
+                refreshCount: 0
+            };
+            window.history.replaceState(JSON.stringify(newStateObject), null, location.href);
+        }
+};
+var __tisa_SetTemporaryStyles = function __tisa_SetTemporaryStyles_() {
+    var wpn = "WebPartWPQ2";
+    var css = '#' + wpn + ' { position: relative; } ';
+    css += '#' + wpn + ' .ms-formtable {z-index: -9999; position: absolute;	overflow: hidden; height: 0; display: block; top: 0; } #' + wpn + ' .ms-formtoolbar {display:none;}';
+    wpn = "WebPartWPQ1";
+    css += '#' + wpn + ' { position: relative; } ';
+    css += '#' + wpn + ' .ms-formtable {z-index: -9999; position: absolute;	overflow: hidden; height: 0; display: block; top: 0; } #' + wpn + ' .ms-formtoolbar {display:none;}';
+    css += '#Ribbon { visibility: hidden; } ';
+    var head = document.head || document.getElementsByTagName('head')[0];
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.id = 'tisa-loading-styles';
+    if (style.styleSheet) {
+        style.styleSheet.cssText = css;
+    }
+    else {
+        style.appendChild(document.createTextNode(css));
+    }
+    head.appendChild(style);
+};
+__tisa_SetTemporaryStyles();
+var TiSa;
+(function (TiSa) {
+    var __preInitializeFormComplete = false;
+    var __preInitializeFormTicker = 0;
+    function StartForm() {
+        if (!window["__tisa_AbortLoad"]) {
+            if (window["_spBodyOnLoadWrapperInit"] && !window["_spBodyOnLoadWrapperInitOverrideTiSaForm"]) {
+                window["_spBodyOnLoadWrapperInitOverrideTiSaForm"] = window["_spBodyOnLoadWrapperInit"];
+                window["_spBodyOnLoadWrapperInit"] = function () {
+                    var ie = (function () {
+                        var undef, v = 3, div = document.createElement('div'), all = div.getElementsByTagName('i');
+                        while (div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+                            all[0])
+                            ;
+                        return v > 4 ? v : undef;
+                    }());
+                    if (ie < 9) {
+                        setTimeout(function () {
+                            PreInitializeForm();
+                        }, 10);
+                    }
+                    else
+                        PreInitializeForm();
+                    if (document.getElementsByTagName) {
+                        var inputElements = document.getElementsByTagName("input");
+                        for (var i = 0; inputElements[i]; i++)
+                            inputElements[i].setAttribute("autocomplete", "off");
+                        var inputElements2 = document.getElementsByTagName("form");
+                        for (var i = 0; inputElements2[i]; i++)
+                            inputElements2[i].setAttribute("autocomplete", "off");
+                    }
+                    window["_spBodyOnLoadWrapperInitOverrideTiSaForm"]();
+                };
+            }
+        }
+        EnsureScripts(function () {
+            PreInitializeForm();
+            FormInitTemplate();
+            InitializeForm();
+        });
+    }
+    TiSa.StartForm = StartForm;
+    function PreInitializeForm() {
+        if (__preInitializeFormComplete)
+            return;
+        if (!window["FORM_INFO_OBJECT"])
+            return;
+        var wp = null;
+        var wpSelected = document.getElementById("_wpSelected");
+        if (wpSelected != null && wpSelected.value) {
+            var wpn = wpSelected.value.split('_').pop();
+            wp = document.getElementById(wpn);
+        }
+        if (!wp)
+            wp = document.getElementById("WebPartWPQ2");
+        if (!wp)
+            wp = document.getElementById("WebPartWPQ1");
+        if (!wp) {
+            TiSa.Console.Debug("WebPart not found. Try wait (" + __preInitializeFormTicker.toString() + ")...");
+            __preInitializeFormTicker++;
+            if (__preInitializeFormTicker < 200) {
+                setTimeout(PreInitializeForm, 200);
+                return;
+            }
+            else {
+                TiSa.Console.Error("WebPart not found");
+                return;
+            }
+        }
+        var h = 100;
+        var table = null;
+        var nodes = wp.getElementsByTagName("table");
+        for (var i = 0; i < nodes.length; i++) {
+            var e = nodes[i];
+            if (e.className && e.className.indexOf("ms-formtable") >= 0) {
+                table = e;
+                break;
+            }
+        }
+        if (table == null) {
+            wp = document.getElementById("WebPartWPQ1");
+            if (wp) {
+                var nodes = wp.getElementsByTagName("table");
+                for (var i = 0; i < nodes.length; i++) {
+                    var e = nodes[i];
+                    if (e.className && e.className.indexOf("ms-formtable") >= 0) {
+                        table = e;
+                        break;
+                    }
+                }
+            }
+            if (table == null) {
+                __preInitializeFormTicker++;
+                if (__preInitializeFormTicker < 200) {
+                    setTimeout(PreInitializeForm, 200);
+                    return;
+                }
+                else
+                    TiSa.Console.Error("Can't not find .ms-formtable table element.");
+            }
+        }
+        if (table.parentNode.nodeName == "TD") {
+            var e = table.parentNode;
+            e.removeAttribute("width");
+            var p = e.parentNode;
+            while (p.nodeName != "TABLE")
+                p = p.parentNode;
+            p.removeAttribute("width");
+        }
+        table.className += " tisa-form";
+        var div = document.createElement("div");
+        div.className = "ui-widget-content tisa-form-loadingpanel";
+        div.style.height = h + "px";
+        div.style.width = '100%';
+        div.innerHTML = '<table><tbody><tr><td><img src="/_layouts/15/images/hig_progcircle_loading24.gif" alt="loading image" /><span class="ms-descriptiontext">' + Strings.STS.L_Loading_Text + '</span><br /><span class="tisa-form-dynamictext" style="font-size: 11px;"></span></td></tr></tbody></table>';
+        wp.insertBefore(div, wp.firstChild);
+        __preInitializeFormComplete = true;
+    }
+    TiSa.PreInitializeForm = PreInitializeForm;
+    function InitializeForm() {
+        if (!__preInitializeFormComplete) {
+            if (++__preInitializeFormTicker < 1500)
+                setTimeout(InitializeForm, 20);
+            else
+                TiSa.Console.Warn("Limit __tisa_FormPreInitTicker");
+            return;
+        }
+        TiSa.ExecuteScript("tisa.forms.js", function () {
+            var initFnExecuted = false;
+            var initFn = function () {
+                if (initFnExecuted)
+                    return;
+                initFnExecuted = true;
+                var recPanel = TiSa.Utils.GetElementsByClassName(document, "ms-recommendations-panel");
+                if (recPanel != null && recPanel.length > 0)
+                    recPanel[0].parentNode.style.display = "none";
+                if (!moment._inited) {
+                    var culture = _spPageContextInfo.currentCultureName, ld = moment.localeData(culture);
+                    if (!ld)
+                        ld = moment.localeData("en-US");
+                    if (!ld)
+                        ld = moment.localeData("en");
+                    moment.locale(ld._abbr);
+                    var f = (TiSa.GetDefaultDateFormat) ? TiSa.GetDefaultDateFormat() : "l";
+                    moment.langDefaultFormat = ld.longDateFormat(f);
+                    moment._inited = true;
+                }
+                var fn = null;
+                if (FORM_INFO_OBJECT.AllowCustomScript)
+                    if (typeof window["TiSaForm_Customize"] == "function") {
+                        var fn = new window["TiSaForm_Customize"](FORM_INFO_OBJECT);
+                        fn.OnPreFormInit && fn.OnPreFormInit();
+                    }
+                TiSa.Forms.TiSaForm.Init(FORM_INFO_OBJECT, fn);
+            };
+            TiSa.ExecuteScriptWithTest("jquery-ui.js", function () { return jQuery.ui; }, function () {
+                TiSa.ExecuteScriptWithTest("moment.js", function () { return window.moment; }, function () {
+                    if (!jQuery.ui) {
+                        TiSa.Console.Warn("jQuery is not loaded!");
+                        debugger;
+                        var url = TiSa.Environment.AppUrl + '/Components/_Shared/jquery-ui-1.11.4.min.js' + TiSa.ScriptToken;
+                        $.getScript(url, function () {
+                            if (!window.moment) {
+                                TiSa.Console.Warn("moment is not loaded!");
+                                var url = TiSa.Environment.AppUrl + '/Components/_Shared/moment-with-langs.min.js' + TiSa.ScriptToken;
+                                $.getScript(url, function () {
+                                    initFn();
+                                });
+                            }
+                            else
+                                initFn();
+                        });
+                    }
+                    else
+                        initFn();
+                });
+            });
+        });
+    }
+    ;
+    function FormInitTemplate() {
+        var scriptToken = "?v=" + FORM_INFO_OBJECT.CoreBuildVersion_CTAG;
+        var componentRootUrlApp = TiSa.Environment.GetComponentAppUrl(FORM_INFO_OBJECT.ComponentInfo);
+        TiSa.RegisterScript("tisa.forms.js", componentRootUrlApp + '/tisa.forms.js', ["core.js", "jquery.js", "jquery-ui.js", "moment.js"], [1033, 1029, 1045, 1031]);
+        TiSa.RegisterStyle(componentRootUrlApp + "/tisa.forms.css", ["jQuery_UI"]);
+        if (FORM_INFO_OBJECT.Data.CalloutEnabled) {
+            SP.SOD.registerSodDep("tisa.forms.js", "callout.js");
+        }
+        if (FORM_INFO_OBJECT.AllowCustomScript) {
+            SP.SOD.registerSod("tisa.forms.custom.js", TiSa.Environment.SiteServerRelativeUrl + "/tisa-forms-customization/form_" + FORM_INFO_OBJECT.Id + "_custom.js?f=" + FORM_INFO_OBJECT.ScriptToken);
+            SP.SOD.registerSodDep("tisa.forms.js", "tisa.forms.custom.js");
+            SP.SOD.registerSodDep("tisa.forms.js", "AutoNumeric.js");
+        }
+        if (window.location.href.indexOf("IsTaskForm=") > 0 && window.location.href.indexOf("TaskId=") > 0) {
+            SP.SOD.registerSod("tisa.task.js", componentRootUrlApp + '/tisa.task.js' + scriptToken);
+            SP.SOD.registerSodDep("tisa.forms.js", "tisa.task.js");
+            SP.SOD.registerSod("autofill.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/autofill.js");
+            SP.SOD.registerSod("clientpeoplepicker.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/clientpeoplepicker.js");
+            SP.SOD.registerSodDep("AdvancedTable.js", "clientpeoplepicker.js");
+        }
+        if (FORM_INFO_OBJECT.Data.TaskLessForm) {
+            SP.SOD.registerSod("tisa.taskless.js", componentRootUrlApp + '/tisa.taskless.js' + scriptToken);
+            SP.SOD.registerSodDep("tisa.forms.js", "tisa.taskless.js");
+        }
+        if (FORM_INFO_OBJECT.Data.ExternalScripts) {
+            var exScripts = FORM_INFO_OBJECT.Data.ExternalScripts;
+            for (var i = 0; i < exScripts.length; i++) {
+                var scriptDef = exScripts[i];
+                if (scriptDef.Path) {
+                    var url = TiSa.Environment.SiteServerRelativeUrl + scriptDef.Path + scriptToken + "&f=" + FORM_INFO_OBJECT.ScriptToken;
+                    SP.SOD.registerSod(scriptDef.Name, url);
+                }
+                if (scriptDef.Dependency) {
+                    for (var j = 0; j < scriptDef.Dependency.length; j++) {
+                        SP.SOD.registerSodDep(scriptDef.Name, scriptDef.Dependency[j]);
+                    }
+                }
+                SP.SOD.registerSodDep("tisa.forms.js", scriptDef.Name);
+            }
+        }
+        var styleSheets = [];
+        if (FORM_INFO_OBJECT.AllowCustomStyle) {
+            styleSheets.push("/tisa-forms-customization/form_" + FORM_INFO_OBJECT.Id + "_custom.css?f=" + FORM_INFO_OBJECT.ScriptToken);
+        }
+        if (FORM_INFO_OBJECT.Data.ExternalStyles) {
+            for (var i = 0; i < FORM_INFO_OBJECT.Data.ExternalStyles.length; i++) {
+                styleSheets.push(FORM_INFO_OBJECT.Data.ExternalStyles[i]);
+            }
+        }
+        TiSa.RegisterStyle(styleSheets);
+    }
+    ;
+    function EnsureScripts(callbackFunction) {
+        if (!TiSa.Environment) {
+            SP.SOD.registerSod("tisa.js", _spPageContextInfo.siteAbsoluteUrl + "/SiteAssets/TiSa/_Shared/tisa.js?v=" + FORM_INFO_OBJECT.Data.CoreBuildVersion_CTAG);
+            SP.SOD.registerSod("tisa.formcontext.js", _spPageContextInfo.siteAbsoluteUrl + "/SiteAssets/TiSa/_Shared/tisa.formcontext.js?v=" + FORM_INFO_OBJECT.Data.CoreBuildVersion_CTAG);
+            SP.SOD.registerSodDep("tisa.formcontext.js", "tisa.js");
+            ExecuteScript(["tisa.js", "tisa.formcontext.js"], function () {
+                callbackFunction();
+            });
+        }
+        else {
+            callbackFunction();
+        }
+    }
+    function ExecuteScript(scriptName, callbackFunction) {
+        var scriptNames = [];
+        if (scriptName instanceof Array)
+            scriptNames = scriptName;
+        else
+            scriptNames.push(scriptName);
+        if (scriptNames.length == 0) {
+            callbackFunction();
+            return;
+        }
+        var a = scriptNames.shift();
+        if (a) {
+            SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+                TiSa.ExecuteScript(scriptNames, callbackFunction);
+            }, a);
+            SP.SOD.executeFunc(a, null, null);
+        }
+        else
+            callbackFunction();
+    }
+    ;
+})(TiSa || (TiSa = {}));
+if (!window["__tisa_AbortLoad"]) {
+    TiSa.StartForm();
+}

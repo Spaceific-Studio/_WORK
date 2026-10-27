@@ -1,0 +1,76 @@
+{
+  "source_outlook_event": {
+    "subject": "Home office",
+    "start": "2026-09-02T08:00:00",
+    "end": "2026-09-02T16:00:00",
+    "all_day": false,
+    "categories": [
+      "HOMEOFFICE"
+    ],
+    "is_recurring": true,
+    "entry_id": "00000000825114477C84404DB5CD3BB3BB754BF207005AA267A23581234097FDB0C576A6AF0900000000010D0000BA800BDA327A604D9FD19EC893B00E7A000000004B040000",
+    "global_appointment_id": "040000008200E00074C5B7101A82E0080000000010585D94891ADD01000000000000000010000000B34CA9AC9E95894F95BD6ADC3CE602CE"
+  },
+  "approver_source": {
+    "source_item_id": 14735,
+    "source_item_title": "Pracovní nepřítomnost - PV/D4/014756 - Placené volno (4. 9. 2026 - 4. 9. 2026)",
+    "approver_1_id": 260,
+    "approver_1": {
+      "__metadata": {
+        "id": "0e62987f-9f06-41e6-b42e-e69a9ace7348",
+        "type": "SP.Data.UserInfoItem"
+      },
+      "Id": 260,
+      "Title": "Kortus Marek",
+      "EMail": "kortusm@pvs.cz"
+    },
+    "approver_2_id": 58,
+    "approver_2": {
+      "__metadata": {
+        "id": "cc4e8fb7-f212-4f83-a44a-11f6c55bfaea",
+        "type": "SP.Data.UserInfoItem"
+      },
+      "Id": 58,
+      "Title": "Miškovský Jiří",
+      "EMail": "miskovskyj@pvs.cz"
+    }
+  },
+  "calculated_values": {
+    "request_start_date": "2026-09-02",
+    "request_end_date": "2026-09-02",
+    "working_days": 1
+  },
+  "target": {
+    "site": "https://dms.pvs.cz/sites/Zadanky",
+    "list_guid": "dc08c020-45ba-4cb5-9681-5ef919daa42b",
+    "intended_method": "POST",
+    "post_was_executed": false
+  },
+  "payload": {
+    "__metadata": {
+      "type": "SP.Data.HolidayRequestItem"
+    },
+    "Rq_All_type": "Absence",
+    "Rq_All_ApplicantId": 192,
+    "Rq_H_TypeOfHoliday": "Placené volno",
+    "Rq_H_PaidHoliday": "Jiné",
+    "Rq_All_RelatedLink": "[{\"Cells\":[\"\",\"Home office\"]}]",
+    "Rq_H_ValidSince": "2026-09-01T22:00:00Z",
+    "Rq_H_ValidTo": "2026-09-01T22:00:00Z",
+    "Rq_H_ValidToHalfDay": false,
+    "Rq_H_WorkingDay": 1,
+    "Rq_All_StartDate": "2026-09-01T22:00:00Z",
+    "Rq_All_EndDate": "2026-09-01T22:00:00Z",
+    "Rq_H_Approver1Id": 260,
+    "Rq_H_Approver2Id": 58,
+    "Rq_All_ApproversId": {
+      "results": [
+        260,
+        58
+      ]
+    },
+    "Rq_H_ClaimAndRemains": "1",
+    "Rq_H_Department": "D4",
+    "Rq_All_division": "stavebni"
+  }
+}

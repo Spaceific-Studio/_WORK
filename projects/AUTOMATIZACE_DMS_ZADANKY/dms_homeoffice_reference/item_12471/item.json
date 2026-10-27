@@ -1,0 +1,37 @@
+{
+  "__metadata": {
+    "id": "ee51e077-fab2-4800-bff2-287ef83f2ae5",
+    "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Items(12471)",
+    "etag": "\"10\"",
+    "type": "SP.Data.HolidayRequestItem"
+  },
+  "Rq_All_Applicant": {
+    "__metadata": {
+      "id": "70f6d2ef-ae73-4077-9df1-924711ae0638",
+      "type": "SP.Data.UserInfoItem"
+    },
+    "Id": 192,
+    "Title": "Gerčák Daniel",
+    "EMail": "GercakD@pvs.cz"
+  },
+  "Rq_All_ApplicantManager": {
+    "__deferred": {
+      "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Items(12471)/Rq_All_ApplicantManager"
+    }
+  },
+  "Id": 12471,
+  "Title": "Pracovní nepřítomnost - PV/D4/012490 - Placené volno (13. 3. 2026 - 13. 3. 2026)",
+  "Rq_H_TypeOfHoliday": "Placené volno",
+  "Rq_H_PaidHoliday": "Jiné",
+  "Rq_H_SpecifyOther": null,
+  "Rq_H_ValidSince": "2026-03-12T23:00:00Z",
+  "Rq_H_ValidTo": "2026-03-12T23:00:00Z",
+  "Rq_H_WorkingDay": 1,
+  "Rq_All_RequestNumber": null,
+  "Rq_All_StatusChoice": "Approved",
+  "Rq_All_type": "Absence",
+  "Rq_All_RelatedLink": "[{\"Cells\":[\"\",\"Home office\"]}]",
+  "ID": 12471,
+  "Modified": "2026-03-11T07:17:37Z",
+  "Created": "2026-03-10T15:40:24Z"
+}

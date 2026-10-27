@@ -1,0 +1,1080 @@
+﻿"use strict";
+
+function CountedColumnValidator() {
+    var _enabled = true;
+    var _forceDisabled = false;
+    this.SetEnabled = function (enabled) {
+        _enabled = enabled;
+    };
+
+    this.Disable = function () {
+        _forceDisabled = true;
+    };
+
+    this.Validate = function (value) {
+        if (_forceDisabled)
+            return new SPClientForms.ClientValidation.ValidationResult(false, '');
+        if (typeof (value) === "undefined")
+            return new SPClientForms.ClientValidation.ValidationResult(false, '');
+        return new SPClientForms.ClientValidation.ValidationResult(_enabled, "Please wait - require increment counters");
+    };
+}
+
+function CountedColumnValidatorError() {
+
+    this.Validate = function (value) {
+        return new SPClientForms.ClientValidation.ValidationResult(true, "Unable to get another id. You have generated 5 consecutive ids from a series without first saving the item. Restart your the browser.");
+    };
+}
+
+function CountedColumnControl(ctxControl) {
+    var _this = this;
+    var RESX = ctxControl.Resources || TiSa.ComponentResource[ctxControl.FieldInfo.FieldType.FieldType];
+    var _controlId = ctxControl.ControlId;
+    var _currentFieldValue = ctxControl.CurrentFieldValue[_controlId];
+    var _fieldInfo = ctxControl.FieldInfo;
+    var _config = ctxControl.FieldInfo.Data;
+    var _registerGetValueCallBack = ctxControl.RegisterGetValueCallBack;
+    var _formContext = ctxControl.FormContext;
+    var _renderPanel = null;
+    var _controlValue = null;
+    var _isEditMode = ctxControl.ControlMode == SPClientTemplates.ClientControlMode.EditForm || ctxControl.ControlMode == SPClientTemplates.ClientControlMode.NewForm;
+    var _isNewForm = ctxControl.ControlMode == SPClientTemplates.ClientControlMode.NewForm;
+    var _rootFolder = null;
+    var _container = null;
+    var _proxy = null;
+    var _staticContext = TiSa.Component["CountedColumnStatic"].StaticContext;
+
+    var _initialValue = "";
+    var _countedValue = "";
+    var _SPListId = "";
+    var _SPFolderPath = "";
+    var _fieldEvaluationInidialized = false;
+    var _clientValueInitialized = false;
+    var _isReadOnly = false; // used in OnDemand button disabling
+    var _conditionalExpresssionIndex = -1;
+
+    var _initialAsyncLoading = false;
+    this.OnInitialAsyncLoadComplete = [];
+    this.HasAsyncLoad = function () {
+        return _initialAsyncLoading;
+    };
+
+    var _sourceData = {
+        FormValues: null,
+        CounterValues: null,
+        CounterValuesRequestComplete: false,
+        FolderValues: null,
+        ParentFolderValues: null,
+        Properties: null,
+        ClientRequestComplete: false,
+        IsComplete: function () { return this.CounterValuesRequestComplete && this.ClientRequestComplete; }
+    };
+
+    var _validator = null;
+    var _requireUpdate = false;
+
+
+
+    this.Init = function () {
+        _renderPanel = $(TiSa.Templates.GetRenderPanel(_controlId));
+        _controlValue = $(TiSa.Templates.GetControlValue(_controlId));
+        // control is edit mode always
+
+        _initialValue = _currentFieldValue;
+        _countedValue = _currentFieldValue;
+
+        if (_config.Counters && _config.Counters.length > 0) {
+            for (var i = 0; i < _config.Counters.length; i++) {
+                var counter = _config.Counters[i];
+                if (counter.Variable.indexOf("item:") >= 0) {
+                    _config.DisableEvaluateOnClient = true;
+                    break;
+                }
+            }
+        }
+
+        if (!_currentFieldValue && ctxControl.ControlMode == SPClientTemplates.ClientControlMode.EditForm) {
+            if (_currentFieldValue != ctxControl.TemplateContext.CurrentItem[_fieldInfo.InternalName] || _currentFieldValue != _controlValue.val())
+                TiSa.Console.Warn("Different value in CC " + _fieldInfo.InternalName + "");
+        }
+
+        if (_config.DisableInEdit && ctxControl.ControlMode == SPClientTemplates.ClientControlMode.EditForm) {
+            _isEditMode = false;
+        }
+
+        if (_isEditMode) {
+            _SPFolderPath = decodeURIComponent(parseUri(window.location.href).queryKey.RootFolder);
+
+            _formControlContext = TiSa.Forms.GetFormControlContext();
+            if (!_formControlContext.Form.IsFormValidExceptFields)
+                TiSa.Console.Warn("Undefined function: IsFormValidExceptFields");
+
+            if ((_countedValue.length === 0 && !_config.OnDemand) || _config.AlwaysUpdate)
+                _requireUpdate = true;
+            if (!_requireUpdate) {
+                // conditional expression může změnit některé vlastnosti
+                _GetExpression();
+                if ((_countedValue.length == 0 && !_config.OnDemand) || _config.AlwaysUpdate)
+                    _requireUpdate = true;
+            }
+        }
+        if (_requireUpdate)
+            _initialAsyncLoading = true;
+
+
+        _container = $("<div>", { "class": "tisa-container" });
+        _renderPanel.append(_container);
+
+
+        if (_config.IncrementOnLoad) {
+            if (_AddToSessionStorage(false)) {
+                var val = new CountedColumnValidatorError();
+                var validators = new SPClientForms.ClientValidation.ValidatorSet();
+                validators.RegisterValidator(val);
+                _formContext.registerClientValidator(_formContext.fieldName, validators);
+                _container.html("<span class='countedValue notFilled' >Unable to get another id. You have generated 5 consecutive ids from a series without first saving the item. Restart your the browser.</span>");
+                TiSa.Templates.HideLoadingPanel(_controlId);
+                throw new Error("Unable to get another id. You have generated 5 consecutive ids from a series without first saving the item. Restart your the browser.");
+            }
+        }
+
+        _RenderControl();
+
+        if (_requireUpdate && !_config.OnDemand && !_config.DisableEvaluateOnClient) {
+            _InitClientValue();
+        }
+
+        if (_isEditMode)
+            _registerGetValueCallBack(function () {
+                if (_config.IncrementOnLoad)
+                    _ResetToSessionStorage();
+                if (!_requireUpdate || _config.OnDemand || _config.DisableEvaluateOnClient)
+                    return _countedValue;
+
+                //_formContext.registerGetValueCallback(_formContext.fieldName, function () {
+                if (_requireUpdate)
+                    _ComputeValue();
+
+                // sync pro pripad pokud se poprve nepovedlo                
+                if (_config.SyncElement) {
+                    var se = _config.SyncElement;
+                    var elements = se.TargetElement.split(/[\s,;|]+/);
+                    for (var i = 0; i < elements.length; i++) {
+                        var element = elements[i];
+                        if (element.length > 0) {
+                            if (element.toLowerCase() === _fieldInfo.InternalName.toLowerCase())
+                                continue
+                            var ctrl = _formControlContext.FindFieldControl(element);
+                            if (ctrl !== null) {
+                                var v = se.Expression.replace(/\{value\}/gi, _countedValue);
+                                v = _EvaluateExpression(v);
+                                ctrl.SetValue(v);
+                                if (se.Hidden)
+                                    ctrl.SetHidden(true);
+                                if (se.ReadOnly)
+                                    ctrl.SetReadOnly(true);
+                            }
+                        }
+                    }
+                }
+
+                return _countedValue;
+            });
+
+
+        TiSa.Templates.HideLoadingPanel(_controlId);
+    };
+
+    // Initializes value computation on client.
+    var _InitClientValue = function (showLoading) {
+
+        if (_clientValueInitialized)
+            return;
+
+        if (showLoading)
+            TiSa.Templates.ShowLoadingPanel(_controlId);
+
+        _StartAsyncRequests(function () {
+            var referencedFields = _GetFormColumns();
+            for (var i = 0; i < referencedFields.length; i++) {
+                var f = referencedFields[i];
+                var ct = _formControlContext.FindFieldControl(f);
+                if (ct !== null) {
+                    // propojení na kontrolky, aby byla vidět změna ihned
+                    if (!ct.AttachedCountedColumn)
+                        ct.AttachedCountedColumn = {};
+                    if (!ct.AttachedCountedColumn[_formContext.fieldName]) {
+                        ct.OnChange(function () {
+                            var expression = _GetExpression();
+                            if (expression) {
+                                if (!_clientValueInitialized)
+                                    _InitClientValue();
+                                else
+                                    _RenderControl();
+                            }
+                        });
+                        ct.AttachedCountedColumn[_formContext.fieldName] = _this;
+                    }
+                    //if (input) {
+                    //	input.on("change", _RenderControl);
+                    //}
+                    if (_sourceData.FormValues == null)
+                        _sourceData.FormValues = {};
+                    _sourceData.FormValues[f] = ct.GetDisplayValue();
+                }
+                else if (_formControlContext.Context.ListData[f]) {
+                    if (_sourceData.FormValues == null)
+                        _sourceData.FormValues = {};
+                    _sourceData.FormValues[f] = _formControlContext.Context.ListData[f];
+                }
+            }
+
+            _RenderControl();
+
+            if (showLoading)
+                TiSa.Templates.HideLoadingPanel(_controlId);
+        });
+
+        _staticContext.Fields.push(_formContext.fieldName);
+
+
+        var expression = _GetExpression();
+        if (!expression) {            
+            return;
+        }
+        // vytvoření validatoru pokud existuje nějaký counter, aby blokoval uložení doku nebude hodnota vygenerovaná
+        if (_config.Counters && _config.Counters.length > 0 && expression.indexOf("{$") >= 0 && !_config.IncrementOnLoad && !_config.DisableEvaluateOnClient) {
+            _staticContext.CounterInstancesCount++;
+            _validator = new CountedColumnValidator();
+            var validators = new SPClientForms.ClientValidation.ValidatorSet();
+            validators.RegisterValidator(_validator);
+            _formContext.registerClientValidator(_formContext.fieldName, validators);
+            _formContext.registerValidationErrorCallback(_formContext.fieldName, function (validationResult) {
+                TiSa.Console.Log("CC " + _formContext.fieldName + ": Enter ValidationErrorCallback");
+                // pokud nebylo inkrementovano
+                if (validationResult.validationError) {
+
+                    if (_formControlContext.ValidationProgress) {
+                        TiSa.Console.Log("CC " + _formContext.fieldName + ": ValidationProgress");
+                        return;
+                    }
+                   
+
+                    TiSa.Console.Log("CC " + _formContext.fieldName + ": _WaitForCounterValues");
+                    _this._WaitForCounterValues(function () {
+
+                        // if form validation error
+                        if (_formControlContext.Form.IsFormValidExceptFields && !_formControlContext.Form.IsFormValidExceptFields(_staticContext.Fields)) {
+                            TiSa.Console.Log("CC " + _formContext.fieldName + ": invalid form");
+                            return;
+                        }
+
+                        if (_formControlContext.Form._GetValidationErrors) {
+                            var errors = _formControlContext.Form._GetValidationErrors(_staticContext.Fields);
+                            if (errors.length > 0) {
+                                TiSa.Console.Log("CC " + _formContext.fieldName + ": form has a validation error");
+                                return;
+                            }
+                        }
+
+                        // hide validationsummary
+                        $(".tisa-validationErrors").hide();
+
+                        if (_staticContext.PendingRequests == 0)
+                            _staticContext._waitDialog = SP.UI.ModalDialog.showWaitScreenWithNoClose('Processing...', 'Please wait while request is in progress...', 126, 330);
+                        _staticContext.PendingRequests++;
+                        TiSa.Console.Log("CC " + _formContext.fieldName + ": PendingRequests: (+)" + _staticContext.PendingRequests);
+
+
+                        TiSa.Console.Log("CC " + _formContext.fieldName + ": _CallHandler");
+                        _CallHandler(true, function (data) {
+                            _sourceData.CounterValues = data;
+                            _RenderControl();
+                            // disable validator
+                            _validator.Disable();
+                            _staticContext.PendingRequests--;
+                            TiSa.Console.Log("CC " + _formContext.fieldName + ": PendingRequests (-): " + _staticContext.PendingRequests);
+
+                            if (_staticContext.PendingRequests <= 0) {
+                                _staticContext._waitDialog.close();
+                                TiSa.Console.Log("CC " + _formContext.fieldName + ": SubmitForm");
+                                _formControlContext.SubmitForm();
+                            }
+                        });
+                    }, 0);
+
+                }
+
+            });
+        }
+
+        _clientValueInitialized = true;
+    };
+
+    this._WaitForCounterValues = function (callbackFunction, cnt) {
+        if (_sourceData.CounterValues) {
+            setTimeout(function () {
+                callbackFunction();
+            }, 100);
+            return;
+        }
+        if (cnt > 300) {
+            return;
+        }
+
+        setTimeout(function () {
+            _this._WaitForCounterValues(callbackFunction, cnt + 1);
+        }, 100);
+    };
+
+
+    var _RenderControl = function () {
+        if (_requireUpdate)
+            _ComputeValue();
+        if (_countedValue != "")
+            _container.html("<span class='countedValue'>" + _EvaluateTemplate(_countedValue) + "</span>");
+        else if (_config.OnDemand && !_isReadOnly) {
+            _container.html("<input type='button' id='DemandButton_" + _controlId + "' value='" + (RESX.$O_GetValueDefault ? RESX.$O_GetValueDefault : RESX.GetValueDefault) + "' />");
+            $("#DemandButton_" + _controlId).click(function () {
+                $(this).remove();
+                _requireUpdate = true;
+                _InitClientValue(true);
+            });
+        }
+        else
+            _container.html("<span class='countedValue notFilled' title='" + RESX.NotFilled + "' >---</span>");
+    };
+
+    var _EvaluateTemplate = function (value) {
+        var v = value;
+        if (!_config.Template)
+            return v;
+
+        var exp = v;
+        if (_config.Template.Expression) {
+            var s = _config.Template.Expression;
+            exp = s.replace(/\{value\}/gi, v);
+        }
+        if (_config.Template.Formula) {
+            var formula = _config.Template.Formula;
+            formula = formula.replace(/\{value\}/gi, v);
+            formula = formula.replace(/\{expression\}/gi, exp);
+            formula = formula.replace(/\{InternalName\}/gi, _fieldInfo.InternalName);
+            try {
+                var fnName = '__evaluateExpression_' + _fieldInfo.InternalName;
+                eval('window.' + fnName + ' = ' + 'function (ctx, RESX){\r\n\treturn ' + formula + '; \r\n};');
+                var fn = window[fnName];
+                if (fn) {
+                    var ctx = {
+                        Instance: _this,
+                        Config: _config,
+                        ControlId: _controlId,
+                        FieldInfo: _fieldInfo,
+                        RenderPanel: _renderPanel,
+                        Value: v,
+                        Expression: exp,
+                        ControlMode: ctxControl.ControlMode,
+                        Resources: RESX
+                    };
+                    var fnResult = fn(ctx, RESX);
+                    if (fnResult)
+                        v = fnResult.toString();
+                    delete window[fnName];
+                }
+            }
+            catch (ex) {
+                TiSa.Console.Group("Formula");
+                TiSa.Console.Warn("Can't evaluate this formula: '" + formula + "'");
+                TiSa.Console.Dir(ex);
+                TiSa.Console.GroupEnd("Formula");
+            }
+        }
+        return v;
+    };
+
+    var _AddToSessionStorage = function (increment) {
+        var err = false;
+        try {
+            var k = "CountedColumnCount_" + _fieldInfo.InternalName;
+            var ss = window.sessionStorage;
+            var c = 0;
+            try {
+                var s = ss.getItem(k);
+                if (s)
+                    c = parseInt(s);
+            }
+            catch (e) {
+                // nope
+            }
+            if (increment)
+                c++;
+
+            if (c > 5)
+                err = true;
+            ss.setItem(k, c.toString());
+        }
+        catch (e) {
+            // err
+        }
+        return err;
+    };
+    var _ResetToSessionStorage = function () {
+        try {
+            var k = "CountedColumnCount_" + _fieldInfo.InternalName;
+            var ss = window.sessionStorage;
+            var s = ss.getItem(k);
+            var c = 0;
+            ss.setItem(k, c.toString());
+        }
+        catch (e) {
+            // err
+        }
+    };
+
+    var _StartAsyncRequests = function (callbackFunction) {
+        var expression = _GetExpression();
+        if (!expression) {
+            callbackFunction();
+            return;
+        }
+        if (!_sourceData.CounterValuesRequestComplete)
+            TiSa.Console.Log("CC " + _formContext.fieldName + ": _CallHandler (preview)");
+            _CallHandler(false, function (data, expression) {
+                _sourceData.CounterValues = data;
+                if (expression)
+                    _expression = expression;
+                _sourceData.CounterValuesRequestComplete = true;
+                _AddToSessionStorage(true);
+                if (_sourceData.IsComplete() && callbackFunction)
+                    callbackFunction();
+            });
+        if (!_sourceData.ClientRequestComplete)
+            _CallClientRequest(function (data1, data2, props) {
+                _sourceData.FolderValues = data1;
+                _sourceData.ParentFolderValues = data2;
+                _sourceData.Properties = props;
+                _sourceData.ClientRequestComplete = true;
+                if (_sourceData.IsComplete() && callbackFunction)
+                    callbackFunction();
+            });
+    };
+
+    // voláno pouze pokud jsou definovány nějaké číselníky
+    var _CallHandler = function (submit, callbackFunction) {
+        var expression = _GetExpression();
+        if (!expression)
+            return;
+        if (_config.Counters && _config.Counters.length > 0 && expression.indexOf("{$") >= 0) {
+            if (_formControlContext == null)
+                _formControlContext = TiSa.Forms.GetFormControlContext();
+            var requestData = null;
+            if (submit) {
+                requestData = {
+                    CounterValues: JSON.stringify(_sourceData.CounterValues),
+                    FieldId: _fieldInfo.Id,
+                    WebUrl: _formContext.webAttributes.WebUrl,
+                    ListId: _formContext.listAttributes.Id,
+                    IsSubmit: 1,
+                    FieldOnList: _fieldInfo.FieldOnList ? "1" : "0",
+                    FieldOnWeb: _fieldInfo.FieldOnWeb ? "1" : "0",
+                    ConditionalExpresssionIndex: _conditionalExpresssionIndex
+                }
+            } else {
+                _ResolveRootFolder();
+                requestData = {
+                    WebUrl: _formContext.webAttributes.WebUrl,
+                    ListId: _formContext.listAttributes.Id,
+                    FolderPath: _rootFolder,
+                    FieldId: _fieldInfo.Id,
+                    FieldName: _formContext.fieldName,
+                    ItemContentTypeName: _formControlContext.Context.ItemContentTypeName,
+                    ItemContentTypeId: _formControlContext.Context.ItemContentTypeId,
+                    CurrentUserId: _formContext.webAttributes.CurrentUserId,
+                    IsSubmit: 0,
+                    IsIncrement: _config.IncrementOnLoad ? "1" : "0",
+                    FieldOnList: _fieldInfo.FieldOnList ? "1" : "0",
+                    FieldOnWeb: _fieldInfo.FieldOnWeb ? "1" : "0",
+                    ConditionalExpresssionIndex: _conditionalExpresssionIndex
+                }
+            }
+            if (_proxy == null)
+                _proxy = TiSa.Templates.CreateProxy(_renderPanel, _fieldInfo.FieldType);
+
+            _proxy.CallHandler("GetCounterValues.ashx", requestData, function (result) {
+                if (result.IsError) {
+                    TiSa.Console.Error("Problem in getting data. Receive this error '" + result.ErrorMessage + "'");
+                    //alert("Problem in getting data. Receive this error '" + result.ErrorMessage + "'");
+                }
+                else if (result.Data == null || result.Data.length == 0) {
+                    if (callbackFunction)
+                        callbackFunction(null, null);
+                }
+                else {
+                    if (callbackFunction)
+                        callbackFunction(result.Data, result.Expression);
+                }
+            }, function (err) {
+                TiSa.Console.Error("Problem in getting data.Remote handler thrown error '" + err.Error + "'");
+                //alert("Problem in getting data. Remote handler thrown error '" + err.Error + "'");
+            });
+        }
+        else {
+            if (callbackFunction)
+                callbackFunction(null);
+        }
+    };
+
+    var _expression = null;
+    var _GetExpression = function () {
+
+        if (_config.ConditionalExpressions)
+            for (var i = 0; i < _config.ConditionalExpressions.length; i++) {
+                var ce = _config.ConditionalExpressions[i];
+                var condition = _EvaluateExpression(ce.Condition);
+                var conditionResult = false;
+                try {
+                    var fnName = '__evaluateExpression_' + _fieldInfo.InternalName;
+                    eval('window.' + fnName + ' = ' + 'function (ctx, RESX){\r\n\treturn ' + condition + '; \r\n};');
+                    var fn = window[fnName];
+                    if (fn) {
+                        var ctx = {
+                            Resources: RESX
+                        };
+                        var fnResult = fn(ctx, RESX);
+                        if (fnResult)
+                            conditionResult = fnResult;
+                        delete window[fnName];
+                    }
+
+                    if (conditionResult) {
+                        _expression = ce.Expression;
+                        _config.SyncElement = ce.SyncElement;
+                        _config.DisableEvaluateOnClient = ce.DisableEvaluateOnClient;
+                        _config.DisableReceiver = ce.DisableReceiver;
+                        _config.OnDemand = ce.OnDemand;
+                        _config.AlwaysUpdate = ce.AlwaysUpdate;
+                        _conditionalExpresssionIndex = i;
+                        return _expression;
+                    }
+                }
+                catch (ex) {
+                    //TiSa.Console.Group("Formula");
+                    //TiSa.Console.Warn("Can't evaluate this formula: '" + formula + "'");
+                    //TiSa.Console.Dir(ex);
+                    //TiSa.Console.GroupEnd("Formula");
+                }
+            }
+        _expression = _config.Expression;
+        return _expression;
+    };
+
+    var _EvaluateFormula = function (formula, value) {
+        try {
+            var fnName = '__evaluateExpression_' + _fieldInfo.InternalName;
+            eval('window.' + fnName + ' = ' + 'function (ctx, RESX){\r\n\treturn ' + formula + '; \r\n};');
+            var fn = window[fnName];
+            if (fn) {
+                var ctx = {
+                    Resources: RESX
+                };
+                var fnResult = fn(ctx, RESX);
+                if (fnResult)
+                    value = fnResult.toString();
+                delete window[fnName];
+            }
+        }
+        catch (ex) {
+            TiSa.Console.Group("Formula");
+            TiSa.Console.Warn("Can't evaluate this formula: '" + formula + "'");
+            TiSa.Console.Dir(ex);
+            TiSa.Console.GroupEnd("Formula");
+        }
+        return value;
+    }
+
+    var _EvaluateExpression = function (expression) {
+
+        var newCountedValue = expression || '';
+
+        _EnsureRegexBank();
+
+        // replace counters
+        if (_sourceData.CounterValues !== null) {
+            for (var i = 0; i < _sourceData.CounterValues.length; i++) {
+                var counterValue = _sourceData.CounterValues[i];
+                if (counterValue.StringValue != "") {
+                    var cn = "{$" + counterValue.Name + "}";
+                    while (newCountedValue.indexOf(cn) >= 0)
+                        newCountedValue = newCountedValue.replace(cn, counterValue.StringValue);
+                }
+            }
+        }
+
+
+        // replace folder variables
+        if (_sourceData.ClientRequestComplete) {
+            var re = _staticContext.RegexBank.Folder;
+            var match;
+            var interations = 0;
+            while ((match = new RegExp(re, "g").exec(newCountedValue)) !== null) {
+                if (interations++ > 25)
+                    break;
+                var s = "";
+                if (_sourceData.FolderValues != null) {
+                    var columnName = match[1];
+                    var value = _sourceData.FolderValues[columnName];
+                    if (value && value !== null)
+                        s = value.toString();
+                }
+                newCountedValue = newCountedValue.replace(match[0], s);
+            }
+        }
+
+        // replace parent folder variables
+        if (_sourceData.ClientRequestComplete) {
+            var re = _staticContext.RegexBank.ParentFolder;
+            var match;
+            var interations = 0;
+            while ((match = new RegExp(re, "g").exec(newCountedValue)) !== null) {
+                if (interations++ > 25)
+                    break;
+                var s = "";
+                if (_sourceData.ParentFolderValues != null) {
+                    var columnName = match[1];
+                    var value = _sourceData.ParentFolderValues[columnName];
+                    if (value && value !== null)
+                        s = value.toString();
+                }
+                newCountedValue = newCountedValue.replace(match[0], s);
+            }
+        }
+
+        // replace folder properties
+        if (_sourceData.ClientRequestComplete) {
+            var re = _staticContext.RegexBank.FolderProperty;
+            var match;
+            var interations = 0;
+            while ((match = new RegExp(re, "g").exec(newCountedValue)) !== null) {
+                if (interations++ > 25)
+                    break;
+                var s = "";
+                if (_sourceData.Properties != null && _sourceData.Properties.Folder != null) {
+                    var key = match[1];
+                    var fvs = _sourceData.Properties.Folder.get_fieldValues();
+                    var value = fvs[key];
+                    if (value && value !== null)
+                        s = value.toString();
+                }
+                newCountedValue = newCountedValue.replace(match[0], s);
+            }
+        }
+
+        // replace list properties
+        if (_sourceData.ClientRequestComplete) {
+            var re = _staticContext.RegexBank.ListProperty;
+            var match;
+            var interations = 0;
+            while ((match = new RegExp(re, "g").exec(newCountedValue)) !== null) {
+                if (interations++ > 25)
+                    break;
+                var s = "";
+                if (_sourceData.Properties != null && _sourceData.Properties.List != null) {
+                    var key = match[1];
+                    var fvs = _sourceData.Properties.List.get_fieldValues();
+                    var value = fvs[key];
+                    if (value && value !== null)
+                        s = value.toString();
+                }
+                newCountedValue = newCountedValue.replace(match[0], s);
+            }
+        }
+
+        // replace web properties
+        if (_sourceData.ClientRequestComplete) {
+            var re = _staticContext.RegexBank.WebProperty;
+            var match;
+            var interations = 0;
+            while ((match = new RegExp(re, "g").exec(newCountedValue)) !== null) {
+                if (interations++ > 25)
+                    break;
+                var s = "";
+                if (_sourceData.Properties != null && _sourceData.Properties.Web != null) {
+                    var key = match[1];
+                    var fvs = _sourceData.Properties.Web.get_fieldValues();
+                    var value = fvs[key];
+                    if (value && value !== null)
+                        s = value.toString();
+                }
+                newCountedValue = newCountedValue.replace(match[0], s);
+            }
+        }
+
+
+        //replace date
+
+        if (newCountedValue.indexOf("{date:") >= 0) {
+            var d = new Date();
+            var re = _staticContext.RegexBank.Date;
+            var match;
+            var interations = 0;
+            while ((match = new RegExp(re, "g").exec(newCountedValue)) !== null) {
+                if (interations++ > 50)
+                    break;
+                var mask = match[1];
+                var value = d.format(mask);
+                newCountedValue = newCountedValue.replace(match[0], value);
+            }
+        }
+        //replace columns
+        if (_sourceData.FormValues !== null) {
+            for (var f in _sourceData.FormValues) {
+                var ct = _formControlContext.FindFieldControl(f);
+                if (ct !== null)
+                    newCountedValue = newCountedValue.replace(new RegExp("\{" + f + "\}", "g"), ct.GetDisplayValue());
+                else
+                    newCountedValue = newCountedValue.replace(new RegExp("\{" + f + "\}", "g"), _sourceData.FormValues[f]);
+            }
+        }
+
+        //replace entities
+
+
+        newCountedValue = newCountedValue.replace("{$ItemContentTypeName}", _formControlContext.Context.ItemContentTypeName);
+        newCountedValue = newCountedValue.replace("{$ItemContentTypeId}", _formControlContext.Context.ItemContentTypeId);
+        newCountedValue = newCountedValue.replace("{$CurrentUserId}", _formContext.webAttributes.CurrentUserId);
+        newCountedValue = newCountedValue.replace("{$FieldName}", _formContext.fieldName);
+        newCountedValue = newCountedValue.replace("{$FieldTitle}", _formContext.fieldSchema.Title);
+
+
+
+        // evaluate formulas
+        if (_sourceData.ClientRequestComplete) {
+            newCountedValue = TiSa.Templates.ReplaceFormulaInExpression(newCountedValue);
+            /*var re = _staticContext.RegexBank.Formula;
+            var match;
+            var interations = 0;
+            while ((match = new RegExp(re, "g").exec(newCountedValue)) !== null) {
+                if (interations++ > 50)
+                    break;
+                var formula = match[1];
+                var v = _EvaluateFormula(formula, "");
+                if (v)
+                    newCountedValue = newCountedValue.replace(match[0], v.toString());
+                else
+                    newCountedValue = newCountedValue.replace(match[0], '');
+            }*/
+        }
+
+
+        // 12 + 20433" //dvojté hranaté závorky umožní výpočetní operaci
+        // T [[12.34 + 3434.23]]_
+        // T [[12.34 + 3434.23]]_[['{pole1}'.substring(3)]]_{$Counter1}
+        // T [[12.34 + 3434.23]]_
+
+        newCountedValue = newCountedValue.replace(new RegExp(_staticContext.RegexBank.Global, "g"), ""); //clean
+
+
+        return newCountedValue;
+    };
+
+    //Calls handler to get new values of counters.
+    var _ComputeValue = function () {
+        var expression = _GetExpression();
+        if (!expression) {
+            //_InitClientValue(false);
+            return;
+        }
+        if (_config.DisableEvaluateOnClient)
+            return;
+
+        // pokud je conditional expresion nemusí být validator vždy potřeba
+        if (_validator) {
+            if (expression.indexOf("{$") < 0)
+                _validator.SetEnabled(false);
+            else
+                _validator.SetEnabled(true);
+        }
+
+        _countedValue = _EvaluateExpression(expression);
+
+        _controlValue.val(_countedValue);
+        _controlValue.trigger("change");
+        if (_initialAsyncLoading && _sourceData.IsComplete()) {
+            _initialAsyncLoading = false;
+            for (var i = 0; i < _this.OnInitialAsyncLoadComplete.length; i++) {
+                var fn = _this.OnInitialAsyncLoadComplete[i];
+                if (fn)
+                    fn.call(_this);
+            }
+        }
+
+        // copy to sync field
+        if (!_initialAsyncLoading && _config.SyncElement) {
+            var se = _config.SyncElement;
+            var tes = se.TargetElement.split(/[\s,;\|]+/);
+            for (var i = 0; i < tes.length; i++) {
+                var ctrl = _formControlContext.FindFieldControl(tes[i]);
+                if (ctrl !== null) {
+                    var v = se.Expression.replace(/\{value\}/gi, _countedValue);
+                    v = _EvaluateExpression(v);
+                    ctrl.SetValue(v);
+                    if (se.Hidden)
+                        ctrl.SetHidden(true);
+                    if (se.ReadOnly)
+                        ctrl.SetReadOnly(true);
+                }
+            }
+        }
+    };
+
+    var _ResolveRootFolder = function () {
+        if (_rootFolder == null) {
+            if (_isNewForm)
+                _rootFolder = _formControlContext.Context.NewItemRootFolder;
+            else {
+                if (_formContext.itemAttributes.Url)
+                    _rootFolder = _formContext.itemAttributes.Url.substring(0, _formContext.itemAttributes.Url.lastIndexOf('/'));
+            }
+            if (_rootFolder == null) {
+                var uri = parseUri(location.href);
+                _rootFolder = decodeURIComponent(uri.queryKey.RootFolder);
+            }
+        }
+    };
+
+    var _CallClientRequest = function (callbackFunction) {
+        var expression = _GetExpression();
+        if (!expression)
+            return;
+        if (expression.indexOf("{folder") >= 0 || expression.indexOf("{parentfolder") >= 0 ||
+            expression.indexOf("{folderproperty") >= 0 || expression.indexOf("{listproperty") >= 0 || expression.indexOf("{webproperty") >= 0) {
+            SP.SOD.executeFunc('sp.js', 'SP.ClientContext', function () {
+                var context = SP.ClientContext.get_current();
+                var web = context.get_web();
+                _ResolveRootFolder();
+
+                var list = web.get_lists().getById(_formContext.listAttributes.Id);
+                var listRootFolder = list.get_rootFolder();
+
+                var webProperties = null;
+                var listProperties = null;
+                var folderProperties = null;
+
+                context.load(listRootFolder, "ServerRelativeUrl");
+
+                var folderItem = null;
+                var folder = null;
+
+                if (_rootFolder && _rootFolder.length > 0 && (expression.indexOf("{folder") >= 0 || expression.indexOf("{parentfolder") >= 0)) {
+                    folder = web.getFolderByServerRelativeUrl(_rootFolder);
+                    folderItem = folder.get_listItemAllFields();
+                    context.load(folder, "ServerRelativeUrl");
+                    context.load(folderItem);
+                }
+
+                if (expression.indexOf("{listproperty") >= 0) {
+                    listProperties = listRootFolder.get_properties();
+                    context.load(listProperties);
+                }
+                if (expression.indexOf("{webproperty") >= 0) {
+                    webProperties = web.get_allProperties();
+                    context.load(webProperties);
+                }
+                if (_rootFolder && _rootFolder.length > 0 && expression.indexOf("{folderproperty") >= 0) {
+                    if (folder == null)
+                        folder = web.getFolderByServerRelativeUrl(_rootFolder);
+                    folderProperties = folder.get_properties();
+                    context.load(folderProperties);
+                }
+                else if (expression.indexOf("{listproperty") >= 0)
+                    folderProperties = listProperties;
+
+                context.executeQueryAsync(
+                    function () {
+                        var properties = {
+                            Folder: folderProperties,
+                            List: listProperties,
+                            Web: webProperties
+                        };
+
+                        if (folder == null || folderItem == null) {
+                            callbackFunction(null, null, properties);
+                            return;
+                        }
+
+                        var isRoot = listRootFolder.get_serverRelativeUrl() == folder.get_serverRelativeUrl();
+                        if (isRoot) {
+                            callbackFunction(null, null, properties);
+                            return;
+                        }
+
+                        var folderData = folderItem.get_fieldValues();
+
+                        if (expression.indexOf("{parentfolder") >= 0) {
+                            var parentFolder = folder.get_parentFolder();
+                            var parentFolderItem = parentFolder.get_listItemAllFields();
+                            context.load(parentFolder, "ServerRelativeUrl");
+                            context.load(parentFolderItem);
+                            context.executeQueryAsync(function () {
+                                var isRoot2 = listRootFolder.get_serverRelativeUrl() == parentFolder.get_serverRelativeUrl();
+                                if (isRoot2) {
+                                    callbackFunction(folderData, null, properties);
+                                    return;
+                                }
+                                var parentFolderData = parentFolderItem.get_fieldValues();
+                                callbackFunction(folderData, parentFolderData, properties);
+                            }, function (sender, args) {
+                                TiSa.Console.Error("Problem in getting folder data. Receive this error '" + args.get_message() + "'");
+                                //alert("Problem in getting parent folder data. Receive this error '" + args.get_message() + "'");
+                            });
+                        }
+                        else {
+                            callbackFunction(folderData, null, properties);
+                            return;
+                        }
+                    },
+                    function (sender, args) {
+                        TiSa.Console.Error("Problem in getting folder data. Receive this error '" + args.get_message() + "'");
+                        //alert("Problem in getting folder data. Receive this error '" + args.get_message() + "'");
+                    });
+            });
+        }
+        else {
+            callbackFunction(null, null, null);
+        }
+    }
+
+    //Get values of other fields of the record and replace them in the mask
+    var _formControlContext = null;
+    var _GetFormColumns = function () {
+        _EnsureRegexBank();
+        var re = _staticContext.RegexBank.Column;
+        var arr = [];
+
+        var fnAddTokens = function (expression) {
+            var o = TiSa.TemplateEvaluator.ParseTemplate(expression);
+            for (var k in o) {
+                if (k.indexOf("$") === 0)
+                    continue;
+                if (arr.indexOf(k) < 0)
+                    arr.push(k);
+            }
+        };
+
+        //var expression = _GetExpression();
+        //if (!expression)
+        //    return arr;
+
+        if (_config.ConditionalExpressions) {
+            for (var i = 0; i < _config.ConditionalExpressions.length; i++) {
+                var e = _config.ConditionalExpressions[i];
+                fnAddTokens(e.Condition);
+                fnAddTokens(e.Expression);
+            }
+        }
+
+        if (_config.Expression)
+            fnAddTokens(_config.Expression);
+        return arr;
+    }
+
+
+    var _EnsureRegexBank = function () {
+        if (_staticContext.RegexBank == null) {
+            _staticContext.RegexBank = {};
+            _staticContext.RegexBank.Global = "\\{[^\\}]+\\}";
+            _staticContext.RegexBank.Date = "\\{date\\:([^\\}]+)\\}";
+            _staticContext.RegexBank.ParentFolder = "\\{parentfolder\\:([\\w]+)\\}";
+            _staticContext.RegexBank.Folder = "\\{folder\\:([\\w]+)\\}";
+            _staticContext.RegexBank.FolderProperty = "\\{folderproperty\\:([\\w]+)\\}";
+            _staticContext.RegexBank.WebProperty = "\\{webproperty\\:([\\w]+)\\}";
+            _staticContext.RegexBank.ListProperty = "\\{listproperty\\:([\\w]+)\\}";
+            _staticContext.RegexBank.Column = "\\{([\\w]+)\\}";
+            _staticContext.RegexBank.Formula = "\\[\\[([^[]+)\\]\\]";
+        }
+    }
+
+    this.SetReadOnly = function (state) {
+        _isReadOnly = state;
+        _RenderControl();
+    };
+
+    this.SetValue = function (v) {
+        if (v === null) {
+            this.ResetValue();
+            return;
+        }
+        _countedValue = v;
+        _controlValue.val(v);
+        _requireUpdate = false;
+        if (_validator)
+            _validator.Disable();
+        _controlValue.trigger("change");
+        _RenderControl();
+    };
+    this.ResetValue = function () {
+        _requireUpdate = true;
+        //_clientValueInitialized = false;
+        _countedValue = "";
+        _controlValue.val("");
+        _sourceData.CounterValues = null;
+        _sourceData.CounterValuesRequestComplete = false;
+
+        //_sourceData.ClientRequestComplete = false;
+
+        _RenderControl();
+        if (!_clientValueInitialized)
+            _InitClientValue(true);
+        else
+            _StartAsyncRequests(function () {
+                _RenderControl();
+            });
+    };
+
+    this.Refresh = function () {
+        _RenderControl();
+    };
+
+    this.GetValue = function () {
+        return _controlValue.val();
+    };
+
+    this.OnChanged = function (ev) {
+        if (_controlValue) {
+            _controlValue.on("change", ev);
+        }
+    }
+
+    // pokud je sloupec v OnDemand módu a hodnota ještě nebyla vygenerována, odebere tlačítko a vygeneruje hodnotu. 
+    this.GenerateValue = function () {
+        if (_config.OnDemand && !_requireUpdate) {
+            _requireUpdate = true;
+            _InitClientValue(true);
+            $("#DemandButton_" + _controlId).remove();
+        }
+    }
+
+    function padCharacters(str, max, ch) {
+        str = str.toString();
+        return str.length < max ? padCharacters(ch + str, max, ch) : str;
+    }
+
+}
+
+
+var TiSa = TiSa || {};
+TiSa.Component = TiSa.Component || {};
+TiSa.Component["CountedColumn"] = CountedColumnControl;
+
+TiSa.Component["CountedColumnStatic"] = {
+    StaticContext: {
+        Fields: [],
+        CounterInstancesCount: 0,
+        PendingRequests: 0,
+        RegexBank: null
+    }
+};
+
+if (SP && SP.SOD)
+    SP.SOD.notifyScriptLoadedAndExecuteWaitingJobs("CountedColumn.js");

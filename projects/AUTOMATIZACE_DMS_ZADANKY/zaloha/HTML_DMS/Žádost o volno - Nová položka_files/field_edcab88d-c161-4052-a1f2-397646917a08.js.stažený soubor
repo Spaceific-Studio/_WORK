@@ -1,0 +1,223 @@
+"use strict";
+var TiSa;
+(function (TiSa) {
+    var Components;
+    (function (Components) {
+        var AdvancedTable;
+        (function (AdvancedTable) {
+            var Configuration;
+            (function (Configuration) {
+                "use strict";
+                function UpdateConfiguration(config) {
+                    if (config["_configurationUpdated"]) {
+                        return config;
+                    }
+                    if (!config.Columns) {
+                        config.Columns = [];
+                    }
+                    if (!config.Table) {
+                        config.Table = {};
+                    }
+                    var cts = {
+                        Text: false,
+                        TextMultiLine: false,
+                        Number: false,
+                        DateTime: false,
+                        Boolean: false,
+                        ExternalLookup: false,
+                        User: false,
+                        UserQuery: false,
+                        ManageMetadata: false,
+                        Rating: false,
+                        Attachment: false,
+                        Reference: false,
+                        ReferenceQuery: false,
+                        Url: false,
+                        _ExternalLookup_DataTable: false,
+                        _ExternalLookup_DropDownSearch: false
+                    };
+                    config.ColumnTypes = cts;
+                    for (var i = 0; i < config.Columns.length; i++) {
+                        var c = config.Columns[i];
+                        if (c.Number) {
+                            c.ColumnType = 2;
+                            cts.Number = true;
+                        }
+                        else if (c.DateTime) {
+                            c.ColumnType = 3;
+                            cts.DateTime = true;
+                        }
+                        else if (c.Boolean) {
+                            c.ColumnType = 4;
+                            cts.Boolean = true;
+                        }
+                        else if (c.ExternalLookup) {
+                            c.ColumnType = 5;
+                            cts.ExternalLookup = true;
+                            if (!cts._ExternalLookup_DataTable)
+                                cts._ExternalLookup_DataTable = c.ExternalLookup.RenderMode == "DataTable";
+                            if (!cts._ExternalLookup_DropDownSearch)
+                                cts._ExternalLookup_DropDownSearch = c.ExternalLookup.DropDownSearch;
+                        }
+                        else if (c.User) {
+                            c.ColumnType = 6;
+                            cts.User = true;
+                        }
+                        else if (c.ManageMetadata) {
+                            c.ColumnType = 7;
+                            cts.ManageMetadata = true;
+                        }
+                        else if (c.Attachment) {
+                            c.ColumnType = 8;
+                            cts.Attachment = true;
+                        }
+                        else if (c.UserQuery) {
+                            c.ColumnType = 9;
+                            cts.UserQuery = true;
+                        }
+                        else if (c.Rating) {
+                            c.ColumnType = 10;
+                            cts.Rating = true;
+                        }
+                        else if (c.Reference) {
+                            c.ColumnType = 20;
+                            cts.Reference = true;
+                        }
+                        else if (c.ReferenceQuery) {
+                            c.ColumnType = 21;
+                            cts.ReferenceQuery = true;
+                        }
+                        else if (c.Url) {
+                            c.ColumnType = 22;
+                            cts.Url = true;
+                        }
+                        else if (c.MultiLine) {
+                            c.ColumnType = 1;
+                            cts.TextMultiLine = true;
+                        }
+                        else {
+                            c.ColumnType = 1;
+                            cts.Text = true;
+                        }
+                    }
+                    config["_configurationUpdated"] = true;
+                    return config;
+                }
+                Configuration.UpdateConfiguration = UpdateConfiguration;
+            })(Configuration = AdvancedTable.Configuration || (AdvancedTable.Configuration = {}));
+        })(AdvancedTable = Components.AdvancedTable || (Components.AdvancedTable = {}));
+    })(Components = TiSa.Components || (TiSa.Components = {}));
+})(TiSa || (TiSa = {}));
+(function () {
+    var FIELD_INFO_OBJECT = {"Id":"edcab88d-c161-4052-a1f2-397646917a08","FieldOnWeb":true,"FieldOnList":false,"ScriptToken":43326844,"FieldType":{"FieldType":"AdvancedTable","ComponentPath":"AdvancedTable","ComponentAppUrlEncoded":"https:://dms.pvs.cz/tisa","ComponentAppUrl":"https://dms.pvs.cz/tisa","ApplicationName":"TiSa.BaseWeb"},"Data":{"Table":{"MaxItemsOnPage":10,"ReadOnly":true},"Columns":[{"Name":"Datum","DateTime":{"Format":"DateAndTime"}},{"Name":"Zaměstnanec","User":{}},{"Name":"Akce"},{"Name":"Poznámka","Multiline":true}]},"StaticName":"Rq_All_ApprovalHistory","DisplayName":"Detaily schvalování","InternalName":"Rq_All_ApprovalHistory","FieldPath":""};
+    var __tisa_InitField = function () {
+        var componentRootUrlApp = TiSa.Environment.GetComponentAppUrl(FIELD_INFO_OBJECT.FieldType);
+        TiSa.RegisterScript("AdvancedTable.js", componentRootUrlApp + "/AdvancedTable.js", ["jquery.js", "jquery-ui.js", "jquery-ui-datepicker-lang.js"], [1033, 1029, 1045, 1031]);
+        TiSa.RegisterStyle(componentRootUrlApp + "/AdvancedTable.css", ["jQuery_UI", "Templates"]);
+        TiSa.Components.AdvancedTable.Configuration.UpdateConfiguration(FIELD_INFO_OBJECT.Data);
+        var cts = FIELD_INFO_OBJECT.Data.ColumnTypes;
+        if (cts.Number || cts.ReferenceQuery || cts.ExternalLookup) {
+            SP.SOD.registerSodDep("AdvancedTable.js", "AutoNumeric.js");
+        }
+        if (cts.DateTime || cts.ReferenceQuery || cts.ExternalLookup
+            || FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Comment
+            || FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Acquaint) {
+            SP.SOD.registerSodDep("AdvancedTable.js", "moment.js");
+        }
+        if (cts.ExternalLookup || cts.ReferenceQuery || (FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.CheckBoxList)) {
+            var fieldType = { ComponentAppUrl: FIELD_INFO_OBJECT.FieldType.ComponentAppUrl, ComponentPath: "ExternalLookup" };
+            var rootUrl = TiSa.Environment.GetComponentAppUrl(fieldType);
+            TiSa.RegisterScript("ExternalLookup.js", rootUrl + "/ExternalLookup.js", ["jquery.js", "jquery-ui.js", ">AdvancedTable.js"], [1033, 1029, 1045, 1031]);
+            TiSa.RegisterStyle(rootUrl + "/ExternalLookup.css");
+            if (cts._ExternalLookup_DataTable) {
+                TiSa.RegisterStyle(null, ["jQuery_DataTables"]);
+            }
+            if (cts._ExternalLookup_DropDownSearch) {
+                SP.SOD.registerSodDep("ExternalLookup.js", "select2.js");
+                TiSa.RegisterStyle(null, ["Select2"]);
+            }
+        }
+        if (cts.Attachment) {
+            var fieldType = { ComponentAppUrl: FIELD_INFO_OBJECT.FieldType.ComponentAppUrl, ComponentPath: "Attachment" };
+            var rootUrl = TiSa.Environment.GetComponentAppUrl(fieldType);
+            TiSa.RegisterScript("Attachment.js", rootUrl + "/Attachment.js", ["jquery.js", "jquery-ui.js", ">AdvancedTable.js"], [1033, 1029, 1045, 1031]);
+            TiSa.RegisterStyle(rootUrl + "/AttachmentControl.css");
+        }
+        if (cts.Rating) {
+            var fieldType = { ComponentAppUrl: FIELD_INFO_OBJECT.FieldType.ComponentAppUrl, ComponentPath: "Rating" };
+            var rootUrl = TiSa.Environment.GetComponentAppUrl(fieldType);
+            TiSa.RegisterScript("Rating.js", rootUrl + "/Rating.js", ["jquery.js", "jquery-ui.js", ">AdvancedTable.js"], [1033, 1029, 1045, 1031]);
+            TiSa.RegisterStyle(rootUrl + "/Rating.css");
+        }
+        if (cts.User || cts.UserQuery
+            || FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Comment
+            || FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Acquaint) {
+            TiSa.RegisterScript("AdvancedTableUser.js", componentRootUrlApp + "/AdvancedTableUser.js", [">AdvancedTable.js"]);
+            if (cts.UserQuery) {
+                SP.SOD.registerSod("sp.userprofiles.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/sp.userprofiles.js");
+                SP.SOD.registerSodDep("sp.userprofiles.js", "sp.js");
+                SP.SOD.registerSodDep("AdvancedTable.js", "sp.userprofiles.js");
+            }
+        }
+        if (FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Reference && cts.Reference) {
+            TiSa.RegisterScript("AdvancedTableReference.js", componentRootUrlApp + "/AdvancedTableReference.js", [">AdvancedTable.js"]);
+        }
+        if (FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Comment) {
+            TiSa.RegisterScript("AdvancedTableComment.js", componentRootUrlApp + "/AdvancedTableComment.js", [">AdvancedTable.js"]);
+        }
+        if (FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Acquaint) {
+            TiSa.RegisterScript("AdvancedTableAcquaint.js", componentRootUrlApp + "/AdvancedTableAcquaint.js", [">AdvancedTable.js"]);
+        }
+        if (FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.CheckBoxList) {
+            TiSa.RegisterScript("AdvancedTableCheckBoxList.js", componentRootUrlApp + "/AdvancedTableCheckBoxList.js", [">AdvancedTable.js"]);
+        }
+        FIELD_INFO_OBJECT.BeforeCreateControlInstance = function (ctxControl) {
+            var isEditControl = ctxControl.ControlMode === SPClientTemplates.ClientControlMode.EditForm || ctxControl.ControlMode === SPClientTemplates.ClientControlMode.NewForm;
+            var isForm = isEditControl || ctxControl.ControlMode === SPClientTemplates.ClientControlMode.DisplayForm;
+            if ((cts.TextMultiLine && isEditControl) ||
+                (FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Comment && isForm)) {
+                SP.SOD.registerSodDep("AdvancedTable.js", "jquery-autosize.js");
+            }
+            if (cts.ManageMetadata && isEditControl) {
+                SP.SOD.registerSod("ScriptResources.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/ScriptResx.ashx?culture=" + _spPageContextInfo.currentUICultureName + "&name=ScriptResources");
+                SP.SOD.registerSod("SP.Taxonomy.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/SP.Taxonomy.js");
+                SP.SOD.registerSod("SP.UI.Taxonomy.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/SP.UI.Taxonomy.js");
+                SP.SOD.registerSod("ScriptForWebTaggingUI.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/ScriptForWebTaggingUI.js");
+                SP.SOD.registerSodDep("SP.Taxonomy.js", "sp.js");
+                SP.SOD.registerSodDep("SP.Taxonomy.js", "ScriptResources.js");
+                SP.SOD.registerSodDep("ScriptForWebTaggingUI.js", "sp.ui.rte.js");
+                SP.SOD.registerSodDep("AdvancedTable.js", "SP.Taxonomy.js");
+                SP.SOD.registerSodDep("AdvancedTable.js", "SP.UI.Taxonomy.js");
+                SP.SOD.registerSodDep("AdvancedTable.js", "ScriptForWebTaggingUI.js");
+                TiSa.RegisterStyle("/_layouts/15/1033/styles/WebTaggingUI.css");
+            }
+            if ((cts.User
+                || (FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Comment)
+                || (FIELD_INFO_OBJECT.Data.Extensions && FIELD_INFO_OBJECT.Data.Extensions.Acquaint)) && isEditControl) {
+                SP.SOD.registerSod("autofill.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/autofill.js");
+                SP.SOD.registerSod("clientpeoplepicker.js", TiSa.Environment.SiteServerUrl + "/_layouts/15/clientpeoplepicker.js");
+                SP.SOD.registerSodDep("AdvancedTable.js", "clientpeoplepicker.js");
+            }
+        };
+        TiSa.AddExternalScripts("AdvancedTable.js", FIELD_INFO_OBJECT.Data.ExternalScripts);
+        TiSa.AddExternalStyles(FIELD_INFO_OBJECT.Data.ExternalStyles);
+        var templateFunction = TiSa.Templates.CreateDefaultTemplateFunction(FIELD_INFO_OBJECT, {
+            ControlScript: "AdvancedTable.js"
+        });
+        SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+            TiSa.Templates.RegisterFieldTemplate(FIELD_INFO_OBJECT, templateFunction, TiSa.Templates.RegisterFieldFlags.All);
+        }, "clienttemplates.js");
+        SP.SOD.executeOrDelayUntilScriptLoaded(function () {
+            TiSa.Templates.OverrideCSRFilter(FIELD_INFO_OBJECT.InternalName, function (str) { return str + "AA"; });
+        }, 'core.js');
+    };
+    var __tisa_StartField = function __tisa_StartField_() {
+        if (!TiSa || !TiSa.Environment || !TiSa.Templates) {
+            setTimeout(__tisa_StartField, 20);
+        }
+        else {
+            __tisa_InitField();
+        }
+    };
+    __tisa_StartField();
+})();

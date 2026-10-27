@@ -1,12 +1,40 @@
 import os
 import subprocess
 import shutil
+import stat
+import time
 from pathlib import Path
 
 # Konfigurace cest
 BASE_DIR = Path(r"H:/_NORMY/AI_priprava")
 # Cesta přímo k EXE souboru markeru ve vašem prostředí
 MARKER_EXE = Path(r"C:/MarkerVenv/Scripts/marker_single.exe")
+
+def remove_readonly(func, path, excinfo):
+    """
+    Pomocná funkce pro shutil.rmtree. 
+    Pokud mazání selže kvůli právům (např. Read-Only), změní atributy a zkusí to znovu.
+    """
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+def safe_rmtree(dir_path):
+    """
+    Bezpečně smaže adresář. Obsahuje time.sleep pro uvolnění zámků na síťovém disku H:
+    """
+    if not dir_path.exists():
+        return
+
+    # Krátká pauza, aby Windows / síťový disk stihl uvolnit zámky po předchozích operacích
+    time.sleep(0.5)
+    
+    try:
+        shutil.rmtree(dir_path, onerror=remove_readonly)
+    except PermissionError:
+        # Pokud napoprvé selže (časté u síťových disků), počkáme o něco déle a zkusíme znovu
+        print(f"Složka {dir_path.name} je dočasně uzamčena, opakuji pokus o smazání...")
+        time.sleep(1.5)
+        shutil.rmtree(dir_path, onerror=remove_readonly)
 
 def run_marker(pdf_path, output_dir):
     """Spustí marker_single.exe přímo z Scripts složky venv."""
@@ -56,7 +84,7 @@ def process_structure():
                 else:
                     sub_md = sub_dir_path / f"{base_name}.md"
                     if not sub_md.exists():
-                        shutil.rmtree(sub_dir_path)
+                        safe_rmtree(sub_dir_path)
                         should_run = True
                     else:
                         print(f"Nalezen zapomenutý .md v {sub_dir_path.name}, přesouvám.")
@@ -67,7 +95,7 @@ def process_structure():
                 if md_file_path.stat().st_mtime < pdf_file.stat().st_mtime:
                     print(f"PDF {pdf_file.name} je novější než .md, aktualizuji.")
                     if sub_dir_path.exists():
-                        shutil.rmtree(sub_dir_path)
+                        safe_rmtree(sub_dir_path)
                     should_run = True
 
             if should_run:

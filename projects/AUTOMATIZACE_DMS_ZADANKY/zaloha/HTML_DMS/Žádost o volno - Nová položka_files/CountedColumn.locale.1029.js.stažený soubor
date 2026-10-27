@@ -1,0 +1,8 @@
+﻿"use strict";
+
+var TiSa = TiSa || {};
+TiSa.ComponentResource = TiSa.ComponentResource || {};
+TiSa.ComponentResource["CountedColumn"] = {
+    NotFilled: "Hodnota nenaplněna!",
+    GetValueDefault: "Získat hodnotu"
+};

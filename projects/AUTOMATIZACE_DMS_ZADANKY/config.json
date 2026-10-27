@@ -1,0 +1,22 @@
+{
+  "dms": {
+    "site_url": "https://dms.pvs.cz/sites/Zadanky",
+    "list_guid": "dc08c020-45ba-4cb5-9681-5ef919daa42b",
+    "verify_tls": false
+  },
+  "outlook": {
+    "tenant_id": "DOPLNIT_TENANT_ID",
+    "client_id": "DOPLNIT_CLIENT_ID",
+    "certificate_thumbprint": "DOPLNIT_THUMBPRINT",
+    "private_key_path": "C:\\DmsVenv\\cert\\graph-certificate.pem",
+    "mailbox": "GercakD@pvs.cz",
+    "category": "HOMEOFFICE",
+    "lookahead_days": 7
+  },
+  "runtime": {
+    "timezone": "Europe/Prague",
+    "dry_run": true,
+    "log_file": "C:\\DmsVenv\\logs\\homeoffice.log",
+    "database": "C:\\DmsVenv\\homeoffice_state.db"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "__metadata": {
+    "id": "932e0d28-9203-42bb-83a6-4c3eb702f777",
+    "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Items(8551)",
+    "etag": "\"6\"",
+    "type": "SP.Data.HolidayRequestItem"
+  },
+  "Rq_All_Applicant": {
+    "__metadata": {
+      "id": "78195fd2-3a0a-4bd6-854d-6bb0994e35db",
+      "type": "SP.Data.UserInfoItem"
+    },
+    "Id": 192,
+    "Title": "Gerčák Daniel",
+    "EMail": "GercakD@pvs.cz"
+  },
+  "Rq_All_ApplicantManager": {
+    "__deferred": {
+      "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Items(8551)/Rq_All_ApplicantManager"
+    }
+  },
+  "Id": 8551,
+  "Title": "Pracovní nepřítomnost - PV/D4/008555 - Placené volno (15. 5. 2025 - 16. 5. 2025)",
+  "Rq_H_TypeOfHoliday": "Placené volno",
+  "Rq_H_PaidHoliday": "Jiné",
+  "Rq_H_SpecifyOther": null,
+  "Rq_H_ValidSince": "2025-05-14T22:00:00Z",
+  "Rq_H_ValidTo": "2025-05-15T22:00:00Z",
+  "Rq_H_WorkingDay": 2,
+  "Rq_All_RequestNumber": null,
+  "Rq_All_StatusChoice": "Approved",
+  "Rq_All_type": "Absence",
+  "Rq_All_RelatedLink": "[{\"Cells\":[\"\",\"Home office\"]}]",
+  "ID": 8551,
+  "Modified": "2025-05-16T05:34:16Z",
+  "Created": "2025-05-15T09:19:11Z"
+}

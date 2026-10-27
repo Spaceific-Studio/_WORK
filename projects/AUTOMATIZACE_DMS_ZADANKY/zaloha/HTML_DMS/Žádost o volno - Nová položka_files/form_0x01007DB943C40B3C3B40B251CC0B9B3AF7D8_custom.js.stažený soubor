@@ -1,0 +1,1017 @@
+var __userGroupsResult = null;
+
+function TiSaForm_Customize(cfg) {
+
+  var _this = this;
+  var _form = null;
+  var _web = null;
+  var _user = null;
+  var deptCode = null;
+  var sectCode = null;
+  var divCode = null;
+  var oListItems, clientContext;
+
+  /*var _profilePropertyMapping = {
+    Rq_H_Department: "Department",
+    Rq_H_Approver1: "Manager",
+    Rq_H_EmployeeContact: "telephoneNumber"
+  };*/
+
+  var __formatNumber = {
+    mDec: 1,
+    aPad: false,
+    aDec: ',',
+    aSep: ''
+  };
+
+  var __currentState = {
+    drawn: -1,
+    drawnFree: -1,
+    drawnSenior: -1,
+    remains: 0,
+    remainsFree: 0,
+    remainsSenior: 0,
+    forApprove: 0,
+    total: -1
+  };
+
+  var __nextState = {
+    drawn: -1,
+    drawnFree: -1,
+    drawnSenior: -1,
+    remains: 0,
+    remainsFree: 0,
+    remainsSenior: 0,
+    forApprove: 0,
+    total: -1
+  };
+
+  var __remains = -1;
+  var __remainsNext = -1;
+  var __currentHolidays = [];
+  var __year = new Date().getFullYear();
+
+  var fv = function(item, p) {
+    return item.get_item(p) || 0;
+  };
+  var fn = function(val) {
+    return TiSa.Forms.Utils.FormatNumber(val, __formatNumber);
+  };
+
+  this.OnPreInit = function() {};
+  this.OnFormInit = function(form) {
+
+    var formContext = form.FormContext;
+    var ctRq_All_Applicant = formContext.FindFieldControl("Rq_All_Applicant");
+
+    /* form.OnAction("BtnCancelCommand", function(completeCallback) {
+    var id = form.FormContext.Context.ItemAttributes.Id;
+    WFEngine.Manager.StartWorkflowOnItem("HolidayRequestCancel", id, null, null, function() {
+    completeCallback();
+    });
+    });*/
+
+    form.OnAction("BtnCancelCommand", function(completeCallback) {
+      var id = form.FormContext.Context.ItemAttributes.Id;
+      WFEngine.Manager.StartWorkflowOnItem("HolidayRequestCancel", id);
+    });
+
+    form.IsUserInGroups(["wf-Sekretariat",
+      "wf-IT"
+    ], function(result) {
+      __userGroupsResult = result;
+      RefreshCommandUI();
+    });
+
+    /*form.OnAction("BtnCancelRequestCommand", function(completeCallback) {
+    var id = form.FormContext.Context.ItemAttributes.Id;
+    WFEngine.Manager.StopWorkflowOnItem("Linde_HolidayRequest", id, null, null, function(result) {
+    WFEngine.Manager.StartWorkflowOnItem("Linde_HolidayRequestCancel", id, null, null, function() {
+    completeCallback();
+    });
+    });
+    });*/
+  };
+
+  this.OnFormInitComplete = function(form) {
+    var formContext = form.FormContext;
+    var holidaysObject = new TiSa.Forms.Holidays();
+    var holidaysObjectNext = new TiSa.Forms.Holidays(__year + 1);
+    var ct_Rq_All_Applicant = formContext.FindFieldControl("Rq_All_Applicant");
+    var ctRq_All_StatusChoice = formContext.FindFieldControl("Rq_All_StatusChoice");
+    var ctRq_H_TypeOfHoliday = formContext.FindFieldControl("Rq_H_TypeOfHoliday");
+    var ctRq_H_PaidHoliday = formContext.FindFieldControl("Rq_H_PaidHoliday");
+    var ctRq_H_ValidSince = formContext.FindFieldControl("Rq_H_ValidSince");
+    var ctRq_H_ValidTo = formContext.FindFieldControl("Rq_H_ValidTo");
+    var ctRq_H_ValidToHalfDay = formContext.FindFieldControl("Rq_H_ValidToHalfDay");
+    var ctRq_All_RelatedLink = form.FormContext.FindFieldControl("Rq_All_RelatedLink");
+
+    //edit pokial je vrateny
+    if (ctRq_All_StatusChoice.GetValue() == "Returned") {
+      ctRq_H_TypeOfHoliday.SetReadOnly(false);
+      ctRq_H_ValidSince.SetReadOnly(false);
+      ctRq_H_ValidTo.SetReadOnly(false);
+      ctRq_H_ValidToHalfDay.SetReadOnly(false);
+    }
+
+    form.FormContext.FindFieldControl('Rq_H_TypeOfHoliday').SetRequired(true);
+    form.FormContext.FindFieldControl('Rq_H_PaidHoliday').SetHidden(true);
+    form.FormContext.FindFieldControl('Rq_H_SpecifyOther').SetHidden(true);
+
+    ctRq_H_TypeOfHoliday.OnChange(function() {
+      if (ctRq_H_TypeOfHoliday.GetValue().indexOf("Placené volno") >= 0) {
+        ctRq_H_PaidHoliday.SetHidden(false);
+        ctRq_H_PaidHoliday.SetValue("Lékař");
+      } else {
+        ctRq_H_PaidHoliday.SetHidden(true);
+        ctRq_H_PaidHoliday.SetValue("");
+      }
+    });
+
+    if (ctRq_H_TypeOfHoliday.GetValue().indexOf("Placené volno") >= 0) {
+      ctRq_H_PaidHoliday.SetHidden(false);
+    } else {
+      ctRq_H_PaidHoliday.SetHidden(true);
+    }
+    /*var fnStateByType = function() {
+    var p1 = form.Fields.Rq_H_TypeOfHoliday.Control.GetValue() === "Placené volno";
+    var p2 = form.Fields.Rq_H_PaidHoliday.Control.GetValue() === "Jiné" && form.Fields.Rq_H_TypeOfHoliday.Control.GetValue() === "Placené volno";
+    form.Fields.Rq_H_PaidHoliday.Control.SetHidden(!p1);
+    form.Fields.Rq_H_SpecifyOther.Control.SetHidden(!p2);
+    form.Fields.Rq_H_SpecifyOther.Control.SetRequired(p2);
+    };
+    fnStateByType();
+
+    ctRq_H_TypeOfHoliday.OnChange(fnStateByType);
+    ctRq_H_PaidHoliday.OnChange(fnStateByType);
+    */
+
+    if (form.IsNewForm) {
+
+      ctRq_All_RelatedLink.SetReadOnly(false);
+
+      if (_spPageContextInfo.isSiteAdmin) {
+        form.FieldsByName.Rq_H_Approver1.SetValue(_spPageContextInfo.userId);
+        form.FieldsByName.Rq_H_Approver2.SetValue(_spPageContextInfo.userId);
+        //GetDepartment(form, 'D1');
+      }
+
+      // actual logged user
+      //form.FieldsByName.Rq_All_Applicant.SetValue(_spPageContextInfo.userId);
+
+      TestIsSekretariat(form, function(valid) {
+        if (valid)
+          form.FieldsByName.Rq_All_Applicant.SetReadOnly(false);
+      });
+
+      // load manager+department from AD
+      form.FieldsByName.Rq_All_Applicant.OnChange(function() {
+
+        form.GetUserProperties(["Department", "Manager", "telephoneNumber"], function(result) {
+          var manager = result.Properties.Manager;
+          var deptCode = result.Properties.Department;
+          //var sectCode = result.Properties.Department;
+          if (!manager && _spPageContextInfo.isSiteAdmin) {
+            manager = _spPageContextInfo.userId;
+            deptCode = "D1";
+          }
+          //form.FieldsByName.Rq_H_Department.SetValue(deptCode, true);
+          form.FieldsByName.Rq_H_Approver1.SetValue(manager);
+          //form.FieldsByName.Rq_All_division.SetValue(sectCode);
+          form.FieldsByName.Rq_H_EmployeeContact.SetValue(result.Properties.telephoneNumber);
+          //GetDepartment(form, deptCode);
+        }, form.FieldsByName.Rq_All_Applicant.GetValue());
+      }, true);
+
+      ct_Rq_All_Applicant.SetValue(_spPageContextInfo.userId);
+
+      /* Disable countries dropdown if Rq_BT_TripType 'Tuzemská'*/
+      //var ctRq_H_TypeOfHoliday = form.FormContext.FindFieldControl('Rq_H_TypeOfHoliday');
+
+    }
+
+    var sTable = ["<table><tbody>",
+      "<tr class=\"rq-h-row rq-h-row-header\"><th></th><th class=\"v1\">vyčerpaná*</th><th class=\"v2\">zbývající*</th><th class=\"v3\" style=\"visibility:hidden\">po schválení</th></tr>",
+      "<tr class=\"rq-h-row rq-h-row-base\"><td>dovolená</td><td class=\"v1\">---</td><td class=\"v2\">---</td><td class=\"v3\" style=\"visibility:hidden\"></td></tr>",
+      "<tr class=\"rq-h-row rq-h-row-free\"><td>sick day</td><td class=\"v1\">---</td><td class=\"v2\">---</td><td class=\"v3\" style=\"visibility:hidden\"></td></tr>",
+      //"<tr class=\"rq-h-row rq-h-row-senior\" style=\"display:none;\"><td>Seniorita</td><td class=\"v1\">---</td><td class=\"v2\">---</td><td class=\"v3\" style=\"visibility:hidden\"></td></tr>",
+      "<tr class=\"rq-h-row rq-h-row-app\" style=\"display:none\"><td>Ke schválení</td><td class=\"v1\"></td><td class=\"v2\">---</td><td class=\"v3\" style=\"visibility:hidden\">---</td></tr>",
+      "<tr class=\"rq-h-row rq-h-row-sum\"><td>Celkem</td><td class=\"v1\">---</td><td class=\"v2\">---</td><td class=\"v3\" style=\"visibility:hidden\">---</td></tr>",
+      "</tbody></table><div>* jedná se pouze o informativní výpočet</div>"
+    ];
+
+    $('.tisa-form-rowRq_H_WorkingDay td:last').append("<span class='rq-h-number'>" + sTable.join('') + "</span><span class='rq-h-warningText' style='display:none'></span>");
+
+    var fnApplyHolliday = function(userId, onCompleteApplyHolliday) {
+      __currentHolidays = [];
+      form.EnsureClientContext(function(ctx) {
+        var web = ctx.get_web();
+        var list = web.get_lists().getById(form.FormContext.Context.ListAttributes.Id);
+        var list2 = web.getList(_spPageContextInfo.webServerRelativeUrl + '/HolidayClaim');
+        var camlQuery = new SP.CamlQuery();
+        var camlQuery2 = new SP.CamlQuery();
+        //var year = new Date().getFullYear();
+        //var yearTo = new Date().getFullYear();
+        //var userId = _spPageContextInfo.userId;
+        var user = null;
+
+        if (!form.IsNewForm) {
+          if (form.IsDisplayForm)
+            userId = parseInt(form.FormData.Rq_All_Applicant.split(';')[0], 0);
+          else {
+            if (form.FormData.Rq_All_Applicant[0])
+              userId = parseInt(form.FormData.Rq_All_Applicant[0].EntityData.SPUserID, 0);
+            else if (form.FormData.Author) {
+
+              //opravovac
+              userId = parseInt(form.FormData.Author.split(';')[0], 0);
+              ct_Rq_All_Applicant.SetValue(userId);
+
+              user = web.getUserById(userId);
+              ctx.load(user);
+            }
+          }
+          __year = TiSa.Forms.DateTimeUtils.ParseDate(form.FormData.Rq_H_ValidSince).year();
+          //yearTo = TiSa.Forms.DateTimeUtils.ParseDate(form.FormData.Rq_H_ValidTo).year();
+        }
+
+        camlQuery.set_viewXml('<View><Query><Where>' +
+          '<And>' +
+          '  <Eq><FieldRef Name="Rq_All_Applicant" LookupId="TRUE" /><Value Type="Integer">' + userId + '</Value></Eq>' +
+          '  <And>' +
+          '    <And>' +
+          '      <Neq><FieldRef Name="Rq_All_StatusChoice" /><Value Type="Text">Terminated</Value></Neq>' +
+          '      <Neq><FieldRef Name="Rq_All_StatusChoice" /><Value Type="Text">Rejected</Value></Neq>' +
+          '    </And>' +
+          '    <Or>' +
+          '      <And>' +
+          '        <Geq><FieldRef Name="Rq_H_ValidSince" /><Value Type="DateTime">' + __year + '-01-01-T12:00:00Z</Value></Geq>' +
+          '        <Leq><FieldRef Name="Rq_H_ValidSince" /><Value Type="DateTime">' + (__year + 1) + '-12-31-T12:00:00Z</Value></Leq>' +
+          '      </And>' +
+          '      <And>' +
+          '        <Geq><FieldRef Name="Rq_H_ValidTo" /><Value Type="DateTime">' + __year + '-01-01-T12:00:00Z</Value></Geq>' +
+          '        <Leq><FieldRef Name="Rq_H_ValidTo" /><Value Type="DateTime">' + (__year + 1) + '-12-31-T12:00:00Z</Value></Leq>' +
+          '      </And>' +
+          '    </Or>' +
+          '  </And>' +
+          '</And>' +
+          '</Where></Query>' +
+          '<ViewFields><FieldRef Name="Rq_H_WorkingDay" /><FieldRef Name="Rq_H_ValidSince" /><FieldRef Name="Rq_H_ValidTo" /><FieldRef Name="Rq_All_StatusChoice" /><FieldRef Name="Rq_H_TypeOfHoliday" /></ViewFields></View>');
+
+        camlQuery2.set_viewXml('<View><Query><Where>' +
+          '<And>' +
+          '  <Eq><FieldRef Name="Rq_H_Employee" LookupId="TRUE" /><Value Type="Integer">' + userId + '</Value></Eq>' +
+          '  <In><FieldRef Name="Rq_H_Year" /><Values><Value Type="Number">' + __year + '</Value><Value Type="Number">' + (__year + 1) + '</Value></Values></In>' +
+          '</And>' +
+          '</Where></Query><ViewFields><FieldRef Name="Rq_H_Year" /><FieldRef Name="Rq_H_Drawn" /><FieldRef Name="Rq_H_Remains" /><FieldRef Name="Rq_H_DrawnFree" /><FieldRef Name="Rq_H_RemainsFree" /><FieldRef Name="Rq_H_DrawnSenior" /><FieldRef Name="Rq_H_RemainsSenior" /></ViewFields></View>');
+
+        var items = list.getItems(camlQuery);
+        var items2 = list2.getItems(camlQuery2);
+        ctx.load(items);
+        ctx.load(items2);
+        ctx.executeQueryAsync(function() {
+
+          // opravovac
+          if (user) {
+            var p1 = ["employeeNumber", "employeeID", "Manager", "Title"];
+            var p2 = ["Rq_H_ApplicantNumber", "Rq_H_CostCenter", "Rq_All_ApplicantManager", "Rq_H_ApplicantJobTitle"];
+
+            if (TiSa.Forms.CurrentForm.FormData.Author.match(/[A-Za-z0-9]+\\[A-Za-z0-9]+/))
+
+              form.GetUserProfileProperties(p1, function(data) {
+                for (var i = 0; i < p1.length; i++)
+                  formContext.FindFieldControl(p2[i]).SetValue(data.Properties[p1[i]]);
+              }, user.get_loginName());
+          }
+
+          var itemsCollection = items.getEnumerator();
+
+          while (itemsCollection.moveNext()) {
+            var item = itemsCollection.get_current();
+            var n = item.get_item('Rq_H_WorkingDay');
+            var start = item.get_item('Rq_H_ValidSince');
+            var end = item.get_item('Rq_H_ValidTo');
+            var status = item.get_item('Rq_All_StatusChoice');
+            var type = item.get_item('Rq_H_TypeOfHoliday');
+            __currentHolidays.push({
+              Start: start,
+              End: end,
+              Days: n,
+              Status: status,
+              Type: type
+            });
+          }
+
+          var itemsCollection2 = items2.getEnumerator();
+
+          for (var w = 0; w < __currentHolidays.length; w++) {
+            var c = __currentHolidays[w];
+            if (c.Status !== 'Approved' && c.Type == 'Dovolená') {
+              if (c.Start.getFullYear() === __year && c.End.getFullYear() === __year)
+                __currentState.forApprove += c.Days;
+              if (c.Start.getFullYear() === (__year + 1) && c.End.getFullYear() === (__year + 1))
+                __nextState.forApprove += c.Days;
+            }
+          }
+
+          while (itemsCollection2.moveNext()) {
+            var item = itemsCollection2.get_current();
+            var y = item.get_item('Rq_H_Year');
+            var o = __currentState;
+            if (y == (__year + 1))
+              o = __nextState;
+
+            o.drawn = fv(item, 'Rq_H_Drawn');
+            o.drawnFree = fv(item, 'Rq_H_DrawnFree');
+            o.drawnSenior = fv(item, 'Rq_H_DrawnSenior');
+
+            o.remains = fv(item, 'Rq_H_Remains');
+            o.remainsFree = fv(item, 'Rq_H_RemainsFree');
+            o.remainsSenior = fv(item, 'Rq_H_RemainsSenior');
+
+            o.total = o.remains + o.remainsFree + o.remainsSenior;
+
+            // odečtení neschválené
+            if (o.total > 0) {
+              o.total -= o.forApprove;
+              if (o.total < 0)
+                o.total = 0;
+            }
+          }
+
+          var ct_Rq_H_WorkingDay = formContext.FindFieldControl("Rq_H_WorkingDay");
+          var days = ct_Rq_H_WorkingDay.GetValue() || 0;
+          drawTable(fn, __currentState, days);
+
+          if (form.IsNewForm) {
+            if (__currentState.total <= 0 && __nextState.total > 0)
+              SetHolidayWarning(true, 9);
+            else if (__currentState.total === -1)
+              SetHolidayWarning(true, 2);
+            else if (__currentState.total === 0)
+              SetHolidayWarning(true, 7);
+            else
+              SetHolidayWarning(false, 0);
+          }
+          if (onCompleteApplyHolliday)
+            onCompleteApplyHolliday();
+
+        }, function(sender, args) {});
+      });
+    };
+
+    fnApplyHolliday(_spPageContextInfo.userId, null);
+    if (form.IsNewForm) {
+      setTimeout(function() {
+        form.FieldsByName.Rq_All_Applicant.OnChange(function() {
+          form.GetUserId(this.GetValue(), function(userId) {
+            if (userId > 0)
+              fnApplyHolliday(userId, function() {
+                if (onValidRangeChange)
+                  onValidRangeChange();
+              });
+          });
+
+        });
+      }, 500);
+    }
+
+    if (form.IsEditableForm) {
+
+      //var personProperties;
+
+      var ct_Rq_H_TypeOfHoliday = formContext.FindFieldControl("Rq_H_TypeOfHoliday");
+      var ct_Rq_H_ValidSince = formContext.FindFieldControl("Rq_H_ValidSince");
+      var ct_Rq_H_ValidTo = formContext.FindFieldControl("Rq_H_ValidTo");
+      var ct_Rq_H_ValidToHalfDay = formContext.FindFieldControl("Rq_H_ValidToHalfDay");
+      var ct_Rq_H_WorkingDay = formContext.FindFieldControl("Rq_H_WorkingDay");
+
+      var onValidRangeChange = function(o) {
+        var s_start = ct_Rq_H_ValidSince.GetValue();
+        var s_end = ct_Rq_H_ValidTo.GetValue();
+        var table = $(".rq-h-number");
+        $(".rq-h-row > .v3", table).css("visibility", "hidden");
+        var start = null;
+        var state = __currentState;
+
+        var holidaysObjectCurrent = holidaysObject;
+        var yearCurrent = __year;
+        if (s_start) {
+          start = TiSa.Forms.DateTimeUtils.ParseDateStrict(s_start, true);
+          if (start && start.year() === (__year + 1)) {
+            yearCurrent = __year + 1;
+            holidaysObjectCurrent = holidaysObjectNext;
+            state = __nextState;
+          }
+        }
+
+        ct_Rq_H_ValidToHalfDay.SetReadOnly(false);
+        ct_Rq_H_ValidTo.SetReadOnly(false);
+        ct_Rq_H_WorkingDay.SetReadOnly(false);
+
+        if (!start)
+          return;
+
+        // kontrola, že lze zadat maximálně 35 dní zpětně
+        var dt = TiSa.Forms.DateTimeUtils.GetToday();
+        if (start.unix() < dt.unix()) {
+          var days = dt.diff(start, 'days');
+          if (days > 35) {
+            start = holidaysObjectCurrent.GetNextWorkDay(dt.add(-35, 'days'));
+            ct_Rq_H_ValidSince.SetValue(start.format('l'));
+          }
+        }
+
+        if (!s_end) {
+          s_end = s_start;
+          ct_Rq_H_ValidTo.SetValue(s_start);
+        }
+        var end = TiSa.Forms.DateTimeUtils.ParseDateStrict(s_end, true);
+        if (!end)
+          return;
+
+        if (end.isBefore(start)) {
+          end = start;
+          s_end = s_start;
+          ct_Rq_H_ValidTo.SetValue(s_start);
+        }
+
+        var dtYear = dt.year();
+        var startY = start.year();
+        var endY = end.year();
+
+        if (startY > endY || endY - 2 > dtYear || startY + 2 < dtYear) {
+          SetHolidayWarning(true, 0);
+          return;
+        }
+
+        var days = holidaysObjectCurrent.GetWorkDays(start, end);
+        if (days > 0 && ct_Rq_H_ValidToHalfDay.GetValue())
+          days -= 0.5;
+
+        if (!(o && o.disableUpdateWorkingDay))
+          ct_Rq_H_WorkingDay.SetValue(days);
+
+        // kontrola
+        if (form.IsNewForm) {
+
+          var days1 = days;
+          var days2 = 0;
+
+          if (end.year() > yearCurrent) {
+            days1 = holidaysObjectCurrent.GetWorkDays(start, new Date(yearCurrent, 11, 31));
+            days2 = holidaysObjectCurrent.GetWorkDays(new Date(yearCurrent + 1, 0, 1), end);
+          }
+
+          if (days === 0) {
+            SetHolidayWarning(true, 8);
+          } else {
+            if (ct_Rq_H_TypeOfHoliday.GetValue() == "Dovolená") {
+              if (start.year() < yearCurrent) {
+                SetHolidayWarning(true, 1);
+              } else if (state.total === -1) {
+                SetHolidayWarning(true, 2);
+              } else if (state.total === 0) {
+                SetHolidayWarning(true, 7);
+              } else if (days1 > state.total) {
+                SetHolidayWarning(true, 3);
+              } else if (end.year() > yearCurrent && __nextState.total === -1) {
+                SetHolidayWarning(true, 4);
+              } else if (end.year() > yearCurrent && days2 > __nextState.total) {
+                SetHolidayWarning(true, 5);
+              } else if (testHolidayCollisions(start.toDate(), end.toDate(), days, __currentHolidays)) {
+                SetHolidayWarning(true, 6);
+              } else {
+                SetHolidayWarning(false, 0);
+              }
+            } else {
+              if (testHolidayCollisions(start.toDate(), end.toDate(), days, __currentHolidays))
+                SetHolidayWarning(true, 6);
+              else
+                SetHolidayWarning(false, 0);
+            }
+          }
+
+          drawTable(fn, state, days);
+
+          $(".rq-h-row .v3", table).css("visibility", "visible");
+          //$(".rq-h-row-sum > .v3", table).text(fn(remains - days));
+
+        }
+
+      };
+
+      ct_Rq_H_ValidSince.OnChange(onValidRangeChange);
+      ct_Rq_H_ValidTo.OnChange(onValidRangeChange);
+      ct_Rq_H_ValidToHalfDay.OnChange(function() {
+        var s_start = ct_Rq_H_ValidSince.GetValue();
+        var s_end = ct_Rq_H_ValidTo.GetValue();
+        if (!s_start && !s_end) {
+          var dt = TiSa.Forms.DateTimeUtils.GetToday();
+          dt = holidaysObject.GetNextWorkDay(dt);
+          ct_Rq_H_ValidSince.SetValue(dt.format("L"));
+          ct_Rq_H_ValidTo.SetValue(dt.format("L"));
+        }
+        onValidRangeChange();
+      });
+
+      ct_Rq_H_WorkingDay.OnChange(function() {
+        var n = TiSa.Forms.Utils.ParseNumber(this.GetValue());
+
+        if (((n * 10) % 5) > 0) {
+          n = Math.floor(n);
+          this.SetValue(n);
+        }
+
+        var m = Math.ceil(n);
+
+        var s_start = ct_Rq_H_ValidSince.GetValue();
+
+        var dt = TiSa.Forms.DateTimeUtils.GetToday();
+        dt = holidaysObject.GetNextWorkDay(dt);
+        if (s_start) {
+          dt = TiSa.Forms.DateTimeUtils.ParseDate(s_start);
+        } else {
+          ct_Rq_H_ValidSince.SetValue(dt.format("l"));
+        }
+        dt = holidaysObject.OffsetWorkDays(dt, m, true);
+        ct_Rq_H_ValidToHalfDay.SetValue(n < m);
+        ct_Rq_H_ValidTo.SetValue(dt.format("l"));
+        onValidRangeChange({
+          disableUpdateWorkingDay: true
+        });
+      });
+
+      ct_Rq_H_TypeOfHoliday.OnChange(function() {
+        onValidRangeChange();
+      });
+
+    }
+
+    //divize
+    form.IsUserInGroups(["Divize01", "Divize02", "Divize03", "Divize04", "Divize05", "Divize06", "Divize07", "GŘ"], function(result) {
+      if (result.ValidGroupNames.length) {
+        var division = "";
+        switch (result.ValidGroupNames[0]) {
+          case "Divize01":
+            division = "D1";
+            break;
+          case "Divize02":
+            division = "D2";
+            break;
+          case "Divize03":
+            division = "D3";
+            break;
+          case "Divize04":
+            division = "D4";
+            break;
+          case "Divize05":
+            division = "D5";
+            break;
+          case "Divize06":
+            division = "D6";
+            break;
+          case "Divize07":
+            division = "D7";
+            break;
+          case "GŘ":
+            division = "GŘ";
+            break;
+          default:
+            alert("Nenalezena divize aktuálního uživatele!");
+        }
+        console.log(division);
+        form.FieldsByName.Rq_H_Department.SetValue(division);
+      } else {
+        alert("Nenalezena divize aktuálního uživatele!");
+      }
+    });
+
+    var ctRq_All_Applicant = formContext.FindFieldControl("Rq_All_Applicant");
+
+    ctRq_All_Applicant.OnChange(function() {
+      //sekce
+      form.GetUserProperties(["Department"], function(result) {
+        getSectionGroup(result.Properties.Department, function(sectionGroup) {
+          if (!sectionGroup) {
+            alert("Nenalezen úsek aktuálního uživatele!");
+            return;
+          }
+          console.log("usek:" + sectionGroup);
+          form.FieldsByName.Rq_All_division.SetValue(sectionGroup);
+        });
+      }, ctRq_All_Applicant.GetValue());
+
+    });
+
+  };
+
+  /*function _LoadUserProfileAsync(form, userEntry) {
+    _userEntry = userEntry;
+    var requestProperties = [];
+    for (var k in _profilePropertyMapping)
+      requestProperties.push(_profilePropertyMapping[k]);
+
+    var targetUser = userEntry.Key;
+    var formContext = form.FormContext;
+    var clientContext = SP.ClientContext.get_current();
+    var peopleManager = new SP.UserProfiles.PeopleManager(clientContext);
+    var userProfilePropertiesForUser = new SP.UserProfiles.UserProfilePropertiesForUser(clientContext, targetUser, requestProperties);
+    _this.userProfileProperties = peopleManager.getUserProfilePropertiesFor(userProfilePropertiesForUser);
+    clientContext.load(userProfilePropertiesForUser);
+    clientContext.executeQueryAsync(_LoadUserProfileComplete, function(sender, args) {
+      alert("Problem in async request. Receive this error '" + args.get_message() + "'");
+    });
+  }
+
+  function _LoadUserProfileComplete() {
+    var formContext = _form.FormContext;
+
+    var i = 0;
+    var pp = _this.userProfileProperties;
+    for (var k in _profilePropertyMapping) {
+      var ct = formContext.FindFieldControl(k);
+      ct.SetValue(pp[i++]);
+    }
+  }
+
+  function GetDepartment(form, deptCode) {
+    // You can optionally specify the Site URL here to get the context
+    // If you don't specify the URL, the method will get the context of the current site
+    // var clientContext = new SP.ClientContext("http://MyServer/sites/SiteCollection");
+    clientContext = new SP.ClientContext();
+
+    var oWeb = clientContext.get_web();
+    var oList = oWeb.get_lists().getByTitle("Úseky a divize");
+    var camlQuery = new SP.CamlQuery();
+    //var ctSectionName = form.FormContext.FindFieldControl('Rq_BT_Department');
+    //var valSection = ctSectionName.GetValue();
+    //TiSa.Console.Log("USEK: " + deptCode);
+    camlQuery.set_viewXml('<View><Query><Where><Eq><FieldRef Name=\'Title\'/>' + '<Value Type=\'Text\'>' + deptCode + '</Value></Eq></Where></Query></View>');
+    oListItems = oList.getItems(camlQuery);
+
+    // Load list items to Client Context
+    // "Include" will get only "Title" and "Id" properties, rather than fetching all the properties(This avoids unnecessary data transfer between client and server)
+    clientContext.load(oListItems, 'Include(Title, Id, Rq_Department)');
+    clientContext.executeQueryAsync(onsuccess, onfailed);
+  }
+
+  function onsuccess(sender, args) {
+
+    var itemCount = oListItems.get_count();
+
+    for (var i = 0; i <= itemCount - 1; i++) {
+      var oListItem = oListItems.itemAt(i);
+      TiSa.Console.Log("Divize: " + oListItem.get_item('Rq_Department') + " ==== Usek: " + oListItem.get_item('Title'));
+      divCode = oListItem.get_item('Rq_Department');
+      TiSa.Forms.CurrentForm.Fields.Rq_H_Department.Control.SetValue(divCode, true);
+    }
+  }
+
+  function onfailed(sender, args) {
+    TiSa.Console.Log('Failed' + args.get_message() + '\n' + args.get_stackTrace());
+  }*/
+
+  function TestIsSekretariat(form, onComplete) {
+    form.EnsureClientContext(function(ctx) {
+      var web = ctx.get_web();
+      var list = web.getList(_spPageContextInfo.webServerRelativeUrl + "/Directors");
+      var camlQuery = new SP.CamlQuery();
+      camlQuery.set_viewXml('<View><ViewFields><FieldRef Name="DivisionSecretary"/></ViewFields><Query><Where><Eq><FieldRef Name="DivisionSecretary" LookupId="True"/><Value Type="User">' + _spPageContextInfo.userId + '</Value></Eq></Where></Query></View>');
+      var items = list.getItems(camlQuery);
+      ctx.load(items);
+      ctx.executeQueryAsync(function() {
+        var itemCount = items.get_count();
+        onComplete(itemCount > 0);
+      }, function(s, a) {
+        TiSa.Console.Error(a.get_message());
+        onComplete(false);
+      });
+    });
+  }
+
+} //TiSaForm_Customize
+
+function drawTable(fn, o, days) {
+  var table = $(".rq-h-number");
+
+  var v = TiSa.Forms.CurrentForm.FieldsByName.Rq_H_TypeOfHoliday.GetValue();
+
+  $(".rq-h-row-base > .v1", table).text(fn(o.drawn));
+  $(".rq-h-row-free > .v1", table).text(fn(o.drawnFree));
+  $(".rq-h-row-senior > .v1", table).text(fn(o.drawnSenior));
+  $(".rq-h-row-sum > .v1", table).text(fn(o.drawn + o.drawnFree + o.drawnSenior));
+
+  $(".rq-h-row-base > .v2", table).text(fn(o.remains));
+  $(".rq-h-row-free > .v2", table).text(fn(o.remainsFree));
+  $(".rq-h-row-senior > .v2", table).text(fn(o.remainsSenior));
+  $(".rq-h-row-sum > .v2", table).text(fn(o.remains + o.remainsFree + o.remainsSenior - o.forApprove));
+
+  if (o.forApprove > 0) {
+    $(".rq-h-row-app").show();
+    $(".rq-h-row-app > .v2", table).text(fn(-o.forApprove));
+  }
+
+  if (v == "Dovolená") {
+    $(".rq-h-row-sum > .v3", table).text(fn(o.remains + o.remainsFree + o.remainsSenior - o.forApprove - days));
+    $(".v3", table).show();
+  } else {
+    $(".rq-h-row-sum > .v3", table).text(fn(o.remains + o.remainsFree + o.remainsSenior - o.forApprove));
+    $(".v3", table).hide();
+  }
+  if (o.drawnSenior > 0 || o.remainsSenior > 0)
+    $(".rq-h-row-senior").show();
+
+}
+
+function isInt(value) {
+  var x;
+  if (isNaN(value)) {
+    return false;
+  }
+  x = parseFloat(value);
+  return (x | 0) === x;
+}
+
+function existsAnotherHolidayAt(arr, except, d) {
+  for (var i = 0; i < arr.length; i++) {
+    if (i == except)
+      continue;
+    var b = arr[i];
+    if (d.getTime() == b.Start.getTime() || d.getTime() == b.End.getTime()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function testHolidayCollisions(start, end, days, arr) {
+  var half = !isInt(days);
+  for (var i = 0; i < arr.length; i++) {
+    var a = arr[i];
+    var h = !isInt(a.Days);
+    if (start.getTime() >= a.Start.getTime() && start.getTime() <= a.End.getTime() || end.getTime() >= a.Start.getTime() && end.getTime() <= a.End.getTime()) {
+
+      // vyšetření okrajových podmínek
+      if (h && (start.getTime() == a.End.getTime() || end.getTime() == a.Start.getTime())) {
+        var clearStart = !existsAnotherHolidayAt(arr, i, start);
+        var clearEnd = !existsAnotherHolidayAt(arr, i, end);
+
+        if (start.getTime() == end.getTime()) {
+          if (clearStart && clearEnd) {
+            TiSa.Console.Log("HolidayCollisions: vyjímka přidání půldne na již existující půlden");
+            continue; // přidání půldne na již existující půlden
+          }
+        } else {
+          if (start.getTime() == a.End.getTime() && clearStart) {
+            TiSa.Console.Log("HolidayCollisions: vyjímka pokud je možno překrývat půlden na začátku");
+            continue; // pokud je možno překrývat půlden na začátku
+          } else if (end.getTime() == a.Start.getTime() && clearEnd) {
+            TiSa.Console.Log("HolidayCollisions: vyjímka pokud je možno překrývat půlden na konci");
+            continue; // pokud je možné překrývat půlden na konci
+          }
+        }
+      }
+
+      return true;
+    }
+  }
+  return false;
+}
+
+function SetHolidayWarning(isWarn, reason) {
+  var formContext = TiSa.Forms.CurrentForm.FormContext;
+  var ct_Rq_H_ValidSince = formContext.FindFieldControl("Rq_H_ValidSince");
+  var ct_Rq_H_ValidTo = formContext.FindFieldControl("Rq_H_ValidTo");
+  var ct_Rq_H_WorkingDay = formContext.FindFieldControl("Rq_H_WorkingDay");
+  ct_Rq_H_ValidSince.GetInput().toggleClass("rq-h-warning", isWarn);
+  ct_Rq_H_ValidTo.GetInput().toggleClass("rq-h-warning", isWarn);
+  ct_Rq_H_WorkingDay.GetInput().toggleClass("rq-h-warning", isWarn);
+  $(".rq-h-warningText").toggle(isWarn);
+  switch (reason) {
+    case 0:
+      $(".rq-h-warningText").text("");
+      break;
+    case 1:
+      $(".rq-h-warningText").text("Dovolenou nelze plánovat v přechozím roce");
+      break;
+    case 2:
+      $(".rq-h-warningText").text("Prozatím nelze plánovat dovolenou v aktuálním roce");
+      break;
+    case 3:
+      $(".rq-h-warningText").text("Nelze naplánovat dovolenou delší, než na jakou máte nárok");
+      break;
+    case 4:
+      $(".rq-h-warningText").text("Prozatím nelze plánovat dovolenou v následujícím roce");
+      break;
+    case 5:
+      $(".rq-h-warningText").text("Nelze naplánovat dovolenou delší, než na jakou máte nárok v následujícím roce");
+      break;
+    case 6:
+      $(".rq-h-warningText").text("V tomto termínu již máte naplánované nebo schválené volno");
+      break;
+    case 7:
+      $(".rq-h-warningText").text("V aktuálním roce nemáte nárok na žádnou dovolenou");
+      break;
+    case 8:
+      $(".rq-h-warningText").text("Ve vybraném období nejsou žádné pracovní dny");
+      break;
+    case 9:
+      $(".rq-h-warningText").text("Na tento rok již nelze plánovat dovolenou, ale můžete již plánovat dovolenou na příští rok");
+      break;
+  }
+  var val = TiSa.Forms.Utils.GetValidatorByType(ct_Rq_H_WorkingDay.Validators, "number");
+  val.SetDisabled(!isWarn);
+
+  if (isWarn)
+    $("head").append("<style type='text/css' id='rq-h-saveButtonStyle'>#Ribbon\\.ListForm\\.Edit\\.Commit\\.Publish-Large, #TiSa\\.Copy\\.SectionCopy {display:none !important}</style>");
+  else
+    $("#rq-h-saveButtonStyle").remove();
+
+  setTimeout(function() {
+    if (isWarn)
+      $("head").append("<style type='text/css' id='rq-h-saveButtonStyle'>#Ribbon\\.ListForm\\.Edit\\.Commit\\.Publish-Large, #TiSa\\.Copy\\.SectionCopy {display:none !important}</style>");
+    else
+      $("#rq-h-saveButtonStyle").remove();
+  }, 100);
+
+  $("[id$='diidIOSaveItem']").toggle(!isWarn);
+
+}
+
+/*function BtnCancelRequestEnabled(obj, form) {
+if (form.IsNewForm)
+return false;
+
+if (form.FormData.Rq_All_StatusChoice == "Terminated" || form.FormData.Rq_All_StatusChoice == "Rejected")
+return false;
+
+if (_spPageContextInfo.isSiteAdmin)
+return true;
+
+var formContext = form.FormContext;
+
+var ct_Rq_All_Applicant = formContext.FindFieldControl("Rq_All_Applicant");
+var applicantId = parseInt(ct_Rq_All_Applicant.GetValue().split(';')[0], 0);
+var ctRq_All_ApplicantManager = formContext.FindFieldControl("Rq_All_ApplicantManager");
+var applicantManagerId = parseInt(ctRq_All_ApplicantManager.GetValue().split(';')[0], 0);
+
+// manager
+if (_spPageContextInfo.userId == applicantManagerId)
+return true;
+
+// employee
+var validSince = TiSa.Forms.DateTimeUtils.ParseDate(form.FormData.Rq_H_ValidSince);
+var today = TiSa.Forms.DateTimeUtils.GetToday();
+if (form.FormData.Rq_All_StatusChoice == "Approved" && _spPageContextInfo.userId == applicantId)
+return false;
+if (form.FormData.Rq_All_StatusChoice != "Approved" && _spPageContextInfo.userId == applicantId && validSince.isSameOrAfter(today))
+return true;
+
+// HR a IT
+if (__userGroupsResult && __userGroupsResult.ValidGroupNames.length > 0)
+return true;
+
+return false;
+}*/
+
+/*function BtnCancelRequestCommand(obj, form) {
+form.ActionStart("BtnCancelRequestCommand");
+}*/
+
+/*function BtnCancelEnabled(obj, form) {
+if (!BtnCancelVisible(obj, form))
+return false;
+return true;
+}*/
+
+function BtnCancelCommand(obj, form) {
+  form.ActionStart("BtnCancelCommand", true, true);
+}
+
+function BtnCancelVisible(obj, form) {
+  return form.FormData.Rq_All_StatusChoice == "InProgress" || form.FormData.Rq_All_StatusChoice == "Returned";
+}
+
+function BtnCancel2Visible(obj, form) {
+  return form.FormData.Rq_All_StatusChoice == "Approved";
+}
+
+var __wfState = false;
+var __wfStateQueryComplete = false;
+
+function BtnCancelEnabled(obj, form) {
+  var Rq_All_Applicant = form.FormContext.FieldsByName.Rq_All_Applicant;
+  var Rq_All_Secretary = form.FormContext.FieldsByName.Rq_All_Secretary;
+  var isZadavatel = Rq_All_Applicant.GetValue() && Rq_All_Applicant.GetValue().indexOf(_spPageContextInfo.userLoginName) >= 0;
+  var isSekretarka = Rq_All_Secretary.GetValue() && Rq_All_Secretary.GetValue().indexOf(_spPageContextInfo.userLoginName) >= 0;
+  var isUser = isZadavatel || isSekretarka;
+  if (form.IsNewForm) {
+    form.FormContext.FieldsByName.Rq_All_Applicant.OnChange(function() {
+      RefreshCommandUI();
+    });
+    return false;
+  } else {
+    if (!__wfStateQueryComplete) {
+      WFEngine.Manager.IsRunningWorkflowOnItem("HolidayRequestCancel", form.ItemId, null, function(result) {
+        __wfState = !result;
+        __wfStateQueryComplete = true;
+        RefreshCommandUI();
+      });
+      return false;
+    } else {
+      return isUser && __wfState;
+    }
+  }
+}
+
+function BtnCancel2Enabled(obj, form) {
+  var Rq_All_Secretary = form.FormContext.FieldsByName.Rq_All_Secretary;
+  //var isUser2 = Rq_All_Secretary.GetValue() && Rq_All_Secretary.GetValue().indexOf(_spPageContextInfo.userLoginName) >= 0;
+  var isUser2 = Rq_All_Secretary.GetValue() && (Rq_All_Secretary.GetValue().indexOf(_spPageContextInfo.userLoginName) >= 0 || Rq_All_Secretary.GetValue().split(';#').map(function(x) {
+    return parseInt(x, 0);
+  }).indexOf(_spPageContextInfo.userId) >= 0);
+
+  if (form.IsNewForm) {
+    form.FormContext.FieldsByName.Rq_All_Applicant.OnChange(function() {
+      RefreshCommandUI();
+    });
+    return false;
+  } else {
+    if (!__wfStateQueryComplete) {
+      WFEngine.Manager.IsRunningWorkflowOnItem("HolidayRequestCancel", form.ItemId, null, function(result) {
+        __wfState = !result;
+        __wfStateQueryComplete = true;
+        RefreshCommandUI();
+      });
+      return false;
+    } else {
+      return isUser2 && __wfState;
+    }
+  }
+}
+
+//TiSa.Console.Log("VALID GRPX? " + applicantId);
+//return form.FormContext.FieldsByName.Rq_All_Applicant.GetValue() == _spPageContextInfo.userLoginName;
+/*
+
+if (form.FormData.Rq_All_Status == "Terminated" || form.FormData.Rq_All_Status == "Rejected")
+return false;
+if (_spPageContextInfo.isSiteAdmin)
+return true;
+
+var formContext = form.FormContext;
+var ct_Rq_All_Applicant = formContext.FindFieldControl("Rq_All_Applicant");
+var applicantId = parseInt(ct_Rq_All_Applicant.GetValue().split(';')[0], 0);
+var validSince = TiSa.Forms.DateTimeUtils.ParseDate(form.FormData.Rq_H_ValidSince);
+var today = TiSa.Forms.DateTimeUtils.GetToday();
+TiSa.Console.Log("VALID GRPX? " + applicantId);
+
+if (form.FormData.Rq_All_StatusChoice == "Approved" && _spPageContextInfo.userId == applicantId) {
+TiSa.Console.Log("VALID GRPX? " + applicantId);
+return false;
+}
+if (form.FormData.Rq_All_StatusChoice != "Approved" && _spPageContextInfo.userId == applicantId && validSince.isSameOrAfter(today))
+return true;
+if (__userGroupsResult && __userGroupsResult.ValidGroupNames.length > 0) {
+TiSa.Console.Log("VALID GRP? " + __userGroupsResult);
+return true;
+}
+
+//return form.FormContext.FieldsByName.Rq_All_Applicant.GetValue() == _spPageContextInfo.userLoginName;
+
+}*/
+
+// přeloží název úseku na AD skupinu, dle mapování v seznamu v dashboard, je potřeba nastavit oprávnění pro uživatele na tento list
+function getSectionGroup(department, fnCallback) {
+  if (!department && _spPageContextInfo.isSiteAdmin) {
+    department = "úsek informatiky";
+    TiSa.Console.Warn("Pro site admina je nastaven úsek informatiky");
+  }
+  var applicationUrl = _spPageContextInfo.webAbsoluteUrl.substring(0, _spPageContextInfo.webAbsoluteUrl.length - _spPageContextInfo.webServerRelativeUrl.length);
+  var dashboardUrl = "/sites/dashboard";
+  var ctx = new SP.ClientContext(applicationUrl + dashboardUrl);
+  var web = ctx.get_web();
+  var list = web.getList(dashboardUrl + "/Lists/sectionMapping");
+  console.log(list);
+  var caml = new SP.CamlQuery();
+  caml.set_viewXml("<View><Query><Where><And><Eq><FieldRef Name='Title' /><Value Type='Text'>" + department + "</Value></Eq><Eq><FieldRef Name='daActive' /><Value Type='Boolean'>1</Value></Eq></And></Where></Query></View>");
+  var items = list.getItems(caml);
+  ctx.load(items);
+  ctx.executeQueryAsync(function() {
+    var itemsEnumerator = items.getEnumerator();
+    while (itemsEnumerator.moveNext()) {
+      var item = itemsEnumerator.get_current();
+      var section = item.get_item("daSectionGroup");
+      if (section) {
+        var sectionName = section.get_lookupValue().split("\\").pop();
+        fnCallback(sectionName);
+      }
+      return;
+    }
+    fnCallback(null);
+  }, function(s, a) {
+    TiSa.Console.Error(a.get_message());
+    fnCallback(null);
+  });
+}

@@ -1,0 +1,59 @@
+{
+  "__metadata": {
+    "id": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Fields(guid'de582ba4-e398-4a56-8224-370e7386606b')",
+    "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Fields(guid'de582ba4-e398-4a56-8224-370e7386606b')",
+    "type": "SP.FieldMultiLineText"
+  },
+  "DescriptionResource": {
+    "__deferred": {
+      "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Fields(guid'de582ba4-e398-4a56-8224-370e7386606b')/DescriptionResource"
+    }
+  },
+  "TitleResource": {
+    "__deferred": {
+      "uri": "https://dms.pvs.cz/sites/Zadanky/_api/Web/Lists(guid'dc08c020-45ba-4cb5-9681-5ef919daa42b')/Fields(guid'de582ba4-e398-4a56-8224-370e7386606b')/TitleResource"
+    }
+  },
+  "AutoIndexed": false,
+  "CanBeDeleted": true,
+  "ClientSideComponentId": "00000000-0000-0000-0000-000000000000",
+  "ClientSideComponentProperties": null,
+  "CustomFormatter": null,
+  "DefaultFormula": null,
+  "DefaultValue": null,
+  "Description": "",
+  "Direction": "none",
+  "EnforceUniqueValues": false,
+  "EntityPropertyName": "Rq_All_RelatedLink",
+  "Filterable": false,
+  "FromBaseType": false,
+  "Group": "Rq_All",
+  "Hidden": false,
+  "Id": "de582ba4-e398-4a56-8224-370e7386606b",
+  "Indexed": false,
+  "InternalName": "Rq_All_RelatedLink",
+  "JSLink": "clienttemplates.js|~sitecollection/SiteAssets/TiSa/_Shared/tisa.js?v=6507.1968367941.2013609164|~sitecollection/SiteAssets/TiSa/_Shared/tisa.formcontext.js?v=6507.1968367941.2013609164|~sitecollection/SiteAssets/TiSa/TextTemplate/TextTemplate.js?v=6507.1968367941.2013609164|~sitecollection/tisa-fields/field_de582ba4-e398-4a56-8224-370e7386606b.js?v=14",
+  "PinnedToFiltersPane": false,
+  "ReadOnlyField": false,
+  "Required": false,
+  "SchemaXml": "<Field xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" DisplayName=\"Související odkaz\" Name=\"Rq_All_RelatedLink\" Type=\"Note\" UnlimitedLengthInDocumentLibrary=\"TRUE\" Group=\"Rq_All\" ID=\"{de582ba4-e398-4a56-8224-370e7386606b}\" SourceID=\"{07987fb8-1259-4ab7-a4d5-c47970655594}\" StaticName=\"Rq_All_RelatedLink\" Version=\"18\" JSLink=\"clienttemplates.js|~sitecollection/SiteAssets/TiSa/_Shared/tisa.js?v=6507.1968367941.2013609164|~sitecollection/SiteAssets/TiSa/_Shared/tisa.formcontext.js?v=6507.1968367941.2013609164|~sitecollection/SiteAssets/TiSa/TextTemplate/TextTemplate.js?v=6507.1968367941.2013609164|~sitecollection/tisa-fields/field_de582ba4-e398-4a56-8224-370e7386606b.js?v=14\" ColName=\"ntext4\" RowOrdinal=\"0\"><MAPPINGS /><FieldRefs /></Field>",
+  "Scope": "/sites/Zadanky/HolidayRequest",
+  "Sealed": false,
+  "ShowInFiltersPane": 0,
+  "Sortable": false,
+  "StaticName": "Rq_All_RelatedLink",
+  "Title": "Související odkaz",
+  "FieldTypeKind": 3,
+  "TypeAsString": "Note",
+  "TypeDisplayName": "Více řádků textu",
+  "TypeShortDescription": "Více řádků textu",
+  "ValidationFormula": null,
+  "ValidationMessage": null,
+  "AllowHyperlink": false,
+  "AppendOnly": false,
+  "NumberOfLines": 6,
+  "RestrictedMode": true,
+  "RichText": false,
+  "UnlimitedLengthInDocumentLibrary": true,
+  "WikiLinking": false
+}

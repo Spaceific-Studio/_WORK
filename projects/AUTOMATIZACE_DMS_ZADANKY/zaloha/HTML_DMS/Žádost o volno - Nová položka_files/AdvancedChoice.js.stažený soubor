@@ -1,0 +1,238 @@
+﻿"use strict";
+
+function AdvancedChoiceControl(ctxControl) {
+	var RESX = ctxControl.Resources || TiSa.ComponentResource[ctxControl.FieldInfo.FieldType.FieldType];
+	var _this = this;
+	var _controlId = ctxControl.ControlId;
+	var _currentFieldValue = ctxControl.CurrentFieldValue[_controlId];
+	var _fieldInfo = ctxControl.FieldInfo;
+    var _config = ctxControl.FieldInfo.Data;
+    var _registerGetValueCallBack = ctxControl.RegisterGetValueCallBack;
+	var _formContext = ctxControl.FormContext;
+	var _templateContext = ctxControl.TemplateContext;
+	var _renderPanel = null;
+	var _controlValue = null;
+	var _isEditForm = ctxControl.ControlMode === SPClientTemplates.ClientControlMode.EditForm;
+	var _isNewForm = ctxControl.ControlMode === SPClientTemplates.ClientControlMode.NewForm;
+	var _isEditMode = ctxControl.ControlMode === SPClientTemplates.ClientControlMode.EditForm || ctxControl.ControlMode === SPClientTemplates.ClientControlMode.NewForm;
+	var _formatType = _formContext.fieldSchema.FormatType;
+    var _currentValue = "";
+    var _onChangedEvents = [];
+
+	var _container = null;
+
+	this.Init = function () {
+		_renderPanel = $(TiSa.Templates.GetRenderPanel(_controlId));
+		//_controlValue = $(TiSa.Templates.GetControlValue(_controlId));
+
+		_currentValue = _currentFieldValue;
+		//_controlValue.val(_currentValue);
+
+		_RenderControl();
+
+        if (_isEditMode) {
+            _registerGetValueCallBack(function () {
+			//_formContext.registerGetValueCallback(_formContext.fieldName, function () {
+				return _this.GetValue();
+			});
+		}
+		TiSa.Templates.HideLoadingPanel(_controlId);
+	}
+
+	this.SetValue = function (newControlValue, triggerChange) {
+		if (!_isEditMode) {
+			var choices = _GetChoices();
+			_currentValue = newControlValue;
+			
+			if (choices.length > 0)
+				for (var i = 0; i < choices.length; i++) {
+					if (choices[i].Value === _currentValue) {
+						_renderPanel.html(choices[i].Title);
+						return;
+					}
+				}
+			_renderPanel.html(_currentValue);
+			return;
+		}
+
+		if (_formatType === 0) {
+			var input = this.GetInput();
+            input.val(newControlValue);
+            _currentValue = input.val();
+			if (triggerChange)
+				$(input).trigger("change");
+		}
+		else if (_formatType === 1) {
+			var input = this.GetInput();
+			for (var i = 0; i < input.length; i++) {
+				var ii = input[i];
+				if (ii.value == newControlValue) {
+                    ii.checked = true;
+                    _currentValue = ii.value;
+					if (triggerChange)
+						$(ii).trigger("change");
+					break;
+				}
+			}
+		}
+	};
+
+	this.GetValue = function () {
+		return _currentValue;		
+	};
+
+    this.OnChanged = function (ev) {
+        _onChangedEvents.push(ev);
+		//var input = this.GetInput();
+		//input.on("change", ev);
+	};
+
+	this.GetInput = function () {
+		if (_formatType == 0)
+			return $("select", _renderPanel);
+		else if (_formatType == 1)
+			return $("input[type=radio]", _renderPanel);
+	};
+
+	this.SetReadOnly = function (state) {
+		_isEditMode = !state;
+		_RenderControl();
+
+
+	};
+
+	this.GetReadOnly = function () {
+		return !_isEditMode;
+	};
+
+	var _RenderControl = function () {
+		var choices = _GetChoices();
+		if ((!_currentValue || _currentValue.length == 0) && choices.length > 0) {
+			// default value
+			for (var i = 0; i < choices.length; i++) {
+				if (choices[i].IsDefault) // explicitly set default value
+					_currentValue = choices[i].Value;
+			}
+			if (!_currentValue)
+				_currentValue = choices[0].Value;
+		}
+
+
+		_renderPanel.html("");
+
+		if (!_isEditMode) {
+			if (choices.length > 0)
+				for (var i = 0; i < choices.length; i++) {
+					if (choices[i].Value == _currentValue) {
+						_renderPanel.html(choices[i].Title);
+						return;
+					}
+				}
+			_renderPanel.html(_currentValue);
+			return;
+        }
+        var me = this;
+
+		if (_formatType == 0) {
+			choices = choices.reverse();
+			var ddl = document.createElement("select");
+			for (var i = 0; i < choices.length; i++) {
+				var choice = choices[i];
+				var o = document.createElement("option");
+				o.value = choice.Value;
+				o.text = choice.Title;
+				ddl.add(o, 0);
+            }
+            
+			$(ddl).on("change", function (args) {
+				var selectedOption = $("option:selected", ddl);
+                _currentValue = selectedOption.val();
+                for (var i = 0; i < _onChangedEvents.length; i++)
+                {
+                    var ev = _onChangedEvents[i];
+                    ev.call(me, _currentValue);
+                }
+			});
+			_renderPanel.append(ddl);
+		}
+		else if (_formatType == 1) {
+			//<table id="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_ChoiceRadioTable" cellpadding="0" cellspacing="1"><tbody><tr><td><span class="ms-RadioText" title="Návrh"><input id="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField0" type="radio" name="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField" value="Návrh"><label for="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField0">Návrh</label></span></td></tr><tr><td><span class="ms-RadioText" title="Aktivní"><input id="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField1" type="radio" name="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField" value="Aktivní"><label for="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField1">Aktivní</label></span></td></tr><tr><td><span class="ms-RadioText" title="Ukončený"><input id="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField2" type="radio" name="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField" value="Ukončený"><label for="DIP_ProjectStatus_06be77be-d076-4884-9b94-31a9047e3514_$RadioButtonChoiceField2">Ukončený</label></span></td></tr></tbody></table>
+			var sTable = '<table id="' + _controlId + '_Table" cellpadding="0" cellspacing="1"><tbody>';
+			for (var i = 0; i < choices.length; i++) {
+				var choice = choices[i];
+				var id = _controlId + i.toString();
+				sTable += '<tr><td><span class="ms-RadioText" title="' + choice.Title + '"><input id="' + id + '" type="radio" name="' + _controlId + '" value="' + choice.Value + '"><label for="' + id + '">' + choice.Title + '</label></span></td></tr>';
+			}
+			sTable += '</tbody></table>';
+			_renderPanel.append(sTable);
+			$("input[type=radio]", _renderPanel).on("change", function () {
+                if (this.checked) {
+                    _currentValue = this.value;
+                    for (var i = 0; i < _onChangedEvents.length; i++) {
+                        var ev = _onChangedEvents[i];
+                        ev.call(me, _currentValue);
+                    }
+                }
+			});
+		}
+
+		if (_isEditMode) {
+			if (_currentValue && _currentValue.length > 0)
+				_this.SetValue(_currentValue, false);
+			else if (_formatType == 0)
+				_this.SetValue("", false);
+		}
+
+	};
+
+	var _GetChoices = function () {
+		var choices = _formContext.fieldSchema.Choices;
+		var arr = [];
+
+		if (_formatType == 0) {
+			arr.push({
+				Value: "",
+				Title: "",
+				IsDefault: false
+			});
+		}
+
+		for (var i = 0; i < choices.length; i++) {
+			var v = choices[i];
+			var title = v;
+			var isDefault = false;
+
+
+
+			if (_config.Choices) {
+				for (var j = 0; j < _config.Choices.length; j++) {
+					var choice = _config.Choices[j];
+					if (choice.Value == v) {
+						title = choice.Title;
+						if (choice.IsDefault)
+							isDefault = true
+						break;
+					}
+				}
+			}
+			if (title.indexOf("RESX.") == 0)
+				title = eval(title);
+			title = TiSa.TextTemplates.ReplaceText(title);
+			arr.push({
+				Value: v,
+				Title: title,
+				IsDefault: isDefault
+			});
+		}
+		return arr;
+	};
+}
+
+var TiSa = TiSa || {};
+TiSa.Component = TiSa.Component || {};
+TiSa.Component["AdvancedChoice"] = AdvancedChoiceControl;
+TiSa.ComponentResource = TiSa.ComponentResource || {};
+TiSa.ComponentResource["AdvancedChoice"] = {};
+
+if (SP && SP.SOD)
+	SP.SOD.notifyScriptLoadedAndExecuteWaitingJobs("AdvancedChoice.js");

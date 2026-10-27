@@ -1,0 +1,3 @@
+Nebyla nalezena žádná událost aktuálního týdne s přesnou kategorií HOMEOFFICE.
+Proto nevznikl žádný náhled POST requestu.
+Diagnostika Outlooku: C:\DANO\_WORK\PYTHON\projects\AUTOMATIZACE_DMS_ZADANKY\generated_homeoffice_payloads\outlook_events_current_week.json

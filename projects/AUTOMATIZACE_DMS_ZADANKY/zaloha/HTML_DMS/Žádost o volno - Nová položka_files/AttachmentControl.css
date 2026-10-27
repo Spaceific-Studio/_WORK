@@ -1,0 +1,224 @@
+﻿.tispMultipleUploadFT {
+}
+
+    .tispMultipleUploadFT .hidden {
+        display: none;
+    }
+
+    .tispMultipleUploadFT .error {
+        display: block;
+        color: red;
+    }
+
+    .tispMultipleUploadFT .containerItems {
+        margin: 0;
+        font-size: 9pt;
+        min-width: 500px;
+        width: 100%;
+    }
+
+    .tispMultipleUploadFT .tableWithItems, .tispMultipleUploadFT .quickEditForm table {
+        width: 100%;
+        border-spacing: 0;
+        border: 1px solid #abacab;
+        color: #666;
+    }
+
+        .tispMultipleUploadFT .tableWithItems th, .tispMultipleUploadFT .quickEditForm table th {
+            font-size: 8pt;
+            font-weight: normal;
+            color: #999;
+            border-bottom: 1px solid #abacab;
+            text-align: center;
+        }
+
+        .tispMultipleUploadFT .tableWithItems tr:hover td, .tispMultipleUploadFT .tableWithItems tr.sel:hover td,
+        .tispMultipleUploadFT .searchDialog .resultsTable tr:hover td, .tispMultipleUploadFT .searchDialog .resultsTable tr.sel:hover td {
+            background: #fffA99;
+        }
+
+
+        .tispMultipleUploadFT .tableWithItems tr.sel td,
+        .tispMultipleUploadFT .searchDialog .resultsTable tr.sel td {
+            background: #ffe34b;
+        }
+
+        .tispMultipleUploadFT .tableWithItems td {
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .attachment-float-icon {
+            margin-left: 2px;
+            margin-right: 2px;
+            vertical-align: -2px;
+        }
+        .attachment-float-icon + .attachment-float-icon {
+            margin-left: 0;
+        }
+
+        .tispMultipleUploadFT .tableWithItems .cIcon {
+            width: 21px;
+        }
+
+            .tispMultipleUploadFT .tableWithItems .cIcon span, .tispMultipleUploadFT .tableWithItems .cIcon a, .tispMultipleUploadFT .pager span.icon, .attachment-float-icon {
+                background-image: url('attchicons13.gif');
+                display: inline-block;
+                width: 13px;
+                height: 13px;
+                cursor: pointer;
+            }
+
+            .tispMultipleUploadFT .tableWithItems .cIcon span {
+                margin: 2px 4px 0 2px;
+            }
+
+                .tispMultipleUploadFT .tableWithItems .cIcon span.edit {
+                    background-position: 0 0;
+                }
+
+                .tispMultipleUploadFT .tableWithItems .cIcon span.editDisabled {
+                    background-position: -13px 0;
+                }
+
+                .tispMultipleUploadFT .tableWithItems .cIcon span.view, .attachment-float-icon.view {
+                    background-position: -26px 0;
+                }
+
+                .tispMultipleUploadFT .tableWithItems .cIcon span.viewDisabled {
+                    background-position: -39px 0;
+                }
+
+                .tispMultipleUploadFT .tableWithItems .cIcon span.delete, .attachment-float-icon.delete {
+                    background-position: -52px 0;
+                }
+
+                .tispMultipleUploadFT .tableWithItems .cIcon span.open {
+                    background-position: -13px -26px;
+                }
+
+                .tispMultipleUploadFT .tableWithItems .cIcon span.deleteDisabled {
+                    background-position: -65px 0;
+                }
+
+            .tispMultipleUploadFT .tableWithItems .cIcon a.download {
+                background-position: -78px 0;
+            }
+
+            .tispMultipleUploadFT .tableWithItems .cIcon span.editFileName {
+                background-position: -104px 0;
+            }
+
+
+
+    .tispMultipleUploadFT .buttons {
+        margin: 10px 0 0 0;
+    }
+
+        .tispMultipleUploadFT .buttons a {
+            cursor: pointer;
+            margin-right: 16px;
+        }
+
+    .tispMultipleUploadFT .pager {
+        float: right;
+        margin: 10px 0 0 0;
+    }
+
+        .tispMultipleUploadFT .pager span {
+            margin: 0 2px;
+        }
+
+        .tispMultipleUploadFT .pager .currentPage, .tispMultipleUploadFT .pager .totalItems {
+            position: relative;
+            top: -2px;
+            display: inline-block;
+            height: 13px;
+        }
+
+        .tispMultipleUploadFT .pager .totalItems {
+            margin-right: 6px;
+        }
+
+        .tispMultipleUploadFT .pager span.firstPage {
+            background-position: -26px -13px;
+        }
+
+        .tispMultipleUploadFT .pager span.previousPage {
+            background-position: -39px -13px;
+        }
+
+        .tispMultipleUploadFT .pager span.nextPage {
+            background-position: -52px -13px;
+        }
+
+        .tispMultipleUploadFT .pager span.lastPage {
+            background-position: -65px -13px;
+        }
+
+        .tispMultipleUploadFT .pager span.firstPageDisabled {
+            background-position: -78px -13px;
+        }
+
+        .tispMultipleUploadFT .pager span.previousPageDisabled {
+            background-position: -91px -13px;
+        }
+
+        .tispMultipleUploadFT .pager span.nextPageDisabled {
+            background-position: -104px -13px;
+        }
+
+        .tispMultipleUploadFT .pager span.lastPageDisabled {
+            background-position: -117px -13px;
+        }
+
+    .tispMultipleUploadFT .tableWithItems .cSelect {
+        width: 24px;
+    }
+
+    .tispMultipleUploadFT .tableWithItems .cFileName {
+        text-align: left;
+        padding-left: 10px;
+    }
+
+    .tispMultipleUploadFT .tableWithItems .cContentType, .tispMultipleUploadFT .tableWithItems .cAuthor, .tispMultipleUploadFT .tableWithItems .cCreated, .tispMultipleUploadFT .tableWithItems .cCustom {
+        text-align: left;
+        padding-left: 10px;
+    }
+
+    .tispMultipleUploadFT .tableWithItems td[data-requestFieldName] {
+        white-space: pre-wrap;
+    }
+
+
+    .tispMultipleUploadFT .tableWithItems .cFileSize {
+        width: 160px;
+        padding-right: 10px;
+        text-align: right;
+    }
+
+
+
+.dlgRenameFile, .dlgRenameFileConfirm {
+    margin: 0 20px;
+}
+
+
+    .dlgRenameFile .fileName {
+        width: 100%;
+    }
+
+    .dlgRenameFile .buttons, .dlgRenameFileConfirm .buttons {
+        margin: 20px 0 0 0;
+        text-align: right;
+    }
+
+    .dlgRenameFile .errorMsg, .dlgRenameFileConfirm .msg {
+        color: red;
+    }
+
+
+
+
+/*---------------------------------------------------------------*/
+

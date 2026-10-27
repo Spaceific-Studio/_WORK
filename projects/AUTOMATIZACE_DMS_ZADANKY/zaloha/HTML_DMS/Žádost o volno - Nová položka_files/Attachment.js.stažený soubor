@@ -1,0 +1,1486 @@
+"use strict";
+var TiSa;
+(function (TiSa) {
+    var Components;
+    (function (Components) {
+        var Attachment;
+        (function (Attachment) {
+            var AttachmentControl = (function () {
+                function AttachmentControl(ctxControl, parentComponentInfo) {
+                    this._itemID = "";
+                    this._proxy = null;
+                    this.ShowFileIcon = true;
+                    this._references = [];
+                    this._originReferences = [];
+                    this._deletedReferences = [];
+                    this._currentPage = 0;
+                    this._container = null;
+                    this._containerItems = null;
+                    this._btnRemoveSelected = null;
+                    this._buttonsContainer = null;
+                    this._rootFolder = null;
+                    this._itemRequests = [];
+                    this._requestFields = null;
+                    this._requestFieldTitles = {};
+                    this._requestFieldConfig = {};
+                    this._srcLibId = null;
+                    this._regionalSettings = null;
+                    this.OnValueChanged = [];
+                    this.OnInvalidate = [];
+                    this.OnRowRender = [];
+                    this.OnPreRender = [];
+                    this.OnInit = [];
+                    this.OnInitComplete = [];
+                    this._initialized = false;
+                    this._parentComponentInfo = parentComponentInfo;
+                    this.RESX = ctxControl.Resources || TiSa.ComponentResource[ctxControl.FieldInfo.FieldType.FieldType];
+                    this._controlId = ctxControl.ControlId;
+                    this._currentFieldValue = ctxControl.CurrentFieldValue[this._controlId];
+                    this._fieldInfo = ctxControl.FieldInfo;
+                    this._config = ctxControl.FieldInfo.Data;
+                    this._formContext = ctxControl.FormContext;
+                    this._staticContext = Attachment.AttachmentStatic.StaticContext;
+                    this._renderPanel = null;
+                    this._controlValue = null;
+                    this._controlMode = ctxControl.ControlMode;
+                    this._isEditMode = ctxControl.ControlMode == SPClientTemplates.ClientControlMode.EditForm || ctxControl.ControlMode == SPClientTemplates.ClientControlMode.NewForm;
+                    if (ctxControl.ControlMode != SPClientTemplates.ClientControlMode.NewForm)
+                        this._itemID = ctxControl.ControlMode == SPClientTemplates.ClientControlMode.View ? this._formContext.ListItem.ID : this._formContext.itemAttributes.Id;
+                    this._isView = ctxControl.ControlMode == SPClientTemplates.ClientControlMode.View;
+                    this._ResolveRootFolder();
+                    this._config.RootFolder = this._rootFolder;
+                    this._requestFields = this._config.DisplayFields || [];
+                    if (TiSa.Utils.IndexOf(this._requestFields, "ContentType") < 0 && this._config.DisplayContentType)
+                        this._requestFields.push("ContentType");
+                    if (TiSa.Utils.IndexOf(this._requestFields, "Author") < 0 && this._config.DisplayAuthor)
+                        this._requestFields.push("Author");
+                    if (TiSa.Utils.IndexOf(this._requestFields, "Created") < 0 && this._config.DisplayCreated)
+                        this._requestFields.push("Created");
+                    if (ctxControl.ControlMode == SPClientTemplates.ClientControlMode.View)
+                        this._srcLibId = _spPageContextInfo.pageListId;
+                    else
+                        this._srcLibId = this._formContext.listAttributes.Id;
+                    this._controlPickerUrl = TiSa.Environment.GetApplicationUrl("/Components/Attachment/UploadDialog.aspx", ctxControl.FieldInfo.FieldType, TiSa.Environment.SiteServerUrlEncoded.replace(":://", "://"));
+                    this._registerGetValueCallBack = ctxControl.RegisterGetValueCallBack;
+                    this._templateRenameFile = "<div class=\"tisa-template\">\n                        <div class=\"dlgRenameFile\">\n                            <input type=\"input\" class=\"fileName\" /><br />\n                            <div class=\"errorMsg\" style=\"display:none\" /> <br />\n                            <div class=\"buttons\">\n                                <button class=\"btnOk\">Ok</button>\n                                <button class=\"btnCancel\">" + this.RESX.Close + "</button>\n                            </div>\n                        </div>\n                    </div>";
+                    this._templateRenameFileConfirm = "<div class=\"tisa-template\">\n                        <div class=\"dlgRenameFileConfirm\">\n                            <div class=\"msg\" /> <br />\n                            <div class=\"buttons\">\n                                <button class=\"btnOk\">Ok</button>\n                                <button class=\"btnCancel\">" + this.RESX.Close + "</button>\n                            </div>\n                        </div>\n                    </div>";
+                    if (this._config.ViewFileIcon === false) {
+                        this.ShowFileIcon = false;
+                    }
+                }
+                AttachmentControl.prototype._ResolveRootFolder = function () {
+                    if (this._rootFolder == null && this._isEditMode) {
+                        if (this._controlMode == SPClientTemplates.ClientControlMode.NewForm) {
+                            var formControlContext = TiSa.Forms.GetFormControlContext();
+                            this._rootFolder = formControlContext.Context.NewItemRootFolder;
+                        }
+                        else {
+                            if (this._formContext.itemAttributes.Url)
+                                this._rootFolder = this._formContext.itemAttributes.Url.substring(0, this._formContext.itemAttributes.Url.lastIndexOf('/'));
+                        }
+                        if (this._rootFolder == null) {
+                            var uri = parseUri(location.href);
+                            this._rootFolder = decodeURIComponent(uri.queryKey.RootFolder);
+                        }
+                    }
+                };
+                AttachmentControl.prototype._GetIconPath = function (fileName, iconUrl, isFolder) {
+                    if (fileName.indexOf('.') == -1 || isFolder)
+                        return this._fieldInfo.FieldType.ComponentAppUrl + "/Images/ic_folder.gif";
+                    if (!iconUrl)
+                        return this._fieldInfo.FieldType.ComponentAppUrl + "/Images/ic_doc.gif";
+                    return "/_layouts/images/" + iconUrl;
+                };
+                AttachmentControl.prototype._GetSystemFileIcon = function (fileName) {
+                    var gifs = ["ICACCDB.GIF", "ICACCDC.GIF", "ICACCDE.GIF", "ICASAX.GIF", "ICASCX.GIF", "ICASMX.GIF", "ICASP.GIF", "ICASPX.GIF", "ICBMP.GIF", "ICC16.GIF", "ICCAT.GIF", "ICCHANGE.GIF", "ICCHM.GIF", "ICCONFIG.GIF", "ICCSS.GIF", "ICDB.GIF", "ICDIB.GIF", "ICDISC.GIF", "ICDOC.GIF", "ICDOCM.GIF", "ICDOCP.GIF", "ICDOCSET.GIF", "ICDOCX.GIF", "ICDOT.GIF", "ICDOTM.GIF", "ICDOTX.GIF", "ICDVD.GIF", "ICDWP.GIF", "ICDWT.GIF", "ICEML.GIF", "ICEST.GIF", "ICFWP.GIF", "ICGEN.GIF", "ICGIF.GIF", "ICHDP.GIF", "ICHLP.GIF", "ICHTA.GIF", "ICHTM.GIF", "ICHTMDOC.GIF", "ICHTMFP.GIF", "ICHTMPPT.GIF", "ICHTMPUB.GIF", "ICHTMXLS.GIF", "ICHTT.GIF", "ICINF.GIF", "ICINI.GIF", "ICJFIF.GIF", "ICJPE.GIF", "ICJPEG.GIF", "ICJPG.GIF", "ICJS.GIF", "ICJSE.GIF", "ICLOG.GIF", "ICM16.GIF", "ICMANAGE.GIF", "ICMASTER.GIF", "ICMHT.GIF", "ICMHTML.GIF", "ICMHTPUB.GIF", "ICMPD.GIF", "ICMPP.GIF", "ICMPS.GIF", "ICMPT.GIF", "ICMPW.GIF", "ICMPX.GIF", "ICMSG.GIF", "ICMSI.GIF", "ICMSP.GIF", "ICNPIE.GIF", "ICO16.GIF", "ICOCX.GIF", "ICODC.GIF", "ICODCC.GIF", "ICODCD.GIF", "ICODCT.GIF", "ICODP.GIF", "ICODS.GIF", "ICODT.GIF", "ICONE.GIF", "ICONP.GIF", "ICONT.GIF", "ICPINNED.GIF", "ICPNG.GIF", "ICPOT.GIF", "ICPOTM.GIF", "ICPOTX.GIF", "ICPPS.GIF", "ICPPSDC.GIF", "ICPPSM.GIF", "ICPPSX.GIF", "ICPPT.GIF", "ICPPTM.GIF", "ICPPTP.GIF", "ICPPTX.GIF", "ICPROP.GIF", "ICPSP.GIF", "ICPTM.GIF", "ICPTT.GIF", "ICPUB.GIF", "ICREVIEW.GIF", "ICRTF.GIF", "ICSADREP.GIF", "ICSMRTPG.GIF", "ICSPGEN.GIF", "ICSPWEB.GIF", "ICSTP.GIF", "ICSTT.GIF", "ICTHMX.GIF", "ICTIF.GIF", "ICTIFF.GIF", "ICTXT.GIF", "ICVBE.GIF", "ICVBS.GIF", "ICVDW.GIF", "ICVDX.GIF", "ICVIDSET.GIF", "ICVSD.GIF", "ICVSDM.GIF", "ICVSDX.GIF", "ICVSL.GIF", "ICVSS.GIF", "ICVSSM.GIF", "ICVSSX.GIF", "ICVST.GIF", "ICVSTM.GIF", "ICVSTX.GIF", "ICVSU.GIF", "ICVSW.GIF", "ICVSX.GIF", "ICVTX.GIF", "ICWM.GIF", "ICWMA.GIF", "ICWMD.GIF", "ICWMP.GIF", "ICWMS.GIF", "ICWMV.GIF", "ICWMX.GIF", "ICWMZ.GIF", "ICWSF.GIF", "ICXDDOC.GIF", "ICXLS.GIF", "ICXLSB.GIF", "ICXLSM.GIF", "ICXLSP.GIF", "ICXLSX.GIF", "ICXLT.GIF", "ICXLTM.GIF", "ICXLTX.GIF", "ICXML.GIF", "ICXPS.GIF", "ICXSD.GIF", "ICXSL.GIF", "ICXSLT.GIF", "ICXSN.GIF", "ICZIP.GIF"];
+                    var pngs = ["icaccdb.png", "icaccde.png", "icasax.png", "ICDOC.PNG", "ICDOCM.PNG", "ICDOCX.PNG", "ICDOT.PNG", "ICDOTM.PNG", "ICDOTX.PNG", "iceml.png", "ichlp.png", "ICMPD.PNG", "ICMPP.PNG", "ICMPT.PNG", "ICMSG.PNG", "ICNOTEBK.PNG", "ICODP.PNG", "ICODS.PNG", "ICODT.PNG", "ICONE.PNG", "ICONP.PNG", "ICONT.PNG", "ICPDF.PNG", "ICPOT.PNG", "ICPOTM.PNG", "ICPOTX.PNG", "ICPPA.PNG", "ICPPAM.PNG", "ICPPS.PNG", "ICPPSDC.PNG", "ICPPSM.PNG", "ICPPSX.PNG", "ICPPT.PNG", "ICPPTM.PNG", "ICPPTX.PNG", "icpub.png", "ICVDX.PNG", "ICVSX.PNG", "ICVTX.PNG", "ICXLA.PNG", "ICXLAM.PNG", "ICXLS.PNG", "ICXLSB.PNG", "ICXLSM.PNG", "ICXLSX.PNG", "ICXLT.PNG", "ICXLTM.PNG", "ICXLTX.PNG", "icxps.png", "ICXSN.PNG"];
+                    var ext = fileName.split('.').pop().toUpperCase();
+                    if (ext == "HTML")
+                        ext = "HTM";
+                    var mask = "IC" + ext + ".PNG";
+                    for (var _i = 0, pngs_1 = pngs; _i < pngs_1.length; _i++) {
+                        var png = pngs_1[_i];
+                        if (png.toUpperCase() == mask)
+                            return mask;
+                    }
+                    mask = "IC" + ext + ".GIF";
+                    for (var _a = 0, gifs_1 = gifs; _a < gifs_1.length; _a++) {
+                        var gif = gifs_1[_a];
+                        if (gif.toUpperCase() == mask)
+                            return mask;
+                    }
+                    return null;
+                };
+                AttachmentControl.prototype.GetDeletedReferences = function () {
+                    return this._deletedReferences;
+                };
+                AttachmentControl.prototype.Init = function (references) {
+                    var _this = this;
+                    if (this._initialized) {
+                        return;
+                    }
+                    this._initialized = true;
+                    this._renderPanel = $(TiSa.Templates.GetRenderPanel(this._controlId));
+                    this._controlValue = $(TiSa.Templates.GetControlValue(this._controlId));
+                    if (this._isEditMode)
+                        this._staticContext.Add(this);
+                    this._ValidateConfig();
+                    if (references)
+                        this._references = references;
+                    else {
+                        var s = this._currentFieldValue;
+                        if (s && s.length > 0 && s.indexOf('[') == 0) {
+                            this._controlValue.val(s);
+                            try {
+                                var data = JSON.parse(s);
+                                this._references = data;
+                            }
+                            catch (err) {
+                                var msg = "Field value parsing error for field " + this._fieldInfo.DisplayName + " (" + this._fieldInfo.InternalName + "). " + err.message;
+                                TiSa.Console.Error(msg);
+                                if (!this._parentComponentInfo)
+                                    alert(msg);
+                            }
+                        }
+                    }
+                    this._originReferences = this._references.map(function (x) { return x; });
+                    if (this._isEditMode && this._config.EnableAppendAndRemove) {
+                        $(window).on("message", function (e) {
+                            var oe = e.originalEvent;
+                            if (oe.data === "undefined" || oe.data == null)
+                                return;
+                            else {
+                                if (oe.data.indexOf && oe.data.indexOf('{') == 0) {
+                                    var data = JSON.parse(oe.data);
+                                    if (data.ControlId && data.ControlId == _this._controlId) {
+                                        if (data.References) {
+                                            var newReferences_1 = JSON.parse(data.References);
+                                            var close_1 = function () {
+                                                if (_this._dialogWindow)
+                                                    _this._dialogWindow.close(SP.UI.DialogResult.OK);
+                                            };
+                                            var success_1 = function () {
+                                                for (var _i = 0, newReferences_2 = newReferences_1; _i < newReferences_2.length; _i++) {
+                                                    var reference = newReferences_2[_i];
+                                                    delete reference.Overwrote;
+                                                }
+                                                for (var _a = 0, newReferences_3 = newReferences_1; _a < newReferences_3.length; _a++) {
+                                                    var newRef = newReferences_3[_a];
+                                                    for (var i = 0; i < _this._references.length; i++) {
+                                                        var refItem = _this._references[i];
+                                                        if (refItem.ListUrl == newRef.ListUrl && refItem.FileUrl.toLowerCase() == newRef.FileUrl.toLowerCase()) {
+                                                            _this._references.splice(i, 1);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                _this._references = _this._references.concat(newReferences_1);
+                                                _this._UpdateControl();
+                                                close_1();
+                                            };
+                                            var rollback_1 = function (attachmentItem) {
+                                                if (attachmentItem.Overwrote) {
+                                                    close_1();
+                                                    return;
+                                                }
+                                                _this._dialogWindow.get_frameElement().contentWindow.postMessage(JSON.stringify({
+                                                    "ControlId": _this._controlId,
+                                                    "Rollback": true,
+                                                }), '*');
+                                                TiSa.JSOM.EnsureClientContext(function (ctx) {
+                                                    var web = ctx.get_web();
+                                                    var list = web.getList(attachmentItem.ListUrl);
+                                                    var item = list.getItemById(attachmentItem.ID);
+                                                    ctx.load(item, "EffectiveBasePermissions");
+                                                    ctx.executeQueryAsync(function () {
+                                                        if (item.get_effectiveBasePermissions().has(SP.PermissionKind.editListItems)) {
+                                                            item.deleteObject();
+                                                            ctx.executeQueryAsync(function () {
+                                                                close_1();
+                                                            }, function (s, args) {
+                                                                console.log("delete failed");
+                                                                close_1();
+                                                            });
+                                                        }
+                                                        else {
+                                                            console.log("delete error");
+                                                            close_1();
+                                                        }
+                                                    }, function (s, args) {
+                                                        alert("Problem in async request. Receive this server error '" + args.get_message() + "'");
+                                                        close_1();
+                                                    });
+                                                });
+                                            };
+                                            if (_this._config.ForceEditFormAfterUpload && _this._config.EnableEdit && !_this._config.ExternalPath && newReferences_1.length == 1) {
+                                                var item_1 = newReferences_1[0];
+                                                OpenPopUpPageWithTitle(item_1.EditFormUrl + "?ID=" + item_1.ID, function (retValue, retObject) {
+                                                    if (retValue == 1) {
+                                                        success_1();
+                                                    }
+                                                    else {
+                                                        rollback_1(item_1);
+                                                    }
+                                                }, null, null, item_1.ListUrl + item_1.FileUrl);
+                                            }
+                                            else {
+                                                success_1();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    if (this._parentComponentInfo) {
+                        this._config.DisplayMode = "Float";
+                        this._container = $("<div>", { "class": "tisa-container" });
+                        this._renderPanel.append(this._container);
+                        this._RenderControl();
+                        TiSa.Templates.HideLoadingPanel(this._controlId);
+                        if (this._isEditMode && this._config.EnableAppendAndRemove) {
+                            this._buttonsContainer = $("<div>", { "class": "buttons" });
+                            this._buttonsContainer.append(this._RenderAddButton());
+                            this._container.append(this._buttonsContainer);
+                        }
+                        return;
+                    }
+                    this._container = $("<div>", { "class": "tispMultipleUploadFT" });
+                    this._renderPanel.append(this._container);
+                    if (this._controlMode == SPClientTemplates.ClientControlMode.View) {
+                        var _vsinput = $("<span>", { "class": "atDisp" });
+                        this._container.append(_vsinput);
+                        if (this._references.length > 0) {
+                            _vsinput.text(this.RESX["Total"] + ': ' + this._references.length);
+                        }
+                        else {
+                            _vsinput.text(this.RESX["NoAttach"]);
+                        }
+                        TiSa.Templates.HideLoadingPanel(this._controlId);
+                        return;
+                    }
+                    if (this._config.CustomFunction && !this._isView) {
+                        this._SyncCustomFunction(function () {
+                            _this._InitAsync();
+                        }, function () {
+                            var fnName = "AttachmentCustomFunction_" + _this._fieldInfo.InternalName;
+                            TiSa.Console.Warn("Function: " + fnName + " is not defined.");
+                        });
+                    }
+                    else
+                        this._InitAsync();
+                };
+                AttachmentControl.prototype._InitAsync = function () {
+                    var _this = this;
+                    if (this.OnInit.length)
+                        this._CallEvent("OnInit", function (ev) {
+                            ev.call(this);
+                        });
+                    this._RenderControl();
+                    this._loadAsyncItems();
+                    if (this._isEditMode && this._config.EnableAppendAndRemove) {
+                        this._buttonsContainer = $("<div>", { "class": "buttons" });
+                        this._buttonsContainer.append(this._RenderAddButton());
+                        if (this._config.EnableItemSelection) {
+                            this._btnRemoveSelected = this._RenderRemoveSelectedButton();
+                            this._buttonsContainer.append(this._btnRemoveSelected);
+                            this._RefreshBtnRemoveSelected();
+                        }
+                        this._container.append(this._buttonsContainer);
+                        this._registerGetValueCallBack(function () {
+                            if (_this._references.length > 0) {
+                                for (var _i = 0, _a = _this._references; _i < _a.length; _i++) {
+                                    var r = _a[_i];
+                                    if (r.ListUrl)
+                                        r.ListUrl = r.ListUrl.replace(/\s/g, "%20");
+                                    if (r.DisplayFormUrl)
+                                        r.DisplayFormUrl = r.DisplayFormUrl.replace(/\s/g, "%20");
+                                    if (r.EditFormUrl)
+                                        r.EditFormUrl = r.EditFormUrl.replace(/\s/g, "%20");
+                                    r.FileUrl = r.FileUrl.replace(/\s/g, "%20");
+                                    if (r._asyncState)
+                                        delete r._asyncState;
+                                    for (var _b = 0, _c = _this._requestFields; _b < _c.length; _b++) {
+                                        var f = _c[_b];
+                                        if (r[f])
+                                            delete r[f];
+                                    }
+                                    delete r.Row;
+                                    if (!_this._config.SaveSelected)
+                                        delete r.IsSelected;
+                                    if (!_this._config.SaveDeleted)
+                                        delete r.IsDeleted;
+                                }
+                                return JSON.stringify(_this._references);
+                            }
+                            return null;
+                        });
+                    }
+                    if (this.OnInitComplete.length)
+                        this._CallEvent("OnInitComplete", function (ev) {
+                            ev.call(this);
+                        });
+                    TiSa.Templates.HideLoadingPanel(this._controlId);
+                };
+                AttachmentControl.prototype._SyncCustomFunction = function (callbackFunction, callbackFunctionNotFound) {
+                    this._InternalSyncCustomFunction(callbackFunction, callbackFunctionNotFound, 0);
+                };
+                ;
+                AttachmentControl.prototype._InternalSyncCustomFunction = function (callbackFunction, callbackFunctionNotFound, cnt) {
+                    var _this = this;
+                    if (cnt > 300) {
+                        callbackFunctionNotFound.call(this);
+                        return;
+                    }
+                    var fnName = "AttachmentCustomFunction_" + this._fieldInfo.InternalName;
+                    var fnDef = window[fnName];
+                    if (fnDef) {
+                        if (TiSa.Forms.CurrentForm) {
+                            var fn = new fnDef(this);
+                            callbackFunction.call(this);
+                            return;
+                        }
+                        else
+                            TiSa.Console.Debug("TiSa.Forms.CurrentForm is not defined, waiting on this object...");
+                    }
+                    setTimeout(function () {
+                        _this._InternalSyncCustomFunction(callbackFunction, callbackFunctionNotFound, cnt + 1);
+                    }, 100);
+                };
+                AttachmentControl.prototype.GetRenderPanel = function () {
+                    return this._renderPanel[0];
+                };
+                AttachmentControl.prototype.GetControlId = function () {
+                    return this._controlId;
+                };
+                AttachmentControl.prototype.SetReferences = function (data) {
+                    this._references = data;
+                    this._UpdateControl();
+                };
+                AttachmentControl.prototype.SetValue = function (newValue) {
+                    var s = newValue;
+                    if (s) {
+                        if (s.length > 0) {
+                            try {
+                                var data = JSON.parse(s);
+                                this._references = data;
+                                this._UpdateControl();
+                            }
+                            catch (ex) {
+                            }
+                        }
+                    }
+                    else {
+                        this._references = [];
+                        this._UpdateControl();
+                    }
+                };
+                AttachmentControl.prototype.GetValue = function () { return this._controlValue.val(); };
+                AttachmentControl.prototype.GetItems = function () { return this._references; };
+                AttachmentControl.prototype.GetOriginItems = function () { return this._originReferences; };
+                AttachmentControl.prototype.GetFieldInfo = function () { return this._fieldInfo; };
+                AttachmentControl.prototype.SetReadOnly = function (state) {
+                    if (this._controlMode == SPClientTemplates.ClientControlMode.DisplayForm || this._controlMode == SPClientTemplates.ClientControlMode.View)
+                        return;
+                    this._isEditMode = !state;
+                    this._RenderControl();
+                    if (this._buttonsContainer)
+                        this._buttonsContainer.toggle(!state);
+                };
+                AttachmentControl.prototype.OnChanged = function (ev) {
+                    this.OnValueChanged.push(ev);
+                };
+                AttachmentControl.prototype._ValidateConfig = function () {
+                    if (!this._config.LibraryUrl) {
+                        this._config.LibraryUrl = "{WebUrl}/{ListName}_Attachment";
+                    }
+                    if (!this._config.MaxItemsOnPage) {
+                        this._config.MaxItemsOnPage = 10;
+                    }
+                };
+                AttachmentControl.prototype._UpdateControl = function () {
+                    var _this = this;
+                    var before = this.GetValue();
+                    var s = this._UpdateControlValue();
+                    this._itemRequests = [];
+                    this._RenderControl();
+                    this._loadAsyncItems();
+                    var options = {
+                        BeforeValue: before,
+                        AfterValue: s,
+                        References: this._references,
+                        Origin: this._originReferences
+                    };
+                    this._CallEvent("OnValueChanged", function (ev) {
+                        ev.call(_this, s, _this._controlValue.attr("id"), _this._references, options);
+                    });
+                };
+                AttachmentControl.prototype._CallEvent = function (eventName, eventDelegate) {
+                    var evArray = this[eventName];
+                    if (evArray.length > 0)
+                        for (var _i = 0, evArray_1 = evArray; _i < evArray_1.length; _i++) {
+                            var ev = evArray_1[_i];
+                            if (ev)
+                                eventDelegate.call(this, ev);
+                        }
+                };
+                AttachmentControl.prototype._RenderControl = function () {
+                    if (this._containerItems == null) {
+                        this._containerItems = $("<div>", { "class": "containerItems" });
+                        this._container.append(this._containerItems);
+                    }
+                    this._containerItems.empty();
+                    if (this.OnPreRender.length)
+                        this._CallEvent("OnPreRender", function (ev) {
+                            ev.call(this);
+                        });
+                    this._RefreshBtnRemoveSelected();
+                    if (this._references.length > 0) {
+                        if (this._config.DisplayMode == "Float") {
+                            this._containerItems.append(this._RenderItems_FloatLayout());
+                        }
+                        else {
+                            this._containerItems.append(this._RenderItems());
+                            this._containerItems.append(this._RenderPager());
+                        }
+                        this._PostRenderControl();
+                        if (this.OnInvalidate.length)
+                            this._CallEvent("OnInvalidate", function (ev) {
+                                ev.call(this);
+                            });
+                    }
+                    else {
+                        if (this.OnInvalidate.length)
+                            this._CallEvent("OnInvalidate", function (ev) {
+                                ev.call(this);
+                            });
+                    }
+                };
+                AttachmentControl.prototype._loadAsyncItems = function () {
+                    var _this = this;
+                    this._loadAsyncItemsWithCallback(function () {
+                        _this._RenderControl();
+                    });
+                };
+                AttachmentControl.prototype._loadAsyncItemsWithCallback = function (callback) {
+                    var _this = this;
+                    if (this._itemRequests.length > 0) {
+                        var isExternal = this._config.ExternalPath ? true : false;
+                        if (isExternal) {
+                            if (this._proxy == null)
+                                this._proxy = TiSa.Templates.CreateProxy(this._renderPanel, this._fieldInfo.FieldType);
+                            var requestData = {
+                                r: encodeURIComponent(this._config.ExternalPath),
+                                data: JSON.stringify(this._itemRequests),
+                                fields: JSON.stringify(this._requestFields)
+                            };
+                            this._proxy.CallHandler("Download.ashx", requestData, function (result) {
+                                if (result) {
+                                    for (var _i = 0, _a = _this._itemRequests; _i < _a.length; _i++) {
+                                        var ritem = _a[_i];
+                                        for (var _b = 0, result_1 = result; _b < result_1.length; _b++) {
+                                            var item = result_1[_b];
+                                            if (ritem.ListUrl === item.ListUrl) {
+                                                for (var _c = 0, _d = _this._requestFields; _c < _d.length; _c++) {
+                                                    var f = _d[_c];
+                                                    var v = item[f];
+                                                    if (v) {
+                                                        if (f == "Created")
+                                                            v = moment(v).toDate();
+                                                        ritem[f] = v;
+                                                    }
+                                                }
+                                                ritem._asyncState = 2;
+                                            }
+                                        }
+                                    }
+                                    callback();
+                                }
+                            });
+                        }
+                        else {
+                            var groups_1 = {};
+                            var requireUpdate = false;
+                            for (var _i = 0, _a = this._itemRequests; _i < _a.length; _i++) {
+                                var item = _a[_i];
+                                if (item._asyncState === 2)
+                                    continue;
+                                var gi = groups_1[item.ListUrl] = groups_1[item.ListUrl] || { IDs: [], Items: {}, refItems: null };
+                                gi.IDs.push(item.ID);
+                                gi.Items[item.ID] = item;
+                                requireUpdate = true;
+                            }
+                            if (!requireUpdate)
+                                return;
+                            TiSa.JSOM.EnsureClientContext(function (ctx) {
+                                var web = ctx.get_web();
+                                var ff = ['<FieldRef Name="FileLeafRef" />'];
+                                for (var _i = 0, _a = _this._requestFields; _i < _a.length; _i++) {
+                                    var f = _a[_i];
+                                    ff.push("<FieldRef Name=\"" + f + "\" />");
+                                }
+                                for (var g in groups_1) {
+                                    var gi = groups_1[g];
+                                    var list = web.getList(g);
+                                    var query = new SP.CamlQuery();
+                                    var ids = [];
+                                    for (var _b = 0, _c = gi.IDs; _b < _c.length; _b++) {
+                                        var id = _c[_b];
+                                        ids.push("<Value Type=\"Counter\">" + id + "</Value>");
+                                    }
+                                    query.set_viewXml("<View Scope=\"RecursiveAll\"><ViewFields>" + ff.join("") + "</ViewFields><Query><Where><In><FieldRef Name=\"ID\" /><Values>" + ids.join("") + "</Values></In></Where></Query></View>");
+                                    gi.refItems = list.getItems(query);
+                                    gi.refList = list;
+                                    gi.refFields = list.get_fields();
+                                    ctx.load(gi.refFields);
+                                    ctx.load(gi.refItems);
+                                }
+                                var rootWeb = ctx.get_site().get_rootWeb();
+                                var listTiSaFields = rootWeb.getList(_spPageContextInfo.siteServerRelativeUrl.replace(/\/$/, '') + '/tisa-fields');
+                                var queryTiSaFields = new SP.CamlQuery();
+                                var fieldNames = [];
+                                for (var _d = 0, _e = _this._requestFields; _d < _e.length; _d++) {
+                                    var rf = _e[_d];
+                                    fieldNames.push("<Value Type=\"Text\">" + rf + "</Value>");
+                                }
+                                queryTiSaFields.set_viewXml('<View><ViewFields><FieldRef Name="tisa_FieldInternalName"/><FieldRef Name="tisa_FieldType"/><FieldRef Name="tisa_FieldData"/></ViewFields><Query><Where><In><FieldRef Name="tisa_FieldInternalName" /><Values>' + fieldNames.join("") + '</Values></In></Where></Query></View>');
+                                var refTiSaFieldItems = listTiSaFields.getItems(queryTiSaFields);
+                                ctx.load(refTiSaFieldItems);
+                                var regionalSettings = web.get_regionalSettings();
+                                ctx.load(regionalSettings);
+                                var fnBuildTisaConfig = function (items, fn) {
+                                    var itemEnumerator = items.getEnumerator();
+                                    var result = null;
+                                    while (itemEnumerator.moveNext()) {
+                                        var item = itemEnumerator.get_current();
+                                        var internalName = item.get_item("tisa_FieldInternalName");
+                                        if (internalName == fn) {
+                                            var fdata = item.get_item("tisa_FieldData");
+                                            var ft = item.get_item("tisa_FieldType");
+                                            var data = null;
+                                            switch (ft) {
+                                                case "AdvancedChoice":
+                                                    data = Entity.TiSaChoice.ParseConfiguration(fdata);
+                                                    break;
+                                            }
+                                            result = {
+                                                FieldType: ft,
+                                                Data: data
+                                            };
+                                            break;
+                                        }
+                                    }
+                                    return result;
+                                };
+                                ctx.executeQueryAsync(function () {
+                                    _this._regionalSettings = regionalSettings;
+                                    for (var g in groups_1) {
+                                        var gi = groups_1[g];
+                                        var fieldEnumerator = gi.refFields.getEnumerator();
+                                        while (fieldEnumerator.moveNext()) {
+                                            var field = fieldEnumerator.get_current();
+                                            var n = field.get_internalName();
+                                            for (var _i = 0, _a = _this._requestFields; _i < _a.length; _i++) {
+                                                var f = _a[_i];
+                                                if (f == n) {
+                                                    _this._requestFieldTitles[n] = field.get_title();
+                                                    var decimals = -1;
+                                                    try {
+                                                        if (field.get_typeAsString() === 'Number' || field.get_typeAsString() === 'Currency') {
+                                                            var d = parseInt($($.parseXML(field.get_schemaXml())).find("Field").attr("Decimals"));
+                                                            if (d >= 0)
+                                                                decimals = d;
+                                                        }
+                                                    }
+                                                    catch (e) {
+                                                        console.log(e);
+                                                    }
+                                                    _this._requestFieldConfig[n] = {
+                                                        DisplayFormat: field.get_displayFormat ? field.get_displayFormat() : 0,
+                                                        TiSaConfig: fnBuildTisaConfig(refTiSaFieldItems, f),
+                                                        NumberDecimals: decimals
+                                                    };
+                                                }
+                                            }
+                                        }
+                                        var itemEnumerator = gi.refItems.getEnumerator();
+                                        while (itemEnumerator.moveNext()) {
+                                            var item = itemEnumerator.get_current();
+                                            var id = item.get_id();
+                                            var ritem = gi.Items[id];
+                                            if (ritem) {
+                                                for (var _b = 0, _c = _this._requestFields; _b < _c.length; _b++) {
+                                                    var f = _c[_b];
+                                                    ritem[f] = item.get_item(f);
+                                                }
+                                                ritem.FileUrl = ritem.FileUrl.substring(0, ritem.FileUrl.lastIndexOf('/') + 1) + item.get_item("FileLeafRef");
+                                                ritem._asyncState = 2;
+                                            }
+                                        }
+                                    }
+                                    callback();
+                                }, function (s, a) {
+                                    TiSa.Console.Warn(a.get_message() + a.get_errorTypeName() + a.get_stackTrace());
+                                });
+                            });
+                        }
+                    }
+                };
+                AttachmentControl.prototype._RenderItems_FloatLayout = function () {
+                    var _this = this;
+                    var div = $("<div>", { "class": "float" });
+                    var _loop_1 = function (i) {
+                        var item = this_1._references[i];
+                        var fileName = this_1._GetFileName(item.FileUrl);
+                        var link = TiSa.Environment.GenerateFileLink(item.ListUrl + item.FileUrl, this_1._isEditMode);
+                        var linkWrapper = $("<span>", { "class": "attachment" });
+                        if (this_1._config.EnableView)
+                            linkWrapper.append($('<a>', { "class": "attachment-float-icon view", "data-command": "view", "data-index": i, "href": "javascript:void(0)", "title": this_1.RESX["ViewProperties"] }));
+                        linkWrapper.append(link);
+                        if (this_1._isEditMode)
+                            linkWrapper.append($('<a>', { "class": "attachment-float-icon delete", "data-command": "delete", "data-index": i, "href": "javascript:void(0)", "title": Strings.STS.L_DeleteItem_Text }));
+                        div.append(linkWrapper);
+                        if (this_1.OnRowRender.length)
+                            this_1._CallEvent("OnRowRender", function (ev) {
+                                ev.call(this, $("[data-index=" + i + "]", div));
+                            });
+                    };
+                    var this_1 = this;
+                    for (var i = 0; i < this._references.length; i++) {
+                        _loop_1(i);
+                    }
+                    div.on("click", "a[data-command=delete]", function (event) {
+                        if (confirm(_this.RESX["DeleteOne"])) {
+                            var index = parseInt($(event.currentTarget).attr("data-index"));
+                            var item = _this._references[index];
+                            _this._deletedReferences.push(item);
+                            _this._references.splice(index, 1);
+                            _this._DeleteFile(item);
+                            _this._UpdateControl();
+                        }
+                    });
+                    div.on("click", "a[data-command=view]", function (event) {
+                        var index = parseInt($(event.currentTarget).attr("data-index"));
+                        var item = _this._references[index];
+                        OpenPopUpPageWithTitle(item.DisplayFormUrl + "?ID=" + item.ID, function (retValue, retObject) {
+                            if (retValue == 1) {
+                                if (_this._config.DisplayMode == "Float")
+                                    _this._RenderControl();
+                                else {
+                                    _this._itemRequests = [item];
+                                    _this._RefreshRequestFields(true);
+                                }
+                            }
+                        }, null, null, item.ListUrl + item.FileUrl);
+                    });
+                    return div;
+                };
+                AttachmentControl.prototype._RenderItems = function () {
+                    var _this = this;
+                    var table = $("<table>", { "class": "tableWithItems" });
+                    var isExternal = !!this._config.ExternalPath;
+                    if (isExternal) {
+                        var webName = _spPageContextInfo.webServerRelativeUrl.replace(/\/$/, "");
+                        var ix = webName.lastIndexOf('/');
+                        if (ix >= 0)
+                            webName = webName.substring(ix + 1);
+                        if (webName.length == 0)
+                            webName = 'root';
+                        this._config.ExternalPath = this._config.ExternalPath.replace(/\{WebName\}/g, webName);
+                    }
+                    var header = $("<tr>");
+                    if (this.ShowFileIcon)
+                        header.append("<th class='cItemIcon'></th>");
+                    if (this._isEditMode && this._config.EnableItemSelection)
+                        header.append("<th class='cSelect' title='" + Strings.STS.L_select_deselect_all + "'><input type='checkbox'" + (this._references.every(function (r) { return r.IsSelected; }) ? " checked" : "") + "/></th>");
+                    if (this._config.EnableOpen)
+                        header.append("<th class='cIcon'></th>");
+                    if (this._config.EnableView && !isExternal)
+                        header.append("<th class='cIcon'></th>");
+                    if (this._config.EnableEdit && !isExternal)
+                        header.append("<th class='cIcon'></th>");
+                    if (this._config.EnableDownload)
+                        header.append("<th class='cIcon'></th>");
+                    if (this._config.EnableEditFileName)
+                        header.append("<th class='cIcon'></th>");
+                    header.append("<th class='cFileName'>" + this.RESX["FileName"] + "</th>");
+                    header.append("<th class='cFileSize'>" + this.RESX["FileSize"] + "</th>");
+                    for (var _i = 0, _a = this._requestFields; _i < _a.length; _i++) {
+                        var f = _a[_i];
+                        var cssClass = f == "ContentType" ? "cContentType" : f == "Author" ? "cAuthor" : f == "Created" ? "cCreated" : ("cCustom c" + f);
+                        var text = f == "ContentType" ? this.RESX["ContentType"] : f == "Author" ? this.RESX["Autor"] : f == "Created" ? this.RESX["Created"] : (this._requestFieldTitles[f] || f);
+                        header.append("<th class=\"" + cssClass + "\">" + text + "</th>");
+                    }
+                    if (this._isEditMode && this._config.EnableAppendAndRemove)
+                        header.append("<th class='cIcon'></th>");
+                    table.append(header);
+                    var start = this._currentPage * this._config.MaxItemsOnPage;
+                    var end = Math.min(start + this._config.MaxItemsOnPage, this._references.length);
+                    this._itemRequests = [];
+                    if (this._config.SortColumn) {
+                        if (this._requestFields.length > 0) {
+                            for (var _b = 0, _c = this._references; _b < _c.length; _b++) {
+                                var ritem = _c[_b];
+                                if (ritem._asyncState !== 2) {
+                                    this._itemRequests.push(ritem);
+                                    ritem._asyncState = 1;
+                                }
+                            }
+                        }
+                        var sc = this._config.SortColumn.split(' ');
+                        var f_1 = sc[0];
+                        var isDesc_1 = (sc.length > 1 ? sc[1] : '').toLowerCase() == "desc";
+                        this._references = this._references.sort(function (a, b) {
+                            var a0 = a[f_1];
+                            var b0 = b[f_1];
+                            var a1 = a.ID;
+                            var b1 = b.ID;
+                            if (isDesc_1) {
+                                a0 = b[f_1];
+                                b0 = a[f_1];
+                                a1 = b.ID;
+                                b1 = a.ID;
+                            }
+                            if (!a0 && !b0)
+                                return 0;
+                            return a0 > b0 ? 1
+                                : b0 > a0 ? -1
+                                    : a1 > b1 ? 1
+                                        : b1 > a1 ? -1
+                                            : 0;
+                        });
+                    }
+                    for (var i = 0; i < start; ++i) {
+                        delete this._references[i].Row;
+                    }
+                    for (var i = end; i < this._references.length; ++i) {
+                        delete this._references[i].Row;
+                    }
+                    var _loop_2 = function (i) {
+                        var ritem = this_2._references[i];
+                        var jsonID = JSON.stringify({ ListUrl: ritem.ListUrl, ID: ritem.ID });
+                        var row = $("<tr>")
+                            .attr("data-id", jsonID);
+                        ritem.Row = row;
+                        this_2._RenderItem(ritem);
+                        table.append(row);
+                        if (this_2.OnRowRender.length)
+                            this_2._CallEvent("OnRowRender", function (ev) {
+                                ev.call(this, row);
+                            });
+                    };
+                    var this_2 = this;
+                    for (var i = start; i < end; i++) {
+                        _loop_2(i);
+                    }
+                    $(table).on("click", "td.cIcon span", function (event) {
+                        var itemIndex = $(event.currentTarget).closest("tr").data("id");
+                        var srchItem = _this._FindReferenceItem(itemIndex);
+                        var item = srchItem.DataItem;
+                        var c = event.currentTarget.className;
+                        if (c == "view") {
+                            OpenPopUpPageWithTitle(item.DisplayFormUrl + "?ID=" + item.ID, function (retValue, retObject) {
+                                if (retValue == 1) {
+                                    if (_this._config.DisplayMode == "Float")
+                                        _this._RenderControl();
+                                    else {
+                                        _this._itemRequests = [item];
+                                        _this._RefreshRequestFields(true);
+                                    }
+                                }
+                            }, null, null, item.ListUrl + item.FileUrl);
+                        }
+                        else if (c == "edit") {
+                            OpenPopUpPageWithTitle(item.EditFormUrl + "?ID=" + item.ID, function (retValue, retObject) {
+                                if (retValue == 1) {
+                                    if (_this._config.DisplayMode == "Float")
+                                        _this._RenderControl();
+                                    else {
+                                        _this._itemRequests = [item];
+                                        _this._RefreshRequestFields(true);
+                                    }
+                                }
+                            }, null, null, item.ListUrl + item.FileUrl);
+                        }
+                        else if (c == "editFileName") {
+                            var template_1 = $(_this._templateRenameFile);
+                            var templateConfirm_1 = $(_this._templateRenameFileConfirm);
+                            template_1.find(".fileName").val(_this._GetFileName(item.FileUrl));
+                            var confirmDialog_1 = null;
+                            var err_1 = template_1.find(".errorMsg");
+                            $(".btnOk", template_1).off("click").on("click", function (event) {
+                                var originFileName = _this._GetFileName(item.FileUrl);
+                                var s = $(".fileName", template_1).val();
+                                if (s.length > 0 && originFileName != s) {
+                                    _this._EditFileName(item, s, function (replaced) {
+                                        err_1.hide();
+                                        _this._UpdateControlValue();
+                                        if (replaced)
+                                            _this._RenderControl();
+                                        else
+                                            _this._RenderItem(item);
+                                        _this._dialogWindow.close(SP.UI.DialogResult.OK);
+                                        _this._CallEvent("OnValueChanged", function (ev) {
+                                            ev.call(_this, _this._controlValue.val(), _this._controlValue.attr("id"), _this._references);
+                                        });
+                                    }, function (reason, errorMessage, newFileUrl) {
+                                        TiSa.Console.Warn(errorMessage);
+                                        if (reason === EditFileNameResult.DocumentAlreadyExists) {
+                                            templateConfirm_1.find(".msg").text(_this.RESX.ConfirmRename.replace(/\{0\}/, "'" + s + "'"));
+                                            var title = _this.RESX.ConfirmRenameTitle;
+                                            var options_1 = SP.UI.$create_DialogOptions();
+                                            options_1.html = templateConfirm_1[0];
+                                            options_1.title = title;
+                                            options_1.showClose = true;
+                                            options_1.autoSize = true;
+                                            confirmDialog_1 = SP.UI.ModalDialog.showModalDialog(options_1);
+                                        }
+                                        else if (reason === EditFileNameResult.FileNameCharactersNotPermitted) {
+                                            errorMessage = errorMessage.replace(item.ListUrl + encodeURI(newFileUrl).replace(/%20/g, ' '), "'" + s + "'");
+                                            err_1.text(errorMessage);
+                                            err_1.show();
+                                        }
+                                        else {
+                                            err_1.text(_this.RESX.UnableRename);
+                                            err_1.show();
+                                        }
+                                        _this._dialogWindow.autoSize();
+                                    }, false);
+                                }
+                                else
+                                    _this._dialogWindow.close(SP.UI.DialogResult.OK);
+                            });
+                            $(".btnCancel", template_1).off("click").on("click", function () {
+                                _this._dialogWindow.close(SP.UI.DialogResult.cancel);
+                            });
+                            $(".btnOk", templateConfirm_1).off("click").on("click", function (event) {
+                                var originFileName = _this._GetFileName(item.FileUrl);
+                                var s = $(".fileName", template_1).val();
+                                _this._EditFileName(item, s, function (replaced) {
+                                    err_1.hide();
+                                    _this._UpdateControlValue();
+                                    if (replaced)
+                                        _this._RenderControl();
+                                    else
+                                        _this._RenderItem(item);
+                                    confirmDialog_1.close(SP.UI.DialogResult.OK);
+                                    _this._dialogWindow.close(SP.UI.DialogResult.OK);
+                                }, function (reason, errorMessage) {
+                                    TiSa.Console.Warn(errorMessage);
+                                    err_1.text(_this.RESX.UnableRename);
+                                    err_1.show();
+                                    confirmDialog_1.close(SP.UI.DialogResult.OK);
+                                }, true);
+                            });
+                            $(".btnCancel", templateConfirm_1).off("click").on("click", function () {
+                                confirmDialog_1.close(SP.UI.DialogResult.cancel);
+                            });
+                            var options = SP.UI.$create_DialogOptions();
+                            options.html = template_1[0];
+                            options.title = _this.RESX.RenameFileDlgTitle;
+                            options.showClose = true;
+                            options.autoSize = true;
+                            _this._dialogWindow = SP.UI.ModalDialog.showModalDialog(options);
+                        }
+                        else if (c == "delete") {
+                            if (confirm(_this.RESX["DeleteOne"])) {
+                                var item_2 = _this._references[srchItem.Index];
+                                _this._deletedReferences.push(item_2);
+                                _this._references.splice(srchItem.Index, 1);
+                                _this._DeleteFile(item_2);
+                                _this._UpdateControl();
+                            }
+                        }
+                        else if (c == "open") {
+                            var path = _this.GetItemUrl(item, true);
+                            var win = window.open(path, '_blank');
+                            win.focus();
+                        }
+                    });
+                    $("th.cSelect input:checkbox", table).on("click", function (event) {
+                        var ch = event.currentTarget.checked;
+                        for (var _i = 0, _a = _this._references; _i < _a.length; _i++) {
+                            var r = _a[_i];
+                            r.IsSelected = ch;
+                        }
+                        _this._UpdateControlValue();
+                        $("td.cSelect input:checkbox", _this._containerItems).prop('checked', ch).closest("tr").toggleClass("sel", ch);
+                        _this._RefreshBtnRemoveSelected(ch);
+                    });
+                    $(table).on("change", "td.cSelect input:checkbox", function (event) {
+                        var row = $(event.currentTarget).closest("tr");
+                        var itemIndex = row.data("id");
+                        var srchItem = _this._FindReferenceItem(itemIndex);
+                        var item = srchItem.DataItem;
+                        item.IsSelected = event.currentTarget.checked;
+                        var selectedCount = _this._references.reduce(function (acc, obj) { return acc + 1 * obj.IsSelected; }, 0);
+                        $("th.cSelect input:checkbox", _this._containerItems).prop('checked', selectedCount == _this._references.length);
+                        _this._RefreshBtnRemoveSelected(selectedCount > 0);
+                        _this._UpdateControlValue();
+                        row.toggleClass("sel", item.IsSelected);
+                    });
+                    return table;
+                };
+                AttachmentControl.prototype._RenderItem = function (ritem) {
+                    if (!ritem.Row)
+                        return;
+                    ritem.Row.empty().toggleClass("sel", ritem.IsSelected ? true : false);
+                    if (!ritem.FileIconUrl) {
+                        ritem.FileIconUrl = this._GetSystemFileIcon(ritem.FileUrl);
+                    }
+                    var isFolder = ritem._type == "1";
+                    var isExternal = !!this._config.ExternalPath;
+                    var cItemIcon = "<td class=\"cIcon\"><img src=\"" + this._GetIconPath(ritem.FileUrl, ritem.FileIconUrl, isFolder) + "\"></td>";
+                    var cSelect = "<td class=\"cSelect\"><input type=\"checkbox\" " + (ritem.IsSelected ? "checked" : "") + "/></td>";
+                    var cOpenIcon = "<td class=\"cIcon\"><span class=\"open\" title=\"" + (isFolder ? this.RESX["OpenFolder"] : this.RESX["Open"]) + "\"></span></td>";
+                    var cViewIcon = "<td class=\"cIcon\"><span class=\"view\" title=\"" + Strings.STS.L_ViewItem_Text + "\"></span></td>";
+                    var cEditIcon = "<td class=\"cIcon\"><span class=\"edit\" title=\"" + Strings.STS.L_EditItem_Text + "\"></span></td>";
+                    var path = this.GetItemUrl(ritem, false);
+                    var cDownloadIcon = $("<td class='cIcon'></td>");
+                    if (isExternal)
+                        cDownloadIcon.append($("<a></a>", { "class": "download", "target": "_blank", "title": this.RESX["Download"], "href": path }));
+                    else if (!isFolder)
+                        cDownloadIcon.append($("<a></a>", { "class": "download", "target": "_blank", "title": this.RESX["Download"], "href": TiSa.Environment.SiteServerRelativeUrl + "/_layouts/15/download.aspx?SourceUrl=" + encodeURIComponent(path.replace(/%20/g, ' ')) }));
+                    var fileName = this._GetFileName(ritem.FileUrl);
+                    if (this._config.EnableLinkDownload && !isExternal) {
+                        fileName = TiSa.Environment.GenerateFileLink(ritem.ListUrl + ritem.FileUrl, this._isEditMode);
+                    }
+                    var cEditFileNameIcon = "<td class=\"cIcon\"><span class=\"editFileName\" title=\"" + this.RESX.RenameFileDlgTitle + "\"></span></td>";
+                    var cFileName = "<td class=\"cFileName\">" + fileName + "</td>";
+                    var cFileSize = "<td class=\"cFileSize\" title=\"" + ritem.FileSize + " B\">" + this._FormatFileSizeAdaptive(ritem.FileSize) + "</td>";
+                    var cDeleteIcon = "<td class=\"cIcon\"><span class=\"delete\" title=\"" + Strings.STS.L_DeleteItem_Text + "\"></span></td>";
+                    if (this.ShowFileIcon)
+                        ritem.Row.append(cItemIcon);
+                    if (this._isEditMode && this._config.EnableItemSelection)
+                        ritem.Row.append(cSelect);
+                    if (this._config.EnableOpen)
+                        ritem.Row.append(cOpenIcon);
+                    if (this._config.EnableView && !isExternal)
+                        ritem.Row.append(cViewIcon);
+                    if (this._config.EnableEdit && !isExternal)
+                        ritem.Row.append(cEditIcon);
+                    if (this._config.EnableDownload)
+                        ritem.Row.append(cDownloadIcon);
+                    if (this._config.EnableEditFileName)
+                        ritem.Row.append(cEditFileNameIcon);
+                    ritem.Row.append(cFileName);
+                    ritem.Row.append(cFileSize);
+                    if (this._requestFields.length > 0) {
+                        var r = false;
+                        for (var _i = 0, _a = this._requestFields; _i < _a.length; _i++) {
+                            var f = _a[_i];
+                            var v = null;
+                            if (ritem._asyncState == 2) {
+                                v = this._FormatRequestFieldValue(this._requestFieldConfig[f], ritem, f);
+                            }
+                            else {
+                                r = true;
+                            }
+                            var cssClass = f == "ContentType" ? "cContentType" : f == "Author" ? "cAuthor" : f == "Created" ? "cCreated" : "cCustom";
+                            ritem.Row.append($("<td></td>", { "class": cssClass, "data-requestFieldName": f }).text(v || ""));
+                        }
+                        if (r && ritem._asyncState !== 1) {
+                            this._itemRequests.push(ritem);
+                            ritem._asyncState = 1;
+                        }
+                    }
+                    if (this._isEditMode && this._config.EnableAppendAndRemove)
+                        ritem.Row.append(cDeleteIcon);
+                };
+                AttachmentControl.prototype._RefreshBtnRemoveSelected = function (visible) {
+                    if (visible === void 0) { visible = null; }
+                    if (this._btnRemoveSelected == null)
+                        return;
+                    this._btnRemoveSelected.toggle(this._references.length > 0);
+                    if (visible === null) {
+                        visible = this._references.some(function (r) { return r.IsSelected; });
+                    }
+                    this._btnRemoveSelected.css({ "visibility": visible ? "visible" : "hidden" });
+                };
+                AttachmentControl.prototype._UpdateControlValue = function () {
+                    var s = JSON.stringify(this._references);
+                    this._controlValue.val(s);
+                    return s;
+                };
+                AttachmentControl.prototype._FormatFileSizeAdaptive = function (fs) {
+                    fs = parseInt(fs);
+                    if (isNaN(fs))
+                        return "";
+                    var unit = ["B", "kB", "MB", "GB", "TB", "PB"];
+                    var unitIndex = 0;
+                    while (fs > 1024) {
+                        fs = fs / 1024;
+                        ++unitIndex;
+                    }
+                    var fileSizeString = fs.toFixed(unitIndex == 0 ? 0 : 3 - Math.min(3, Math.log(fs) / Math.log(10)));
+                    if (this._regionalSettings) {
+                        fileSizeString = fileSizeString.replace(".", this._regionalSettings.get_decimalSeparator());
+                    }
+                    return fileSizeString + " " + unit[unitIndex];
+                };
+                AttachmentControl.prototype._RefreshRequestFields = function (force) {
+                    var _this = this;
+                    if (!force && (!this._requestFields || this._requestFields.length == 0))
+                        return;
+                    for (var _i = 0, _a = this._itemRequests; _i < _a.length; _i++) {
+                        var item = _a[_i];
+                        delete item._asyncState;
+                    }
+                    this._loadAsyncItemsWithCallback(function () {
+                        for (var _i = 0, _a = _this._itemRequests; _i < _a.length; _i++) {
+                            var item = _a[_i];
+                            _this._RenderItem(item);
+                        }
+                    });
+                };
+                AttachmentControl.prototype._FormatRequestFieldValue = function (cfg, ritem, f) {
+                    var v = ritem[f];
+                    if (!v)
+                        v = "";
+                    if (v instanceof Date || (typeof (v) == 'object' && v.getDate)) {
+                        var fmt = (TiSa.GetDefaultDateFormat) ? TiSa.GetDefaultDateFormat() : "l";
+                        if (!moment._inited) {
+                            var culture = _spPageContextInfo.currentCultureName, ld = moment.localeData(culture);
+                            if (!ld)
+                                ld = moment.localeData("en-US");
+                            if (!ld)
+                                ld = moment.localeData("en");
+                            moment.locale(ld._abbr);
+                            moment.langDefaultFormat = ld.longDateFormat(fmt);
+                            moment._inited = true;
+                        }
+                        var m = moment(v);
+                        if (cfg && cfg.DisplayFormat === 1)
+                            v = m.format(fmt + " LT");
+                        else
+                            v = m.format(fmt);
+                    }
+                    else if (cfg && !isNaN(v) && typeof v == 'number' && this._regionalSettings) {
+                        var decimalSeparator = this._regionalSettings.get_decimalSeparator();
+                        var thousandSeparator = this._regionalSettings.get_thousandSeparator();
+                        var digitGrouping = parseInt(this._regionalSettings.get_digitGrouping().split(';')[0]);
+                        var c = {
+                            aDec: decimalSeparator,
+                            aSep: thousandSeparator,
+                            dGroup: digitGrouping,
+                            mDec: cfg.NumberDecimals >= 0 ? cfg.NumberDecimals : 2,
+                            aPad: cfg.NumberDecimals >= 0,
+                            vMax: Number.MAX_VALUE,
+                            vMin: -Number.MAX_VALUE
+                        };
+                        v = this.FormatNumber(v, c);
+                    }
+                    else if (typeof (v) == 'object' && v.get_lookupValue)
+                        v = v.get_lookupValue();
+                    else if (typeof (v) == 'object' && v.get_title)
+                        v = v.get_title();
+                    if (cfg && cfg.TiSaConfig) {
+                        switch (cfg.TiSaConfig.FieldType) {
+                            case "AdvancedChoice":
+                                v = cfg.TiSaConfig.Data.GetChoiceTitle(v);
+                                break;
+                        }
+                    }
+                    return v;
+                };
+                AttachmentControl.prototype._FindReferenceItem = function (itemIndex) {
+                    for (var i = 0; i < this._references.length; i++) {
+                        var item = this._references[i];
+                        if (item.ID == itemIndex.ID && item.ListUrl == itemIndex.ListUrl)
+                            return { Index: i, DataItem: item };
+                    }
+                    return null;
+                };
+                AttachmentControl.prototype.GetItemUrl = function (item, inline) {
+                    if (this._config.ExternalPath)
+                        return this._fieldInfo.FieldType.ComponentAppUrl + "/Components/Attachment/Download.ashx?r=" + encodeURIComponent(this._config.ExternalPath) + "&p=" + encodeURIComponent(item.ListUrl) + (inline ? "&inline=1" : "");
+                    else
+                        return item.ListUrl + item.FileUrl;
+                };
+                AttachmentControl.prototype._PostRenderControl = function () {
+                    TiSa.Environment.ActivateFileLink(this._containerItems);
+                };
+                AttachmentControl.prototype._GetFileName = function (fileUrl) {
+                    fileUrl = fileUrl.replace(/\\/g, '/');
+                    var fileName = fileUrl.substr(fileUrl.lastIndexOf("/") + 1).replace(/\%20/g, " ");
+                    if (fileName.indexOf("___DV_") > 0) {
+                        var idx = fileName.indexOf("___DV_");
+                        var idx2 = fileName.lastIndexOf(".");
+                        fileName = fileName.substring(0, idx) + fileName.substring(idx2);
+                    }
+                    return fileName;
+                };
+                AttachmentControl.prototype._RenderPager = function () {
+                    var _this = this;
+                    var totalPages = Math.ceil(this._references.length / this._config.MaxItemsOnPage);
+                    var pager = $("<div>", { "class": "pager" });
+                    var createPagerIcon = function (className, title) {
+                        return "<span class=\"icon " + className + "\" title=\"" + title + "\"></span>";
+                    };
+                    var isFirst = this._currentPage == 0;
+                    var isLast = this._currentPage == totalPages - 1;
+                    var firstPage = $(createPagerIcon(isFirst ? "firstPageDisabled" : "firstPage", Strings.STS.L_FirstWeek_Text));
+                    var previousPage = $(createPagerIcon(isFirst ? "previousPageDisabled" : "previousPage", Strings.STS.L_Prev));
+                    var nextPage = $(createPagerIcon(isLast ? "nextPageDisabled" : "nextPage", Strings.STS.L_Next));
+                    var lastPage = $(createPagerIcon(isLast ? "lastPageDisabled" : "lastPage", Strings.STS.L_LastWeek_Text));
+                    if (!isFirst) {
+                        firstPage.click(function () { _this._currentPage = 0; _this._RenderControl(); _this._loadAsyncItems(); });
+                        previousPage.click(function () { _this._currentPage--; _this._RenderControl(); _this._loadAsyncItems(); });
+                    }
+                    if (!isLast) {
+                        nextPage.click(function () { _this._currentPage++; _this._RenderControl(); _this._loadAsyncItems(); });
+                        lastPage.click(function () { _this._currentPage = totalPages - 1; _this._RenderControl(); _this._loadAsyncItems(); });
+                    }
+                    pager.append("<span class=\"totalItems\">" + this.RESX["Total"] + "&nbsp<b>" + this._references.length + "</b></span>");
+                    pager.append(firstPage);
+                    pager.append(previousPage);
+                    pager.append("<span class=\"currentPage\">" + (this._currentPage + 1) + "&nbsp;/&nbsp;" + totalPages + "</span>");
+                    pager.append(nextPage);
+                    pager.append(lastPage);
+                    return pager;
+                };
+                AttachmentControl.prototype._RenderAddButton = function () {
+                    var _this = this;
+                    var btn = $("<a>", { "class": "addNewAttachment", "onclick": "return false" });
+                    if (this._config.DisplayMode == "Float") {
+                        btn.attr("title", this.RESX["InsertAttach"]);
+                        btn.append("<span>+</span>");
+                    }
+                    else {
+                        btn.text(this.RESX["InsertAttach"]);
+                    }
+                    var fldrCustTempl = this._config.CustomFolderFormat;
+                    var cfgForUpload = {
+                        CustomFolderFormat: this._config.CustomFolderFormat,
+                        FolderDateFormat: this._config.FolderDateFormat,
+                        LibraryUrl: this._config.LibraryUrl,
+                        CopyRoles: this._config.CopyRoles,
+                        RootFolder: this._config.RootFolder,
+                        ExternalPath: this._config.ExternalPath,
+                        DisableMultipleUpload: this._config.DisableMultipleUpload || (this._config.ForceEditFormAfterUpload && this._config.EnableEdit && !this._config.ExternalPath),
+                        Accept: this._config.Accept,
+                        AllowOverwrite: this._config.AllowOverwrite,
+                    };
+                    var query = {
+                        fc: encodeURIComponent(JSON.stringify(cfgForUpload)),
+                        resx: encodeURIComponent(JSON.stringify({ "UploadOverwritePrompt": this.RESX["UploadOverwritePrompt"] })),
+                        sr: _spPageContextInfo.webServerRelativeUrl,
+                        sl: this._srcLibId,
+                        si: this._itemID.toString(),
+                        ControlId: this._controlId
+                    };
+                    var dialogUrl = this._controlPickerUrl + "&" + TiSa.Environment.BuildQueryString(query);
+                    btn.click(function () {
+                        var options = SP.UI.$create_DialogOptions();
+                        options.url = dialogUrl;
+                        options.title = _this.RESX["AddAttachDlgTitle"];
+                        options.width = 480;
+                        options.height = 256;
+                        if (fldrCustTempl) {
+                            TiSa.ExecuteScript('tisaFieldValueRenderer.js', function () {
+                                var data = TiSa.TemplateEvaluator.ParseTemplate(fldrCustTempl);
+                                data._spPageContextInfo = _spPageContextInfo;
+                                var formctrlctx = TiSa.Forms.GetFormControlContext();
+                                for (var internalName in data.item) {
+                                    var ctrl = formctrlctx.FindFieldControl(internalName);
+                                    data.item[internalName] = ctrl.GetValue();
+                                }
+                                var dt = new Date();
+                                for (var key in data.date) {
+                                    var mask = key;
+                                    mask = mask.replace(/MM/g, (dt.getMonth() + 1).toString().padStart(2, '0'));
+                                    mask = mask.replace(/yyyy/g, dt.getFullYear().toString());
+                                    data.date[key] = mask;
+                                }
+                                for (var key in data.list) {
+                                    if (key === 'ServerRelativeUrl') {
+                                        data.list[key] = formctrlctx.ResolveRootFolder();
+                                    }
+                                }
+                                var folderName = TiSa.TemplateEvaluator.EvaluateTemplate(fldrCustTempl, data);
+                                options.url += '&fn=' + encodeURIComponent(folderName);
+                                _this._dialogWindow = SP.UI.ModalDialog.showModalDialog(options);
+                            });
+                        }
+                        else {
+                            _this._dialogWindow = SP.UI.ModalDialog.showModalDialog(options);
+                        }
+                        return false;
+                    });
+                    return btn;
+                };
+                AttachmentControl.prototype._RenderRemoveSelectedButton = function () {
+                    var _this = this;
+                    var btn = $("<a>", { "class": "deleteAll", "onclick": "return false" }).text(this.RESX["Delete"]);
+                    btn.click(function () {
+                        if (confirm(_this.RESX["DeleteConfirm"])) {
+                            var arr = new Array();
+                            for (var _i = 0, _a = _this._references; _i < _a.length; _i++) {
+                                var item = _a[_i];
+                                if (!item.IsSelected)
+                                    arr.push(item);
+                                else {
+                                    _this._deletedReferences.push(item);
+                                    _this._DeleteFile(item);
+                                }
+                            }
+                            _this._references = arr;
+                            _this._UpdateControl();
+                        }
+                    });
+                    btn.hide();
+                    return btn;
+                };
+                AttachmentControl.prototype._OnAddNewReferences = function (result, data) {
+                    if (result == SP.UI.DialogResult.OK) {
+                        this._references = this._references.concat(data);
+                        this._UpdateControl();
+                    }
+                };
+                AttachmentControl.prototype._DeleteFile = function (attachmentItem) {
+                    if (!this._config.DeleteFileWhenItemDeleted)
+                        return;
+                    var isExternal = this._config.ExternalPath ? true : false;
+                    if (isExternal) {
+                        TiSa.Console.Warn("Is not implemented for external attachments!");
+                    }
+                    else {
+                        TiSa.JSOM.EnsureClientContext(function (ctx) {
+                            var web = ctx.get_web();
+                            var list = web.getList(attachmentItem.ListUrl);
+                            var item = list.getItemById(attachmentItem.ID);
+                            ctx.load(item, "EffectiveBasePermissions");
+                            ctx.executeQueryAsync(function () {
+                                if (item.get_effectiveBasePermissions().has(SP.PermissionKind.editListItems)) {
+                                    item.deleteObject();
+                                    ctx.executeQueryAsync(function () {
+                                        console.log("deleted");
+                                    }, function (s, args) {
+                                        console.log("delete failed");
+                                    });
+                                }
+                                else {
+                                    console.log("delete error");
+                                }
+                            }, function (s, args) {
+                                console.log("Problem in async request. Receive this server error '" + args.get_message() + "'");
+                            });
+                        });
+                    }
+                };
+                AttachmentControl.prototype._EditFileName = function (attachmentItem, newFileName, success, error, force) {
+                    var _this = this;
+                    var isExternal = this._config.ExternalPath ? true : false;
+                    if (isExternal) {
+                        error(EditFileNameResult.NotImplemented, "Is not implemented for external attachments!", attachmentItem.FileUrl);
+                    }
+                    else {
+                        TiSa.JSOM.EnsureClientContext(function (ctx) {
+                            var web = ctx.get_web();
+                            var list = web.getList(attachmentItem.ListUrl);
+                            var item = list.getItemById(attachmentItem.ID);
+                            ctx.load(item, "EffectiveBasePermissions");
+                            ctx.executeQueryAsync(function () {
+                                if (item.get_effectiveBasePermissions().has(SP.PermissionKind.editListItems)) {
+                                    var file = item.get_file();
+                                    var ix = attachmentItem.FileUrl.lastIndexOf('/');
+                                    var fileUrl_1 = attachmentItem.FileUrl.substring(0, ix + 1) + newFileName;
+                                    if (force)
+                                        file.moveTo(attachmentItem.ListUrl + encodeURI(fileUrl_1), SP.MoveOperations.overwrite);
+                                    else
+                                        file.moveTo(attachmentItem.ListUrl + encodeURI(fileUrl_1), SP.MoveOperations.none);
+                                    ctx.executeQueryAsync(function () {
+                                        var replaced = false;
+                                        for (var i = 0; i < _this._references.length; i++) {
+                                            var refItem = _this._references[i];
+                                            if (refItem.FileUrl.toLowerCase() == fileUrl_1.toLowerCase()) {
+                                                _this._references.splice(i, 1);
+                                                replaced = true;
+                                                break;
+                                            }
+                                        }
+                                        attachmentItem.FileUrl = fileUrl_1;
+                                        success(replaced);
+                                    }, function (s, args) {
+                                        var result = EditFileNameResult.Other;
+                                        switch (args.get_errorCode()) {
+                                            case -2130575245:
+                                                result = EditFileNameResult.FileNameCharactersNotPermitted;
+                                                break;
+                                            case -2147024891:
+                                                result = EditFileNameResult.InsufficientPermissions;
+                                                break;
+                                            case -2146233086:
+                                                result = EditFileNameResult.InvalidUnderlyingObjectType;
+                                                break;
+                                            case -2130575257:
+                                                result = EditFileNameResult.DocumentAlreadyExists;
+                                                break;
+                                        }
+                                        error(result, args.get_message(), fileUrl_1);
+                                    });
+                                }
+                                else {
+                                    error(EditFileNameResult.InsufficientPermissions, "You do not have the permission", attachmentItem.FileUrl);
+                                }
+                            }, function (s, args) {
+                                alert("Problem in async request. Receive this server error '" + args.get_message() + "'");
+                            });
+                        });
+                    }
+                };
+                AttachmentControl.prototype.FormatNumber = function (value, cfg) {
+                    var defaultNumberConfiguration = {
+                        mDec: 2,
+                        aPad: false,
+                        vMax: Number.MAX_VALUE,
+                        vMin: -Number.MAX_VALUE
+                    };
+                    if (value == null)
+                        return "";
+                    if (value == 0)
+                        return "0";
+                    if (value) {
+                        var numCfg = $.extend({}, defaultNumberConfiguration, cfg);
+                        var a = $("<span>");
+                        a.autoNumeric(numCfg);
+                        a.autoNumeric("set", value);
+                        return a.text();
+                    }
+                    return "";
+                };
+                ;
+                return AttachmentControl;
+            }());
+            Attachment.AttachmentControl = AttachmentControl;
+            var EditFileNameResult;
+            (function (EditFileNameResult) {
+                EditFileNameResult[EditFileNameResult["OK"] = 1] = "OK";
+                EditFileNameResult[EditFileNameResult["Other"] = -99] = "Other";
+                EditFileNameResult[EditFileNameResult["NotImplemented"] = -1] = "NotImplemented";
+                EditFileNameResult[EditFileNameResult["FileNameCharactersNotPermitted"] = -2130575245] = "FileNameCharactersNotPermitted";
+                EditFileNameResult[EditFileNameResult["InsufficientPermissions"] = -2147024891] = "InsufficientPermissions";
+                EditFileNameResult[EditFileNameResult["InvalidUnderlyingObjectType"] = -2146233086] = "InvalidUnderlyingObjectType";
+                EditFileNameResult[EditFileNameResult["DocumentAlreadyExists"] = -2130575257] = "DocumentAlreadyExists";
+            })(EditFileNameResult || (EditFileNameResult = {}));
+            var Entity;
+            (function (Entity) {
+                var TiSaChoice = (function () {
+                    function TiSaChoice() {
+                    }
+                    TiSaChoice.prototype.Localize = function () {
+                        if (this._localized) {
+                            return;
+                        }
+                        var resx = null;
+                        if ((this.Resources != null)) {
+                            resx = $.grep(this.Resources, function (n, i) { return n.LCID == TiSa.LCID; })[0];
+                        }
+                        if (!resx) {
+                            this._localized = true;
+                            return;
+                        }
+                        for (var i = 0; i < this.Choices.length; i++) {
+                            var ch = this.Choices[i];
+                            if (ch.Title.indexOf("RESX.$") == 0) {
+                                var key = ch.Title.substring(5);
+                                if (resx[key]) {
+                                    ch.Title = resx[key];
+                                }
+                            }
+                        }
+                        this._localized = true;
+                    };
+                    TiSaChoice.prototype.GetChoiceTitle = function (value) {
+                        this.Localize();
+                        for (var i = 0; i < this.Choices.length; i++) {
+                            var ch = this.Choices[i];
+                            if ((ch.Value == value)) {
+                                return ch.Title;
+                            }
+                        }
+                        return value;
+                    };
+                    TiSaChoice.ParseConfiguration = function (configuration) {
+                        var o = JSON.parse(configuration);
+                        var e = new TiSaChoice();
+                        $.extend(e, o);
+                        return e;
+                    };
+                    return TiSaChoice;
+                }());
+                Entity.TiSaChoice = TiSaChoice;
+            })(Entity || (Entity = {}));
+        })(Attachment = Components.Attachment || (Components.Attachment = {}));
+    })(Components = TiSa.Components || (TiSa.Components = {}));
+})(TiSa || (TiSa = {}));
+(function (TiSa) {
+    var Component;
+    (function (Component) {
+        Component.Attachment = TiSa.Components.Attachment.AttachmentControl;
+        Component.AttachmentStatic = TiSa.Components.Attachment.AttachmentStatic;
+    })(Component = TiSa.Component || (TiSa.Component = {}));
+})(TiSa || (TiSa = {}));
+(function (TiSa) {
+    var Components;
+    (function (Components) {
+        var Attachment;
+        (function (Attachment) {
+            var AttachmentStatic;
+            (function (AttachmentStatic) {
+                var StaticContext = (function () {
+                    function StaticContext() {
+                    }
+                    StaticContext.Add = function (instance) {
+                        if (!StaticContext.Instances) {
+                            StaticContext.Instances = [];
+                            var formContext = TiSa.Forms.GetFormControlContext();
+                            formContext.Form.OnRequestSucceededCallBack.push(StaticContext._submitComplete);
+                        }
+                        StaticContext.Instances.push(instance);
+                    };
+                    StaticContext._submitComplete = function (formContext, context) {
+                        var ctx = SP.ClientContext.get_current();
+                        var web = ctx.get_web();
+                        for (var i = 0; i < StaticContext.Instances.length; i++) {
+                            var instance = StaticContext.Instances[i];
+                            var references = instance.GetDeletedReferences();
+                            if (references.length > 0) {
+                                for (var j = 0; j < references.length; j++) {
+                                    var ritem = references[j];
+                                    if (ritem.Static)
+                                        continue;
+                                    var url = ritem.ListUrl + ritem.FileUrl;
+                                    var file = web.getFileByServerRelativeUrl(url);
+                                    file.deleteObject();
+                                }
+                                ctx.executeQueryAsync();
+                            }
+                        }
+                    };
+                    return StaticContext;
+                }());
+                AttachmentStatic.StaticContext = StaticContext;
+            })(AttachmentStatic = Attachment.AttachmentStatic || (Attachment.AttachmentStatic = {}));
+        })(Attachment = Components.Attachment || (Components.Attachment = {}));
+    })(Components = TiSa.Components || (TiSa.Components = {}));
+})(TiSa || (TiSa = {}));
+String.prototype.padStart = String.prototype.padStart ? String.prototype.padStart : function (targetLength, padString) {
+    targetLength = Math.floor(targetLength) || 0;
+    if (targetLength < this.length)
+        return String(this);
+    padString = padString ? String(padString) : " ";
+    var pad = "";
+    var len = targetLength - this.length;
+    var i = 0;
+    while (pad.length < len) {
+        if (!padString[i]) {
+            i = 0;
+        }
+        pad += padString[i];
+        i++;
+    }
+    return pad + String(this).slice(0);
+};
+if (SP && SP.SOD)
+    SP.SOD.notifyScriptLoadedAndExecuteWaitingJobs("Attachment.js");

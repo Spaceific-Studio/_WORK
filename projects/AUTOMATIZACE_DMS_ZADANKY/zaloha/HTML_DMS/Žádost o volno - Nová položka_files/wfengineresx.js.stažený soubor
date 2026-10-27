@@ -1,0 +1,59 @@
+WFEngine.RESX =
+{
+    "StartForm_Title": "Start workflow",
+    "Engine_Wait": "Please wait...",
+    "Engine_StartingWorkflow": "Starting workflow...",
+    "Engine_StoppingWorkflow": "Terminating workflow...",
+    "Engine_WorkflowStarted": "Workflow was started.",
+    "Engine_UnableToStartWorkflow": "Unable to start workflow.",
+    "Engine_WorkflowStopped": "Workflow was stopped.",
+    "Engine_UnableToStopWorkflow": "Unable to stop workflow."
+};
+ExecuteOrDelayUntilBodyLoaded(function () {
+    if (typeof Object.assign != 'function') {
+        Object.assign = function (target) {
+            'use strict';
+            if (target == null) {
+                throw new TypeError('Cannot convert undefined or null to object');
+            }
+            target = Object(target);
+            for (var index = 1; index < arguments.length; index++) {
+                var source = arguments[index];
+                if (source != null) {
+                    for (var key in source) {
+                        if (Object.prototype.hasOwnProperty.call(source, key)) {
+                            target[key] = source[key];
+                        }
+                    }
+                }
+            }
+            return target;
+        };
+    }
+
+    var resxUrl = _spPageContextInfo.siteServerRelativeUrl + "/SiteAssets/WFEngine/Scripts/Resources/WFEngineResx." + _spPageContextInfo.currentUICultureName + ".js";
+
+    if (resxUrl.startsWith('//')) {
+        resxUrl = resxUrl.replace('//', '');
+    }
+
+    try {
+        if (WFEngineInfo && WFEngineInfo.AppUrl) {
+            resxUrl = WFEngineInfo.AppUrl + "/Scripts/Resources/WFEngineResx." + _spPageContextInfo.currentUICultureName + ".js";
+        }
+    } catch (e) { }
+
+    RegisterSod("wfresx.js", resxUrl);
+    LoadSodByKey("wfresx.js");
+});
+//# sourceMappingURL=WFEngineResx.js.map
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map 
+//# sourceMappingURL=WFEngineResx.js.map
